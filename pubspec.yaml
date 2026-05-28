@@ -1,0 +1,32 @@
+name: nihaisha_app
+description: "汉唐中医 - 倪海厦六经辨证中医诊断助手"
+publish_to: 'none'
+version: 1.3.0+1
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  flutter_markdown: ^0.7.0
+  sqflite: ^2.4.2
+  path_provider: ^2.1.5
+  path: ^1.9.1
+  share_plus: ^10.1.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/SKILL.md
+    - assets/data/formulas.json
+    - assets/data/herbs.json
+    - assets/data/acupuncture.json
+    - assets/data/acupoints.json
+    - assets/data/prescriptions.json
