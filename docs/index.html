@@ -14,6 +14,9 @@
   <meta name="twitter:title" content="汉唐中医 - 六经辨证诊断助手">
   <meta name="twitter:description" content="基于倪海厦六经辨证体系的中医诊断助手App。">
   <link rel="canonical" href="https://jangviktor-web.github.io/nihaixia-app/">
+  <link rel="icon" type="image/jpeg" href="https://github.com/user-attachments/assets/d13b08a7-b877-491f-9cce-9aa415b04efb">
+  <meta property="og:image" content="https://github.com/user-attachments/assets/d13b08a7-b877-491f-9cce-9aa415b04efb">
+  <meta name="twitter:image" content="https://github.com/user-attachments/assets/d13b08a7-b877-491f-9cce-9aa415b04efb">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -31,7 +34,7 @@
       text-align: center;
       padding: 80px 20px 60px;
     }
-    .hero-emoji { font-size: 64px; margin-bottom: 16px; }
+    .hero-logo { width: 100px; height: 100px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
     .hero h1 {
       font-size: 2.4em;
       font-weight: 700;
@@ -102,6 +105,44 @@
     .feature-card h3 { font-size: 1.15em; margin-bottom: 8px; color: #3a2a10; }
     .feature-card p { font-size: 0.92em; color: #666; }
 
+    /* Screenshots */
+    .screenshots {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 64px 20px;
+      text-align: center;
+    }
+    .screenshots h2 {
+      font-size: 1.8em;
+      margin-bottom: 40px;
+      color: #3a2a10;
+    }
+    .screenshot-row {
+      display: flex;
+      gap: 32px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .screenshot-item {
+      flex: 1;
+      min-width: 280px;
+      max-width: 440px;
+    }
+    .screenshot-item img {
+      width: 100%;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(90,60,20,0.15);
+      transition: transform 0.2s;
+    }
+    .screenshot-item img:hover {
+      transform: scale(1.02);
+    }
+    .screenshot-item p {
+      margin-top: 12px;
+      font-size: 0.95em;
+      color: #888;
+    }
+
     /* Meridian */
     .meridian-section {
       background: #fff;
@@ -171,9 +212,10 @@
     @media (max-width: 600px) {
       .hero { padding: 56px 16px 44px; }
       .hero h1 { font-size: 1.7em; }
-      .hero-emoji { font-size: 48px; }
+      .hero-logo { width: 80px; height: 80px; }
       .stats { gap: 28px; }
       .stat-num { font-size: 1.5em; }
+      .screenshot-row { flex-direction: column; align-items: center; }
     }
   </style>
 </head>
@@ -181,7 +223,7 @@
 
   <!-- Hero -->
   <section class="hero">
-    <div class="hero-emoji">🏥</div>
+    <img class="hero-logo" src="https://github.com/user-attachments/assets/d13b08a7-b877-491f-9cce-9aa415b04efb" alt="汉唐中医 Logo">
     <h1>汉唐中医</h1>
     <p>基于倪海厦六经辨证体系的中医诊断助手<br>离线可用，完全免费，开箱即用</p>
     <div class="hero-buttons">
@@ -247,6 +289,21 @@
         <div class="feature-icon">⏰</div>
         <h3>子午流注取穴</h3>
         <p>输入时间自动推算开穴，辅助针灸取穴决策。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Screenshots -->
+  <section class="screenshots">
+    <h2>应用截图</h2>
+    <div class="screenshot-row">
+      <div class="screenshot-item">
+        <img src="https://github.com/user-attachments/assets/8e416b03-dea3-4fc1-b905-d64fb8314f87" alt="问诊引导 · 六经速查 · 方剂速查" loading="lazy">
+        <p>问诊引导 · 六经速查 · 方剂速查</p>
+      </div>
+      <div class="screenshot-item">
+        <img src="https://github.com/user-attachments/assets/4b0fcad8-a026-4cbf-a24d-b82a9dd43079" alt="本草速查 · 针灸穴位 · 实用工具" loading="lazy">
+        <p>本草速查 · 针灸穴位 · 实用工具</p>
       </div>
     </div>
   </section>
