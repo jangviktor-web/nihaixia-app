@@ -23,6 +23,9 @@
 
 ## 📷 截图
 
+<img width="3000" height="2160" alt="截图2" src="https://github.com/user-attachments/assets/4b0fcad8-a026-4cbf-a24d-b82a9dd43079" />
+<img width="3000" height="2160" alt="截图1" src="https://github.com/user-attachments/assets/8e416b03-dea3-4fc1-b905-d64fb8314f87" />
+
 <div align="center">
 
 | 问诊引导 | 辨证结果 | 处方详情 |
