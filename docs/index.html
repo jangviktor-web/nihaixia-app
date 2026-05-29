@@ -10,13 +10,13 @@
   <meta property="og:description" content="基于倪海厦六经辨证体系的中医诊断助手，离线可用，完全免费。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://jangviktor-web.github.io/nihaixia-app/">
-  <meta name="twitter:card" content="summary">
+  <meta property="og:image" content="https://raw.githubusercontent.com/jangviktor-web/nihaixia-app/main/docs/images/logo.jpg">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="汉唐中医 - 六经辨证诊断助手">
   <meta name="twitter:description" content="基于倪海厦六经辨证体系的中医诊断助手App。">
+  <meta name="twitter:image" content="https://raw.githubusercontent.com/jangviktor-web/nihaixia-app/main/docs/images/logo.jpg">
   <link rel="canonical" href="https://jangviktor-web.github.io/nihaixia-app/">
-  <link rel="icon" type="image/jpeg" href="https://github.com/user-attachments/assets/d13b08a7-b877-491f-9cce-9aa415b04efb">
-  <meta property="og:image" content="https://github.com/user-attachments/assets/d13b08a7-b877-491f-9cce-9aa415b04efb">
-  <meta name="twitter:image" content="https://github.com/user-attachments/assets/d13b08a7-b877-491f-9cce-9aa415b04efb">
+  <link rel="icon" type="image/jpeg" href="images/logo.jpg">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -24,198 +24,386 @@
       color: #2c2c2c;
       background: #faf8f5;
       line-height: 1.6;
+      overflow-x: hidden;
     }
     a { color: inherit; text-decoration: none; }
 
-    /* Hero */
+    /* ===== Hero ===== */
     .hero {
-      background: linear-gradient(135deg, #5b3a1a 0%, #8b6914 50%, #a0522d 100%);
+      background: linear-gradient(135deg, #1a0f05 0%, #3a2a10 40%, #5b3a1a 70%, #8b6914 100%);
       color: #fff;
-      text-align: center;
-      padding: 80px 20px 60px;
+      padding: 80px 0 0;
+      position: relative;
+      overflow: hidden;
     }
-    .hero-logo { width: 100px; height: 100px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-    .hero h1 {
-      font-size: 2.4em;
-      font-weight: 700;
-      margin-bottom: 12px;
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(139,105,20,0.3) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .hero-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      gap: 60px;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-text { flex: 1; min-width: 0; }
+    .hero-text h1 {
+      font-size: 3em;
+      font-weight: 800;
+      margin-bottom: 8px;
       letter-spacing: 2px;
+      line-height: 1.2;
     }
-    .hero p {
-      font-size: 1.15em;
-      opacity: 0.9;
-      max-width: 520px;
-      margin: 0 auto 32px;
+    .hero-text .subtitle {
+      font-size: 1.2em;
+      opacity: 0.85;
+      margin-bottom: 24px;
+      line-height: 1.5;
     }
-    .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .hero-text .tagline {
+      display: inline-block;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      margin-bottom: 32px;
+      backdrop-filter: blur(4px);
+    }
+    .hero-buttons { display: flex; gap: 14px; flex-wrap: wrap; }
     .btn {
       display: inline-flex;
       align-items: center;
       gap: 8px;
       padding: 14px 32px;
-      border-radius: 10px;
+      border-radius: 12px;
       font-size: 1.05em;
       font-weight: 600;
-      transition: transform 0.15s, box-shadow 0.15s;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
     }
-    .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
-    .btn-primary { background: #fff; color: #5b3a1a; }
-    .btn-secondary { background: rgba(255,255,255,0.18); color: #fff; border: 1.5px solid rgba(255,255,255,0.5); }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary {
+      background: #fff;
+      color: #3a2a10;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .btn-primary:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1.5px solid rgba(255,255,255,0.35);
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.18); }
 
-    /* Stats */
+    /* Phone Mockup */
+    .hero-phone {
+      flex: 0 0 320px;
+      position: relative;
+    }
+    .phone-frame {
+      width: 280px;
+      background: #1a1a1a;
+      border-radius: 36px;
+      padding: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 0 0 2px #333;
+      position: relative;
+    }
+    .phone-frame::before {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 20px;
+      background: #1a1a1a;
+      border-radius: 0 0 12px 12px;
+      z-index: 2;
+    }
+    .phone-screen {
+      border-radius: 26px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .phone-screen img {
+      width: 100%;
+      display: block;
+    }
+
+    /* ===== Stats ===== */
     .stats {
       display: flex;
       justify-content: center;
-      gap: 48px;
-      padding: 32px 20px;
+      gap: 56px;
+      padding: 40px 20px;
       background: #fff;
       border-bottom: 1px solid #ece7df;
       flex-wrap: wrap;
     }
     .stat { text-align: center; }
-    .stat-num { font-size: 2em; font-weight: 700; color: #8b6914; }
-    .stat-label { font-size: 0.9em; color: #888; margin-top: 2px; }
-
-    /* Features */
-    .features {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 64px 20px;
+    .stat-num {
+      font-size: 2.2em;
+      font-weight: 800;
+      background: linear-gradient(135deg, #8b6914, #a0522d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
-    .features h2 {
+    .stat-label { font-size: 0.9em; color: #888; margin-top: 4px; }
+
+    /* ===== Features ===== */
+    .features {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 80px 24px;
+    }
+    .section-title {
       text-align: center;
-      font-size: 1.8em;
-      margin-bottom: 48px;
-      color: #3a2a10;
+      font-size: 2em;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #2c2c2c;
+    }
+    .section-desc {
+      text-align: center;
+      color: #888;
+      max-width: 520px;
+      margin: 0 auto 48px;
+      font-size: 1.05em;
     }
     .feature-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 24px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
     }
     .feature-card {
       background: #fff;
-      border-radius: 14px;
-      padding: 28px 24px;
-      border: 1px solid #ece7df;
-      transition: transform 0.15s, box-shadow 0.15s;
+      border-radius: 16px;
+      padding: 32px 24px;
+      border: 1px solid #f0ebe3;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
     }
-    .feature-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(90,60,20,0.1); }
-    .feature-icon { font-size: 2em; margin-bottom: 12px; }
-    .feature-card h3 { font-size: 1.15em; margin-bottom: 8px; color: #3a2a10; }
-    .feature-card p { font-size: 0.92em; color: #666; }
-
-    /* Screenshots */
-    .screenshots {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 64px 20px;
-      text-align: center;
+    .feature-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #8b6914, #a0522d);
+      opacity: 0;
+      transition: opacity 0.25s;
     }
-    .screenshots h2 {
-      font-size: 1.8em;
-      margin-bottom: 40px;
-      color: #3a2a10;
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(90,60,20,0.1);
+      border-color: #d4a853;
     }
-    .screenshot-row {
+    .feature-card:hover::after { opacity: 1; }
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
       display: flex;
-      gap: 32px;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5em;
+      margin-bottom: 16px;
+    }
+    .fi-blue { background: #e3f2fd; }
+    .fi-orange { background: #fff3e0; }
+    .fi-green { background: #e8f5e9; }
+    .fi-purple { background: #f3e5f5; }
+    .fi-red { background: #fce4ec; }
+    .fi-teal { background: #e0f2f1; }
+    .feature-card h3 {
+      font-size: 1.1em;
+      margin-bottom: 8px;
+      color: #2c2c2c;
+      font-weight: 600;
+    }
+    .feature-card p { font-size: 0.9em; color: #777; line-height: 1.5; }
+
+    /* ===== Screenshots ===== */
+    .screenshots {
+      background: #fff;
+      padding: 80px 24px;
+      border-top: 1px solid #ece7df;
+      border-bottom: 1px solid #ece7df;
+    }
+    .screenshot-showcase {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      gap: 40px;
       justify-content: center;
       flex-wrap: wrap;
     }
     .screenshot-item {
       flex: 1;
       min-width: 280px;
-      max-width: 440px;
+      max-width: 400px;
+      text-align: center;
     }
-    .screenshot-item img {
-      width: 100%;
-      border-radius: 16px;
-      box-shadow: 0 8px 32px rgba(90,60,20,0.15);
-      transition: transform 0.2s;
-    }
-    .screenshot-item img:hover {
-      transform: scale(1.02);
+    .screenshot-item .phone-frame {
+      width: 260px;
+      margin: 0 auto;
     }
     .screenshot-item p {
-      margin-top: 12px;
+      margin-top: 16px;
       font-size: 0.95em;
       color: #888;
+      font-weight: 500;
     }
 
-    /* Meridian */
+    /* ===== Meridian ===== */
     .meridian-section {
-      background: #fff;
-      padding: 64px 20px;
-      border-top: 1px solid #ece7df;
-      border-bottom: 1px solid #ece7df;
-    }
-    .meridian-section h2 {
+      padding: 80px 24px;
       text-align: center;
-      font-size: 1.8em;
-      margin-bottom: 40px;
-      color: #3a2a10;
     }
     .meridian-grid {
       display: flex;
       justify-content: center;
-      gap: 20px;
+      gap: 16px;
       flex-wrap: wrap;
-      max-width: 720px;
+      max-width: 760px;
       margin: 0 auto;
     }
     .meridian-tag {
-      padding: 12px 24px;
-      border-radius: 10px;
+      padding: 14px 28px;
+      border-radius: 12px;
       font-weight: 600;
       font-size: 1.05em;
-      min-width: 100px;
+      min-width: 110px;
       text-align: center;
       color: #fff;
+      transition: transform 0.2s;
     }
-    .m-taiyang { background: #FF9800; }
-    .m-yangming { background: #F44336; }
-    .m-shaoyang { background: #FF5722; }
-    .m-taiyin { background: #2196F3; }
-    .m-shaoyin { background: #9C27B0; }
-    .m-jueyin { background: #607D8B; }
+    .meridian-tag:hover { transform: scale(1.05); }
+    .m-taiyang { background: linear-gradient(135deg, #FF9800, #F57C00); }
+    .m-yangming { background: linear-gradient(135deg, #F44336, #D32F2F); }
+    .m-shaoyang { background: linear-gradient(135deg, #FF5722, #E64A19); }
+    .m-taiyin { background: linear-gradient(135deg, #2196F3, #1976D2); }
+    .m-shaoyin { background: linear-gradient(135deg, #9C27B0, #7B1FA2); }
+    .m-jueyin { background: linear-gradient(135deg, #607D8B, #455A64); }
 
-    /* Tech */
+    /* ===== Tech ===== */
     .tech {
       max-width: 720px;
       margin: 0 auto;
-      padding: 64px 20px;
+      padding: 80px 24px;
       text-align: center;
     }
-    .tech h2 { font-size: 1.8em; margin-bottom: 24px; color: #3a2a10; }
-    .tech-tags { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+    .tech-desc {
+      color: #888;
+      max-width: 520px;
+      margin: 0 auto 24px;
+      font-size: 1.05em;
+    }
+    .tech-tags {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
     .tech-tag {
-      padding: 8px 18px;
-      background: #f0ebe3;
-      border-radius: 8px;
-      font-size: 0.92em;
+      padding: 10px 20px;
+      background: #f5f0e8;
+      border-radius: 10px;
+      font-size: 0.95em;
       color: #5b3a1a;
       font-weight: 500;
+      transition: background 0.2s;
+    }
+    .tech-tag:hover { background: #ece4d6; }
+
+    /* ===== Download CTA ===== */
+    .download-cta {
+      background: linear-gradient(135deg, #3a2a10, #5b3a1a);
+      color: #fff;
+      text-align: center;
+      padding: 80px 24px;
+    }
+    .download-cta h2 {
+      font-size: 2em;
+      margin-bottom: 16px;
+    }
+    .download-cta p {
+      opacity: 0.8;
+      margin-bottom: 32px;
+      font-size: 1.1em;
+    }
+    .download-cta .btn-primary {
+      font-size: 1.15em;
+      padding: 16px 40px;
     }
 
-    /* Footer */
+    /* ===== Footer ===== */
     footer {
       text-align: center;
-      padding: 40px 20px;
-      background: #3a2a10;
-      color: rgba(255,255,255,0.7);
+      padding: 40px 24px;
+      background: #1a0f05;
+      color: rgba(255,255,255,0.5);
       font-size: 0.9em;
     }
     footer a { color: #d4a853; }
     footer a:hover { text-decoration: underline; }
+    footer .quote {
+      font-style: italic;
+      opacity: 0.6;
+      margin-bottom: 16px;
+      font-size: 0.95em;
+    }
 
-    @media (max-width: 600px) {
-      .hero { padding: 56px 16px 44px; }
-      .hero h1 { font-size: 1.7em; }
-      .hero-logo { width: 80px; height: 80px; }
-      .stats { gap: 28px; }
-      .stat-num { font-size: 1.5em; }
-      .screenshot-row { flex-direction: column; align-items: center; }
+    /* ===== Animations ===== */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 768px) {
+      .hero { padding: 60px 0 0; }
+      .hero-inner {
+        flex-direction: column;
+        text-align: center;
+        gap: 40px;
+        padding: 0 20px;
+      }
+      .hero-text h1 { font-size: 2em; }
+      .hero-buttons { justify-content: center; }
+      .hero-phone { flex: none; }
+      .phone-frame { width: 240px; }
+      .feature-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
+      .stats { gap: 32px; }
+      .stat-num { font-size: 1.7em; }
+      .screenshot-showcase { flex-direction: column; align-items: center; }
+      .meridian-grid { gap: 10px; }
+      .meridian-tag { min-width: 90px; padding: 10px 18px; font-size: 0.95em; }
+    }
+    @media (max-width: 480px) {
+      .hero-text h1 { font-size: 1.6em; }
+      .phone-frame { width: 200px; }
     }
   </style>
 </head>
@@ -223,86 +411,107 @@
 
   <!-- Hero -->
   <section class="hero">
-    <img class="hero-logo" src="https://github.com/user-attachments/assets/d13b08a7-b877-491f-9cce-9aa415b04efb" alt="汉唐中医 Logo">
-    <h1>汉唐中医</h1>
-    <p>基于倪海厦六经辨证体系的中医诊断助手<br>离线可用，完全免费，开箱即用</p>
-    <div class="hero-buttons">
-      <a class="btn btn-primary" href="https://github.com/jangviktor-web/nihaixia-app/releases/latest">
-        📥 下载 APK
-      </a>
-      <a class="btn btn-secondary" href="https://github.com/jangviktor-web/nihaixia-app">
-        GitHub 仓库
-      </a>
+    <div class="hero-inner">
+      <div class="hero-text">
+        <div class="tagline">基于倪海厦《人纪》体系</div>
+        <h1>汉唐中医</h1>
+        <p class="subtitle">六经辨证智能诊断助手<br>离线可用 · 完全免费 · 开箱即用</p>
+        <div class="hero-buttons">
+          <a class="btn btn-primary" href="https://github.com/jangviktor-web/nihaixia-app/releases/latest">
+            📥 下载 APK
+          </a>
+          <a class="btn btn-secondary" href="https://github.com/jangviktor-web/nihaixia-app">
+            GitHub 仓库
+          </a>
+        </div>
+      </div>
+      <div class="hero-phone">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <img src="images/screenshot1.jpg" alt="汉唐中医 - 六经辨证诊断" loading="eager">
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- Stats -->
   <div class="stats">
-    <div class="stat">
+    <div class="stat fade-up">
       <div class="stat-num">271</div>
       <div class="stat-label">经典方剂</div>
     </div>
-    <div class="stat">
+    <div class="stat fade-up">
       <div class="stat-num">345</div>
       <div class="stat-label">中药药物</div>
     </div>
-    <div class="stat">
+    <div class="stat fade-up">
+      <div class="stat-num">361</div>
+      <div class="stat-label">针灸穴位</div>
+    </div>
+    <div class="stat fade-up">
       <div class="stat-num">26</div>
       <div class="stat-label">鉴别诊断</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">14</div>
-      <div class="stat-label">合病覆盖</div>
     </div>
   </div>
 
   <!-- Features -->
   <section class="features">
-    <h2>核心功能</h2>
+    <h2 class="section-title fade-up">核心功能</h2>
+    <p class="section-desc fade-up">从问诊到开方，一站式中医诊断辅助</p>
     <div class="feature-grid">
-      <div class="feature-card">
-        <div class="feature-icon">🩺</div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon fi-blue">🩺</div>
         <h3>六经辨证诊断</h3>
-        <p>通过智能问诊引导，自动判断太阳/阳明/少阳/太阴/少阴/厥阴六经归属，给出辨证结果和方剂推荐。</p>
+        <p>智能问诊引导，自动判断太阳/阳明/少阳/太阴/少阴/厥阴六经归属，给出辨证结果和方剂推荐。</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon">📋</div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon fi-orange">📋</div>
         <h3>完整处方生成</h3>
         <p>诊断后自动显示方剂组成、剂量、煎服法、禁忌，并根据兼证推荐经方加减变化。</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon">🔍</div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon fi-green">🔍</div>
         <h3>鉴别诊断</h3>
         <p>26对鉴别场景，自动对比相似证型的关键区别，辅助精准辨证。</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon">📚</div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon fi-purple">📚</div>
         <h3>方剂药物速查</h3>
         <p>271首经方、345味中药，支持搜索、六经筛选、分类筛选，离线查阅。</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon">📈</div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon fi-red">📈</div>
         <h3>诊断历史趋势</h3>
         <p>六经传变可视化，自动检测"由表入里"或"由里出表"趋势，追踪健康变化。</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon">⏰</div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon fi-teal">⏰</div>
         <h3>子午流注取穴</h3>
-        <p>输入时间自动推算开穴，辅助针灸取穴决策。</p>
+        <p>输入时间自动推算开穴，辅助针灸取穴决策。361穴完整数据。</p>
       </div>
     </div>
   </section>
 
   <!-- Screenshots -->
   <section class="screenshots">
-    <h2>应用截图</h2>
-    <div class="screenshot-row">
-      <div class="screenshot-item">
-        <img src="https://github.com/user-attachments/assets/8e416b03-dea3-4fc1-b905-d64fb8314f87" alt="问诊引导 · 六经速查 · 方剂速查" loading="lazy">
+    <h2 class="section-title fade-up">应用截图</h2>
+    <p class="section-desc fade-up">简洁直观的界面设计，专业中医诊断体验</p>
+    <div class="screenshot-showcase">
+      <div class="screenshot-item fade-up">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <img src="images/screenshot1.jpg" alt="问诊引导 · 六经速查 · 方剂速查" loading="lazy">
+          </div>
+        </div>
         <p>问诊引导 · 六经速查 · 方剂速查</p>
       </div>
-      <div class="screenshot-item">
-        <img src="https://github.com/user-attachments/assets/4b0fcad8-a026-4cbf-a24d-b82a9dd43079" alt="本草速查 · 针灸穴位 · 实用工具" loading="lazy">
+      <div class="screenshot-item fade-up">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <img src="images/screenshot2.jpg" alt="本草速查 · 针灸穴位 · 实用工具" loading="lazy">
+          </div>
+        </div>
         <p>本草速查 · 针灸穴位 · 实用工具</p>
       </div>
     </div>
@@ -310,8 +519,9 @@
 
   <!-- Meridian -->
   <section class="meridian-section">
-    <h2>六经辨证体系</h2>
-    <div class="meridian-grid">
+    <h2 class="section-title fade-up">六经辨证体系</h2>
+    <p class="section-desc fade-up">张仲景《伤寒论》核心辨证框架</p>
+    <div class="meridian-grid fade-up">
       <div class="meridian-tag m-taiyang">☀️ 太阳</div>
       <div class="meridian-tag m-yangming">🔥 阳明</div>
       <div class="meridian-tag m-shaoyang">🌅 少阳</div>
@@ -323,21 +533,32 @@
 
   <!-- Tech -->
   <section class="tech">
-    <h2>技术特性</h2>
-    <p style="color:#666; max-width:520px; margin:0 auto;">完全离线运行，无需联网。数据本地存储，隐私安全。Material Design 3 界面，流畅体验。</p>
-    <div class="tech-tags">
+    <h2 class="section-title fade-up">技术特性</h2>
+    <p class="tech-desc fade-up">完全离线运行，无需联网。数据本地存储，隐私安全。</p>
+    <div class="tech-tags fade-up">
       <span class="tech-tag">Flutter</span>
       <span class="tech-tag">SQLite</span>
       <span class="tech-tag">离线优先</span>
       <span class="tech-tag">Material 3</span>
-      <span class="tech-tag">Android</span>
+      <span class="tech-tag">Android 6.0+</span>
+      <span class="tech-tag">零联网</span>
     </div>
+  </section>
+
+  <!-- Download CTA -->
+  <section class="download-cta">
+    <h2 class="fade-up">立即体验</h2>
+    <p class="fade-up">下载 APK，离线使用全部功能</p>
+    <a class="btn btn-primary fade-up" href="https://github.com/jangviktor-web/nihaixia-app/releases/latest">
+      📥 下载最新版 v1.3.0
+    </a>
   </section>
 
   <!-- Footer -->
   <footer>
+    <p class="quote">「中医很简单，就是阴阳气血。你搞懂了，一通百通。」—— 倪海厦</p>
     <p>汉唐中医 v1.3.0 &nbsp;|&nbsp; 基于倪海厦《伤寒论》《金匮要略》教学体系</p>
-    <p style="margin-top:8px;">
+    <p style="margin-top:12px;">
       <a href="https://github.com/jangviktor-web/nihaixia-app">GitHub</a>
       &nbsp;&middot;&nbsp;
       <a href="https://github.com/jangviktor-web/nihaixia-app/releases">下载</a>
@@ -345,6 +566,19 @@
       <a href="https://github.com/jangviktor-web/nihaixia-app/issues">反馈</a>
     </p>
   </footer>
+
+  <!-- Scroll Animation -->
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  </script>
 
 </body>
 </html>
