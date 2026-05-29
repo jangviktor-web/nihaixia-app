@@ -1,6 +1,8 @@
 <div align="center">
 
-🏥 **汉唐中医**
+<img width="120" src="https://github.com/user-attachments/assets/d13b08a7-b877-491f-9cce-9aa415b04efb" alt="汉唐中医 Logo">
+
+# 汉唐中医
 
 **基于倪海厦六经辨证体系的中医诊断助手**
 
@@ -23,24 +25,17 @@
 
 ## 📷 截图
 
-<img width="3000" height="2160" alt="截图2" src="https://github.com/user-attachments/assets/4b0fcad8-a026-4cbf-a24d-b82a9dd43079" />
-<img width="3000" height="2160" alt="截图1" src="https://github.com/user-attachments/assets/8e416b03-dea3-4fc1-b905-d64fb8314f87" />
-
 <div align="center">
 
-| 问诊引导 | 辨证结果 | 处方详情 |
-|:---:|:---:|:---:|
-| 智能问诊流程 | 六经辨证 + 置信度 | 组成·剂量·煎服法 |
-| *选择症状* | *自动判断六经* | *完整处方+加减* |
+**问诊引导 · 六经速查 · 方剂速查**
 
-| 方剂速查 | 药物速查 | 诊断历史 |
-|:---:|:---:|:---:|
-| 271首经方 | 345味中药 | 六经传变趋势 |
-| *搜索+筛选* | *分类/性味/归经* | *可视化追踪* |
+![问诊引导](https://github.com/user-attachments/assets/8e416b03-dea3-4fc1-b905-d64fb8314f87)
+
+**本草速查 · 针灸穴位 · 实用工具**
+
+![本草针灸工具](https://github.com/user-attachments/assets/4b0fcad8-a026-4cbf-a24d-b82a9dd43079)
 
 </div>
-
-> 截图待补充 — 构建APK后运行截图
 
 ---
 
