@@ -1,6 +1,6 @@
 <div align="center">
 
-<img width="120" src="https://github.com/user-attachments/assets/d13b08a7-b877-491f-9cce-9aa415b04efb" alt="汉唐中医 Logo">
+<img width="120" src="docs/images/logo.jpg" alt="汉唐中医 Logo">
 
 # 汉唐中医
 
@@ -29,11 +29,11 @@
 
 **问诊引导 · 六经速查 · 方剂速查**
 
-![问诊引导](https://github.com/user-attachments/assets/8e416b03-dea3-4fc1-b905-d64fb8314f87)
+![问诊引导](docs/images/screenshot1.jpg)
 
 **本草速查 · 针灸穴位 · 实用工具**
 
-![本草针灸工具](https://github.com/user-attachments/assets/4b0fcad8-a026-4cbf-a24d-b82a9dd43079)
+![本草针灸工具](docs/images/screenshot2.jpg)
 
 </div>
 
