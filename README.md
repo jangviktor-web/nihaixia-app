@@ -2,12 +2,12 @@
 
 > 基于倪海厦《伤寒论》《金匮要略》教学体系的中医诊断助手，离线可用，完全免费。
 
-[![Release](https://img.shields.io/github/v/release/jangviktor-web/nihaisha-app?label=下载APK)](https://github.com/jangviktor-web/nihaisha-app/releases/latest)
+[![Release](https://img.shields.io/github/v/release/jangviktor-web/nihaixia-app?label=下载APK)](https://github.com/jangviktor-web/nihaixia-app/releases/latest)
 [![Flutter](https://img.shields.io/badge/Flutter-3.x-blue)](https://flutter.dev)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Android-lightgrey)]()
 
-**🌐 落地页**: https://jangviktor-web.github.io/nihaisha-app/
+**🌐 落地页**: https://jangviktor-web.github.io/nihaixia-app/
 
 ---
 
@@ -55,7 +55,7 @@
 
 ## 📱 下载安装
 
-前往 [Releases](https://github.com/jangviktor-web/nihaisha-app/releases/latest) 页面下载最新 APK：
+前往 [Releases](https://github.com/jangviktor-web/nihaixia-app/releases/latest) 页面下载最新 APK：
 
 ```
 nihaisha-v1.3.0-diagnosis-enhanced.apk (51.8MB)
