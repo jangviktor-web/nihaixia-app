@@ -32,7 +32,8 @@
     .hero {
       background: linear-gradient(135deg, #1a0f05 0%, #3a2a10 40%, #5b3a1a 70%, #8b6914 100%);
       color: #fff;
-      padding: 80px 0 0;
+      text-align: center;
+      padding: 100px 24px 80px;
       position: relative;
       overflow: hidden;
     }
@@ -46,41 +47,37 @@
       background: radial-gradient(circle, rgba(139,105,20,0.3) 0%, transparent 70%);
       border-radius: 50%;
     }
-    .hero-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 32px;
-      display: flex;
-      align-items: center;
-      gap: 60px;
-      position: relative;
-      z-index: 1;
+    .hero-logo {
+      width: 96px;
+      height: 96px;
+      border-radius: 22px;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
     }
-    .hero-text { flex: 1; min-width: 0; }
-    .hero-text h1 {
+    .hero h1 {
       font-size: 3em;
       font-weight: 800;
-      margin-bottom: 8px;
-      letter-spacing: 2px;
+      margin-bottom: 12px;
+      letter-spacing: 3px;
       line-height: 1.2;
     }
-    .hero-text .subtitle {
+    .hero .subtitle {
       font-size: 1.2em;
       opacity: 0.85;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       line-height: 1.5;
     }
-    .hero-text .tagline {
+    .hero .tagline {
       display: inline-block;
       background: rgba(255,255,255,0.12);
       border: 1px solid rgba(255,255,255,0.2);
-      padding: 6px 16px;
+      padding: 6px 18px;
       border-radius: 20px;
       font-size: 0.9em;
-      margin-bottom: 32px;
+      margin-bottom: 36px;
       backdrop-filter: blur(4px);
     }
-    .hero-buttons { display: flex; gap: 14px; flex-wrap: wrap; }
+    .hero-buttons { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
     .btn {
       display: inline-flex;
       align-items: center;
@@ -106,41 +103,6 @@
       border: 1.5px solid rgba(255,255,255,0.35);
     }
     .btn-secondary:hover { background: rgba(255,255,255,0.18); }
-
-    /* Phone Mockup */
-    .hero-phone {
-      flex: 0 0 320px;
-      position: relative;
-    }
-    .phone-frame {
-      width: 280px;
-      background: #1a1a1a;
-      border-radius: 36px;
-      padding: 12px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 0 0 2px #333;
-      position: relative;
-    }
-    .phone-frame::before {
-      content: '';
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 80px;
-      height: 20px;
-      background: #1a1a1a;
-      border-radius: 0 0 12px 12px;
-      z-index: 2;
-    }
-    .phone-screen {
-      border-radius: 26px;
-      overflow: hidden;
-      background: #fff;
-    }
-    .phone-screen img {
-      width: 100%;
-      display: block;
-    }
 
     /* ===== Stats ===== */
     .stats {
@@ -246,27 +208,32 @@
       border-bottom: 1px solid #ece7df;
     }
     .screenshot-showcase {
-      max-width: 900px;
+      max-width: 960px;
       margin: 0 auto;
       display: flex;
-      gap: 40px;
-      justify-content: center;
-      flex-wrap: wrap;
+      flex-direction: column;
+      gap: 48px;
+      align-items: center;
     }
     .screenshot-item {
-      flex: 1;
-      min-width: 280px;
-      max-width: 400px;
+      width: 100%;
+      max-width: 880px;
       text-align: center;
     }
-    .screenshot-item .phone-frame {
-      width: 260px;
-      margin: 0 auto;
+    .screenshot-item img {
+      width: 100%;
+      border-radius: 16px;
+      box-shadow: 0 8px 40px rgba(90,60,20,0.12), 0 1px 4px rgba(0,0,0,0.06);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .screenshot-item img:hover {
+      transform: scale(1.01);
+      box-shadow: 0 12px 48px rgba(90,60,20,0.18), 0 2px 8px rgba(0,0,0,0.08);
     }
     .screenshot-item p {
-      margin-top: 16px;
+      margin-top: 14px;
       font-size: 0.95em;
-      color: #888;
+      color: #999;
       font-weight: 500;
     }
 
@@ -383,27 +350,18 @@
 
     /* ===== Responsive ===== */
     @media (max-width: 768px) {
-      .hero { padding: 60px 0 0; }
-      .hero-inner {
-        flex-direction: column;
-        text-align: center;
-        gap: 40px;
-        padding: 0 20px;
-      }
-      .hero-text h1 { font-size: 2em; }
-      .hero-buttons { justify-content: center; }
-      .hero-phone { flex: none; }
-      .phone-frame { width: 240px; }
+      .hero { padding: 60px 20px 48px; }
+      .hero h1 { font-size: 2em; }
+      .hero-logo { width: 72px; height: 72px; }
       .feature-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
       .stats { gap: 32px; }
       .stat-num { font-size: 1.7em; }
-      .screenshot-showcase { flex-direction: column; align-items: center; }
       .meridian-grid { gap: 10px; }
       .meridian-tag { min-width: 90px; padding: 10px 18px; font-size: 0.95em; }
     }
     @media (max-width: 480px) {
-      .hero-text h1 { font-size: 1.6em; }
-      .phone-frame { width: 200px; }
+      .hero h1 { font-size: 1.6em; }
+      .hero-logo { width: 64px; height: 64px; }
     }
   </style>
 </head>
@@ -411,27 +369,17 @@
 
   <!-- Hero -->
   <section class="hero">
-    <div class="hero-inner">
-      <div class="hero-text">
-        <div class="tagline">基于倪海厦《人纪》体系</div>
-        <h1>汉唐中医</h1>
-        <p class="subtitle">六经辨证智能诊断助手<br>离线可用 · 完全免费 · 开箱即用</p>
-        <div class="hero-buttons">
-          <a class="btn btn-primary" href="https://github.com/jangviktor-web/nihaixia-app/releases/latest">
-            📥 下载 APK
-          </a>
-          <a class="btn btn-secondary" href="https://github.com/jangviktor-web/nihaixia-app">
-            GitHub 仓库
-          </a>
-        </div>
-      </div>
-      <div class="hero-phone">
-        <div class="phone-frame">
-          <div class="phone-screen">
-            <img src="images/screenshot1.jpg" alt="汉唐中医 - 六经辨证诊断" loading="eager">
-          </div>
-        </div>
-      </div>
+    <img class="hero-logo" src="images/logo.jpg" alt="汉唐中医 Logo">
+    <div class="tagline">基于倪海厦《人纪》体系</div>
+    <h1>汉唐中医</h1>
+    <p class="subtitle">六经辨证智能诊断助手<br>离线可用 · 完全免费 · 开箱即用</p>
+    <div class="hero-buttons">
+      <a class="btn btn-primary" href="https://github.com/jangviktor-web/nihaixia-app/releases/latest">
+        📥 下载 APK
+      </a>
+      <a class="btn btn-secondary" href="https://github.com/jangviktor-web/nihaixia-app">
+        GitHub 仓库
+      </a>
     </div>
   </section>
 
@@ -499,19 +447,11 @@
     <p class="section-desc fade-up">简洁直观的界面设计，专业中医诊断体验</p>
     <div class="screenshot-showcase">
       <div class="screenshot-item fade-up">
-        <div class="phone-frame">
-          <div class="phone-screen">
-            <img src="images/screenshot1.jpg" alt="问诊引导 · 六经速查 · 方剂速查" loading="lazy">
-          </div>
-        </div>
+        <img src="images/screenshot1.jpg" alt="问诊引导 · 六经速查 · 方剂速查" loading="lazy">
         <p>问诊引导 · 六经速查 · 方剂速查</p>
       </div>
       <div class="screenshot-item fade-up">
-        <div class="phone-frame">
-          <div class="phone-screen">
-            <img src="images/screenshot2.jpg" alt="本草速查 · 针灸穴位 · 实用工具" loading="lazy">
-          </div>
-        </div>
+        <img src="images/screenshot2.jpg" alt="本草速查 · 针灸穴位 · 实用工具" loading="lazy">
         <p>本草速查 · 针灸穴位 · 实用工具</p>
       </div>
     </div>
