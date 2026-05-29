@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>汉唐中医 - 倪海厦六经辨证诊断助手</title>
+  <meta name="description" content="基于倪海厦六经辨证体系的中医诊断助手App，支持智能问诊、处方生成、方剂速查、药物速查、子午流注等功能。">
+  <meta name="keywords" content="中医,倪海厦,六经辨证,伤寒论,经方,中医诊断,Flutter,汉唐中医">
+  <meta property="og:title" content="汉唐中医 - 六经辨证诊断助手">
+  <meta property="og:description" content="基于倪海厦六经辨证体系的中医诊断助手，离线可用，完全免费。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://jangviktor-web.github.io/nihaisha-app/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="汉唐中医 - 六经辨证诊断助手">
+  <meta name="twitter:description" content="基于倪海厦六经辨证体系的中医诊断助手App。">
+  <link rel="canonical" href="https://jangviktor-web.github.io/nihaisha-app/">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: #2c2c2c;
+      background: #faf8f5;
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #5b3a1a 0%, #8b6914 50%, #a0522d 100%);
+      color: #fff;
+      text-align: center;
+      padding: 80px 20px 60px;
+    }
+    .hero-emoji { font-size: 64px; margin-bottom: 16px; }
+    .hero h1 {
+      font-size: 2.4em;
+      font-weight: 700;
+      margin-bottom: 12px;
+      letter-spacing: 2px;
+    }
+    .hero p {
+      font-size: 1.15em;
+      opacity: 0.9;
+      max-width: 520px;
+      margin: 0 auto 32px;
+    }
+    .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      border-radius: 10px;
+      font-size: 1.05em;
+      font-weight: 600;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
+    .btn-primary { background: #fff; color: #5b3a1a; }
+    .btn-secondary { background: rgba(255,255,255,0.18); color: #fff; border: 1.5px solid rgba(255,255,255,0.5); }
+
+    /* Stats */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      padding: 32px 20px;
+      background: #fff;
+      border-bottom: 1px solid #ece7df;
+      flex-wrap: wrap;
+    }
+    .stat { text-align: center; }
+    .stat-num { font-size: 2em; font-weight: 700; color: #8b6914; }
+    .stat-label { font-size: 0.9em; color: #888; margin-top: 2px; }
+
+    /* Features */
+    .features {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 64px 20px;
+    }
+    .features h2 {
+      text-align: center;
+      font-size: 1.8em;
+      margin-bottom: 48px;
+      color: #3a2a10;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+    .feature-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 28px 24px;
+      border: 1px solid #ece7df;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .feature-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(90,60,20,0.1); }
+    .feature-icon { font-size: 2em; margin-bottom: 12px; }
+    .feature-card h3 { font-size: 1.15em; margin-bottom: 8px; color: #3a2a10; }
+    .feature-card p { font-size: 0.92em; color: #666; }
+
+    /* Meridian */
+    .meridian-section {
+      background: #fff;
+      padding: 64px 20px;
+      border-top: 1px solid #ece7df;
+      border-bottom: 1px solid #ece7df;
+    }
+    .meridian-section h2 {
+      text-align: center;
+      font-size: 1.8em;
+      margin-bottom: 40px;
+      color: #3a2a10;
+    }
+    .meridian-grid {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .meridian-tag {
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 1.05em;
+      min-width: 100px;
+      text-align: center;
+      color: #fff;
+    }
+    .m-taiyang { background: #FF9800; }
+    .m-yangming { background: #F44336; }
+    .m-shaoyang { background: #FF5722; }
+    .m-taiyin { background: #2196F3; }
+    .m-shaoyin { background: #9C27B0; }
+    .m-jueyin { background: #607D8B; }
+
+    /* Tech */
+    .tech {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 64px 20px;
+      text-align: center;
+    }
+    .tech h2 { font-size: 1.8em; margin-bottom: 24px; color: #3a2a10; }
+    .tech-tags { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+    .tech-tag {
+      padding: 8px 18px;
+      background: #f0ebe3;
+      border-radius: 8px;
+      font-size: 0.92em;
+      color: #5b3a1a;
+      font-weight: 500;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      background: #3a2a10;
+      color: rgba(255,255,255,0.7);
+      font-size: 0.9em;
+    }
+    footer a { color: #d4a853; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      .hero { padding: 56px 16px 44px; }
+      .hero h1 { font-size: 1.7em; }
+      .hero-emoji { font-size: 48px; }
+      .stats { gap: 28px; }
+      .stat-num { font-size: 1.5em; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-emoji">🏥</div>
+    <h1>汉唐中医</h1>
+    <p>基于倪海厦六经辨证体系的中医诊断助手<br>离线可用，完全免费，开箱即用</p>
+    <div class="hero-buttons">
+      <a class="btn btn-primary" href="https://github.com/jangviktor-web/nihaisha-app/releases/latest">
+        📥 下载 APK
+      </a>
+      <a class="btn btn-secondary" href="https://github.com/jangviktor-web/nihaisha-app">
+        GitHub 仓库
+      </a>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">271</div>
+      <div class="stat-label">经典方剂</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">345</div>
+      <div class="stat-label">中药药物</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">26</div>
+      <div class="stat-label">鉴别诊断</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">14</div>
+      <div class="stat-label">合病覆盖</div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <section class="features">
+    <h2>核心功能</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🩺</div>
+        <h3>六经辨证诊断</h3>
+        <p>通过智能问诊引导，自动判断太阳/阳明/少阳/太阴/少阴/厥阴六经归属，给出辨证结果和方剂推荐。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📋</div>
+        <h3>完整处方生成</h3>
+        <p>诊断后自动显示方剂组成、剂量、煎服法、禁忌，并根据兼证推荐经方加减变化。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <h3>鉴别诊断</h3>
+        <p>26对鉴别场景，自动对比相似证型的关键区别，辅助精准辨证。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📚</div>
+        <h3>方剂药物速查</h3>
+        <p>271首经方、345味中药，支持搜索、六经筛选、分类筛选，离线查阅。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📈</div>
+        <h3>诊断历史趋势</h3>
+        <p>六经传变可视化，自动检测"由表入里"或"由里出表"趋势，追踪健康变化。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⏰</div>
+        <h3>子午流注取穴</h3>
+        <p>输入时间自动推算开穴，辅助针灸取穴决策。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Meridian -->
+  <section class="meridian-section">
+    <h2>六经辨证体系</h2>
+    <div class="meridian-grid">
+      <div class="meridian-tag m-taiyang">☀️ 太阳</div>
+      <div class="meridian-tag m-yangming">🔥 阳明</div>
+      <div class="meridian-tag m-shaoyang">🌅 少阳</div>
+      <div class="meridian-tag m-taiyin">🌙 太阴</div>
+      <div class="meridian-tag m-shaoyin">🌑 少阴</div>
+      <div class="meridian-tag m-jueyin">☯️ 厥阴</div>
+    </div>
+  </section>
+
+  <!-- Tech -->
+  <section class="tech">
+    <h2>技术特性</h2>
+    <p style="color:#666; max-width:520px; margin:0 auto;">完全离线运行，无需联网。数据本地存储，隐私安全。Material Design 3 界面，流畅体验。</p>
+    <div class="tech-tags">
+      <span class="tech-tag">Flutter</span>
+      <span class="tech-tag">SQLite</span>
+      <span class="tech-tag">离线优先</span>
+      <span class="tech-tag">Material 3</span>
+      <span class="tech-tag">Android</span>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>汉唐中医 v1.3.0 &nbsp;|&nbsp; 基于倪海厦《伤寒论》《金匮要略》教学体系</p>
+    <p style="margin-top:8px;">
+      <a href="https://github.com/jangviktor-web/nihaisha-app">GitHub</a>
+      &nbsp;&middot;&nbsp;
+      <a href="https://github.com/jangviktor-web/nihaisha-app/releases">下载</a>
+      &nbsp;&middot;&nbsp;
+      <a href="https://github.com/jangviktor-web/nihaisha-app/issues">反馈</a>
+    </p>
+  </footer>
+
+</body>
+</html>
