@@ -117,8 +117,14 @@ class DiagnosticEngine {
     return DiagnosticRules.followUpQuestions[meridian] ?? [];
   }
 
-  List<FollowUpQuestion> getTenQuestions() {
-    return DiagnosticRules.tenQuestions;
+  List<FollowUpQuestion> getTenQuestions({String? defaultGender}) {
+    final questions = List<FollowUpQuestion>.from(DiagnosticRules.tenQuestions);
+    // 如果已设置默认性别，跳过性别问题并自动设置
+    if (defaultGender != null && defaultGender.isNotEmpty) {
+      _gender = defaultGender;
+      questions.removeWhere((q) => q.key == 'gender');
+    }
+    return questions;
   }
 
   // ==================== 舌诊脉诊选项 ====================
@@ -320,6 +326,7 @@ class DiagnosticEngine {
       _answers['upper_heat_lower_cold'] = answer.contains('头热脚冷') || answer.contains('上半身热');
       _answers['chills'] = answer.contains('全身怕冷');
       _answers['no_chills'] = !answer.contains('冷');
+      _answers['alternating_chills'] = answer.contains('往来寒热') || answer.contains('忽冷忽热');
     }
     if (questionKey == 'sweating') {
       _answers['no_sweat'] = answer.contains('不容易出汗');
@@ -330,11 +337,13 @@ class DiagnosticEngine {
       _answers['head_sweat'] = answer.contains('头汗');
       _answers['hand_foot_sweat'] = answer.contains('手足汗');
       _answers['sweating'] = _answers['has_sweat'] == true;
+      _answers['profuse_sweat'] = answer.contains('大汗');
     }
     if (questionKey == 'energy') {
       _answers['drowsy'] = answer.contains('欲寐') || answer.contains('昏昏沉沉');
       _answers['irritable'] = answer.contains('烦躁');
       _answers['weak_speech'] = answer.contains('说话没力气');
+      _answers['qi_rushing'] = answer.contains('气上撞心') || answer.contains('气往上冲');
     }
     // 注意：舌诊数据已统一由 Step 3 (answerTonguePulse) 处理，不再在此重复
     if (questionKey == 'pain') {
@@ -345,6 +354,10 @@ class DiagnosticEngine {
       _answers['abdomen_pain_press'] = answer.contains('拒按') || answer.contains('按了更痛') || answer.contains('压痛');
       _answers['abdomen_pain_relief'] = answer.contains('喜按') || answer.contains('按了舒服');
       _answers['joint_wandering'] = answer.contains('游走');
+      _answers['body_joint_pain'] = answer.contains('身体痛') && answer.contains('骨节');
+      _answers['body_pain'] = answer.contains('身体痛');
+      _answers['joint_pain'] = answer.contains('骨节');
+      _answers['epigastric_fullness'] = answer.contains('心下痞');
     }
     if (questionKey == 'menstrual') {
       _answers['menstrual_pain'] = answer.contains('痛经');
@@ -603,7 +616,7 @@ class DiagnosticEngine {
     if (answer != '没有此症状') {
       _selectedSymptoms.add(answer);
     }
-    // 跟进问诊派生布尔标志
+    // 跟进问诊派生布尔标志（六经辨证公式优化版）
     if (questionKey == 'throat') {
       _answers['sore_throat'] = answer.contains('痛');
       _answers['throat_ulcer'] = answer.contains('生疮');
@@ -618,6 +631,74 @@ class DiagnosticEngine {
     }
     if (questionKey == 'diarrhea') {
       _answers['severe_diarrhea'] = answer.contains('清谷') || answer.contains('完谷不化');
+      _answers['bloody_stool'] = answer.contains('脓血');
+    }
+    // 太阳跟进：辨桂枝/麻黄/葛根汤
+    if (questionKey == 'sweating' && _answers['meridian'] == '太阳') {
+      _answers['has_sweat'] = answer.contains('有汗');
+      _answers['no_sweat'] = answer.contains('没汗');
+      _answers['profuse_sweat'] = answer.contains('汗出不止');
+    }
+    // 太阳跟进：辨喘证
+    if (questionKey == 'breathing') {
+      _answers['cough'] = answer.contains('咳嗽');
+      _answers['asthma'] = answer.contains('气喘') || answer.contains('喘');
+      _answers['phlegm_cold'] = answer.contains('白痰');
+      _answers['phlegm_hot'] = answer.contains('黄痰');
+    }
+    // 阳明跟进：辨谵语
+    if (questionKey == 'speech') {
+      _answers['delirium'] = answer.contains('胡话') || answer.contains('谵语');
+      _answers['restlessness'] = answer.contains('烦躁');
+      _answers['chest_discomfort'] = answer.contains('懊憹');
+    }
+    // 阳明跟进：辨潮热
+    if (questionKey == 'tidal_fever') {
+      _answers['tidal_fever'] = answer.contains('潮热');
+      _answers['jaundice'] = answer.contains('身黄');
+    }
+    // 少阳跟进：辨口苦/咽干/目眩
+    if (questionKey == 'bitter_mouth') {
+      _answers['bitter_mouth'] = answer.contains('苦');
+      _answers['shaoyang_triad'] = answer.contains('口苦') && answer.contains('咽干') && answer.contains('目眩');
+    }
+    // 少阴跟进：辨但欲寐
+    if (questionKey == 'spirit') {
+      _answers['drowsy'] = answer.contains('但欲寐') || answer.contains('昏昏沉沉');
+      _answers['day_night_different'] = answer.contains('昼日烦躁');
+    }
+    // 少阴跟进：辨寒化/热化
+    if (questionKey == 'extremities' && _answers['meridian'] == '少阴') {
+      _answers['cold_limbs'] = answer.contains('冰冷');
+      _answers['hot_limbs'] = answer.contains('手脚心热');
+      _answers['hand_foot_cold_pulse_fine'] = answer.contains('脉细欲绝');
+    }
+    // 少阴跟进：辨身痛证
+    if (questionKey == 'pain' && _answers['meridian'] == '少阴') {
+      _answers['body_joint_pain'] = answer.contains('身体痛') && answer.contains('骨节');
+      _answers['body_pain'] = answer.contains('身体痛');
+      _answers['joint_pain'] = answer.contains('骨节');
+      _answers['heavy_limbs_pain'] = answer.contains('四肢沉重');
+    }
+    // 少阴跟进：辨少阴兼表
+    if (questionKey == 'table') {
+      _answers['shaoyin_with_table'] = answer.contains('发热') || answer.contains('反发热');
+    }
+    // 厥阴跟进：辨气上撞心
+    if (questionKey == 'chest_sensation') {
+      _answers['qi_rushing'] = answer.contains('气上撞心');
+      _answers['heart_heat'] = answer.contains('心中疼热');
+      _answers['vomit_frogs'] = answer.contains('吐涎沫');
+    }
+    // 厥阴跟进：辨饥不欲食
+    if (questionKey == 'appetite' && _answers['meridian'] == '厥阴') {
+      _answers['hungry_no_eat'] = answer.contains('饿但不想吃');
+      _answers['vomit_on_eat'] = answer.contains('食谷欲呕');
+    }
+    // 厥阴跟进：辨寒热错杂
+    if (questionKey == 'extremities' && _answers['meridian'] == '厥阴') {
+      _answers['alternating_hot_cold'] = answer.contains('时冷时热');
+      _answers['hand_foot_cold_pulse_fine'] = answer.contains('脉细欲绝');
     }
   }
 

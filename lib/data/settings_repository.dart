@@ -8,10 +8,16 @@ class SettingsRepository extends ChangeNotifier {
 
   ThemeMode _themeMode = ThemeMode.system;
   double _textScaleFactor = 1.0;
+  String _defaultGender = ''; // ''=不设置, 'male', 'female'
+  String _diagnosticLevel = 'detailed'; // 'simple' or 'detailed'
+  bool _autoCopyPrescription = false;
   bool _loaded = false;
 
   ThemeMode get themeMode => _themeMode;
   double get textScaleFactor => _textScaleFactor;
+  String get defaultGender => _defaultGender;
+  String get diagnosticLevel => _diagnosticLevel;
+  bool get autoCopyPrescription => _autoCopyPrescription;
   bool get isLoaded => _loaded;
 
   Future<void> load() async {
@@ -30,6 +36,15 @@ class SettingsRepository extends ChangeNotifier {
         case 'text_scale_factor':
           _textScaleFactor = double.tryParse(value) ?? 1.0;
           break;
+        case 'default_gender':
+          _defaultGender = value;
+          break;
+        case 'diagnostic_level':
+          _diagnosticLevel = value;
+          break;
+        case 'auto_copy_prescription':
+          _autoCopyPrescription = value == 'true';
+          break;
       }
     }
     _loaded = true;
@@ -46,6 +61,24 @@ class SettingsRepository extends ChangeNotifier {
     _textScaleFactor = factor;
     notifyListeners();
     await _save('text_scale_factor', factor.toStringAsFixed(2));
+  }
+
+  Future<void> setDefaultGender(String gender) async {
+    _defaultGender = gender;
+    notifyListeners();
+    await _save('default_gender', gender);
+  }
+
+  Future<void> setDiagnosticLevel(String level) async {
+    _diagnosticLevel = level;
+    notifyListeners();
+    await _save('diagnostic_level', level);
+  }
+
+  Future<void> setAutoCopyPrescription(bool value) async {
+    _autoCopyPrescription = value;
+    notifyListeners();
+    await _save('auto_copy_prescription', value.toString());
   }
 
   Future<void> _save(String key, String value) async {

@@ -954,7 +954,8 @@ class DiagnosticRules {
     'fever_thirst_no_cold': '太阳',
   };
 
-  // ==================== 倪海厦诊病十问 ====================
+  // ==================== 倪海厦诊病十问（六经辨证优化版）====================
+  // 基于《伤寒论113方六经辨证公式》优化，确保能覆盖六经关键辨证要素
   static final List<FollowUpQuestion> tenQuestions = [
     FollowUpQuestion(
       key: 'gender',
@@ -969,43 +970,43 @@ class DiagnosticRules {
     FollowUpQuestion(
       key: 'appetite',
       question: '【二问胃口】三餐正常吗？有没有特别想吃或不想吃的？',
-      options: ['正常三餐', '没有胃口', '特别能吃', '饿但不想吃', '想吃冷的', '想吃热的'],
+      options: ['正常三餐', '没有胃口', '特别能吃', '饿但不想吃（厥阴）', '想吃冷的', '想吃热的', '食不下（太阴）'],
     ),
     FollowUpQuestion(
       key: 'stool',
       question: '【三问大便】每天有大便吗？成形还是稀的？颜色？',
-      options: ['每天有，成形', '便秘，好几天一次', '稀/拉肚子', '先硬后稀', '水样便', '便脓血'],
+      options: ['每天有，成形', '便秘，好几天一次', '稀/拉肚子', '先硬后稀', '水样便', '便脓血', '下利清谷（完谷不化）'],
     ),
     FollowUpQuestion(
       key: 'urine',
       question: '【四问小便】一天几次？颜色？量多量少？',
-      options: ['5-7次淡黄色（正常）', '次数多量少', '次数少颜色深', '夜尿多', '小便不利', '小便黄赤'],
+      options: ['5-7次淡黄色（正常）', '次数多量少', '次数少颜色深', '夜尿多', '小便不利', '小便黄赤', '小便清长'],
     ),
     FollowUpQuestion(
       key: 'thirst',
       question: '【五问口渴】渴不渴？想喝冷水还是热水？',
-      options: ['不渴', '渴想喝冷水', '渴想喝热水', '渴但不想喝', '口苦口干', '消渴（喝水不止渴）'],
+      options: ['不渴', '渴想喝冷水', '渴想喝热水', '渴但不想喝', '口苦口干（少阳）', '消渴（喝水不止渴）', '大渴（阳明）'],
     ),
     FollowUpQuestion(
       key: 'temperature',
       question: '【六问寒热】怕冷还是怕热？手脚温度？',
-      options: ['手脚温热（正常）', '手脚冰冷', '手心脚心热', '头热脚冷', '上半身热下半身冷', '全身怕冷'],
+      options: ['手脚温热（正常）', '手脚冰冷', '手心脚心热', '头热脚冷', '上半身热下半身冷', '全身怕冷', '往来寒热（忽冷忽热）'],
     ),
     FollowUpQuestion(
       key: 'sweating',
       question: '【七问汗】容易出汗吗？什么时间出汗？',
-      options: ['不容易出汗', '稍微活动就出汗', '睡觉出汗（盗汗）', '白天也出汗（自汗）', '但头汗出', '手足汗出'],
+      options: ['不容易出汗', '稍微活动就出汗', '睡觉出汗（盗汗）', '白天也出汗（自汗）', '但头汗出', '手足汗出', '大汗出（阳明）'],
     ),
     FollowUpQuestion(
       key: 'energy',
-      question: '【八问体力】精神体力怎样？晨起精神？',
-      options: ['精力充沛', '容易疲倦', '但欲寐（昏昏沉沉）', '烦躁不安', '说话没力气'],
+      question: '【八问精神】精神体力怎样？有没有特殊感觉？',
+      options: ['精力充沛', '容易疲倦', '但欲寐（昏昏沉沉想睡）', '烦躁不安', '说话没力气', '气上撞心（感觉有气往上冲）'],
     ),
     // 注意：舌诊已统一在 Step 3（舌诊脉诊步骤）处理，十问中不再重复
     FollowUpQuestion(
       key: 'pain',
       question: '【九问疼痛】哪里痛？什么性质的痛？',
-      options: ['不痛', '头痛（前额）', '头痛（两侧）', '头痛（后脑）', '胸胁胀痛', '腹痛喜按', '腹痛拒按', '关节游走痛'],
+      options: ['不痛', '头痛（前额）', '头痛（两侧）', '头痛（后脑）', '胸胁胀痛（少阳）', '腹痛喜按', '腹痛拒按', '关节游走痛', '身体痛+骨节痛（少阴）', '心下痞满（按之软）'],
     ),
     FollowUpQuestion(
       key: 'menstrual',
@@ -1014,198 +1015,219 @@ class DiagnosticRules {
     ),
   ];
 
-  // ==================== 六经跟进问诊（扩展版）====================
+  // ==================== 六经跟进问诊（113方公式优化版）====================
+  // 基于《伤寒论113方六经辨证公式》优化，每个跟进问题对应具体方剂辨证
   static final Map<String, List<FollowUpQuestion>> followUpQuestions = {
     '太阳': [
       FollowUpQuestion(
         key: 'sweating',
-        question: '有汗还是没汗？',
-        options: ['有汗（中风）', '没汗（伤寒）', '汗出不止'],
+        question: '【辨桂枝/麻黄】有汗还是没汗？',
+        options: ['有汗（中风→桂枝汤）', '没汗（伤寒→麻黄汤）', '汗出不止（→桂枝加附子汤）'],
       ),
       FollowUpQuestion(
         key: 'neck',
-        question: '脖子后面僵硬吗？',
-        options: ['僵硬', '不僵硬'],
+        question: '【辨葛根汤】脖子后面僵硬吗？牵连到背部？',
+        options: ['僵硬（→葛根汤/桂枝加葛根汤）', '不僵硬', '项背强几几+无汗（→葛根汤）'],
       ),
       FollowUpQuestion(
         key: 'body_pain',
-        question: '全身骨节酸痛吗？',
-        options: ['全身酸痛', '只有头痛', '只有腰痛', '不痛'],
+        question: '【辨身痛类型】全身骨节酸痛吗？',
+        options: ['全身酸痛（伤寒）', '只有头痛', '只有腰痛', '不痛', '身体疼烦不能转侧（→桂枝附子汤）', '身痒（→桂麻各半汤）'],
       ),
       FollowUpQuestion(
         key: 'breathing',
-        question: '有没有咳嗽气喘？',
-        options: ['没有', '咳嗽', '气喘', '咳嗽有白痰', '咳嗽有黄痰'],
+        question: '【辨喘证】有没有咳嗽气喘？',
+        options: ['没有', '咳嗽（→桂枝加厚朴杏仁汤）', '气喘（→桂枝加厚朴杏仁汤）', '咳而上气+烦躁（→小青龙加石膏汤）', '咳嗽有白痰（→小青龙汤）', '咳嗽有黄痰（→麻杏石甘汤）'],
+      ),
+      FollowUpQuestion(
+        key: 'chest',
+        question: '【辨心下证】胸口或心下有没有不舒服？',
+        options: ['没有', '心下满微痛（→桂去桂加苓术汤）', '心下悸（→茯苓甘草汤）', '气上冲胸（→苓桂术甘汤）'],
       ),
       FollowUpQuestion(
         key: 'treatment_history',
-        question: '之前有没有被误用过泻药或攻下？',
-        options: ['没有', '被误下过', '吃坏肚子拉过'],
+        question: '【辨误治】之前有没有被误用过泻药或攻下？',
+        options: ['没有', '被误下过', '吃坏肚子拉过', '烧针令汗（→桂枝加桂汤）'],
       ),
     ],
     '阳明': [
       FollowUpQuestion(
         key: 'stool',
-        question: '大便怎样？',
-        options: ['便秘好几天不通', '大便硬但能通', '正常', '腹泻'],
+        question: '【辨承气汤证】大便怎样？',
+        options: ['便秘好几天不通', '大便硬但能通（→小承气汤）', '正常', '腹泻', '便秘+腹满痛拒按+谵语（→大承气汤）', '便秘+心烦（→调胃承气汤）'],
       ),
       FollowUpQuestion(
         key: 'thirst',
-        question: '口渴吗？想喝什么？',
-        options: ['大渴饮冷水', '口渴喝温水', '不渴'],
+        question: '【辨白虎汤证】口渴吗？想喝什么？',
+        options: ['大渴饮冷水（→白虎加人参汤）', '口渴喝温水', '不渴', '渴+小便不利（→猪苓汤）'],
       ),
       FollowUpQuestion(
         key: 'sweat',
-        question: '出汗多吗？',
-        options: ['大汗出', '正常', '手足汗出'],
+        question: '【辨汗出类型】出汗多吗？',
+        options: ['大汗出（→白虎汤）', '正常', '手足汗出（→承气汤）', '但头汗出+身无汗（→茵陈蒿汤）'],
       ),
       FollowUpQuestion(
         key: 'abdomen',
-        question: '肚子胀不胀？按着痛不痛？',
-        options: ['胀满拒按（不能按）', '胀满喜按（按着舒服）', '不胀不痛', '只胃脘痛'],
+        question: '【辨腹证】肚子胀不胀？按着痛不痛？',
+        options: ['胀满拒按（不能按→大承气汤）', '胀满喜按（按着舒服）', '不胀不痛', '只胃脘痛', '腹满+身黄（→茵陈蒿汤）', '心下痞+按之濡（→大黄黄连泻心汤）'],
       ),
       FollowUpQuestion(
         key: 'speech',
-        question: '有没有说胡话（谵语）？',
-        options: ['没有', '有说胡话', '烦躁不安'],
+        question: '【辨谵语】有没有说胡话（谵语）？',
+        options: ['没有', '有说胡话（→承气汤）', '烦躁不安', '心中懊憹（→栀子豉汤）'],
       ),
       FollowUpQuestion(
         key: 'tidal_fever',
-        question: '有没有下午发冷发热（潮热）？',
-        options: ['没有', '下午3-5点发热（潮热）', '全身持续发热', '手足汗出'],
+        question: '【辨潮热】有没有下午发冷发热（潮热）？',
+        options: ['没有', '下午3-5点发热（潮热→大承气汤）', '全身持续发热', '手足汗出', '身黄发热（→栀子蘖皮汤）'],
       ),
     ],
     '少阳': [
       FollowUpQuestion(
         key: 'bitter_mouth',
-        question: '嘴苦吗？',
-        options: ['嘴苦', '不苦'],
+        question: '【辨少阳主证】嘴苦吗？',
+        options: ['嘴苦（少阳主证）', '不苦', '口苦+咽干+目眩（→小柴胡汤）'],
       ),
       FollowUpQuestion(
         key: 'throat',
-        question: '喉咙干吗？',
-        options: ['咽干', '不干', '喉咙痛'],
+        question: '【辨少阳主证】喉咙干吗？',
+        options: ['咽干（少阳主证）', '不干', '喉咙痛', '咽干+目眩（→小柴胡汤）'],
       ),
       FollowUpQuestion(
         key: 'chest',
-        question: '胸口两侧胀吗？',
-        options: ['胸胁苦满（胀痛）', '不胀', '只有胸闷'],
+        question: '【辨胸胁苦满】胸口两侧胀吗？',
+        options: ['胸胁苦满（胀痛→小柴胡汤）', '不胀', '只有胸闷', '胸胁满+微结（→柴胡桂枝干姜汤）'],
       ),
       FollowUpQuestion(
         key: 'nausea',
-        question: '想呕吐吗？',
-        options: ['心烦喜呕', '不想吐', '干呕', '呕吐不止'],
+        question: '【辨呕吐类型】想呕吐吗？',
+        options: ['心烦喜呕（→小柴胡汤）', '不想吐', '干呕', '呕吐不止', '呕不止+心下急（→大柴胡汤）'],
       ),
       FollowUpQuestion(
         key: 'eyes',
-        question: '眼睛有没有不舒服？',
-        options: ['目眩（眼花）', '眼睛干', '没有'],
+        question: '【辨少阳主证】眼睛有没有不舒服？',
+        options: ['目眩（眼花→少阳主证）', '眼睛干', '没有'],
       ),
       FollowUpQuestion(
         key: 'constipation',
-        question: '大便怎样？',
-        options: ['正常', '便秘（少阳阳明合病）', '腹泻'],
+        question: '【辨少阳兼证】大便怎样？',
+        options: ['正常', '便秘（少阳阳明合病→大柴胡汤/柴胡加芒硝汤）', '腹泻', '胸胁满+微结+小便不利（→柴胡桂枝干姜汤）'],
+      ),
+      FollowUpQuestion(
+        key: 'extremities',
+        question: '【辨四逆散】手脚温度？有没有烦躁？',
+        options: ['手脚温', '手脚冷但非寒证（→四逆散）', '烦躁+身重不可转侧（→柴胡加龙骨牡蛎汤）'],
       ),
     ],
     '太阴': [
       FollowUpQuestion(
         key: 'appetite',
-        question: '胃口怎样？',
-        options: ['吃不下', '能吃但腹胀', '正常'],
+        question: '【辨太阴主证】胃口怎样？',
+        options: ['吃不下（太阴主证）', '能吃但腹胀', '正常', '饿但不想吃（→理中汤）'],
       ),
       FollowUpQuestion(
         key: 'diarrhea',
-        question: '大便怎样？',
-        options: ['稀/拉肚子', '水样便', '正常', '先硬后稀'],
+        question: '【辨下利类型】大便怎样？',
+        options: ['稀/拉肚子（太阴湿利）', '水样便', '正常', '先硬后稀', '下利不止+心下痞硬（→赤石脂禹余粮汤）'],
       ),
       FollowUpQuestion(
         key: 'abdomen',
-        question: '肚子痛吗？',
-        options: ['时腹自痛（隐痛）', '腹满不痛', '不痛', '腹痛喜按'],
+        question: '【辨腹痛类型】肚子痛吗？',
+        options: ['时腹自痛（隐痛→理中汤）', '腹满不痛', '不痛', '腹痛喜按', '腹满时痛（→桂枝加芍药汤）', '腹满大实痛（→桂枝加大黄汤）'],
       ),
       FollowUpQuestion(
         key: 'extremities',
-        question: '手脚温度怎样？',
-        options: ['手脚冷', '手脚温', '四肢烦疼'],
+        question: '【辨寒热】手脚温度怎样？',
+        options: ['手脚冷（太阴虚寒）', '手脚温', '四肢烦疼（→桂枝附子汤）', '腹胀满+四肢倦怠（→厚朴姜夏甘参汤）'],
       ),
       FollowUpQuestion(
         key: 'vomiting',
-        question: '有没有呕吐？',
-        options: ['呕吐', '不吐', '干呕'],
+        question: '【辨呕吐】有没有呕吐？',
+        options: ['呕吐（太阴主证）', '不吐', '干呕', '呕吐+腹满（→理中汤）'],
+      ),
+      FollowUpQuestion(
+        key: 'water_retention',
+        question: '【辨水饮】有没有水气相关症状？',
+        options: ['没有', '心下逆满+气上冲胸（→苓桂术甘汤）', '心下悸+厥而心下悸（→茯苓甘草汤）'],
       ),
     ],
     '少阴': [
       FollowUpQuestion(
         key: 'spirit',
-        question: '精神状态怎样？',
-        options: ['但欲寐（昏昏沉沉想睡）', '精神还好', '烦躁不安'],
+        question: '【辨少阴主证】精神状态怎样？',
+        options: ['但欲寐（昏昏沉沉想睡→少阴主证）', '精神还好', '烦躁不安（→黄连阿胶汤/热化）', '昼日烦躁夜安静（→干姜附子汤）'],
       ),
       FollowUpQuestion(
         key: 'extremities',
-        question: '手脚温度？',
-        options: ['冰冷', '温', '手脚心热'],
+        question: '【辨寒化/热化】手脚温度？',
+        options: ['冰冷（少阴寒化→四逆汤）', '温', '手脚心热（少阴热化）', '手足厥寒+脉细欲绝（→当归四逆汤）'],
       ),
       FollowUpQuestion(
         key: 'sleep',
-        question: '晚上能睡着吗？',
-        options: ['心烦睡不着（热化）', '能睡', '嗜睡（寒化）'],
+        question: '【辨热化证】晚上能睡着吗？',
+        options: ['心烦睡不着+舌红（→黄连阿胶汤）', '能睡', '嗜睡（寒化）', '心中烦+不得卧（→黄连阿胶汤）'],
       ),
       FollowUpQuestion(
         key: 'urine',
-        question: '小便怎样？',
-        options: ['清长', '小便不利', '小便黄', '正常'],
+        question: '【辨水气证】小便怎样？',
+        options: ['清长（肾阳虚）', '小便不利+水肿（→真武汤）', '小便黄', '正常', '小便不利+腹痛（→真武汤）'],
       ),
       FollowUpQuestion(
         key: 'diarrhea',
-        question: '大便怎样？',
-        options: ['下利清谷（完谷不化）', '正常', '便秘', '便脓血'],
+        question: '【辨下利类型】大便怎样？',
+        options: ['下利清谷（完谷不化→四逆汤/通脉四逆汤）', '正常', '便秘', '便脓血（→桃花汤）', '下利+咽痛（→猪肤汤）', '下利六七日+咳而呕渴（→猪苓汤）'],
       ),
       FollowUpQuestion(
         key: 'pain',
-        question: '身体有没有疼痛？',
-        options: ['骨节疼痛', '身体痛', '心下悸', '没有明显疼痛'],
+        question: '【辨身痛证】身体有没有疼痛？',
+        options: ['骨节疼痛（→附子汤）', '身体痛+手足寒+骨节痛+脉沉（→附子汤）', '心下悸', '没有明显疼痛', '四肢沉重疼痛（→真武汤）'],
       ),
       FollowUpQuestion(
         key: 'throat',
-        question: '喉咙怎样？',
-        options: ['没有', '喉咙痛', '咽中生疮', '不能说话', '咽中化脓'],
+        question: '【辨咽痛证】喉咙怎样？',
+        options: ['没有', '喉咙痛（→甘草汤/桔梗汤）', '咽中生疮+不能说话（→苦酒汤）', '不能说话', '咽中化脓', '咽痛+下利（→猪肤汤）'],
+      ),
+      FollowUpQuestion(
+        key: 'table',
+        question: '【辨少阴兼表】有没有发热？',
+        options: ['没有发热', '反发热+脉沉（→麻黄附子细辛汤）', '得之二三日（→麻黄附子甘草汤）'],
       ),
     ],
     '厥阴': [
       FollowUpQuestion(
         key: 'thirst',
-        question: '口渴吗？',
-        options: ['消渴（喝水不止渴）', '渴但不想喝', '不渴'],
+        question: '【辨厥阴主证】口渴吗？',
+        options: ['消渴（喝水不止渴→厥阴主证）', '渴但不想喝', '不渴', '渴+下利（→乌梅丸）'],
       ),
       FollowUpQuestion(
         key: 'chest_sensation',
-        question: '胸口或胃有没有特殊感觉？',
-        options: ['气上撞心', '心中疼热', '没有'],
+        question: '【辨气上撞心】胸口或胃有没有特殊感觉？',
+        options: ['气上撞心（厥阴主证→乌梅丸）', '心中疼热（厥阴主证）', '没有', '干呕+吐涎沫+头痛（→吴茱萸汤）'],
       ),
       FollowUpQuestion(
         key: 'appetite',
-        question: '饿吗？想吃东西吗？',
-        options: ['饿但不想吃', '不饿', '能吃'],
+        question: '【辨饥不欲食】饿吗？想吃东西吗？',
+        options: ['饿但不想吃（厥阴主证→乌梅丸）', '不饿', '能吃', '食谷欲呕（→吴茱萸汤/阳明）'],
       ),
       FollowUpQuestion(
         key: 'extremities',
-        question: '手脚温度？',
-        options: ['手脚冰冷', '时冷时热', '温'],
+        question: '【辨厥证】手脚温度？',
+        options: ['手脚冰冷（厥阴寒证）', '时冷时热（寒热错杂→乌梅丸）', '温', '手足厥寒+脉细欲绝（→当归四逆汤）'],
       ),
       FollowUpQuestion(
         key: 'vomiting',
-        question: '有没有呕吐？',
-        options: ['食则吐蛔', '呕吐', '不吐'],
+        question: '【辨吐蛔】有没有呕吐？',
+        options: ['食则吐蛔（→乌梅丸）', '呕吐', '不吐', '干呕+吐涎沫（→吴茱萸汤）'],
       ),
       FollowUpQuestion(
-        key: 'other厥阴',
-        question: '其他特殊症状？',
-        options: ['没有', '腹泻', '腹痛', '头痛'],
+        key: 'stool',
+        question: '【辨下利】大便怎样？',
+        options: ['没有', '腹泻', '腹痛', '热利下重+便脓血（→白头翁汤）', '下利不止（→乌梅丸）', '食入口即吐（→干姜黄连黄芩人参汤）'],
       ),
       FollowUpQuestion(
         key: 'sputum',
-        question: '痰怎样？',
-        options: ['没有', '白痰', '黄痰', '唾脓血'],
+        question: '【辨脓血】痰或唾液怎样？',
+        options: ['没有', '白痰', '黄痰', '唾脓血（→麻黄升麻汤）'],
       ),
     ],
   };
