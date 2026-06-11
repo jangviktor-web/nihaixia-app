@@ -3,6 +3,8 @@ import 'chat_screen.dart';
 import 'knowledge_screen.dart';
 import 'bookmarks_screen.dart';
 import 'tools_screen.dart';
+import '../services/update_service.dart';
+import '../widgets/update_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
   final double textScaleFactor;
@@ -14,6 +16,30 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // 延迟检查更新，避免影响启动速度
+    Future.delayed(const Duration(seconds: 3), _checkUpdate);
+  }
+
+  Future<void> _checkUpdate() async {
+    if (!mounted) return;
+    final info = await UpdateService.checkForUpdate();
+    if (!mounted || info == null) return;
+
+    if (!context.mounted) return;
+    final action = await UpdateDialog.show(context, info);
+    if (!mounted || action == null) return;
+
+    switch (action) {
+      case UpdateAction.ignore:
+        await UpdateService.ignoreVersion(info.version);
+      case UpdateAction.permanentlyIgnore:
+        await UpdateService.permanentlyIgnoreVersion(info.version);
+    }
+  }
 
   final List<Widget> _screens = [
     const ChatScreen(),

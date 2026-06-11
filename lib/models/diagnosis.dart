@@ -89,6 +89,27 @@ class DiagnosisResult {
   final FormulaPrescription? prescription;
   final Map<String, dynamic> answers;
 
+  // P0-1: 真寒假热/真热假寒鉴别
+  final TrueFalseHeatCold? trueFalseHeatCold;
+  // P0-4: 用药铁律
+  final List<MedicationRule>? medicationRules;
+  // P0-5: 汗法禁忌
+  final List<SweatingContraindication>? sweatingContraindications;
+  // P1-3: 瘀血五法
+  final List<BloodStasisSign>? bloodStasisSigns;
+  // P1-4: 组合脉象
+  final PulseCombination? pulseCombination;
+  // P1-5: 望面色
+  final FacialComplexion? facialComplexion;
+  // P1-6: 条文级鉴别
+  final PatternDifferential? patternDifferential;
+  // P1-7: 传经判断
+  final MeridianTransmission? transmission;
+  // 传经预警文本
+  final String? transmissionWarning;
+  // 脉舌矛盾警告
+  final String? pulseTongueContradiction;
+
   DiagnosisResult({
     required this.meridian,
     required this.pattern,
@@ -106,6 +127,16 @@ class DiagnosisResult {
     this.differential,
     this.prescription,
     this.answers = const {},
+    this.trueFalseHeatCold,
+    this.medicationRules,
+    this.sweatingContraindications,
+    this.bloodStasisSigns,
+    this.pulseCombination,
+    this.facialComplexion,
+    this.patternDifferential,
+    this.transmission,
+    this.transmissionWarning,
+    this.pulseTongueContradiction,
   });
 
   bool get isCombined => combinedMeridian != null;
@@ -180,4 +211,132 @@ enum DiagnosticStage {
   meridianLocation,
   formulaConfirmation,
   result,
+}
+
+// ==================== P0-1: 真寒假热/真热假寒八维鉴别 ====================
+
+class TrueFalseHeatCold {
+  final String type; // '真寒假热' or '真热假寒'
+  final String description;
+  final Map<String, String> dimensions; // 八个维度
+
+  const TrueFalseHeatCold({
+    required this.type,
+    required this.description,
+    required this.dimensions,
+  });
+}
+
+// ==================== P1-3: 瘀血五法 ====================
+
+class BloodStasisSign {
+  final String method; // 诊断方法名
+  final String description; // 具体表现
+  final String clinicalSignificance; // 临床意义
+
+  const BloodStasisSign({
+    required this.method,
+    required this.description,
+    required this.clinicalSignificance,
+  });
+}
+
+// ==================== P1-5: 望面色 ====================
+
+class FacialComplexion {
+  final String color; // 面色
+  final String meridian; // 对应经络
+  final String formula; // 对应方剂
+  final String description; // 说明
+
+  const FacialComplexion({
+    required this.color,
+    required this.meridian,
+    required this.formula,
+    required this.description,
+  });
+}
+
+// ==================== P0-4: 用药铁律 ====================
+
+class MedicationRule {
+  final String category; // '禁忌' or '误治急救'
+  final String condition; // 适用证型
+  final String prohibition; // 禁忌内容
+  final String reason; // 原因
+  final String emergencyTreatment; // 误治后的急救方法（可选）
+
+  const MedicationRule({
+    required this.category,
+    required this.condition,
+    required this.prohibition,
+    required this.reason,
+    this.emergencyTreatment = '',
+  });
+}
+
+// ==================== P0-5: 汗法禁忌 ====================
+
+class SweatingContraindication {
+  final String condition; // 禁忌证型
+  final String reason; // 原因
+  final String consequence; // 后果
+
+  const SweatingContraindication({
+    required this.condition,
+    required this.reason,
+    required this.consequence,
+  });
+}
+
+// ==================== P1-7: 传经判断 ====================
+
+class MeridianTransmission {
+  final String from; // 传入前
+  final String to; // 传入后
+  final String sign; // 传经信号
+  final String treatment; // 治疗原则
+
+  const MeridianTransmission({
+    required this.from,
+    required this.to,
+    required this.sign,
+    required this.treatment,
+  });
+}
+
+// ==================== P1-4: 组合脉象 ====================
+
+class PulseCombination {
+  final String pulse1;
+  final String pulse2;
+  final String meridian;
+  final String formula;
+  final String description;
+
+  const PulseCombination({
+    required this.pulse1,
+    required this.pulse2,
+    required this.meridian,
+    required this.formula,
+    required this.description,
+  });
+}
+
+// ==================== P1-6: 条文级鉴别要点 ====================
+
+class PatternDifferential {
+  final String pattern1;
+  final String pattern2;
+  final String classicText; // 原文条文
+  final String keyPoint; // 关键鉴别点
+  final String niNote; // 倪海厦注解
+
+  const PatternDifferential({
+    required this.pattern1,
+    required this.pattern2,
+    required this.classicText,
+    required this.keyPoint,
+    required this.niNote,
+  });
 }

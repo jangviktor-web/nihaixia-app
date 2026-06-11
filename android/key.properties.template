@@ -1,0 +1,10 @@
+# 签名配置模板
+# 使用方法：
+# 1. 生成签名文件：keytool -genkey -v -keystore nihaisha.jks -keyalg RSA -keysize 2048 -validity 10000 -alias nihaisha
+# 2. 填写以下配置
+# 3. 将 nihaisha.jks 放到 android/ 目录下
+
+storePassword=你的密钥库密码
+keyPassword=你的密钥密码
+keyAlias=nihaisha
+storeFile=nihaisha.jks

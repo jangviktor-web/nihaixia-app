@@ -1,7 +1,7 @@
 name: nihaisha_app
 description: "汉唐中医 - 倪海厦六经辨证中医诊断助手"
 publish_to: 'none'
-version: 1.3.0+1
+version: 1.4.0+1
 
 environment:
   sdk: ^3.12.0
@@ -15,11 +15,14 @@ dependencies:
   path_provider: ^2.1.5
   path: ^1.9.1
   share_plus: ^10.1.4
+  http: ^1.2.0
+  package_info_plus: ^8.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  mocktail: ^1.0.4
 
 flutter:
   uses-material-design: true

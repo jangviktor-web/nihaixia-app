@@ -236,6 +236,43 @@ class DiagnosticRules {
       description: '三阳合病，脉浮大上关上，但欲眠睡，目合则汗',
       source: '伤寒论第268条',
     ),
+    // ---- 补充2种合病（测试发现缺失）----
+    CombinedPattern(
+      meridians: ['太阳', '阳明'],
+      condition: 'sun+yangming_interior_heat',
+      formula: '大青龙汤',
+      description: '太阳阳明合病，表寒里热俱实，无汗恶寒身痛+口渴烦躁',
+      source: '伤寒论第38条',
+    ),
+    CombinedPattern(
+      meridians: ['太阳', '少阴'],
+      condition: 'sun+shaoyin_two_cold',
+      formula: '麻黄附子细辛汤',
+      description: '太阳少阴两感，始得之，发热恶寒脉沉',
+      source: '伤寒论第301条',
+    ),
+    // ---- 新增合病（来自六经辨证公式）----
+    CombinedPattern(
+      meridians: ['少阳', '太阴'],
+      condition: 'shaoyang+taiyin',
+      formula: '柴胡桂枝干姜汤',
+      description: '少阳太阴合病，往来寒热+腹满便溏食不下',
+      source: '伤寒论第147条',
+    ),
+    CombinedPattern(
+      meridians: ['太阳', '太阴'],
+      condition: 'sun+taiyin',
+      formula: '桂枝人参汤',
+      description: '太阳太阴并病，里虚寒+表证未罢',
+      source: '伤寒论第163条',
+    ),
+    CombinedPattern(
+      meridians: ['太阳', '阳明'],
+      condition: 'sun+yangming_diarrhea_heat',
+      formula: '葛根芩连汤',
+      description: '太阳阳明合病，表证轻里热重，下利臭秽',
+      source: '伤寒论第34条',
+    ),
   ];
 
   // ==================== 鉴别诊断表 ====================
@@ -866,7 +903,6 @@ class DiagnosticRules {
     SymptomOption(key: 'skin', label: '皮肤问题', emoji: '🩹', description: '疮疡、瘙痒、过敏'),
     SymptomOption(key: 'urination', label: '小便异常', emoji: '🚽', description: '尿频、尿痛、不利'),
     SymptomOption(key: 'menstrual', label: '月经问题', emoji: '🩸', description: '痛经、量少、不调'),
-    SymptomOption(key: 'other', label: '其他症状', emoji: '📝', description: '以上未列出的症状'),
   ];
 
   // ==================== 寒热辨经（5项→六经定位）====================
@@ -901,6 +937,12 @@ class DiagnosticRules {
       description: '上面口干口苦，下面手脚冰冷，寒热错杂',
       targetMeridian: '厥阴',
     ),
+    TemperatureOption(
+      key: 'fever_thirst_no_cold',
+      label: '发热而渴，不恶寒',
+      description: '发热口渴但不怕冷，温病。津液不足。',
+      targetMeridian: '太阳',
+    ),
   ];
 
   static final Map<String, String> temperatureToMeridian = {
@@ -909,10 +951,16 @@ class DiagnosticRules {
     'chills_no_fever': '太阴/少阴',
     'alternating_chills_fever': '少阳',
     'upper_heat_lower_cold': '厥阴',
+    'fever_thirst_no_cold': '太阳',
   };
 
   // ==================== 倪海厦诊病十问 ====================
   static final List<FollowUpQuestion> tenQuestions = [
+    FollowUpQuestion(
+      key: 'gender',
+      question: '请问您的性别？（影响月经问题的问诊）',
+      options: ['男', '女'],
+    ),
     FollowUpQuestion(
       key: 'sleep',
       question: '【一问睡眠】晚上能一觉到天亮吗？几点醒？',
@@ -951,13 +999,18 @@ class DiagnosticRules {
     FollowUpQuestion(
       key: 'energy',
       question: '【八问体力】精神体力怎样？晨起精神？',
-      options: ['精力充沛', '容易疲倦', '很想睡但睡不着', '但欲寐（昏昏沉沉）', '烦躁不安', '说话没力气'],
+      options: ['精力充沛', '容易疲倦', '但欲寐（昏昏沉沉）', '烦躁不安', '说话没力气'],
     ),
     // 注意：舌诊已统一在 Step 3（舌诊脉诊步骤）处理，十问中不再重复
     FollowUpQuestion(
       key: 'pain',
       question: '【九问疼痛】哪里痛？什么性质的痛？',
       options: ['不痛', '头痛（前额）', '头痛（两侧）', '头痛（后脑）', '胸胁胀痛', '腹痛喜按', '腹痛拒按', '关节游走痛'],
+    ),
+    FollowUpQuestion(
+      key: 'menstrual',
+      question: '【十问月经/性功能】月经怎样？（男问性功能）',
+      options: ['没有此症状', '月经正常', '痛经/量少/色暗有块', '月经量多/色红', '月经不调/先后无定期', '已绝经', '性功能正常', '性功能减退/腰酸'],
     ),
   ];
 
@@ -985,14 +1038,9 @@ class DiagnosticRules {
         options: ['没有', '咳嗽', '气喘', '咳嗽有白痰', '咳嗽有黄痰'],
       ),
       FollowUpQuestion(
-        key: 'fever_level',
-        question: '体温高不高？',
-        options: ['低烧（37-38度）', '高烧（38.5度以上）', '不发烧只是怕冷'],
-      ),
-      FollowUpQuestion(
-        key: 'wind_sensitivity',
-        question: '怕风还是怕冷？',
-        options: ['怕风吹（恶风）', '怕冷盖被子（恶寒）', '都怕', '没有此症状'],
+        key: 'treatment_history',
+        question: '之前有没有被误用过泻药或攻下？',
+        options: ['没有', '被误下过', '吃坏肚子拉过'],
       ),
     ],
     '阳明': [
@@ -1022,9 +1070,9 @@ class DiagnosticRules {
         options: ['没有', '有说胡话', '烦躁不安'],
       ),
       FollowUpQuestion(
-        key: 'tongue_yangming',
-        question: '舌头怎样？',
-        options: ['舌苔黄燥', '舌苔黄厚', '舌红', '正常'],
+        key: 'tidal_fever',
+        question: '有没有下午发冷发热（潮热）？',
+        options: ['没有', '下午3-5点发热（潮热）', '全身持续发热', '手足汗出'],
       ),
     ],
     '少阳': [
@@ -1085,11 +1133,6 @@ class DiagnosticRules {
         question: '有没有呕吐？',
         options: ['呕吐', '不吐', '干呕'],
       ),
-      FollowUpQuestion(
-        key: 'tongue_taiyin',
-        question: '舌头怎样？',
-        options: ['舌苔白厚', '舌淡苔白', '舌胖大有齿痕', '正常'],
-      ),
     ],
     '少阴': [
       FollowUpQuestion(
@@ -1122,6 +1165,11 @@ class DiagnosticRules {
         question: '身体有没有疼痛？',
         options: ['骨节疼痛', '身体痛', '心下悸', '没有明显疼痛'],
       ),
+      FollowUpQuestion(
+        key: 'throat',
+        question: '喉咙怎样？',
+        options: ['没有', '喉咙痛', '咽中生疮', '不能说话', '咽中化脓'],
+      ),
     ],
     '厥阴': [
       FollowUpQuestion(
@@ -1153,6 +1201,11 @@ class DiagnosticRules {
         key: 'other厥阴',
         question: '其他特殊症状？',
         options: ['没有', '腹泻', '腹痛', '头痛'],
+      ),
+      FollowUpQuestion(
+        key: 'sputum',
+        question: '痰怎样？',
+        options: ['没有', '白痰', '黄痰', '唾脓血'],
       ),
     ],
   };
@@ -1212,6 +1265,290 @@ class DiagnosticRules {
     '热秘': '大便硬腹痛拒按 → 承气汤',
     '寒秘': '大便不通但腹冷喜温 → 大黄附子细辛汤',
     '虚秘': '无力排出 → 麻子仁丸',
+  };
+
+  // ==================== P0-1: 真寒假热/真热假寒八维鉴别 ====================
+  static const Map<String, TrueFalseHeatCold> trueFalseHeatColdData = {
+    '真寒假热': TrueFalseHeatCold(
+      type: '真寒假热',
+      description: '热在皮肤，寒在骨髓。外有假热象，内有真寒证。',
+      dimensions: {
+        '面色': '两颧色红，界限分明，红部鲜艳，不红部白中带青',
+        '口鼻气': '呼出气不温，不急促，气不臭',
+        '舌象': '舌虽干而质淡，或红而质润',
+        '脉象': '脉虽浮数，按之则无力',
+        '胸腹': '按之不蒸手，初按似热，久按不如平人',
+        '口渴': '渴喜热饮，饮不多',
+        '小便': '清长或不利',
+        '大便': '稀溏或完谷不化',
+      },
+    ),
+    '真热假寒': TrueFalseHeatCold(
+      type: '真热假寒',
+      description: '寒在皮肤，热在骨髓。外有假寒象，内有真热证。',
+      dimensions: {
+        '面色': '面色虽冷滞，两目炯炯有神',
+        '口鼻气': '呼出气必温，急促，或有不臭',
+        '舌象': '舌虽干而质燥，苔薄根厚，或黄而疏松',
+        '脉象': '脉虽沉细，必兼数急',
+        '胸腹': '四肢虽寒，胸腹必热，久按蒸蒸有热气',
+        '口渴': '渴喜冷饮，饮多',
+        '小便': '黄赤短少',
+        '大便': '干结或热臭',
+      },
+    ),
+  };
+
+  // ==================== P1-3: 瘀血五法诊断 ====================
+  static const List<BloodStasisSign> bloodStasisFiveMethods = [
+    BloodStasisSign(
+      method: '望诊',
+      description: '面色黧黑，唇舌紫暗，舌有瘀斑瘀点，皮肤有青紫瘀斑',
+      clinicalSignificance: '瘀血阻滞，血行不畅，面色失于濡养',
+    ),
+    BloodStasisSign(
+      method: '问诊',
+      description: '疼痛如刺、固定不移，夜间加重，或有跌打损伤史',
+      clinicalSignificance: '瘀血阻络，不通则痛，夜属阴故夜间加重',
+    ),
+    BloodStasisSign(
+      method: '切诊',
+      description: '脉涩或弦紧，或有结代；腹诊可触及包块压痛',
+      clinicalSignificance: '血行瘀滞，脉道不利',
+    ),
+    BloodStasisSign(
+      method: '望舌下',
+      description: '舌下络脉粗胀、迂曲、色暗紫',
+      clinicalSignificance: '舌下络脉为瘀血最直接的望诊指标',
+    ),
+    BloodStasisSign(
+      method: '望眼',
+      description: '眼周暗黑，或白睛有赤脉络瘀曲',
+      clinicalSignificance: '肝开窍于目，眼周暗黑为肝经瘀血',
+    ),
+  ];
+
+  // ==================== P1-5: 望面色 ====================
+  static final List<FacialComplexion> facialComplexions = [
+    FacialComplexion(color: '青色', meridian: '肝/厥阴', formula: '当归四逆汤/吴茱萸汤', description: '面色青，主寒证、痛证、瘀血、惊风'),
+    FacialComplexion(color: '赤色', meridian: '阳明/少阳', formula: '白虎汤/小柴胡汤', description: '面色红，主热证。满面通红为实热，午后颧红为虚热'),
+    FacialComplexion(color: '黄色', meridian: '太阴/阳明', formula: '茵陈蒿汤/理中汤', description: '面色黄，主湿证、脾虚。鲜明为阳黄，暗淡为阴黄'),
+    FacialComplexion(color: '白色', meridian: '太阴/少阴', formula: '四逆汤/理中汤', description: '面色白，主虚证、寒证、失血。晄白为阳虚，淡白为血虚'),
+    FacialComplexion(color: '黑色', meridian: '少阴/厥阴', formula: '真武汤/肾气丸', description: '面色黑，主肾虚、寒证、痛证、瘀血、水饮'),
+  ];
+
+  // ==================== P0-4: 用药铁律（7禁忌+5误治急救） ====================
+  static const List<MedicationRule> medicationRules = [
+    // 7大禁忌
+    MedicationRule(
+      category: '禁忌',
+      condition: '太阳表证',
+      prohibition: '不可攻下',
+      reason: '表证未解先攻里，会引邪入里，导致变证',
+      emergencyTreatment: '误下后出现痞证，用半夏泻心汤和解',
+    ),
+    MedicationRule(
+      category: '禁忌',
+      condition: '阳明经热（白虎汤证）',
+      prohibition: '不可发汗',
+      reason: '经热已盛，发汗更伤津液，会导致谵语、烦躁',
+      emergencyTreatment: '急下存阴，用承气汤通腑泄热',
+    ),
+    MedicationRule(
+      category: '禁忌',
+      condition: '少阳病',
+      prohibition: '不可发汗、吐、下',
+      reason: '少阳为半表半里，汗吐下皆会导致变证',
+      emergencyTreatment: '发汗则谵语（柴胡加龙骨牡蛎汤），吐下则悸而惊（柴胡桂枝干姜汤）',
+    ),
+    MedicationRule(
+      category: '禁忌',
+      condition: '太阴虚寒证',
+      prohibition: '不可攻下（寒凉药）',
+      reason: '脾阳已虚，攻下更伤中阳，必致胸下结硬',
+      emergencyTreatment: '理中汤温中健脾，或四逆汤回阳',
+    ),
+    MedicationRule(
+      category: '禁忌',
+      condition: '少阴病',
+      prohibition: '不可发汗、不可攻下',
+      reason: '心肾阳虚，发汗亡阳，攻下亡阴',
+      emergencyTreatment: '急温回阳，四逆汤加人参',
+    ),
+    MedicationRule(
+      category: '禁忌',
+      condition: '厥阴病',
+      prohibition: '不可单独攻下或发汗',
+      reason: '寒热错杂，单用攻伐会加重病情',
+      emergencyTreatment: '寒热并用，乌梅丸为主方',
+    ),
+    MedicationRule(
+      category: '禁忌',
+      condition: '津液亏虚（风温/温病）',
+      prohibition: '不可发汗、攻下、火疗',
+      reason: '津液已亏，三法皆更伤津液，会导致直视失溲、惊痫瘛疭',
+      emergencyTreatment: '生津液为主，白虎加人参汤',
+    ),
+    // 5大误治急救
+    MedicationRule(
+      category: '误治急救',
+      condition: '误发汗致小便不利',
+      prohibition: '汗出过多伤津',
+      reason: '津液亏损，化源不足',
+      emergencyTreatment: '猪苓汤育阴利水，或五苓散通阳化气',
+    ),
+    MedicationRule(
+      category: '误治急救',
+      condition: '误攻下致直视失溲',
+      prohibition: '下法伤正，肝血枯',
+      reason: '胃肠营养源被截断，肝血不能上注于目',
+      emergencyTreatment: '独参汤大补元气，或四逆加人参汤',
+    ),
+    MedicationRule(
+      category: '误治急救',
+      condition: '误火疗致发黄惊痫',
+      prohibition: '火劫伤津，热入血分',
+      reason: '火热内迫，津液枯竭，血分受热',
+      emergencyTreatment: '茵陈蒿汤清利湿热，犀角地黄汤凉血',
+    ),
+    MedicationRule(
+      category: '误治急救',
+      condition: '误吐致胃气上逆',
+      prohibition: '吐法伤胃气',
+      reason: '胃气因吐而虚，气逆不降',
+      emergencyTreatment: '小半夏汤降逆止呕，或生姜半夏汤',
+    ),
+    MedicationRule(
+      category: '误治急救',
+      condition: '误下致胸下结硬',
+      prohibition: '下法伤中阳',
+      reason: '脾阳受损，寒邪内结',
+      emergencyTreatment: '理中汤温中散寒，或枳实薤白桂枝汤宽胸散结',
+    ),
+  ];
+
+  // ==================== P0-5: 汗法禁忌（10种） ====================
+  static const List<SweatingContraindication> sweatingContraindications = [
+    SweatingContraindication(condition: '阳明经热证', reason: '里热炽盛，发汗更伤津液', consequence: '大渴引饮、烦躁谵语'),
+    SweatingContraindication(condition: '少阳病', reason: '半表半里，汗法不适用', consequence: '发汗则谵语（条文265）'),
+    SweatingContraindication(condition: '少阴病', reason: '心肾阳虚，发汗亡阳', consequence: '四肢厥冷加重，脉微欲绝'),
+    SweatingContraindication(condition: '太阴虚寒证', reason: '脾阳不足，发汗更虚', consequence: '下利不止，腹满呕吐'),
+    SweatingContraindication(condition: '厥阴病', reason: '阴阳错杂，发汗扰乱气机', consequence: '上热下寒加重'),
+    SweatingContraindication(condition: '咽喉干燥者', reason: '津液不足（条文83）', consequence: '小便不利，咽喉更干'),
+    SweatingContraindication(condition: '淋家', reason: '膀胱津亏（条文84）', consequence: '便血'),
+    SweatingContraindication(condition: '疮家', reason: '气血两虚（条文85）', consequence: '痉（筋脉拘急）'),
+    SweatingContraindication(condition: '衄家', reason: '失血亡阴（条文86）', consequence: '额上陷脉紧急，直视不能眴'),
+    SweatingContraindication(condition: '亡血家', reason: '气血大虚（条文87）', consequence: '寒栗而振'),
+  ];
+
+  // ==================== P1-7: 传经判断 ====================
+  static final List<MeridianTransmission> meridianTransmissions = [
+    MeridianTransmission(from: '太阳', to: '阳明', sign: '烦躁、口渴、但热不寒', treatment: '清热泻下，白虎汤/承气汤'),
+    MeridianTransmission(from: '太阳', to: '少阳', sign: '口苦、咽干、呕吐、往来寒热', treatment: '和解少阳，小柴胡汤'),
+    MeridianTransmission(from: '太阳', to: '少阴', sign: '但欲寐、四肢厥冷、脉微细', treatment: '急温回阳，四逆汤'),
+    MeridianTransmission(from: '少阳', to: '阳明', sign: '便秘、潮热、腹满痛', treatment: '和解兼攻下，大柴胡汤/柴胡加芒硝汤'),
+    MeridianTransmission(from: '太阴', to: '少阴', sign: '但欲寐加重、下利清谷', treatment: '温阳回逆，四逆汤'),
+    MeridianTransmission(from: '少阴', to: '厥阴', sign: '消渴、气上撞心、寒热错杂', treatment: '寒热并用，乌梅丸'),
+  ];
+
+  // ==================== P1-4: 组合脉象 ====================
+  static const List<PulseCombination> pulseCombinations = [
+    PulseCombination(pulse1: '浮', pulse2: '紧', meridian: '太阳', formula: '麻黄汤', description: '太阳伤寒表实证，无汗恶寒'),
+    PulseCombination(pulse1: '浮', pulse2: '缓', meridian: '太阳', formula: '桂枝汤', description: '太阳中风表虚证，有汗恶风'),
+    PulseCombination(pulse1: '浮', pulse2: '数', meridian: '太阳/阳明', formula: '桂枝二麻黄一汤/白虎汤', description: '表热或里热，需辨寒热'),
+    PulseCombination(pulse1: '洪', pulse2: '大', meridian: '阳明', formula: '白虎汤', description: '阳明经热，大热大汗大渴'),
+    PulseCombination(pulse1: '沉', pulse2: '迟', meridian: '少阴', formula: '四逆汤', description: '少阴寒化，阳虚寒盛'),
+    PulseCombination(pulse1: '沉', pulse2: '细', meridian: '少阴', formula: '真武汤/附子汤', description: '少阴水饮或经脉寒湿'),
+    PulseCombination(pulse1: '弦', pulse2: '细', meridian: '少阳', formula: '小柴胡汤', description: '少阳病，半表半里'),
+    PulseCombination(pulse1: '弦', pulse2: '滑', meridian: '阳明/少阳', formula: '大柴胡汤', description: '少阳阳明合病，兼有里实'),
+    PulseCombination(pulse1: '微', pulse2: '细', meridian: '少阴', formula: '四逆汤', description: '少阴病脉微细，但欲寐（条文281）'),
+    PulseCombination(pulse1: '涩', pulse2: '弦', meridian: '厥阴', formula: '当归四逆汤', description: '血虚寒凝，脉细欲绝'),
+    PulseCombination(pulse1: '结', pulse2: '代', meridian: '少阴', formula: '炙甘草汤', description: '气血两虚，脉结代心动悸'),
+    PulseCombination(pulse1: '滑', pulse2: '数', meridian: '阳明', formula: '小承气汤', description: '阳明腑实，热结在里'),
+  ];
+
+  // ==================== P1-6: 条文级鉴别要点扩展 ====================
+  static const List<PatternDifferential> patternDifferentials = [
+    PatternDifferential(
+      pattern1: '桂枝汤证（中风）',
+      pattern2: '麻黄汤证（伤寒）',
+      classicText: '太阳病，发热汗出恶风脉缓者名为中风；或已发热或未发热，必恶寒体痛呕逆脉阴阳俱紧者名曰伤寒（条文2-3）',
+      keyPoint: '有汗vs无汗——中风有汗用桂枝，伤寒无汗用麻黄',
+      niNote: '滤过性病毒千百种，只分这两种——按症处方就是辨症论治',
+    ),
+    PatternDifferential(
+      pattern1: '白虎汤证（经热）',
+      pattern2: '承气汤证（腑实）',
+      classicText: '阳明之为病胃家实是也（条文179）',
+      keyPoint: '经热=大热大汗大渴脉洪大（白虎）；腑实=便秘腹满痛拒按（承气）',
+      niNote: '先辨经热还是腑实，再选方。阳明无死证。',
+    ),
+    PatternDifferential(
+      pattern1: '小柴胡汤证',
+      pattern2: '大柴胡汤证',
+      classicText: '太阳病过经十余日，反二三下之，后四五日柴胡证仍在者，先与小柴胡（条文101）',
+      keyPoint: '小柴胡=无便秘；大柴胡=兼便秘腹满（少阳阳明合病）',
+      niNote: '大柴胡是小柴胡去人参甘草，加枳实芍药大黄。有便秘才能用大黄。',
+    ),
+    PatternDifferential(
+      pattern1: '真武汤证',
+      pattern2: '附子汤证',
+      classicText: '少阴病，身体痛，手足寒，骨节痛，脉沉者，附子汤主之（条文305）',
+      keyPoint: '真武汤=水饮（心悸头眩身瞤动）；附子汤=经脉寒湿（身体痛骨节痛）',
+      niNote: '真武汤重在利水，附子汤重在温经散寒止痛。',
+    ),
+    PatternDifferential(
+      pattern1: '四逆汤证',
+      pattern2: '通脉四逆汤证',
+      classicText: '少阴病，下利清谷，里寒外热，手足厥逆，脉微欲绝（条文317）',
+      keyPoint: '四逆汤=一般四肢厥冷；通脉四逆=阴盛格阳（身反不恶寒、面色赤）',
+      niNote: '通脉四逆是四逆汤重用干姜，破阴通阳。',
+    ),
+    PatternDifferential(
+      pattern1: '苓桂术甘汤证',
+      pattern2: '真武汤证',
+      classicText: '伤寒若吐若下后，心下逆满，气上冲胸，起则头眩（条文67）',
+      keyPoint: '苓桂术甘=水气上冲（轻证，脾虚水停）；真武=阳虚水泛（重证，肾阳虚）',
+      niNote: '苓桂术甘是水在中焦，真武汤是水在下焦波及全身。',
+    ),
+    PatternDifferential(
+      pattern1: '黄连阿胶汤证',
+      pattern2: '栀子豉汤证',
+      classicText: '少阴病，得之二三日以上，心中烦，不得卧（条文303）',
+      keyPoint: '黄连阿胶=心肾不交（失眠+舌红少苔）；栀子豉=虚烦（心中懊憹+无实热）',
+      niNote: '黄连阿胶汤有阿胶鸡子黄补心血，栀子豉汤只是清虚热。',
+    ),
+    PatternDifferential(
+      pattern1: '五苓散证',
+      pattern2: '猪苓汤证',
+      classicText: '太阳病，发汗后，脉浮，小便不利，微热消渴者（条文71）',
+      keyPoint: '五苓散=水热互结偏表（脉浮+微热）；猪苓汤=阴虚水热（血尿+口渴）',
+      niNote: '五苓散用桂枝通阳化气，猪苓汤用阿胶育阴利水。',
+    ),
+  ];
+
+  // ==================== 舌脉矛盾检测 ====================
+  static final Map<String, Map<String, String>> pulseTongueContradictions = {
+    '浮脉+黄厚苔': {
+      'warning': '脉浮（表证）但苔黄厚（里热），可能存在表里同病',
+      'suggestion': '需鉴别：是否太阳阳明合病？有无恶寒？',
+    },
+    '沉脉+薄白苔': {
+      'warning': '脉沉（里证）但苔薄白（正常/表证），舌脉不一致',
+      'suggestion': '可能为里证初起或表证已解，需结合问诊判断',
+    },
+    '数脉+淡白舌': {
+      'warning': '脉数（热证）但舌淡白（虚寒），寒热矛盾',
+      'suggestion': '真寒假热可能？需查：渴喜热饮？小便清长？四肢厥冷？',
+    },
+    '迟脉+红舌': {
+      'warning': '脉迟（寒证）但舌红（热证），寒热矛盾',
+      'suggestion': '真热假寒可能？需查：胸腹热？渴喜冷饮？小便黄赤？',
+    },
+    '微脉+洪脉': {
+      'warning': '脉微（虚极）与洪脉（实热）不可能同时出现',
+      'suggestion': '请重新确认脉象，或为不同部位脉象不同（寸关尺异脉）',
+    },
   };
 
   // ==================== 六经详情数据 ====================

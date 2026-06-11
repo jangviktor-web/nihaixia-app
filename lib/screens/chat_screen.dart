@@ -289,7 +289,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void _afterTenQuestions() {
     final result = _engine.diagnose();
     if (result != null) {
-      _addBotMessage('好，九问已经完成了。让我根据你的情况来分析...\n\n'
+      _addBotMessage('好，十问已经完成了。让我根据你的情况来分析...\n\n'
           '📋 你的情况：${_engine.selectedSymptoms.join("、")}\n\n'
           '下面给出辨证结果：');
       _showResult();
@@ -375,6 +375,28 @@ class _ChatScreenState extends State<ChatScreen> {
       jsonEncode(result.answers),
     );
 
+    // P0-2: 脉舌矛盾警告
+    if (result.pulseTongueContradiction != null) {
+      _addBotMessage('⚠️ 脉舌矛盾\n${result.pulseTongueContradiction}', isResult: false);
+    }
+
+    // P0-1: 真寒假热/真热假寒
+    if (result.trueFalseHeatCold != null) {
+      final tfhc = result.trueFalseHeatCold!;
+      String tfhcText = '☯️ ${tfhc.type}八维鉴别\n\n${tfhc.description}\n';
+      for (final entry in tfhc.dimensions.entries) {
+        tfhcText += '\n• ${entry.key}：${entry.value}';
+      }
+      _addBotMessage(tfhcText, isResult: false);
+    }
+
+    // P1-4: 组合脉象
+    if (result.pulseCombination != null) {
+      final pc = result.pulseCombination!;
+      _addBotMessage('🔬 组合脉象：${pc.pulse1}+${pc.pulse2}\n'
+          '指向${pc.meridian}经 → ${pc.formula}\n${pc.description}', isResult: false);
+    }
+
     // 处方详情
     if (result.prescription != null) {
       final rx = result.prescription!;
@@ -411,6 +433,64 @@ class _ChatScreenState extends State<ChatScreen> {
           '└─ ${diff.name2}（${diff.formula2}）\n'
           '   ${diff.details.entries.map((e) => '${e.key}：${e.value}').join('\n   ')}';
       _addBotMessage(diffText, isResult: false);
+    }
+
+    // P1-3: 瘀血五法
+    if (result.bloodStasisSigns != null && result.bloodStasisSigns!.isNotEmpty) {
+      String bsText = '🩸 瘀血诊断（五法）\n';
+      for (final sign in result.bloodStasisSigns!) {
+        bsText += '\n• ${sign.method}：${sign.description}';
+      }
+      _addBotMessage(bsText, isResult: false);
+    }
+
+    // P0-4: 用药铁律
+    if (result.medicationRules != null && result.medicationRules!.isNotEmpty) {
+      String mrText = '🚫 用药铁律\n';
+      for (final rule in result.medicationRules!) {
+        mrText += '\n• ${rule.condition}：${rule.prohibition}';
+        mrText += '\n  原因：${rule.reason}';
+        if (rule.emergencyTreatment != null) {
+          mrText += '\n  误治急救：${rule.emergencyTreatment}';
+        }
+      }
+      _addBotMessage(mrText, isResult: false);
+    }
+
+    // P0-5: 汗法禁忌
+    if (result.sweatingContraindications != null && result.sweatingContraindications!.isNotEmpty) {
+      String scText = '⛔ 汗法禁忌\n';
+      for (final sc in result.sweatingContraindications!) {
+        scText += '\n• ${sc.condition}：${sc.reason}（后果：${sc.consequence}）';
+      }
+      _addBotMessage(scText, isResult: false);
+    }
+
+    // P1-7: 传经判断
+    if (result.transmission != null) {
+      final t = result.transmission!;
+      _addBotMessage('🔄 传经预警\n'
+          '${t.from}→${t.to}传经信号：${t.sign}\n'
+          '治疗原则：${t.treatment}', isResult: false);
+    }
+
+    // 传经预警文本（来自七步走第四步：判传变）
+    if (result.transmissionWarning != null) {
+      _addBotMessage(result.transmissionWarning!, isResult: false);
+    }
+
+    // 太阴少阴交界预警
+    if (result.answers['_taiyin_to_shaoyin'] == true) {
+      _addBotMessage('⚠️ 太阴→少阴传变预警\n'
+          '太阴日久及肾：脉由沉迟转沉微，精神由倦怠转萎靡\n'
+          '当从少阴论治，急温回阳', isResult: false);
+    }
+
+    // 少阴兼表证提示
+    if (result.answers['_shaoyin_with_table'] == true) {
+      _addBotMessage('📋 少阴兼表证\n'
+          '少阴病始得之，反发热脉沉者——麻黄附子细辛汤\n'
+          '温经解表，表里双解', isResult: false);
     }
 
     // 调护建议

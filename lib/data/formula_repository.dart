@@ -114,11 +114,13 @@ class FormulaRepository {
             ))
         .toList();
 
+    // formulas.json 的 dosage 字段实际存储的是煎服法（preparation）
+    // preparation 字段在 JSON 中为空，所以用 dosage 作为煎服法
     return FormulaPrescription(
       formulaName: formula.name,
       components: components,
-      dosage: formula.dosage,
-      preparation: formula.preparation,
+      dosage: formula.dosage,  // 组成+剂量（由 components 提供）
+      preparation: formula.dosage.isNotEmpty ? formula.dosage : formula.preparation,
       contraindication: formula.contraindication,
       modifications: modifications,
     );
