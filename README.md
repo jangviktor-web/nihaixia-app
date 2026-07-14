@@ -270,7 +270,11 @@ lib/
 [MIT License](LICENSE) © 2026 jangviktor-web
 
 ---
+## Star History
 
+[![RepoStars](https://repostars.dev/api/embed?repo=jangviktor-web%2Fnihaixia-app&theme=grape)](https://repostars.dev/?repos=jangviktor-web%2Fnihaixia-app&theme=grape)
+
+---
 <div align="center">
 
 > 「中医很简单，就是阴阳气血。你搞懂了，一通百通。」—— 倪海厦
