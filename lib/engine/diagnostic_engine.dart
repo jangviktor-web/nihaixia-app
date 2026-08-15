@@ -492,6 +492,11 @@ class DiagnosticEngine {
 
     _detectCombinedPattern();
     _detectTaiyinShaoyinBoundary(); // 太阴少阴交界判断
+    // FIX-P3: 写入定稿六经方向。此前 _answers['meridian'] 从未赋值，
+    // 导致跟进问诊中按 `_answers['meridian'] == 'X'` 分流的解析器
+    // （太阳辨汗 L637、少阴辨寒热 L671、少阴辨身痛 L677、厥阴辨饥不欲食 L694、
+    //  厥阴辨寒热 L699）全部静默失效。
+    _answers['meridian'] = _meridianDirection;
     _stage = DiagnosticStage.meridianLocation;
   }
 
@@ -1729,13 +1734,16 @@ class DiagnosticEngine {
           (_answers['constipated'] == true && abdomenPress == true);
       bool stomachPain = _selectedSymptoms.contains('只胃脘痛');
       // FIX-P0-3: 精确串比较与 UI 选项后缀（（→承气汤）等）不兼容，改子串匹配。
-      // 例：跟进选项文本为 '有说胡话（→承气汤）'，原 == '有说胡话' 恒 false → 大承气汤不可达。
+      // 兼容 answerFollowUp 的两种存储形态：speech 存原始文本（L614），
+      // tidal_fever 被 L657 覆盖为 bool（contains('潮热')）。
       final speechAns = _answers['speech'];
       final tidalAns = _answers['tidal_fever'];
-      bool hasDelirium = (speechAns is String && speechAns.contains('胡话')) ||
-          (speechAns is String && speechAns.contains('谵语'));
-      bool hasTidalFever = (tidalAns is String && tidalAns.contains('潮热')) ||
-          (tidalAns is String && tidalAns.contains('手足汗出'));
+      bool hasDelirium = _answers['delirium'] == true ||
+          (speechAns is String &&
+              (speechAns.contains('胡话') || speechAns.contains('谵语')));
+      bool hasTidalFever = tidalAns == true ||
+          (tidalAns is String &&
+              (tidalAns.contains('潮热') || tidalAns.contains('手足汗出')));
 
       // 大承气汤证：腹满痛拒按+便秘+谵语+潮热（四证俱备）
       if (severeConstipation && hasDelirium && hasTidalFever) {

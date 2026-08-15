@@ -133,6 +133,21 @@ class DiagnosticRules {
     'upper_heat_lower_cold': 0.85,
     'hunger_no_eat': 0.8,
     'vomit_roundworm': 0.95,
+    // FIX-P3: 扩充证据闸白名单——以下真实辨证标志此前不计入 P0-2 证据闸计数，
+    // 导致"心下痞按之濡""小便不利+心烦失眠"等典型经方输入被静默建议面诊。
+    // 权重取 0.5~0.6（低于六经核心主证，避免扭曲置信度排序）。
+    'has_sweat': 0.6,
+    'abdomen_pain_press': 0.5,
+    'abdomen_pain_relief': 0.5,
+    'urine_difficult': 0.5,
+    'irritable': 0.5,
+    'insomnia': 0.5,
+    'edema': 0.5,
+    'cough': 0.5,
+    'vomiting': 0.5,
+    'joint_pain': 0.5,
+    'palpitation': 0.6,
+    'history_mistreatment': 0.5,
   };
 
   // ==================== 合病/并病规则 ====================
@@ -274,6 +289,25 @@ class DiagnosticRules {
       source: '伤寒论第34条',
     ),
   ];
+
+  // ==================== 症状→方剂 数据表（P2-1：零代码增方） ====================
+  // 引擎在规则弱命中时查阅此表作提示；新增方剂只需在此加一行，无需改引擎逻辑。
+  static const Map<String, String> symptomFormulaHints = {
+    '但欲寐': '四逆汤',
+    '下利清谷': '四逆汤',
+    '往来寒热': '小柴胡汤',
+    '口苦咽干目眩': '小柴胡汤',
+    '胸胁苦满': '小柴胡汤',
+    '消渴': '乌梅丸',
+    '气上撞心': '乌梅丸',
+    '心下痞': '半夏泻心汤',
+    '大热大渴': '白虎汤',
+    '腹满燥实': '大承气汤',
+    '头痛吐涎沫': '吴茱萸汤',
+    '心悸头眩身瞤动': '真武汤',
+    '发热恶寒无汗': '麻黄汤',
+    '发热恶风有汗': '桂枝汤',
+  };
 
   // ==================== 鉴别诊断表 ====================
   static final Map<String, DifferentialDiagnosis> differentialDiagnoses = {
@@ -943,6 +977,12 @@ class DiagnosticRules {
       description: '发热口渴但不怕冷，温病。津液不足。',
       targetMeridian: '太阳',
     ),
+    TemperatureOption(
+      key: 'no_fever_no_chill',
+      label: '不发烧也不怕冷',
+      description: '体温正常，没有明显怕冷怕热；或仅局部寒热（如皮肤患处发凉或发热）。寒热不显，需结合其他症状辨证。',
+      targetMeridian: '太阴/少阴',
+    ),
   ];
 
   static final Map<String, String> temperatureToMeridian = {
@@ -952,6 +992,7 @@ class DiagnosticRules {
     'alternating_chills_fever': '少阳',
     'upper_heat_lower_cold': '厥阴',
     'fever_thirst_no_cold': '太阳',
+    'no_fever_no_chill': '太阴/少阴',
   };
 
   // ==================== 倪海厦诊病十问（六经辨证优化版）====================
@@ -1277,7 +1318,7 @@ class DiagnosticRules {
   // ==================== 失眠辨经 ====================
   static final Map<String, String> insomniaDiagnosis = {
     '太阴': '脾虚失眠 → 归脾汤/小建中汤',
-    '少阴': '心肾阳虚失眠 → 黄连阿胶汤',
+    '少阴': '阴虚火旺失眠（热化，心烦不得卧）→ 黄连阿胶汤',
     '厥阴': '寒热错杂失眠 → 乌梅丸',
     '阳明': '胃不和失眠 → 调胃承气汤',
   };
@@ -1623,7 +1664,7 @@ class DiagnosticRules {
       'nature': '湿土',
       'organ': '脾·肺',
       'keyPulse': '脉缓弱，腹满而吐，食不下，自利益甚',
-      'coreSymptoms': ['腹满', '呕吐', '食不下', '自利', '腹痛', '手足不温'],
+      'coreSymptoms': ['腹满', '呕吐', '食不下', '自利', '腹痛', '手足自温'],
       'healingTime': '亥至丑（晚上9点-凌晨3点）',
       'transmissionIn': ['少阳'],
       'transmissionOut': ['少阴'],
