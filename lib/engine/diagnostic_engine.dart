@@ -252,10 +252,11 @@ class DiagnosticEngine {
         _meridianDirection = '少阴';
       }
     } else if (pulse == '沉') {
-      // 沉脉 → 里证
-      if (_meridianDirection == '太阳') {
-        _meridianDirection = '太阴/少阴';
-      }
+      // FIX-P0-4: 沉脉不再把已定向的太阳改写为'太阴/少阴'。
+      // 原逻辑在 answerTonguePulse（十问后设脉时）执行会把方向改成'太阴/少阴'，
+      // 而 diagnose() 的 switch 无该 case → 返回 null（新加汤证"发汗后身痛脉沉"直接无结果）。
+      // 表寒+沉脉的少阴兼表判断已由 _decideMeridianDirection L422（fever_chills+脉沉）负责。
+      // 保留：仅当方向仍为'太阴/少阴'（未定）时，沉脉不做改写。
     }
   }
 
@@ -1367,7 +1368,7 @@ class DiagnosticEngine {
         _selectedSymptoms.contains('胸满') ||
         _selectedSymptoms.contains('胸闷');
     final hasNeckStiffnessCheck = _answers['neck_stiff'] == true ||
-        _answers['neck'] == '僵硬';
+        (_answers['neck'] is String && (_answers['neck'] as String).contains('僵硬'));
     if (hasSweat == true && hasChestFullness && !hasNeckStiffnessCheck && !hasCoughAny) {
       return DiagnosisResult(
         meridian: '太阳',
@@ -1447,7 +1448,7 @@ class DiagnosticEngine {
 
     if (hasSweat == true) {
       bool hasNeckStiffness = _answers['neck_stiff'] == true ||
-          _answers['neck'] == '僵硬';
+          (_answers['neck'] is String && (_answers['neck'] as String).contains('僵硬'));
       bool hasCough = _answers['cough'] == true ||
           (_answers['breathing'] != null &&
            _answers['breathing'] != '没有' &&
@@ -1715,9 +1716,14 @@ class DiagnosticEngine {
       bool severeConstipation = _selectedSymptoms.contains('便秘好几天不通') ||
           (_answers['constipated'] == true && abdomenPress == true);
       bool stomachPain = _selectedSymptoms.contains('只胃脘痛');
-      bool hasDelirium = _answers['speech'] == '有说胡话';
-      bool hasTidalFever = _answers['tidal_fever'] == '下午3-5点发热（潮热）' ||
-          _answers['tidal_fever'] == '手足汗出';
+      // FIX-P0-3: 精确串比较与 UI 选项后缀（（→承气汤）等）不兼容，改子串匹配。
+      // 例：跟进选项文本为 '有说胡话（→承气汤）'，原 == '有说胡话' 恒 false → 大承气汤不可达。
+      final speechAns = _answers['speech'];
+      final tidalAns = _answers['tidal_fever'];
+      bool hasDelirium = (speechAns is String && speechAns.contains('胡话')) ||
+          (speechAns is String && speechAns.contains('谵语'));
+      bool hasTidalFever = (tidalAns is String && tidalAns.contains('潮热')) ||
+          (tidalAns is String && tidalAns.contains('手足汗出'));
 
       // 大承气汤证：腹满痛拒按+便秘+谵语+潮热（四证俱备）
       if (severeConstipation && hasDelirium && hasTidalFever) {
