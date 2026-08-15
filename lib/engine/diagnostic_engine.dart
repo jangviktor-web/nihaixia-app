@@ -307,12 +307,14 @@ class DiagnosticEngine {
       _answers['early_wake_3_5'] = answer.contains('3-5');
     }
     if (questionKey == 'thirst') {
-      _answers['thirsty'] = answer.contains('渴');
+      // FIX-P1-1: '不渴'.contains('渴')==true，原逻辑把"不渴"误判为口渴（thirsty=true），
+      // 波及白虎汤/五苓散/栝蒌瞿麦丸/文蛤散等所有读 thirsty 的分支。排除 '不渴' 后修正。
+      _answers['thirsty'] = answer.contains('渴') && !answer.contains('不渴');
       _answers['cold_drink'] = answer.contains('冷水');
       _answers['hot_drink'] = answer.contains('热水');
       _answers['thirst_no_drink'] = answer.contains('渴但不想喝');
       _answers['xiaoke'] = answer.contains('消渴');
-      _answers['thirst_strong'] = answer.contains('渴') && answer.contains('冷水');
+      _answers['thirst_strong'] = answer.contains('渴') && answer.contains('冷水') && !answer.contains('不渴');
       _answers['no_thirst'] = answer == '不渴';
       _answers['mouth_dry'] = answer.contains('口干');
     }
