@@ -452,7 +452,12 @@ class DiagnosticEngine {
         // 少阴核心：但欲寐、四肢厥冷、小便清长（心肾阳虚）
         int shaoyinScore = 0;
         if (_answers['drowsy'] == true) shaoyinScore += 4;  // 但欲寐是少阴核心特征
-        if (_answers['cold_limbs'] == true) shaoyinScore += 3;  // 四肢厥冷=阳虚严重
+        // FIX-P2-1: cold_limbs 权重 3→2。原 3 分使"太阴寒证兼手足不温"（如理中汤证：
+        // 腹满吐利+手足不温）被拉向少阴→四逆汤，理中汤（煎剂）永远不可达。
+        // 少阴核心仍由但欲寐（+4）/脉微细（+3）/小便清长（+3）决定；单纯手足冷+太阴下利
+        // （taiyin diarrhea+3 > shaoyin 2）归太阴理中汤；但欲寐/脉微细则归少阴四逆汤，符合倪师
+        // "厥冷过肘膝用四逆、未过肘膝用理中"的辨法。
+        if (_answers['cold_limbs'] == true) shaoyinScore += 2;
         if (_answers['urine_clear'] == true) shaoyinScore += 3;  // 小便清长=肾阳虚
         if (_answers['palpitation'] == true) shaoyinScore += 2;
         if (_answers['weak_speech'] == true) shaoyinScore += 1;
@@ -1669,8 +1674,13 @@ class DiagnosticEngine {
       }
 
       // 栀子柏皮汤：湿热发黄热重于湿（身黄+发热）
+      // FIX-P1-2: fever 标志修复后，阳明定向必然 fever=true，栀子柏皮（身黄+fever）把
+      // 茵陈蒿汤（身黄+腹满+小便不利，里实湿重）全部遮蔽。加腹满/小便不利排除：
+      // 无腹满无小便不利的"身黄发热"归栀子柏皮；兼腹满小便不利归茵陈蒿汤。
       final hasFever = _answers['fever'] == true || _selectedSymptoms.contains('发热');
-      if (hasFever) {
+      if (hasFever &&
+          !_selectedSymptoms.contains('腹满') &&
+          !_selectedSymptoms.contains('小便不利')) {
         return DiagnosisResult(
           meridian: '阳明',
           pattern: '阳明湿热发黄热重于湿（栀子柏皮汤证）',
@@ -2059,7 +2069,12 @@ class DiagnosticEngine {
     }
 
     // 寒化+水饮 → 真武汤（阳虚水泛）
-    if (hasWaterRetention == true) {
+    // FIX-P1-2: 真武汤（水饮兜底）条件过宽，遮蔽麻黄附子汤（水气+脉沉+无悸无眩）。
+    // 窄化：脉沉且无心悸无头晕时归麻黄附子汤（少阴水肿），其余归真武汤。
+    if (hasWaterRetention == true &&
+        !(_pulseType == '沉' &&
+          answers['palpitation'] != true &&
+          answers['dizziness'] != true)) {
       return DiagnosisResult(
         meridian: '少阴',
         pattern: '少阴水饮（真武汤证）',
@@ -2436,7 +2451,14 @@ class DiagnosticEngine {
         _selectedSymptoms.contains('痞硬');
     final hasBorborygmus = _selectedSymptoms.contains('肠鸣') ||
         _selectedSymptoms.contains('腹中雷鸣');
-    if (hasEpigastric && (answers['vomiting'] == true || hasBorborygmus)) {
+    final hasFoodStinkB = _selectedSymptoms.contains('食臭') ||
+        _selectedSymptoms.contains('噫气食臭');
+    final hasSevereDiarrheaB = _selectedSymptoms.contains('下利不止') ||
+        _selectedSymptoms.contains('日数十行');
+    // FIX-P1-2: 半夏泻心汤（痞证基础方）条件过宽，把生姜泻心（+食臭）和甘草泻心（+下利不止）全部遮蔽。
+    // 加排除后三者各得其所：半夏泻心=心下痞+呕/肠鸣（无食臭无下利不止）。
+    if (hasEpigastric && (answers['vomiting'] == true || hasBorborygmus) &&
+        !hasFoodStinkB && !hasSevereDiarrheaB) {
       return DiagnosisResult(
         meridian: '少阳',
         pattern: '寒热痞（半夏泻心汤证）',
@@ -2531,7 +2553,8 @@ class DiagnosticEngine {
       final hasShortnessBreath = _selectedSymptoms.contains('短气') ||
           _selectedSymptoms.contains('不得卧');
       // 栝蒌薤白半夏汤：胸痹重证（胸背痛+不得卧+心痛彻背）
-      if (hasShortnessBreath) {
+      // FIX-P1-2: 排除胸中气塞（轻证归橘枳生姜/茯苓杏仁甘草），避免遮蔽。
+      if (hasShortnessBreath && !_selectedSymptoms.contains('胸中气塞')) {
         return DiagnosisResult(
           meridian: '太阳',
           pattern: '胸痹重证（栝蒌薤白半夏汤证）',
@@ -2557,15 +2580,21 @@ class DiagnosticEngine {
         );
       }
       // 栝蒌薤白白酒汤：胸痹基础方
-      return DiagnosisResult(
-        meridian: '太阳',
-        pattern: '胸痹（栝蒌薤白白酒汤证）',
-        patternDetail: '胸痹之病，喘息咳唾，胸背痛，短气。',
-        formula: '栝蒌薤白白酒汤',
-        explanation: '栝蒌宽胸散结，薤白通阳散结，白酒行气活血。胸痹基础方。',
-        confidence: 0.8,
-        matchedSymptoms: _selectedSymptoms,
-      );
+      // FIX-P1-2: 白酒汤（胸痹兜底）条件过宽，把栝蒌薤白半夏（不得卧/短气）、
+      // 枳实薤白桂枝（胁下逆抢心）、薏苡附子散（缓急）全部遮蔽。加排除词后作真兜底。
+      if (!hasShortnessBreath && !hasRetrosternal &&
+          !_selectedSymptoms.contains('缓急') &&
+          !_selectedSymptoms.contains('胸中气塞')) {
+        return DiagnosisResult(
+          meridian: '太阳',
+          pattern: '胸痹（栝蒌薤白白酒汤证）',
+          patternDetail: '胸痹之病，喘息咳唾，胸背痛，短气。',
+          formula: '栝蒌薤白白酒汤',
+          explanation: '栝蒌宽胸散结，薤白通阳散结，白酒行气活血。胸痹基础方。',
+          confidence: 0.8,
+          matchedSymptoms: _selectedSymptoms,
+        );
+      }
     }
 
     // 抵当汤/抵当丸：蓄血重证（少腹硬满+发狂+小便利）
@@ -2744,7 +2773,11 @@ class DiagnosticEngine {
     }
 
     // 桂枝加桂汤：奔豚气上冲
-    if (_selectedSymptoms.contains('奔豚') || _selectedSymptoms.contains('气上冲')) {
+    // FIX-P1-2: 桂枝加桂（奔豚||气上冲）条件过宽，遮蔽瓜蒂散（胸中痞硬+气上冲）与
+    // 奔豚汤（奔豚+往来寒热）。加专属词排除。
+    if ((_selectedSymptoms.contains('奔豚') || _selectedSymptoms.contains('气上冲')) &&
+        !_selectedSymptoms.contains('胸中痞硬') &&
+        !_selectedSymptoms.contains('往来寒热')) {
       return DiagnosisResult(
         meridian: '太阳',
         pattern: '奔豚气上冲（桂枝加桂汤证）',
@@ -2772,7 +2805,13 @@ class DiagnosticEngine {
     // 桂枝去芍药加附子汤：脉促胸满微恶寒（已在规则中，跳过）
 
     // 桂枝去芍药加蜀漆龙骨牡蛎救逆汤：亡阳惊狂
-    if (_selectedSymptoms.contains('惊狂') || _selectedSymptoms.contains('卧起不安')) {
+    final hasMistreatmentHistoryG = _answers['history_mistreatment'] == true ||
+        _selectedSymptoms.contains('误下') ||
+        _selectedSymptoms.contains('被下');
+    // FIX-P1-2: 桂枝救逆（惊狂||卧起不安）条件过宽，遮蔽阳明栀子厚朴枳实汤（卧起不安）。
+    // 窄化：仅"惊狂"或"误治后卧起不安"命中，纯"卧起不安"归栀子厚朴枳实汤。
+    if (_selectedSymptoms.contains('惊狂') ||
+        (_selectedSymptoms.contains('卧起不安') && hasMistreatmentHistoryG)) {
       return DiagnosisResult(
         meridian: '太阳',
         pattern: '亡阳惊狂（桂枝救逆汤证）',
@@ -2917,7 +2956,11 @@ class DiagnosticEngine {
     }
 
     // 栀子甘草豉汤/栀子生姜豉汤/栀子干姜豉汤
-    if (_selectedSymptoms.contains('心中懊憹') || _selectedSymptoms.contains('反复颠倒')) {
+    // FIX-P1-2: misc 栀子豉系列（懊憹）条件过宽，遮蔽阳明栀子大黄汤（酒黄疸/身黄+心中热）。
+    // 排除黄疸相关词：酒黄疸归栀子大黄汤，纯虚烦懊憹归本系列。
+    if ((_selectedSymptoms.contains('心中懊憹') || _selectedSymptoms.contains('反复颠倒')) &&
+        !_selectedSymptoms.contains('酒黄疸') &&
+        !_selectedSymptoms.contains('身黄')) {
       if (answers['vomiting'] == true) {
         return DiagnosisResult(
           meridian: '阳明',
@@ -3270,7 +3313,9 @@ class DiagnosticEngine {
     // ========== 金匮要略·痰饮/咳嗽 ==========
 
     // 小青龙汤加减：支饮咳逆倚息不得卧
-    if (_selectedSymptoms.contains('支饮') || _selectedSymptoms.contains('咳逆倚息')) {
+    // FIX-P1-2: 小青龙加减（支饮兜底）条件过宽，遮蔽厚朴大黄汤（支饮+胸满）。加排除。
+    if ((_selectedSymptoms.contains('支饮') || _selectedSymptoms.contains('咳逆倚息')) &&
+        !_selectedSymptoms.contains('胸满')) {
       return DiagnosisResult(
         meridian: '太阳',
         pattern: '支饮（小青龙加减汤证）',
@@ -3309,7 +3354,9 @@ class DiagnosticEngine {
     }
 
     // 橘枳生姜汤：胸痹胸中气塞短气
-    if (_selectedSymptoms.contains('胸痹') && _selectedSymptoms.contains('胸中气塞')) {
+    // FIX-P1-2: 排除短气（主短气者归茯苓杏仁甘草汤），橘枳生姜主行气、偏气塞。
+    if (_selectedSymptoms.contains('胸痹') && _selectedSymptoms.contains('胸中气塞') &&
+        !_selectedSymptoms.contains('短气')) {
       return DiagnosisResult(
         meridian: '太阴',
         pattern: '胸痹气塞（橘枳生姜汤证）',
@@ -3511,7 +3558,10 @@ class DiagnosticEngine {
     // ========== 金匮要略·惊悸/吐衄/瘀血 ==========
 
     // 半夏麻黄丸：心下悸
-    if (_selectedSymptoms.contains('心下悸') && !_selectedSymptoms.contains('水气')) {
+    // FIX-P1-2: 半夏麻黄丸（心下悸）条件过宽，遮蔽六经桂枝甘草汤（心悸+有汗+脉虚）。
+    // 加 has_sweat!=true 排除：有汗心悸归桂枝甘草汤，无汗水饮心悸归半夏麻黄丸。
+    if (_selectedSymptoms.contains('心下悸') && !_selectedSymptoms.contains('水气') &&
+        answers['has_sweat'] != true) {
       return DiagnosisResult(
         meridian: '太阳',
         pattern: '心悸水饮（半夏麻黄丸证）',
@@ -3602,7 +3652,9 @@ class DiagnosticEngine {
     }
 
     // 下瘀血汤：产后腹痛有干血着脐下
-    if (_selectedSymptoms.contains('产后腹痛') || _selectedSymptoms.contains('干血着脐下')) {
+    // FIX-P1-2: 下瘀血（产后腹痛兜底）条件过宽，遮蔽枳实芍药散（产后腹痛+烦满不得卧）。加排除。
+    if ((_selectedSymptoms.contains('产后腹痛') || _selectedSymptoms.contains('干血着脐下')) &&
+        !_selectedSymptoms.contains('烦满不得卧')) {
       return DiagnosisResult(
         meridian: '厥阴',
         pattern: '产后瘀血（下瘀血汤证）',
@@ -3753,7 +3805,14 @@ class DiagnosticEngine {
     // ========== 金匮要略·百合病 ==========
 
     // 百合地黄汤：百合病不经吐下发汗病形如初
-    if (_selectedSymptoms.contains('百合病') || _selectedSymptoms.contains('意欲食复不能食')) {
+    // FIX-P1-2: 百合地黄（基础方）条件过宽，把百合知母（发汗后）/滑石代赭（下之后）/
+    // 滑石散（发热）/栝蒌牡蛎（渴）/鸡子黄（吐之后）全部遮蔽。加变证排除词。
+    if ((_selectedSymptoms.contains('百合病') || _selectedSymptoms.contains('意欲食复不能食')) &&
+        !_selectedSymptoms.contains('发汗后') &&
+        !_selectedSymptoms.contains('下之后') &&
+        !_selectedSymptoms.contains('吐之后') &&
+        !_selectedSymptoms.contains('发热') &&
+        answers['thirsty'] != true) {
       return DiagnosisResult(
         meridian: '太阴',
         pattern: '百合病（百合地黄汤证）',
@@ -3833,7 +3892,9 @@ class DiagnosticEngine {
     // ========== 金匮要略·疮痈/肠痈 ==========
 
     // 大黄牡丹汤：肠痈
-    if (_selectedSymptoms.contains('肠痈') || _selectedSymptoms.contains('腹皮急按之濡')) {
+    // FIX-P1-2: 大黄牡丹（肠痈基础方）条件过宽，遮蔽薏苡附子败酱散（肠痈+脓已成）。加排除。
+    if ((_selectedSymptoms.contains('肠痈') || _selectedSymptoms.contains('腹皮急按之濡')) &&
+        !_selectedSymptoms.contains('脓已成')) {
       return DiagnosisResult(
         meridian: '阳明',
         pattern: '肠痈（大黄牡丹汤证）',
@@ -3913,7 +3974,9 @@ class DiagnosticEngine {
     }
 
     // 大半夏汤：胃反朝食暮吐
-    if (_selectedSymptoms.contains('胃反') || _selectedSymptoms.contains('朝食暮吐')) {
+    // FIX-P1-2: 大半夏（胃反兜底）条件过宽，遮蔽茯苓泽泻汤（胃反+渴）。加排除。
+    if ((_selectedSymptoms.contains('胃反') || _selectedSymptoms.contains('朝食暮吐')) &&
+        answers['thirsty'] != true) {
       return DiagnosisResult(
         meridian: '太阴',
         pattern: '胃反（大半夏汤证）',
@@ -4312,11 +4375,16 @@ class DiagnosticEngine {
     }
 
     // 蒲灰散：小便不利（排除有明确经络归属的情况）
+    // FIX-P1-2: 蒲灰（小便不利兜底）条件过宽，把滑石白鱼散（白鱼）/茯苓戎盐汤（戎盐）/
+    // 葵子茯苓散（妊娠）全部遮蔽。加专属症状词排除。
     if (answers['urine_difficult'] == true &&
         answers['edema'] != true &&
         answers['cold_limbs'] != true &&
         answers['drowsy'] != true &&
-        answers['diarrhea'] != true) {
+        answers['diarrhea'] != true &&
+        !_selectedSymptoms.contains('白鱼') &&
+        !_selectedSymptoms.contains('戎盐') &&
+        !_selectedSymptoms.contains('妊娠')) {
       return DiagnosisResult(
         meridian: '太阳',
         pattern: '小便不利（蒲灰散证）',
@@ -4435,7 +4503,10 @@ class DiagnosticEngine {
     }
 
     // 天雄散：男子失精腰膝冷痛
-    if (_selectedSymptoms.contains('失精') || _selectedSymptoms.contains('腰膝冷痛')) {
+    // FIX-P1-2: 天雄散（失精||腰膝冷痛）条件过宽，遮蔽六经桂枝加龙骨牡蛎汤
+    // （虚劳失精+目眩+有汗）。加 has_sweat!=true：有汗虚劳失精归桂枝加龙骨牡蛎汤。
+    if ((_selectedSymptoms.contains('失精') || _selectedSymptoms.contains('腰膝冷痛')) &&
+        answers['has_sweat'] != true) {
       return DiagnosisResult(
         meridian: '少阴',
         pattern: '失精（天雄散证）',
