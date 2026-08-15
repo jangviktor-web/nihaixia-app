@@ -35,7 +35,7 @@ class FollowUpQuestion {
   final String question;
   final List<String> options;
 
-  FollowUpQuestion({
+  const FollowUpQuestion({
     required this.key,
     required this.question,
     required this.options,
@@ -824,6 +824,8 @@ class DiagnosticRules {
   static const List<String> pulseOptions = [
     '浮', '沉', '迟', '数', '滑', '涩', '弦', '紧', '缓', '弱',
     '微', '细', '洪', '实', '虚',
+    // P2-E: 金匮/伤寒补充脉象（促=热利葛根芩连/大承气；结代=炙甘草汤；芤=失血；革=失精；微弱=桂枝二越婢一）
+    '促', '结', '代', '芤', '革', '微弱',
   ];
 
   // ==================== 调护建议 ====================
@@ -1169,7 +1171,7 @@ class DiagnosticRules {
       FollowUpQuestion(
         key: 'diarrhea',
         question: '【辨下利类型】大便怎样？',
-        options: ['稀/拉肚子（太阴湿利）', '水样便', '正常', '先硬后稀', '下利不止+心下痞硬（→赤石脂禹余粮汤）'],
+        options: ['稀/拉肚子（太阴湿利）', '水样便', '正常', '先硬后稀', '下利不止+滑脱不禁（→赤石脂禹余粮汤）'],
       ),
       FollowUpQuestion(
         key: 'abdomen',
@@ -1269,6 +1271,78 @@ class DiagnosticRules {
         key: 'sputum',
         question: '【辨脓血】痰或唾液怎样？',
         options: ['没有', '白痰', '黄痰', '唾脓血（→麻黄升麻汤）'],
+      ),
+    ],
+  };
+
+  // ==================== 六经杂证补充（P2-2：非misc 24方触发词并入六经跟进） ====================
+  // 引擎 getFollowUpQuestions 会合并本表；选项文本=触发词+证候（→方剂），子串匹配即命中。
+  static final Map<String, List<FollowUpQuestion>> meridianSupplementFollowUps = {
+    '太阳': [
+      FollowUpQuestion(
+        key: 'sup_sun_misc',
+        question: '【太阳杂证补充】以下哪项符合你？（金匮/蓄血/表虚变证）',
+        options: [
+          '心下有水气（→小青龙汤）',
+          '痉（→栝蒌桂枝汤）',
+          '目眩+失精（→桂枝加龙骨牡蛎汤）',
+          '胸满（→桂枝去芍药汤）',
+          '少腹急结+如狂（→桃核承气汤）',
+        ],
+      ),
+    ],
+    '阳明': [
+      FollowUpQuestion(
+        key: 'sup_yangming_misc',
+        question: '【阳明杂证补充】以下哪项符合你？（腹满/酒疸/温疟/痉湿暍）',
+        options: [
+          '腹胀痛（→厚朴三物汤）',
+          '卧起不安（→栀子厚朴枳实汤）',
+          '酒黄疸（→栀子大黄汤）',
+          '温疟（→白虎加桂枝汤）',
+          '脚挛急（→芍药甘草汤）',
+          '恶寒+发汗后（→芍药甘草附子汤）',
+          '身黄+身痒（→麻黄连轺赤小豆汤）',
+          '身黄+发热（→栀子柏皮汤）',
+        ],
+      ),
+    ],
+    '太阴': [
+      FollowUpQuestion(
+        key: 'sup_taiyin_misc',
+        question: '【太阴杂证补充】以下哪项符合你？（肺痿/脏躁）',
+        options: [
+          '吐涎沫（→甘草干姜汤）',
+          '脏躁（→甘麦大枣汤）',
+          '下利+口苦（→黄芩汤）',
+          '心下痞+下利不止（→甘草泻心汤）',
+        ],
+      ),
+    ],
+    '少阴': [
+      FollowUpQuestion(
+        key: 'sup_shaoyin_misc',
+        question: '【少阴杂证补充】以下哪项符合你？（寒疝/咽痛/肾气）',
+        options: [
+          '关节剧痛（→乌头汤）',
+          '绕脐痛（→乌头煎）',
+          '汗出不止（→桂枝加附子汤）',
+          '咽痛+胸满（→猪肤汤）',
+          '腰痛+脚冷（→肾气丸）',
+          '生疮+不能语言（→苦酒汤）',
+          '少阴表证（→麻黄附子甘草汤）',
+          '咽痛（→甘草汤）',
+        ],
+      ),
+    ],
+    '厥阴': [
+      FollowUpQuestion(
+        key: 'sup_jueyin_misc',
+        question: '【厥阴杂证补充】以下哪项符合你？（久寒/麻黄升麻）',
+        options: [
+          '内有久寒（→当归四逆加吴茱萸生姜汤）',
+          '唾脓血+泄利不止（→麻黄升麻汤）',
+        ],
       ),
     ],
   };

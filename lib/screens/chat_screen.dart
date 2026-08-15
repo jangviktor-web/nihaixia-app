@@ -1,20 +1,30 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import '../engine/diagnostic_engine.dart';
 import '../engine/diagnostic_rules.dart';
+import '../engine/condition_families.dart';
 import '../data/formula_repository.dart';
 import '../data/settings_repository.dart';
 import '../models/diagnosis.dart';
 import '../models/bookmark.dart';
 import '../data/database_helper.dart';
-import '../services/update_service.dart';
 import 'formula_detail_screen.dart';
 import 'meridian_detail_screen.dart';
+import '../models/formula.dart';
+import 'app_dialogs.dart';
+
+/// 高危禁忌关键词（用于结果卡红色强提示）
+const Set<String> _highRiskKeywords = {
+  '孕妇', '妊娠', '哺乳', '亡阳', '阳虚欲脱', '大出血',
+  '真寒假热', '真热假寒', '禁用', '忌用',
+};
+
+bool _isHighRiskContraindication(String text) {
+  if (text.isEmpty) return false;
+  return _highRiskKeywords.any((k) => text.contains(k));
+}
 
 /// 对话步骤快照（用于返回上一步）
 class _StepSnapshot {
@@ -42,6 +52,11 @@ class _ChatScreenState extends State<ChatScreen> {
   List<_ChatOption> _currentOptions = [];
   bool _canGoBack = false;
 
+  // P2-3 自由文本症状/方剂搜索
+  final TextEditingController _searchController = TextEditingController();
+  List<Formula> _searchResults = [];
+  bool _searchExpanded = false;
+
   // 诊断步骤历史栈（用于返回上一步）
   final List<_StepSnapshot> _stepHistory = [];
 
@@ -49,6 +64,18 @@ class _ChatScreenState extends State<ChatScreen> {
   String? _selectedTongueCoating;
   String? _selectedTongueShape;
   String? _selectedPulse;
+
+  // 当前选中的主诉 key，用于自适应寒热问法
+  String? _selectedChiefKey;
+
+  // 与发烧直接相关的主诉，使用「发烧/怕冷」问法；其余主诉使用通用寒热问法
+  static const Set<String> _feverChiefKeys = {
+    'fever_chills',
+    'fever_only',
+    'chills_only',
+    'alternating',
+    'upper_heat_lower_cold',
+  };
 
   @override
   void initState() {
@@ -58,7 +85,57 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _startDiagnosis() {
     _addBotMessage(_engine.getInitialGreeting());
-    _showChiefComplaintOptions();
+    _showChiefComplaintGroups();
+  }
+
+  // ==================== 主诉两级导航（P2-C：12大类 → 证候词） ====================
+
+  void _showChiefComplaintGroups() {
+    final categories = _engine.getChiefCategories();
+    setState(() {
+      _currentOptions = [
+        ...categories.map((c) => _ChatOption(
+              label: '${c.emoji} ${c.name}',
+              description: '进入「${c.name}」细分问诊',
+              onTap: () => _showChiefComplaintTerms(c.id, c.name),
+            )),
+        _ChatOption(
+          label: '📋 直接选具体症状（25项）',
+          description: '不按大类，直接进入原有主诉列表',
+          onTap: _showChiefComplaintOptions,
+        ),
+      ];
+      _showOptions = true;
+    });
+    _scrollToBottom();
+  }
+
+  void _showChiefComplaintTerms(String categoryId, String categoryName) {
+    final terms = _engine.getConditionTermsForCategory(categoryId);
+    if (terms.isEmpty) {
+      // 该大类暂无金匮证候族，直接回到常规主诉
+      _showChiefComplaintOptions();
+      return;
+    }
+    _addBotMessage('「$categoryName」— 你的情况更接近下面哪一类？（可返回重选）');
+    setState(() {
+      _currentOptions = terms
+          .map((t) => _ChatOption(
+                label: '${t.emoji} ${t.label}',
+                description: '按「${t.label}」继续辨证',
+                onTap: () => _selectConditionTerm(t),
+              ))
+          .toList();
+      _showOptions = true;
+    });
+    _scrollToBottom();
+  }
+
+  void _selectConditionTerm(ConditionTerm term) {
+    _saveSnapshot();
+    _addUserMessage('${term.emoji} ${term.label}');
+    _engine.selectConditionOption(term.family, term.key, term.label);
+    _showTemperatureOptions();
   }
 
   // ==================== 快照管理 ====================
@@ -103,6 +180,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void _selectChiefComplaint(String key, String label) {
     _saveSnapshot();
     _addUserMessage(label);
+    _selectedChiefKey = key;
     _engine.selectChiefComplaint(key);
     _showTemperatureOptions();
   }
@@ -110,7 +188,13 @@ class _ChatScreenState extends State<ChatScreen> {
   // ==================== 寒热辨经 ====================
 
   void _showTemperatureOptions() {
-    _addBotMessage('发烧怕冷的情况是怎样的？');
+    // 自适应问法：发烧类主诉沿用发烧/怕冷问法，其余主诉用通用寒热问法
+    final isFeverChief = _selectedChiefKey != null &&
+        _ChatScreenState._feverChiefKeys.contains(_selectedChiefKey);
+    final question = isFeverChief
+        ? '你的发烧怕冷情况是怎样的？'
+        : '你整体的寒热感觉是怎样的？（平时怕冷还是怕热，或者身体某处发凉、发热都可以告诉我）';
+    _addBotMessage(question);
     final options = _engine.getTemperatureQuestions();
     setState(() {
       _currentOptions = options
@@ -341,6 +425,43 @@ class _ChatScreenState extends State<ChatScreen> {
 
     setState(() => _showOptions = false);
 
+    // P0-2: 证据不足，建议面诊（不强行给方，避免误治）
+    if (result.recommendConsult || result.formula.isEmpty) {
+      _addBotMessage(
+        '⚠️ 辨证依据不足\n\n'
+        '${result.explanation}\n\n'
+        '（本结果仅供参考，请线下就诊由执业中医师四诊合参）',
+        isWarning: true,
+      );
+
+      // P2: 数据驱动兜底——证据不足时仍按症状给出"参考性"方剂提示（非处方）
+      final tableSuggestion = _engine.suggestByTable();
+      final ranking = _engine.getSimilarityRanking(topK: 3);
+      final refNames = <String>{};
+      if (tableSuggestion != null) refNames.add(tableSuggestion);
+      for (final (name, _) in ranking) {
+        refNames.add(name);
+      }
+      if (refNames.isNotEmpty) {
+        _addBotMessage(
+          '🔎 相似症状参考方（非处方，仅供参考）\n\n'
+          '${refNames.take(3).join('、')}\n\n'
+          '以上仅依据症状关键词匹配，未经正式辨证，切勿自行用药；'
+          '请线下就诊由执业中医师四诊合参后处方。',
+        );
+      }
+
+      _addBotMessage('想重新辨证吗？');
+      setState(() {
+        _currentOptions = [
+          _ChatOption(label: '🔄 重新辨证', onTap: _resetDiagnosis),
+          _ChatOption(label: '📤 分享', onTap: () => _shareResult(result)),
+        ];
+        _showOptions = true;
+      });
+      return;
+    }
+
     final formula = FormulaRepository.getByName(result.formula);
     final explanation = formula?.explanation ?? result.explanation;
 
@@ -369,7 +490,29 @@ class _ChatScreenState extends State<ChatScreen> {
 
     resultText += '\n${result.patternDetail}\n\n💡 ${explanation}';
 
+    // P1-3: 推理链（简单/详细模式均显示）
+    final reasoning = result.matchedSymptoms.isNotEmpty
+        ? result.matchedSymptoms
+        : _engine.selectedSymptoms;
+    if (reasoning.isNotEmpty) {
+      resultText += '\n\n📌 判定依据\n'
+          '关键输入：${reasoning.join('、')}\n'
+          '→ 归入 ${result.displayMeridian}病 · ${result.pattern}';
+    }
+
     _addBotMessage(resultText, isResult: true, diagnosisResult: result);
+
+    // P1-4: 高危方红色强提示（简单/详细模式均显示）
+    final contraindicationText =
+        formula?.contraindication ?? result.prescription?.contraindication ?? '';
+    if (_isHighRiskContraindication(contraindicationText)) {
+      _addBotMessage(
+        '⚠️ 用药安全警示\n\n'
+        '本方禁忌：$contraindicationText\n\n'
+        '含高危人群/证型提示，使用前务必咨询执业中医师，切勿自行用药。',
+        isWarning: true,
+      );
+    }
 
     // 自动复制处方
     if (result.prescription != null && SettingsRepository.instance.autoCopyPrescription) {
@@ -522,6 +665,17 @@ class _ChatScreenState extends State<ChatScreen> {
     }
     } // end if (isDetailed)
 
+    // P1-1: 简单模式也展示其他可能方剂（详细模式已在鉴别诊断中涵盖）
+    if (!isDetailed && result.differential != null) {
+      final diff = result.differential!;
+      _addBotMessage(
+        '🔍 其他可能：${diff.name2}（${diff.formula2}）\n'
+        '与本案关键区别：${diff.keyDifference}',
+        isResult: true,
+        diagnosisResult: result,
+      );
+    }
+
     _addBotMessage('以上是辨证建议，仅供参考。如需详细查看方剂或药物信息，请点击下方按钮。\n\n'
         '🔄 想重新辨证吗？');
     setState(() {
@@ -538,6 +692,14 @@ class _ChatScreenState extends State<ChatScreen> {
           _ChatOption(
             label: '💊 查看${formula.name}详情',
             onTap: () => _openFormulaDetail(formula),
+          ),
+        if (!isDetailed && result.differential != null)
+          _ChatOption(
+            label: '🔍 查看${result.differential!.formula2}详情',
+            onTap: () {
+              final alt = FormulaRepository.getByName(result.differential!.formula2);
+              if (alt != null) _openFormulaDetail(alt);
+            },
           ),
         _ChatOption(
           label: '📤 分享辨证结果',
@@ -587,12 +749,15 @@ class _ChatScreenState extends State<ChatScreen> {
   // ==================== 消息管理 ====================
 
   void _addBotMessage(String text,
-      {bool isResult = false, DiagnosisResult? diagnosisResult}) {
+      {bool isResult = false,
+      bool isWarning = false,
+      DiagnosisResult? diagnosisResult}) {
     setState(() {
       _messages.add(_ChatBubble(
         text: text,
         isUser: false,
         isResult: isResult,
+        isWarning: isWarning,
         diagnosisResult: diagnosisResult,
         onBookmark: isResult && diagnosisResult != null
             ? () => _bookmarkResult(diagnosisResult)
@@ -641,7 +806,7 @@ class _ChatScreenState extends State<ChatScreen> {
       text += '合病：${result.meridian}与${result.combinedMeridian}同病\n';
     }
     text += '证型：${result.pattern}\n';
-    text += '方剂：${result.formula}\n';
+    if (result.formula.isNotEmpty) text += '方剂：${result.formula}\n';
     if (formula != null && formula.components.isNotEmpty) {
       text += '组成：${formula.componentsText}\n';
     }
@@ -671,175 +836,6 @@ class _ChatScreenState extends State<ChatScreen> {
     _addBotMessage('✅ 处方已复制到剪贴板，可粘贴发送给药房。');
   }
 
-  // ==================== 设置对话框 ====================
-
-  void _showSettingsDialog() {
-    final settings = SettingsRepository.instance;
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('设置'),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // === 外观设置 ===
-                const Text('外观', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                const SizedBox(height: 8),
-                const Text('暗黑模式', style: TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                SegmentedButton<ThemeMode>(
-                  segments: const [
-                    ButtonSegment(value: ThemeMode.system, label: Text('跟随系统')),
-                    ButtonSegment(value: ThemeMode.light, label: Text('浅色')),
-                    ButtonSegment(value: ThemeMode.dark, label: Text('深色')),
-                  ],
-                  selected: {settings.themeMode},
-                  onSelectionChanged: (s) => settings.setThemeMode(s.first),
-                ),
-                const SizedBox(height: 16),
-                const Text('字体大小', style: TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    const Text('小', style: TextStyle(fontSize: 12)),
-                    Expanded(
-                      child: Slider(
-                        value: settings.textScaleFactor,
-                        min: 0.8,
-                        max: 1.5,
-                        divisions: 14,
-                        label: '${(settings.textScaleFactor * 100).round()}%',
-                        onChanged: (v) => settings.setTextScaleFactor(v),
-                      ),
-                    ),
-                    const Text('大', style: TextStyle(fontSize: 18)),
-                  ],
-                ),
-
-                const Divider(height: 24),
-
-                // === 诊断设置 ===
-                const Text('诊断', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                const SizedBox(height: 8),
-                ListTile(
-                  leading: const Icon(Icons.person),
-                  title: const Text('默认性别'),
-                  subtitle: Text(settings.defaultGender.isEmpty
-                      ? '未设置（每次询问）'
-                      : settings.defaultGender == 'male' ? '男' : '女'),
-                  contentPadding: EdgeInsets.zero,
-                  trailing: SegmentedButton<String>(
-                    segments: const [
-                      ButtonSegment(value: '', label: Text('不设置')),
-                      ButtonSegment(value: 'male', label: Text('男')),
-                      ButtonSegment(value: 'female', label: Text('女')),
-                    ],
-                    selected: {settings.defaultGender},
-                    onSelectionChanged: (s) => settings.setDefaultGender(s.first),
-                  ),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.format_list_numbered),
-                  title: const Text('诊断详细度'),
-                  subtitle: Text(settings.diagnosticLevel == 'simple' ? '简单模式' : '详细模式'),
-                  contentPadding: EdgeInsets.zero,
-                  trailing: SegmentedButton<String>(
-                    segments: const [
-                      ButtonSegment(value: 'simple', label: Text('简单')),
-                      ButtonSegment(value: 'detailed', label: Text('详细')),
-                    ],
-                    selected: {settings.diagnosticLevel},
-                    onSelectionChanged: (s) => settings.setDiagnosticLevel(s.first),
-                  ),
-                ),
-                SwitchListTile(
-                  secondary: const Icon(Icons.copy),
-                  title: const Text('诊断后自动复制处方'),
-                  subtitle: const Text('诊断完成后自动将处方复制到剪贴板'),
-                  value: settings.autoCopyPrescription,
-                  onChanged: (v) => settings.setAutoCopyPrescription(v),
-                  contentPadding: EdgeInsets.zero,
-                ),
-
-                const Divider(height: 24),
-
-                // === 数据管理 ===
-                const Text('数据管理', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                const SizedBox(height: 8),
-                ListTile(
-                  leading: const Icon(Icons.history, color: Colors.orange),
-                  title: const Text('清除诊断历史'),
-                  subtitle: const Text('删除所有诊断记录'),
-                  contentPadding: EdgeInsets.zero,
-                  onTap: () {
-                    Navigator.pop(context);
-                    _confirmClearHistory();
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.bookmark, color: Colors.green),
-                  title: const Text('导出收藏'),
-                  subtitle: const Text('将收藏导出为文本'),
-                  contentPadding: EdgeInsets.zero,
-                  onTap: () {
-                    Navigator.pop(context);
-                    _exportBookmarks();
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.cleaning_services, color: Colors.blue),
-                  title: const Text('清理缓存'),
-                  subtitle: const Text('清理临时文件释放空间'),
-                  contentPadding: EdgeInsets.zero,
-                  onTap: () {
-                    Navigator.pop(context);
-                    _clearCache();
-                  },
-                ),
-
-                const Divider(height: 24),
-
-                // === 关于 ===
-                ListTile(
-                  leading: const Icon(Icons.info_outline),
-                  title: const Text('关于'),
-                  subtitle: const Text('版本信息与致谢'),
-                  contentPadding: EdgeInsets.zero,
-                  onTap: () {
-                    Navigator.pop(context);
-                    _showAboutPage();
-                  },
-                ),
-                const Divider(height: 24),
-
-                // === 更新 ===
-                ListTile(
-                  leading: const Icon(Icons.system_update),
-                  title: const Text('检测更新'),
-                  subtitle: const Text('检查是否有新版本'),
-                  contentPadding: EdgeInsets.zero,
-                  onTap: () {
-                    Navigator.pop(context);
-                    _checkForUpdate();
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('关闭'),
-          ),
-        ],
-      ),
-    );
-  }
 
   // ==================== 数据管理 ====================
 
@@ -895,227 +891,13 @@ class _ChatScreenState extends State<ChatScreen> {
     await Share.share(text);
   }
 
-  void _clearCache() async {
-    try {
-      final tempDir = await getTemporaryDirectory();
-      int totalSize = 0;
-      if (await tempDir.exists()) {
-        final files = tempDir.listSync(recursive: true);
-        for (final file in files) {
-          if (file is File) {
-            totalSize += await file.length();
-          }
-        }
-        // 删除临时目录中的文件
-        for (final file in files) {
-          try {
-            if (file is File) await file.delete();
-          } catch (_) {}
-        }
-      }
-      if (mounted) {
-        final sizeMB = (totalSize / 1024 / 1024).toStringAsFixed(1);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('已清理 ${sizeMB}MB 缓存')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('清理缓存失败：$e')),
-        );
-      }
-    }
-  }
 
-  void _showAboutPage() async {
-    final info = await PackageInfo.fromPlatform();
-    if (!mounted) return;
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('关于'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Column(
-                  children: [
-                    Icon(Icons.local_hospital, size: 64,
-                        color: Theme.of(context).colorScheme.primary),
-                    const SizedBox(height: 8),
-                    const Text('汉唐中医', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 4),
-                    Text('v${info.version}', style: TextStyle(color: Colors.grey[600])),
-                  ],
-                ),
-              ),
-                const SizedBox(height: 16),
-                const Divider(),
-                const SizedBox(height: 8),
-                const Text('六经辨证诊断助手', style: TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                Text('基于倪海厦老师《伤寒论》六经辨证体系，'
-                    '通过七步问诊提供中医辨证建议。', style: TextStyle(color: Colors.grey[600])),
-                const SizedBox(height: 16),
-                const Text('功能特色', style: TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                Text('• 六经辨证智能诊断\n'
-                    '• 舌诊脉诊参考\n'
-                    '• 经方方剂库\n'
-                    '• 医案收藏与分享\n'
-                    '• 辅助诊断公式验证'),
-                const SizedBox(height: 16),
-                const Text('致谢', style: TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                Text('倪海厦老师 · 经方医学传承\n'
-                    '仲景先师 · 伤寒论原典',
-                    style: TextStyle(color: Colors.grey[600])),
-                const SizedBox(height: 16),
-                const Divider(),
-                const SizedBox(height: 8),
-                Center(
-                  child: Text('© 2024-2026 汉唐中医',
-                      style: TextStyle(color: Colors.grey[500], fontSize: 12)),
-                ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('关闭'),
-          ),
-        ],
-      ),
-    );
-  }
 
   // ==================== 检测更新 ====================
 
-  void _checkForUpdate() async {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (c) => const AlertDialog(
-        content: Row(
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(width: 16),
-            Text('正在检查更新...'),
-          ],
-        ),
-      ),
-    );
 
-    final updateInfo = await UpdateService.checkForUpdate();
-    if (!mounted) return;
-    Navigator.pop(context);
 
-    if (updateInfo == null) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('已是最新版本')),
-      );
-      return;
-    }
 
-    _showUpdateDialog(updateInfo);
-  }
-
-  void _showUpdateDialog(UpdateInfo info) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('发现新版本 v${info.version}'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('更新说明：', style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              Text(info.body),
-              const SizedBox(height: 12),
-              Text(
-                '大小：${(info.apkSize / 1024 / 1024).toStringAsFixed(1)} MB',
-                style: TextStyle(color: Colors.grey[600]),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              await UpdateService.ignoreVersion(info.version);
-              if (context.mounted) Navigator.pop(context);
-            },
-            child: const Text('忽略此版本'),
-          ),
-          FilledButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _downloadAndInstall(info);
-            },
-            child: const Text('下载更新'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _downloadAndInstall(UpdateInfo info) async {
-    double progress = 0;
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (c) => StatefulBuilder(
-        builder: (context, setDialogState) {
-          UpdateService.downloadApk(info.apkDownloadUrl, (p) {
-            setDialogState(() => progress = p);
-          }).then((file) {
-            if (context.mounted) Navigator.pop(context);
-            if (file != null) {
-              _installApk(file);
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('下载失败，请稍后重试')),
-              );
-            }
-          });
-          return AlertDialog(
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('正在下载更新...'),
-                const SizedBox(height: 16),
-                LinearProgressIndicator(value: progress > 0 ? progress : null),
-                const SizedBox(height: 8),
-                Text('${(progress * 100).toStringAsFixed(0)}%'),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  void _installApk(dynamic file) async {
-    try {
-      await SystemChannels.platform.invokeMethod('SystemNavigator.open', {
-        'action': 'install',
-        'filePath': file.path,
-      });
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('安装失败：$e')),
-      );
-    }
-  }
 
   // ==================== 滚动 ====================
 
@@ -1129,6 +911,36 @@ class _ChatScreenState extends State<ChatScreen> {
         );
       }
     });
+  }
+
+  // ==================== P2-3 自由文本搜索 ====================
+
+  void _toggleSearch() {
+    setState(() {
+      _searchExpanded = !_searchExpanded;
+      if (!_searchExpanded) _clearSearch();
+    });
+  }
+
+  void _onSearchChanged(String query) {
+    final q = query.trim();
+    if (q.isEmpty) {
+      setState(() => _searchResults = []);
+      return;
+    }
+    final results = FormulaRepository.search(q);
+    setState(() => _searchResults = results.take(20).toList());
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    setState(() => _searchResults = []);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   // ==================== 构建UI ====================
@@ -1147,8 +959,17 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           IconButton(
             icon: const Icon(Icons.settings),
-            onPressed: _showSettingsDialog,
+            onPressed: () => showSettingsDialog(
+              context,
+              onClearHistory: _confirmClearHistory,
+              onExportBookmarks: _exportBookmarks,
+            ),
             tooltip: '设置',
+          ),
+          IconButton(
+            icon: Icon(_searchExpanded ? Icons.close : Icons.search),
+            onPressed: _toggleSearch,
+            tooltip: '搜索',
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -1159,6 +980,59 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       body: Column(
         children: [
+          if (_searchExpanded) ...[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: '搜索症状 / 方剂，如：往来寒热、小柴胡汤',
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: _searchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: _clearSearch,
+                        )
+                      : null,
+                  border: const OutlineInputBorder(),
+                  isDense: true,
+                ),
+                onChanged: _onSearchChanged,
+              ),
+            ),
+            if (_searchResults.isNotEmpty)
+              Container(
+                constraints: const BoxConstraints(maxHeight: 260),
+                margin: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  itemCount: _searchResults.length,
+                  itemBuilder: (context, index) {
+                    final f = _searchResults[index];
+                    return ListTile(
+                      title: Text(f.name),
+                      subtitle: Text(
+                        '${f.meridian} · ${f.indication}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      onTap: () {
+                        _openFormulaDetail(f);
+                        _clearSearch();
+                      },
+                    );
+                  },
+                ),
+              ),
+          ],
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
@@ -1223,6 +1097,7 @@ class _ChatBubble extends StatelessWidget {
   final String text;
   final bool isUser;
   final bool isResult;
+  final bool isWarning;
   final DiagnosisResult? diagnosisResult;
   final VoidCallback? onBookmark;
 
@@ -1230,6 +1105,7 @@ class _ChatBubble extends StatelessWidget {
     required this.text,
     required this.isUser,
     this.isResult = false,
+    this.isWarning = false,
     this.diagnosisResult,
     this.onBookmark,
   });
@@ -1262,14 +1138,22 @@ class _ChatBubble extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: isUser
-                    ? Theme.of(context).colorScheme.primaryContainer
-                    : isResult
-                        ? Theme.of(context)
-                            .colorScheme
-                            .secondaryContainer
-                            .withOpacity(0.5)
-                        : Theme.of(context).colorScheme.surfaceContainerHighest,
+                color: isWarning
+                    ? Theme.of(context).colorScheme.errorContainer
+                    : isUser
+                        ? Theme.of(context).colorScheme.primaryContainer
+                        : isResult
+                            ? Theme.of(context)
+                                .colorScheme
+                                .secondaryContainer
+                                .withOpacity(0.5)
+                            : Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHighest,
+                border: isWarning
+                    ? Border.all(
+                        color: Theme.of(context).colorScheme.error, width: 1.2)
+                    : null,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
@@ -1277,9 +1161,11 @@ class _ChatBubble extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 15,
                   height: 1.5,
-                  color: isUser
-                      ? Theme.of(context).colorScheme.onPrimaryContainer
-                      : Theme.of(context).colorScheme.onSurface,
+                  color: isWarning
+                      ? Theme.of(context).colorScheme.onErrorContainer
+                      : isUser
+                          ? Theme.of(context).colorScheme.onPrimaryContainer
+                          : Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ),
