@@ -339,9 +339,11 @@ class DiagnosticEngine {
     }
     if (questionKey == 'sweating') {
       _answers['no_sweat'] = answer.contains('不容易出汗');
-      // "不容易出汗" contains "出汗" but means NO sweat — check no_sweat first
+      // FIX-P1-3: 原 contains('出汗') 匹配不到 '大汗出'/'汗出不止'（'汗出' 与 '出汗' 语序相反），
+      // 导致选"大汗出"的 has_sweat 恒 false → 白虎汤/桂枝汤等汗出判断方不可达。
+      // 改匹配 '汗'（no_sweat 已先行排除 '不容易出汗'；'没有此症状' 走 L281 早退，不会误判）。
       _answers['has_sweat'] = _answers['no_sweat'] != true &&
-          (answer.contains('出汗') || answer.contains('盗汗') || answer.contains('自汗'));
+          answer.contains('汗');
       _answers['night_sweat'] = answer.contains('盗汗');
       _answers['head_sweat'] = answer.contains('头汗');
       _answers['hand_foot_sweat'] = answer.contains('手足汗');

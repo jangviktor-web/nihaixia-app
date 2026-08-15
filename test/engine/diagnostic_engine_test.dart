@@ -33,10 +33,11 @@ void main() {
       expect(options, isNotEmpty);
     });
 
-    test('getTemperatureQuestions应返回6个寒热选项', () {
+    test('getTemperatureQuestions应返回7个寒热选项', () {
       final engine = DiagnosticEngine();
       final options = engine.getTemperatureQuestions();
-      expect(options.length, 6);
+      // 工作树规则已扩充至 7 项（含 no_fever_no_chill 寒热不显项）
+      expect(options.length, 7);
     });
 
     test('getTenQuestions应返回11个问题（含性别）', () {
@@ -183,6 +184,8 @@ void main() {
       );
 
       _completeTenQuestions(engine, answers: {
+        'sweating': '正常出汗',
+        'temperature': '全身怕冷',
         'thirst': '口苦口干',
       });
 

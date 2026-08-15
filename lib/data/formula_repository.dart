@@ -41,6 +41,7 @@ class FormulaRepository {
     final q = query.toLowerCase();
     return _formulas!.where((f) {
       return f.name.toLowerCase().contains(q) ||
+          f.alias.toLowerCase().contains(q) ||
           f.indication.toLowerCase().contains(q) ||
           f.keywords.any((k) => k.toLowerCase().contains(q)) ||
           f.components.any((c) => c.name.toLowerCase().contains(q));
@@ -73,9 +74,20 @@ class FormulaRepository {
       if (f.name == engineName) return f;
     }
 
-    // 2. 别名匹配
+    // 2. 别名匹配（别名以逗号分隔，逐一比对）
     for (final f in _formulas!) {
-      if (f.alias.isNotEmpty && engineName.contains(f.alias)) return f;
+      if (f.alias.isEmpty) continue;
+      final aliases = f.alias
+          .split(',')
+          .map((a) => a.trim())
+          .where((a) => a.isNotEmpty);
+      for (final a in aliases) {
+        if (engineName == a ||
+            engineName.contains(a) ||
+            a.contains(engineName)) {
+          return f;
+        }
+      }
     }
 
     // 3. 斜杠分割（取第一个匹配）
@@ -114,12 +126,12 @@ class FormulaRepository {
             ))
         .toList();
 
-    // formulas.json 的 dosage 字段实际存储的是煎服法（preparation）
-    // preparation 字段在 JSON 中为空，所以用 dosage 作为煎服法
+    // formulas.json 的 dosage 字段实际存储煎服法，每味药用量已在 components[].dosage
+    // FIX: dosage 字段此前未填充（模型默认空串），导致 UI/测试处方剂量为空。
     return FormulaPrescription(
       formulaName: formula.name,
       components: components,
-      dosage: formula.dosage,  // 组成+剂量（由 components 提供）
+      dosage: formula.dosage,
       preparation: formula.dosage.isNotEmpty ? formula.dosage : formula.preparation,
       contraindication: formula.contraindication,
       modifications: modifications,
