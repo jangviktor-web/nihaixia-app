@@ -145,6 +145,12 @@ class DiagnosticEngine {
   void answerTemperaturePattern(String patternKey) {
     _meridianDirection = DiagnosticRules.temperatureToMeridian[patternKey];
     _answers['temperature'] = patternKey;
+    // FIX-P0-1: fever 标志此前从未被赋值，导致依赖 fever 的方剂
+    // （麻黄附子细辛汤/葛根黄芩黄连汤/麻杏薏甘汤/厚朴七物汤/栀子枳实汤）全部不可达。
+    // 按寒热辨经模式直接推导（'chills_no_fever' 虽含子串 'fever' 但语义为无热，须精确匹配）。
+    _answers['fever'] = patternKey == 'fever_chills' ||
+        patternKey == 'fever_no_cold' ||
+        patternKey == 'fever_thirst_no_cold';
     _stage = DiagnosticStage.tonguePulse;
   }
 
@@ -705,21 +711,53 @@ class DiagnosticEngine {
   // ==================== 症状权重计算 ====================
 
   double _calculateConfidence(String meridian) {
-    double weight = 0.0;
     int count = 0;
-
     for (final entry in _answers.entries) {
-      if (DiagnosticRules.symptomWeights.containsKey(entry.key)) {
-        final symptomWeight = DiagnosticRules.symptomWeights[entry.key]!;
-        if (entry.value == true) {
-          weight += symptomWeight;
-          count++;
+      if (DiagnosticRules.symptomWeights.containsKey(entry.key) &&
+          entry.value == true) {
+        count++;
+      }
+    }
+    if (count == 0) return 0.4;
+    // P1-2: 真置信度——基于命中关键症状数，保留区分度（不再堆在 0.7~0.95）
+    return (0.5 + 0.09 * count).clamp(0.5, 0.97);
+  }
+
+  // ==================== P2: 相似度兜底 + 数据表提示 ====================
+
+  /// P2-2: 按用户关键症状与方剂 keywords/indication 重叠度打分，返回 Top-K
+  List<(String, int)> getSimilarityRanking({int topK = 5}) {
+    final formulas = FormulaRepository.getAll();
+    final queryTerms = _selectedSymptoms
+        .where((s) => s.isNotEmpty && s != '没有此症状')
+        .toList();
+    if (queryTerms.isEmpty) return <(String, int)>[];
+
+    final scored = <(String, int)>[];
+    for (final f in formulas) {
+      int score = 0;
+      final haystack = <String>[...f.keywords, f.indication, f.name, f.alias];
+      for (final term in queryTerms) {
+        for (final k in haystack) {
+          if (k.contains(term) || term.contains(k)) score++;
+        }
+      }
+      if (score > 0) scored.add((f.name, score));
+    }
+    scored.sort((a, b) => b.$2.compareTo(a.$2));
+    return scored.take(topK).toList();
+  }
+
+  /// P2-1: 数据表直接提示（症状短语 → 方剂）
+  String? suggestByTable() {
+    for (final s in _selectedSymptoms) {
+      for (final entry in DiagnosticRules.symptomFormulaHints.entries) {
+        if (s.contains(entry.key) || entry.key.contains(s)) {
+          return entry.value;
         }
       }
     }
-
-    if (count == 0) return 0.8;
-    return (weight / count).clamp(0.7, 0.95);
+    return null;
   }
 
   // ==================== 鉴别诊断匹配 ====================
@@ -1170,6 +1208,24 @@ class DiagnosticEngine {
     final pulseCombo = _detectPulseCombination();
     // P1-7: 传经判断
     final transmission = _detectTransmission();
+
+    // P0-2: 证据不足 → 建议面诊，避免静默退化为峻烈方
+    final matchedSymptomCount = _answers.entries
+        .where((e) =>
+            e.value == true && DiagnosticRules.symptomWeights.containsKey(e.key))
+        .length;
+    if (matchedSymptomCount < 2) {
+      return DiagnosisResult(
+        meridian: meridian,
+        pattern: '辨证依据不足',
+        formula: '',
+        explanation: '当前提供的信息较少，难以确定方证。为避免误治，建议线下就诊，'
+            '由执业中医师四诊合参后辨证处方。',
+        confidence: finalConfidence,
+        recommendConsult: true,
+        answers: Map.from(_answers),
+      );
+    }
 
     return DiagnosisResult(
       meridian: result.meridian,
