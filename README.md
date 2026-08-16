@@ -61,12 +61,15 @@
 
 ## 📱 下载安装
 
-```bash
+
 # 方式一：直接下载 APK
-# 前往 Releases 页面下载最新版
-https://github.com/jangviktor-web/nihaixia-app/releases/latest
+## V1.10.1 版本
+下载地址:https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.10.1/V1.10.1.apk
+
 
 # 方式二：从源码构建
+
+```bash
 git clone https://github.com/jangviktor-web/nihaixia-app.git
 cd nihaixia-app
 flutter pub get
