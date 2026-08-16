@@ -164,14 +164,14 @@ class DiagnosticRules {
       condition: 'sun_symptoms + shao_yang_symptoms',
       formula: '柴胡桂枝汤',
       description: '太阳少阳合病，发热微恶寒，支节烦痛，微呕',
-      source: '伤寒论第109条',
+      source: '伤寒论第146条',
     ),
     CombinedPattern(
       meridians: ['少阳', '阳明'],
       condition: 'shao_yang_symptoms + yangming_symptoms',
       formula: '大柴胡汤',
       description: '少阳阳明合病，呕不止，心下急',
-      source: '伤寒论第116条',
+      source: '伤寒论第103条/第165条',
     ),
     CombinedPattern(
       meridians: ['太阳', '阳明', '少阳'],
@@ -193,14 +193,14 @@ class DiagnosticRules {
       condition: 'sun+yangming_vomit',
       formula: '葛根加半夏汤',
       description: '太阳阳明合病，不下利但呕者',
-      source: '伤寒论第37条',
+      source: '伤寒论第33条',
     ),
     CombinedPattern(
       meridians: ['太阳', '阳明'],
       condition: 'sun+yangming_chest_full',
       formula: '麻黄汤',
       description: '太阳阳明合病，喘而胸满',
-      source: '伤寒论第40条',
+      source: '伤寒论第36条',
     ),
     CombinedPattern(
       meridians: ['太阳', '少阳'],
@@ -824,8 +824,8 @@ class DiagnosticRules {
   static const List<String> pulseOptions = [
     '浮', '沉', '迟', '数', '滑', '涩', '弦', '紧', '缓', '弱',
     '微', '细', '洪', '实', '虚',
-    // P2-E: 金匮/伤寒补充脉象（促=热利葛根芩连/大承气；结代=炙甘草汤；芤=失血；革=失精；微弱=桂枝二越婢一）
-    '促', '结', '代', '芤', '革', '微弱',
+    // P2-E: 金匮/伤寒补充脉象（促=热利葛根芩连/大承气；结代=炙甘草汤；芤=失血；革=失精；微弱=桂枝二越婢一；沉紧=寒疝大乌头煎）
+    '促', '结', '代', '芤', '革', '微弱', '沉紧',
   ];
 
   // ==================== 调护建议 ====================
@@ -1075,17 +1075,17 @@ class DiagnosticRules {
       FollowUpQuestion(
         key: 'body_pain',
         question: '【辨身痛类型】全身骨节酸痛吗？',
-        options: ['全身酸痛（伤寒）', '只有头痛', '只有腰痛', '不痛', '身体疼烦不能转侧（→桂枝附子汤）', '身痒（→桂麻各半汤）'],
+        options: ['全身酸痛（伤寒）', '只有头痛', '只有腰痛', '不痛', '身体疼烦不能转侧（→白术附子汤）', '身痒（→桂枝麻黄各半汤）'],
       ),
       FollowUpQuestion(
         key: 'breathing',
         question: '【辨喘证】有没有咳嗽气喘？',
-        options: ['没有', '咳嗽（→桂枝加厚朴杏仁汤）', '气喘（→桂枝加厚朴杏仁汤）', '咳而上气+烦躁（→小青龙加石膏汤）', '咳嗽有白痰（→小青龙汤）', '咳嗽有黄痰（→麻杏石甘汤）'],
+        options: ['没有', '咳嗽（→桂枝加厚朴杏仁汤）', '气喘（→桂枝加厚朴杏仁汤）', '咳而上气+烦躁（→小青龙加石膏汤）', '咳嗽有白痰（→小青龙汤）', '咳嗽有黄痰（→麻杏甘石汤）'],
       ),
       FollowUpQuestion(
         key: 'chest',
         question: '【辨心下证】胸口或心下有没有不舒服？',
-        options: ['没有', '心下满微痛（→桂去桂加苓术汤）', '心下悸（→茯苓甘草汤）', '气上冲胸（→苓桂术甘汤）'],
+        options: ['没有', '心下满微痛（→桂枝去桂加茯苓白术汤）', '心下悸（→半夏麻黄丸）', '气上冲胸（→苓桂术甘汤）'],
       ),
       FollowUpQuestion(
         key: 'treatment_history',
@@ -1107,7 +1107,7 @@ class DiagnosticRules {
       FollowUpQuestion(
         key: 'sweat',
         question: '【辨汗出类型】出汗多吗？',
-        options: ['大汗出（→白虎汤）', '正常', '手足汗出（→承气汤）', '但头汗出+身无汗（→茵陈蒿汤）'],
+        options: ['大汗出（→白虎汤）', '正常', '手足汗出（→大承气汤）', '但头汗出+身无汗（→茵陈蒿汤）'],
       ),
       FollowUpQuestion(
         key: 'abdomen',
@@ -1117,12 +1117,12 @@ class DiagnosticRules {
       FollowUpQuestion(
         key: 'speech',
         question: '【辨谵语】有没有说胡话（谵语）？',
-        options: ['没有', '有说胡话（→承气汤）', '烦躁不安', '心中懊憹（→栀子豉汤）'],
+        options: ['没有', '有说胡话（→大承气汤）', '烦躁不安', '心中懊憹（→栀子豉汤）', '少气（→栀子甘草豉汤）'],
       ),
       FollowUpQuestion(
         key: 'tidal_fever',
         question: '【辨潮热】有没有下午发冷发热（潮热）？',
-        options: ['没有', '下午3-5点发热（潮热→大承气汤）', '全身持续发热', '手足汗出', '身黄发热（→栀子蘖皮汤）'],
+        options: ['没有', '下午3-5点发热（潮热→大承气汤）', '全身持续发热', '手足汗出', '身黄发热（→栀子柏皮汤）'],
       ),
     ],
     '少阳': [
@@ -1181,7 +1181,7 @@ class DiagnosticRules {
       FollowUpQuestion(
         key: 'extremities',
         question: '【辨寒热】手脚温度怎样？',
-        options: ['手脚冷（太阴虚寒）', '手脚温', '四肢烦疼（→桂枝附子汤）', '腹胀满+四肢倦怠（→厚朴姜夏甘参汤）'],
+        options: ['手脚冷（太阴虚寒）', '手脚温', '四肢烦疼（→桂枝附子汤）', '腹胀满+四肢倦怠（→厚朴生姜半夏甘草人参汤）'],
       ),
       FollowUpQuestion(
         key: 'vomiting',
@@ -1265,7 +1265,7 @@ class DiagnosticRules {
       FollowUpQuestion(
         key: 'stool',
         question: '【辨下利】大便怎样？',
-        options: ['没有', '腹泻', '腹痛', '热利下重+便脓血（→白头翁汤）', '下利不止（→乌梅丸）', '食入口即吐（→干姜黄连黄芩人参汤）'],
+        options: ['没有', '腹泻', '腹痛', '热利下重+便脓血（→白头翁汤）', '下利不止（→乌梅丸）', '食入口即吐（→干姜黄芩黄连人参汤）'],
       ),
       FollowUpQuestion(
         key: 'sputum',

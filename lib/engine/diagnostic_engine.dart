@@ -1414,7 +1414,8 @@ class DiagnosticEngine {
     final hasInsomniaOrDreams = answers['insomnia'] == true ||
         _symSelected('多梦') ||
         _symSelected('失精');
-    if (hasSweat == true && hasDizziness && (hasHairLoss || hasInsomniaOrDreams)) {
+    if ((hasSweat == true && hasDizziness && (hasHairLoss || hasInsomniaOrDreams)) ||
+        (_symSelected('目眩') && _symSelected('失精'))) {
       return DiagnosisResult(
         meridian: '太阳',
         pattern: '虚劳失精（桂枝加龙骨牡蛎汤证）',
@@ -2546,10 +2547,10 @@ class DiagnosticEngine {
       );
     }
 
-    // 甘草泻心汤：痞利俱甚（心下痞+下利不止+干呕心烦）
+    // 甘草泻心汤：痞利俱甚（心下痞+下利不止+干呕心烦）；倪师：狐惑病主方=甘草泻心汤
     final hasSevereDiarrhea = _symSelected('下利不止') ||
         _symSelected('日数十行');
-    if (hasEpigastric && hasSevereDiarrhea) {
+    if ((hasEpigastric && hasSevereDiarrhea) || _symSelected('狐惑')) {
       return DiagnosisResult(
         meridian: '少阳',
         pattern: '痞利俱甚（甘草泻心汤证）',
@@ -2702,6 +2703,19 @@ class DiagnosticEngine {
         formula: '大黄附子汤',
         explanation: '大黄泻下，附子细辛温里散寒。寒积腹痛专方，温下并用。',
         confidence: 0.85,
+        matchedSymptoms: _selectedSymptoms,
+      );
+    }
+
+    // 红蓝花酒：妇人腹中血气刺痛（金匮·妇人杂病）
+    if (_symSelected('腹中血气刺痛') || _symSelected('血气刺痛')) {
+      return DiagnosisResult(
+        meridian: '厥阴',
+        pattern: '妇人血气刺痛（红蓝花酒证）',
+        patternDetail: '妇人六十二种风，及腹中血气刺痛。',
+        formula: '红蓝花酒',
+        explanation: '红蓝花（红花）一味酒煎。活血行瘀，治妇人腹中血气刺痛。',
+        confidence: 0.82,
         matchedSymptoms: _selectedSymptoms,
       );
     }
@@ -2955,7 +2969,8 @@ class DiagnosticEngine {
     }
 
     // 茯苓甘草汤：厥而心下悸
-    if (answers['cold_limbs'] == true && _symSelected('心下悸')) {
+    if ((answers['cold_limbs'] == true || _symSelected('厥而心下悸')) &&
+        _symSelected('心下悸')) {
       return DiagnosisResult(
         meridian: '太阳',
         pattern: '水饮厥逆（茯苓甘草汤证）',
@@ -3027,8 +3042,7 @@ class DiagnosticEngine {
     // 本系列（栀子甘草豉=懊憹无虚烦、栀子生姜豉=懊憹兼呕）仅在无虚烦时兜底。
     if ((_symSelected('心中懊憹') || _symSelected('反复颠倒')) &&
         !_symSelected('酒黄疸') &&
-        !_symSelected('身黄') &&
-        !_symSelected('虚烦')) {
+        !_symSelected('身黄')) {
       if (answers['vomiting'] == true) {
         return DiagnosisResult(
           meridian: '阳明',
@@ -3040,12 +3054,28 @@ class DiagnosticEngine {
           matchedSymptoms: _selectedSymptoms,
         );
       }
+      if (_symSelected('少气') || _symSelected('虚羸少气')) {
+        return DiagnosisResult(
+          meridian: '阳明',
+          pattern: '虚烦兼少气（栀子甘草豉汤证）',
+          patternDetail: '虚烦不得眠，心中懊憹，兼少气。',
+          formula: '栀子甘草豉汤',
+          explanation: '栀子清热除烦，甘草益气，香豉宣郁。虚烦兼少气。',
+          confidence: 0.8,
+          matchedSymptoms: _selectedSymptoms,
+        );
+      }
+      // 裸心中懊憹：留基础方栀子豉汤（下方 4855 兜底）
+    }
+
+    // 猪胆汁方/蜜煎导：津亏内竭，大便硬不可攻（伤寒导法）
+    if (_symSelected('津亏') || _symSelected('自欲大便')) {
       return DiagnosisResult(
         meridian: '阳明',
-        pattern: '虚烦懊憹（栀子甘草豉汤证）',
-        patternDetail: '虚烦不得眠，心中懊憹，兼少气。',
-        formula: '栀子甘草豉汤',
-        explanation: '栀子清热除烦，甘草益气，香豉宣郁。虚烦兼少气。',
+        pattern: '津亏便秘（猪胆汁方/蜜煎导证）',
+        patternDetail: '津液内竭，虽硬不可攻之，当须自欲大便，宜蜜煎导、猪胆汁皆可为导。',
+        formula: '猪胆汁方',
+        explanation: '蜜煎导/大猪胆汁灌肠润燥。津伤肠燥、不可妄攻之导法。',
         confidence: 0.8,
         matchedSymptoms: _selectedSymptoms,
       );
@@ -3128,6 +3158,19 @@ class DiagnosticEngine {
         patternDetail: '中风卒然不知人，手足拘急，或半身不遂，口眼歪斜。',
         formula: '小续命汤',
         explanation: '麻黄桂枝解表，防风祛风，人参附子补虚。中风通治方。',
+        confidence: 0.8,
+        matchedSymptoms: _selectedSymptoms,
+      );
+    }
+
+    // 矾石汤：脚气冲心（金匮·中风历节）
+    if (_symSelected('脚气冲心')) {
+      return DiagnosisResult(
+        meridian: '太阴',
+        pattern: '脚气冲心（矾石汤证）',
+        patternDetail: '脚气冲心，矾石汤主之。',
+        formula: '矾石汤',
+        explanation: '矾石一味水煎渍脚。收涩下注之湿，治脚气冲心。',
         confidence: 0.8,
         matchedSymptoms: _selectedSymptoms,
       );
@@ -3338,6 +3381,20 @@ class DiagnosticEngine {
     // 厚朴三物汤已在阳明中加，跳过
 
     // 大黄附子汤已在少阴中加，跳过
+
+    // 大乌头煎：寒疝绕脐痛，手足厥冷，白汗出（金匮·腹满寒疝）
+    if (_symSelected('绕脐痛') &&
+        (_symSelected('手足厥冷') || _symSelected('白汗出'))) {
+      return DiagnosisResult(
+        meridian: '厥阴',
+        pattern: '寒疝绕脐（大乌头煎证）',
+        patternDetail: '寒疝绕脐痛，若发则白汗出，手足厥冷，其脉沉紧。',
+        formula: '大乌头煎',
+        explanation: '乌头大者熬去皮，水煎去滓纳蜜。散寒止痛，治寒疝绕脐剧痛。',
+        confidence: 0.85,
+        matchedSymptoms: _selectedSymptoms,
+      );
+    }
 
     // 当归生姜羊肉汤：寒疝腹中痛胁痛里急
     if (_symSelected('寒疝') && _symSelected('胁痛里急')) {
@@ -3632,7 +3689,8 @@ class DiagnosticEngine {
     // FIX-P1-2: 半夏麻黄丸（心下悸）条件过宽，遮蔽六经桂枝甘草汤（心悸+有汗+脉虚）。
     // 加 has_sweat!=true 排除：有汗心悸归桂枝甘草汤，无汗水饮心悸归半夏麻黄丸。
     if (_symSelected('心下悸') && !_symSelected('水气') &&
-        answers['has_sweat'] != true) {
+        answers['has_sweat'] != true &&
+        !_symSelected('厥而心下悸')) {
       return DiagnosisResult(
         meridian: '太阳',
         pattern: '心悸水饮（半夏麻黄丸证）',
@@ -3683,8 +3741,8 @@ class DiagnosticEngine {
       );
     }
 
-    // 赤小豆当归散：目赤如鸠眼（狐惑病）
-    if (_symSelected('目赤如鸠眼') || _symSelected('狐惑')) {
+    // 赤小豆当归散：目赤如鸠眼（狐惑病）。FIX: 排除「蚀于肛」，避免遮蔽雄黄熏方
+    if (_symSelected('目赤如鸠眼') && !_symSelected('蚀于肛')) {
       return DiagnosisResult(
         meridian: '厥阴',
         pattern: '狐惑病（赤豆当归散证）',
@@ -3750,14 +3808,14 @@ class DiagnosticEngine {
       );
     }
 
-    // 桃红四物汤：血虚兼血瘀
+    // 血虚兼血瘀：桂枝茯苓丸（仲景活血化瘀主方，代后世桃红四物汤）
     if (_symSelected('血虚兼血瘀') || _symSelected('面色萎黄')) {
       return DiagnosisResult(
         meridian: '厥阴',
-        pattern: '血虚血瘀（桃红四物汤证）',
-        patternDetail: '血虚兼血瘀证，面色萎黄，胸胁刺痛。',
-        formula: '桃红四物汤',
-        explanation: '四物汤养血，桃仁红花活血。血虚血瘀通用方。',
+        pattern: '血虚血瘀（桂枝茯苓丸证）',
+        patternDetail: '血虚兼血瘀，面色萎黄，胸胁刺痛。瘀血内阻。',
+        formula: '桂枝茯苓丸',
+        explanation: '桂枝芍药桃仁丹皮茯苓。活血化瘀、养血利水，仲景活血化瘀主方。',
         confidence: 0.8,
         matchedSymptoms: _selectedSymptoms,
       );
@@ -3875,6 +3933,33 @@ class DiagnosticEngine {
 
     // ========== 金匮要略·百合病 ==========
 
+    // 百合洗方：百合病一月不解变成渴（金匮·百合狐惑）
+    if ((_symSelected('百合病') || _symSelected('意欲食复不能食')) &&
+        (_symSelected('渴不差') || _symSelected('变成渴') || _symSelected('一月不解'))) {
+      return DiagnosisResult(
+        meridian: '少阴',
+        pattern: '百合病渴（百合洗方证）',
+        patternDetail: '百合病一月不解变成渴者，百合洗方主之。',
+        formula: '百合洗方',
+        explanation: '百合渍水一宿，洗身。外洗清热，治百合病渴不差。',
+        confidence: 0.8,
+        matchedSymptoms: _selectedSymptoms,
+      );
+    }
+
+    // 雄黄熏方：狐惑蚀于肛（金匮·百合狐惑）
+    if (_symSelected('蚀于肛')) {
+      return DiagnosisResult(
+        meridian: '厥阴',
+        pattern: '狐惑蚀肛（雄黄熏方证）',
+        patternDetail: '蚀于肛者，雄黄熏之。',
+        formula: '雄黄熏方',
+        explanation: '雄黄烧烟熏肛。燥湿杀虫，治狐惑蚀于肛。',
+        confidence: 0.78,
+        matchedSymptoms: _selectedSymptoms,
+      );
+    }
+
     // 百合地黄汤：百合病不经吐下发汗病形如初
     // FIX-P1-2: 百合地黄（基础方）条件过宽，把百合知母（发汗后）/滑石代赭（下之后）/
     // 滑石散（发热）/栝蒌牡蛎（渴）/鸡子黄（吐之后）全部遮蔽。加变证排除词。
@@ -3883,7 +3968,7 @@ class DiagnosticEngine {
         !_symSelected('下之后') &&
         !_symSelected('吐之后') &&
         !_symSelected('发热') &&
-        answers['thirsty'] != true) {
+        answers['thirsty'] != true && !_symSelected('渴')) {
       return DiagnosisResult(
         meridian: '太阴',
         pattern: '百合病（百合地黄汤证）',
@@ -3934,8 +4019,8 @@ class DiagnosticEngine {
       );
     }
 
-    // 栝蒌牡蛎散：百合病变渴
-    if (_symSelected('百合病') && answers['thirsty'] == true) {
+    // 栝蒌牡蛎散：百合病变渴（渴欲饮水·渴不差）
+    if (_symSelected('百合病') && (answers['thirsty'] == true || _symSelected('渴'))) {
       return DiagnosisResult(
         meridian: '太阴',
         pattern: '百合病渴（栝蒌牡蛎散证）',
@@ -3961,6 +4046,19 @@ class DiagnosticEngine {
     }
 
     // ========== 金匮要略·疮痈/肠痈 ==========
+
+    // 黄连粉：浸淫疮（金匮·疮痈肠痈）
+    if (_symSelected('浸淫疮')) {
+      return DiagnosisResult(
+        meridian: '阳明',
+        pattern: '浸淫疮（黄连粉证）',
+        patternDetail: '浸淫疮，黄连粉主之。',
+        formula: '黄连粉',
+        explanation: '黄连一味为粉敷之。清热燥湿，治浸淫疮遍身。',
+        confidence: 0.8,
+        matchedSymptoms: _selectedSymptoms,
+      );
+    }
 
     // 大黄牡丹汤：肠痈
     // FIX-P1-2: 大黄牡丹（肠痈基础方）条件过宽，遮蔽薏苡附子败酱散（肠痈+脓已成）。加排除。
@@ -4047,7 +4145,7 @@ class DiagnosticEngine {
     // 大半夏汤：胃反朝食暮吐
     // FIX-P1-2: 大半夏（胃反兜底）条件过宽，遮蔽茯苓泽泻汤（胃反+渴）。加排除。
     if ((_symSelected('胃反') || _symSelected('朝食暮吐')) &&
-        answers['thirsty'] != true) {
+        answers['thirsty'] != true && !_symSelected('渴')) {
       return DiagnosisResult(
         meridian: '太阴',
         pattern: '胃反（大半夏汤证）',
@@ -4115,8 +4213,8 @@ class DiagnosticEngine {
       );
     }
 
-    // 茯苓泽泻汤：胃反吐而渴欲饮水
-    if (_symSelected('胃反') && answers['thirsty'] == true) {
+    // 茯苓泽泻汤：胃反吐下渴欲饮水（渴+胃反）
+    if (_symSelected('胃反') && (answers['thirsty'] == true || _symSelected('渴'))) {
       return DiagnosisResult(
         meridian: '太阴',
         pattern: '水饮胃反（茯苓泽泻汤证）',
@@ -4250,9 +4348,9 @@ class DiagnosticEngine {
       );
     }
 
-    // 蜀漆散：牝疟多寒（FIX-P3: 排除 但头汗出——牡蛎汤（牝疟+但头汗出）专属）
+    // 蜀漆散：牝疟多寒（主方）。外台牡蛎汤为补充方，经 UI 选项 '（→牡蛎汤）' 单独触发，故此处排除之
     if ((_symSelected('牝疟') || _symSelected('疟多寒')) &&
-        !_symSelected('但头汗出')) {
+        !_symSelected('牡蛎汤')) {
       return DiagnosisResult(
         meridian: '少阳',
         pattern: '牝疟（蜀漆散证）',
@@ -4581,7 +4679,8 @@ class DiagnosticEngine {
     // FIX-P1-2: 天雄散（失精||腰膝冷痛）条件过宽，遮蔽六经桂枝加龙骨牡蛎汤
     // （虚劳失精+目眩+有汗）。加 has_sweat!=true：有汗虚劳失精归桂枝加龙骨牡蛎汤。
     if ((_symSelected('失精') || _symSelected('腰膝冷痛')) &&
-        answers['has_sweat'] != true) {
+        answers['has_sweat'] != true &&
+        !_symSelected('目眩')) {
       return DiagnosisResult(
         meridian: '少阴',
         pattern: '失精（天雄散证）',
@@ -4759,8 +4858,8 @@ class DiagnosticEngine {
       );
     }
 
-    // 栀子豉汤：虚烦不得眠心中懊憹（条文84）
-    if (_symSelected('虚烦') && _symSelected('心中懊憹')) {
+    // 栀子豉汤：虚烦不得眠心中懊憹（条文84）—基础方，裸心中懊憹/反复颠倒即命中
+    if (_symSelected('心中懊憹') || _symSelected('反复颠倒')) {
       return DiagnosisResult(
         meridian: '太阳',
         pattern: '余热虚烦（栀子豉汤证）',
@@ -4993,14 +5092,14 @@ class DiagnosticEngine {
       );
     }
 
-    // 杏子汤：身肿喘（水气篇，麻杏甘石变方）
+    // 杏子汤：身肿喘（水气篇，原方方阙失传，倪师拟=麻黄杏仁甘草汤，无石膏）
     if (_symSelected('身肿') && _symSelected('喘')) {
       return DiagnosisResult(
         meridian: '太阳',
-        pattern: '风水身肿喘（杏子汤证）',
-        patternDetail: '水气病，身肿而喘，杏子汤主之（通行本即麻杏甘石汤）。',
+        pattern: '风水身肿喘（杏子汤证·方阙）',
+        patternDetail: '水气病，身肿而喘，杏子汤主之（原方失传，倪师拟=麻黄杏仁甘草汤，无石膏）。',
         formula: '杏子汤',
-        explanation: '麻黄杏仁甘草石膏。风水犯肺，身肿兼喘。',
+        explanation: '麻黄杏仁甘草。表水身肿兼喘；杏子汤方阙，倪师以麻黄杏仁甘草汤代之（非麻杏甘石汤）。',
         confidence: 0.78,
         matchedSymptoms: _selectedSymptoms,
       );
@@ -5058,14 +5157,14 @@ class DiagnosticEngine {
       );
     }
 
-    // 牡蛎汤：牝疟但头汗出
-    if (_symSelected('牝疟') && _symSelected('但头汗出')) {
+    // 牡蛎汤：牝疟（外台补充方，倪师《金匮》附方，治牝疟）。由 UI '（→牡蛎汤）' 选项触发
+    if (_symSelected('牡蛎汤')) {
       return DiagnosisResult(
         meridian: '少阳',
         pattern: '牝疟（牡蛎汤证）',
-        patternDetail: '治牝疟（寒多者），牡蛎汤主之。',
+        patternDetail: '治牝疟（寒多者），牡蛎汤主之（外台秘要补充方）。',
         formula: '牡蛎汤',
-        explanation: '牡蛎麻黄甘草蜀漆。疟多寒，但头汗出，牡蛎降浮阳。',
+        explanation: '牡蛎麻黄甘草蜀漆。疟多寒，寒痰阻遏，牡蛎咸以软坚、降浮阳。',
         confidence: 0.75,
         matchedSymptoms: _selectedSymptoms,
       );

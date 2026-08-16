@@ -210,7 +210,8 @@ class _AcupunctureScreenState extends State<AcupunctureScreen>
               children: entry.acupoints.map((a) {
                 return GestureDetector(
                   onTap: () {
-                    final detail = AcupointRepository.findByName(a.name);
+                    final detail = AcupointRepository.findByName(
+                        AcupointRepository.canonicalOf(a.name));
                     if (detail != null) {
                       Navigator.push(
                         context,
@@ -327,7 +328,8 @@ class _AcupunctureScreenState extends State<AcupunctureScreen>
                   children: acupointNames.map((name) {
                     return GestureDetector(
                       onTap: () {
-                        final detail = AcupointRepository.findByName(name);
+                        final detail = AcupointRepository.findByName(
+                            AcupointRepository.canonicalOf(name));
                         if (detail != null) {
                           Navigator.push(
                             context,
@@ -337,7 +339,7 @@ class _AcupunctureScreenState extends State<AcupunctureScreen>
                           );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('暂无"${name}"的详细解释')),
+                            SnackBar(content: Text('暂无"$name"的详细解释')),
                           );
                         }
                       },

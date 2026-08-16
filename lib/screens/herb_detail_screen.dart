@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/herb.dart';
 import '../models/bookmark.dart';
 import '../data/formula_repository.dart';
+import '../data/herb_repository.dart';
 import '../data/database_helper.dart';
 import 'formula_detail_screen.dart';
 
@@ -326,7 +327,8 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
           Builder(
             builder: (context) {
               final formulas = FormulaRepository.getAll()
-                  .where((f) => f.components.any((c) => c.name == herb.name))
+                  .where((f) => f.components
+                      .any((c) => HerbRepository.canonicalOf(c.name) == herb.name))
                   .toList();
               if (formulas.isEmpty) return const SizedBox.shrink();
               return Card(

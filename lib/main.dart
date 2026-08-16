@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'data/acupuncture_repository.dart';
 import 'data/acupoint_repository.dart';
+import 'data/changelog_repository.dart';
 import 'data/formula_repository.dart';
 import 'data/herb_repository.dart';
 import 'data/settings_repository.dart';
@@ -12,6 +13,7 @@ void main() async {
   await HerbRepository.load();
   await AcupunctureRepository.load();
   await AcupointRepository.load();
+  await ChangelogRepository.load();
   await SettingsRepository.instance.load();
   runApp(const NiHaishaApp());
 }
