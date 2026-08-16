@@ -64,6 +64,7 @@
 
 # 方式一：直接下载 APK
 V1.10.1 版本(更新日志：先后重构六经双轨诊断引擎、补齐神农本草药材库并勘误辨证逻辑，最后专项全量核验针灸穴位库，修复数据矛盾、文字错漏与双向跳转链路，配套新增版本日志弹窗并完成全量工程测试优化。)
+
 下载地址:https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.10.1/V1.10.1.apk
 
 
