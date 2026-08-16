@@ -241,6 +241,24 @@ class DatabaseHelper {
     await db.delete('diagnosis_history');
   }
 
+  // === 通用键值设置（user_settings 表，key 主键） ===
+  Future<String?> getSetting(String key) async {
+    final db = await database;
+    final rows = await db.query('user_settings',
+        where: 'key = ?', whereArgs: [key]);
+    if (rows.isNotEmpty) return rows.first['value'] as String;
+    return null;
+  }
+
+  Future<void> setSetting(String key, String value) async {
+    final db = await database;
+    await db.insert(
+      'user_settings',
+      {'key': key, 'value': value},
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
   // === 收藏导出 ===
   Future<List<Map<String, dynamic>>> exportBookmarks() async {
     final db = await database;

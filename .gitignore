@@ -50,3 +50,9 @@ app.*.map.json
 *_result*.txt
 *_unmatched*.txt
 *_names_list*.txt
+
+# Local temp / scratch / backup artifacts (do not commit)
+_writetest.txt
+*.bak
+*.new
+android/build/

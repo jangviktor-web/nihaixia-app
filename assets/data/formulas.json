@@ -1,11 +1,11 @@
 {
-  "total": 290,
+  "total": 322,
   "formulas": [
     {
       "id": "yiqi_tang",
       "name": "一物瓜蒂汤",
       "alias": "",
-      "meridian": "阳明",
+      "meridian": "太阳",
       "category": "外用剂",
       "components": [
         {
@@ -38,19 +38,23 @@
         },
         {
           "name": "麻黄",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "黄芪",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "炙甘草",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         }
       ],
       "indication": "病历节不可屈伸，疼痛。脚气疼痛，不可屈伸。",
@@ -79,6 +83,7 @@
       ],
       "indication": "寒疝绕脐痛，若发则白汗出，手足厥冷，其脉沉紧者。",
       "contraindication": "有热者禁用。必须蜜煎减毒。",
+      "dosage": "以水三升，煮取一升，去滓，内蜜二升，煎令水气尽，取二升，强人服七合，弱人服五合；不差，明日更服，不可日再服。",
       "explanation": "寒疝重证。乌头大热大毒，蜜煎减毒止痛。绕脐痛+手足厥冷+脉沉紧=阴寒内结。",
       "keywords": [
         "寒疝",
@@ -102,47 +107,56 @@
         {
           "name": "细辛",
           "dosage": "六两",
-          "role": "温脏散寒"
+          "role": "温脏散寒",
+          "clinical": "6钱"
         },
         {
           "name": "干姜",
           "dosage": "十两",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "10钱"
         },
         {
           "name": "黄连",
           "dosage": "一斤",
-          "role": "清热燥湿"
+          "role": "清热燥湿",
+          "clinical": "16钱"
         },
         {
           "name": "当归",
           "dosage": "四两",
-          "role": "养血和血"
+          "role": "养血和血",
+          "clinical": "4钱"
         },
         {
           "name": "炮附子",
           "dosage": "六两",
-          "role": "温脏祛寒"
+          "role": "温脏祛寒",
+          "clinical": "6钱"
         },
         {
           "name": "蜀椒",
           "dosage": "四两",
-          "role": "温脏杀虫"
+          "role": "温脏杀虫",
+          "clinical": "4钱"
         },
         {
           "name": "桂枝",
           "dosage": "六两",
-          "role": "通阳散寒"
+          "role": "通阳散寒",
+          "clinical": "6钱"
         },
         {
           "name": "人参",
           "dosage": "六两",
-          "role": "益气补中"
+          "role": "益气补中",
+          "clinical": "6钱"
         },
         {
           "name": "黄柏",
           "dosage": "六两",
-          "role": "清热燥湿"
+          "role": "清热燥湿",
+          "clinical": "6钱"
         }
       ],
       "indication": "蛔厥（脏寒蛔上入膈），烦躁吐蚘。久利。寒热错杂证。",
@@ -167,27 +181,32 @@
         {
           "name": "猪苓",
           "dosage": "十八铢",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "0.75钱"
         },
         {
           "name": "泽泻",
           "dosage": "一两六铢",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "1.25钱"
         },
         {
           "name": "白术",
           "dosage": "十八铢",
-          "role": "健脾燥湿"
+          "role": "健脾燥湿",
+          "clinical": "0.75钱"
         },
         {
           "name": "茯苓",
           "dosage": "十八铢",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "0.75钱"
         },
         {
           "name": "桂枝",
           "dosage": "半两",
-          "role": "温阳化气"
+          "role": "温阳化气",
+          "clinical": "0.5钱"
         }
       ],
       "indication": "太阳病，发汗后，大汗出，胃中干，烦躁不得眠，欲得饮水者，少少与之令胃气和则愈。若脉浮，小便不利，微热消渴者。",
@@ -211,23 +230,28 @@
       "components": [
         {
           "name": "人参",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "甘草",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "白术",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "干姜",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         }
       ],
       "indication": "胸痹，心中痞气，气结在胸（偏虚者）。理中汤原方。",
       "contraindication": "实证者不可用。",
+      "dosage": "以水八升，煮取三升，温服一升，日三服。",
       "explanation": "胸痹偏于中阳虚者，用人参汤（理中汤）温中补虚。与枳实薤白桂枝汤对比：一虚一实。",
       "keywords": [
         "胸痹",
@@ -250,22 +274,26 @@
         {
           "name": "黄芩",
           "dosage": "三两",
-          "role": "清热"
+          "role": "清热",
+          "clinical": "3钱"
         },
         {
           "name": "干姜",
           "dosage": "三两",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "3钱"
         },
         {
           "name": "人参",
           "dosage": "三两",
-          "role": "益气补中"
+          "role": "益气补中",
+          "clinical": "3钱"
         },
         {
           "name": "黄连",
           "dosage": "一两",
-          "role": "清热"
+          "role": "清热",
+          "clinical": "1钱"
         },
         {
           "name": "大枣",
@@ -273,7 +301,8 @@
         },
         {
           "name": "炙甘草",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         }
       ],
       "indication": "伤寒五六日，呕而发热者，柴胡汤证具，而以他药下之，心下满而不痛者，此为痞。",
@@ -292,7 +321,7 @@
       "id": "banxia_mahuang_wan",
       "name": "半夏麻黄丸",
       "alias": "",
-      "meridian": "心/肺",
+      "meridian": "太阴/少阴",
       "category": "化痰剂",
       "components": [
         {
@@ -307,6 +336,7 @@
       "indication": "心下悸者，半夏麻黄丸主之。",
       "contraindication": "无水饮者慎用。",
       "explanation": "水饮凌心之心悸。半夏化饮，麻黄宣肺利水。丸剂缓图。",
+      "dosage": "末之，炼蜜和丸，小豆大，饮服三丸，日三服。",
       "keywords": [
         "心下悸",
         "水饮凌心"
@@ -321,11 +351,13 @@
       "components": [
         {
           "name": "厚朴",
-          "dosage": "八两"
+          "dosage": "八两",
+          "clinical": "8钱"
         },
         {
           "name": "大黄",
-          "dosage": "四两"
+          "dosage": "四两",
+          "clinical": "4钱"
         },
         {
           "name": "枳实",
@@ -334,6 +366,7 @@
       ],
       "indication": "痛而闭者（腹痛且大便不通）。",
       "contraindication": "虚寒腹痛者不可用。",
+      "dosage": "以水一斗二升，先煮二味取五升，内大黄煮取三升，温服一升，以利为度。",
       "explanation": "厚朴行气为君（重用八两），大黄通便，枳实破气。与小承气汤组成相同但厚朴量大→偏于行气除满。",
       "keywords": [
         "腹痛",
@@ -352,12 +385,14 @@
         {
           "name": "厚朴",
           "dosage": "半斤",
-          "role": "行气除满"
+          "role": "行气除满",
+          "clinical": "8钱"
         },
         {
           "name": "生姜",
           "dosage": "半斤",
-          "role": "温胃散寒"
+          "role": "温胃散寒",
+          "clinical": "8钱"
         },
         {
           "name": "半夏",
@@ -367,12 +402,14 @@
         {
           "name": "炙甘草",
           "dosage": "二两",
-          "role": "补中和药"
+          "role": "补中和药",
+          "clinical": "2钱"
         },
         {
           "name": "人参",
           "dosage": "一两",
-          "role": "益气补中"
+          "role": "益气补中",
+          "clinical": "1钱"
         }
       ],
       "indication": "发汗后，腹胀满者。",
@@ -395,12 +432,14 @@
         {
           "name": "厚朴",
           "dosage": "半斤",
-          "role": "行气除满"
+          "role": "行气除满",
+          "clinical": "8钱"
         },
         {
           "name": "生姜",
           "dosage": "半斤",
-          "role": "温胃散寒"
+          "role": "温胃散寒",
+          "clinical": "8钱"
         },
         {
           "name": "半夏",
@@ -410,12 +449,14 @@
         {
           "name": "炙甘草",
           "dosage": "二两",
-          "role": "补中和药"
+          "role": "补中和药",
+          "clinical": "2钱"
         },
         {
           "name": "人参",
           "dosage": "一两",
-          "role": "益气补中"
+          "role": "益气补中",
+          "clinical": "1钱"
         }
       ],
       "indication": "发汗后，腹胀满者。",
@@ -443,12 +484,14 @@
         {
           "name": "人参",
           "dosage": "二两",
-          "role": "益气补中"
+          "role": "益气补中",
+          "clinical": "2钱"
         },
         {
           "name": "生姜",
           "dosage": "六两",
-          "role": "和胃止呕"
+          "role": "和胃止呕",
+          "clinical": "6钱"
         },
         {
           "name": "大枣",
@@ -477,20 +520,24 @@
       "components": [
         {
           "name": "生附子",
-          "dosage": "一枚"
+          "dosage": "一枚",
+          "clinical": "3钱"
         },
         {
           "name": "干姜",
-          "dosage": "一两半"
+          "dosage": "一两半",
+          "clinical": "1.5钱"
         },
         {
           "name": "炙甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "人参",
           "dosage": "一两",
-          "role": "益气固脱"
+          "role": "益气固脱",
+          "clinical": "1钱"
         }
       ],
       "indication": "霍乱，吐利止而身痛不休者。恶寒脉微而复利，利止亡血也。",
@@ -509,7 +556,7 @@
       "id": "sisi_san",
       "name": "四逆散",
       "alias": "",
-      "meridian": "少阳/少阴",
+      "meridian": "厥阴/少阴",
       "category": "理气剂",
       "components": [
         {
@@ -555,17 +602,20 @@
         {
           "name": "生附子",
           "dosage": "一枚",
-          "role": "回阳救逆"
+          "role": "回阳救逆",
+          "clinical": "3钱"
         },
         {
           "name": "干姜",
           "dosage": "一两半",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "1.5钱"
         },
         {
           "name": "炙甘草",
           "dosage": "二两",
-          "role": "缓和药性，护中"
+          "role": "缓和药性，护中",
+          "clinical": "2钱"
         }
       ],
       "indication": "少阴病：脉微细，但欲寐，四肢厥逆，下利清谷。误汗亡阳。大汗出，热不去，内拘急，四肢疼，又下利厥逆而恶寒者。",
@@ -584,7 +634,7 @@
       "id": "daxiaoyao_tang",
       "name": "大半夏汤",
       "alias": "",
-      "meridian": "胃",
+      "meridian": "太阴/阳明",
       "category": "补益剂",
       "components": [
         {
@@ -593,7 +643,8 @@
         },
         {
           "name": "人参",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "白蜜",
@@ -604,6 +655,7 @@
       "indication": "胃反呕吐者（朝食暮吐，暮食朝吐）。",
       "contraindication": "有热者慎用。",
       "explanation": "脾胃虚寒，胃气不降。半夏降逆，人参补中，白蜜润燥。胃反=宿食不化，朝食暮吐。",
+      "dosage": "以水一斗二升，和蜜扬之二百四十遍，煮药取二升半，温服一升，余分再服。",
       "keywords": [
         "胃反",
         "朝食暮吐",
@@ -620,12 +672,14 @@
         {
           "name": "大黄",
           "dosage": "四两",
-          "role": "攻下热结"
+          "role": "攻下热结",
+          "clinical": "4钱"
         },
         {
           "name": "厚朴",
           "dosage": "半斤",
-          "role": "行气除满"
+          "role": "行气除满",
+          "clinical": "8钱"
         },
         {
           "name": "枳实",
@@ -661,17 +715,20 @@
         {
           "name": "柴胡",
           "dosage": "半斤",
-          "role": "和解少阳"
+          "role": "和解少阳",
+          "clinical": "8钱"
         },
         {
           "name": "黄芩",
           "dosage": "三两",
-          "role": "清热"
+          "role": "清热",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
           "dosage": "三两",
-          "role": "柔肝缓急"
+          "role": "柔肝缓急",
+          "clinical": "3钱"
         },
         {
           "name": "半夏",
@@ -681,7 +738,8 @@
         {
           "name": "生姜",
           "dosage": "五两",
-          "role": "和胃止呕"
+          "role": "和胃止呕",
+          "clinical": "5钱"
         },
         {
           "name": "枳实",
@@ -695,7 +753,8 @@
         {
           "name": "大黄",
           "dosage": "二两",
-          "role": "攻下热结"
+          "role": "攻下热结",
+          "clinical": "2钱"
         }
       ],
       "indication": "少阳阳明合病：呕不止，心下急，郁郁微烦者。心中痞硬，呕吐而下利者。",
@@ -719,7 +778,8 @@
         {
           "name": "大黄",
           "dosage": "六两",
-          "role": "攻下热结"
+          "role": "攻下热结",
+          "clinical": "6钱"
         },
         {
           "name": "芒硝",
@@ -752,11 +812,13 @@
         {
           "name": "麻黄",
           "dosage": "六两",
-          "role": "发汗解表"
+          "role": "发汗解表",
+          "clinical": "6钱"
         },
         {
           "name": "桂枝",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "杏仁",
@@ -769,7 +831,8 @@
         },
         {
           "name": "生姜",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "大枣",
@@ -777,11 +840,13 @@
         },
         {
           "name": "炙甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         }
       ],
       "indication": "太阳伤寒，脉浮紧，发热恶寒，身疼痛，不汗出而烦躁者。",
       "contraindication": "脉微弱，汗出恶风者不可服。服之则厥逆，筋惕肉瞤。",
+      "dosage": "以水九升，先煮麻黄减二升，去上沫，纳诸药，煮取三升，去滓，温服一升，取微似汗，汗多者温粉扑之。",
       "explanation": "麻黄汤加石膏。表寒里热，外面怕冷里面烦躁。石膏清里热，麻黄开表。脉微弱者禁用。",
       "keywords": [
         "烦躁",
@@ -794,17 +859,19 @@
       "id": "dahuang_mudan_tang",
       "name": "大黄牡丹汤",
       "alias": "",
-      "meridian": "大肠",
+      "meridian": "阳明/厥阴",
       "category": "活血化瘀剂",
       "components": [
         {
           "name": "大黄",
-          "dosage": "四两"
+          "dosage": "四两",
+          "clinical": "4钱"
         },
         {
           "name": "牡丹",
           "dosage": "一两",
-          "role": "清热凉血"
+          "role": "清热凉血",
+          "clinical": "1钱"
         },
         {
           "name": "桃仁",
@@ -822,6 +889,7 @@
       ],
       "indication": "肠痈之为病，其身甲错，腹皮急，按之濡，如肿状，腹无积聚，身无热，脉数。肠痈者，少腹肿痞，按之即痛如淋，小便自调，时时发热，自汗出，复恶寒。",
       "contraindication": "肠痈溃后体虚者慎用。",
+      "dosage": "以水六升，煮取一升，去滓，内芒硝，再煎沸，顿服之，有脓当下，如无脓当下血。",
       "explanation": "肠痈（阑尾炎）初起。大黄攻下泄热，桃仁丹皮活血逐瘀，冬瓜仁排脓，芒硝软坚。少腹肿痞+按之痛=肠痈实证。",
       "keywords": [
         "肠痈",
@@ -834,20 +902,23 @@
       "id": "dahuang_gancao_tang",
       "name": "大黄甘草汤",
       "alias": "",
-      "meridian": "胃/肠",
+      "meridian": "阳明/胃",
       "category": "清热剂",
       "components": [
         {
           "name": "大黄",
-          "dosage": "四两"
+          "dosage": "四两",
+          "clinical": "4钱"
         },
         {
           "name": "甘草",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         }
       ],
       "indication": "食已即吐者。",
       "contraindication": "虚寒呕吐者不可用。",
+      "dosage": "以水三升，煮取一升，分温再服。",
       "explanation": "胃肠实热，食入即吐。大黄泻热通腑，甘草缓和。食已即吐=胃热上冲。",
       "keywords": [
         "食已即吐",
@@ -858,24 +929,28 @@
       "id": "dahuang_gansui_tang",
       "name": "大黄甘遂汤",
       "alias": "",
-      "meridian": "血分",
+      "meridian": "厥阴/少阴",
       "category": "活血化瘀剂",
       "components": [
         {
           "name": "大黄",
-          "dosage": "四两"
+          "dosage": "四两",
+          "clinical": "4钱"
         },
         {
           "name": "甘遂",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "阿胶",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         }
       ],
       "indication": "妇人少腹满如敦状，小便微难而不渴，此为水与血俱结在血室也。",
       "contraindication": "孕妇禁用。体虚者慎用。",
+      "dosage": "以水三升，煮取一升，顿服，其血当下。",
       "explanation": "水血互结于血室。大黄攻下逐瘀，甘遂攻逐水饮，阿胶养血护正。攻逐水血兼扶正。",
       "keywords": [
         "少腹满",
@@ -887,7 +962,7 @@
       "id": "dahuang_zhechong_wan",
       "name": "大黄蟅虫丸",
       "alias": "",
-      "meridian": "肝/血分",
+      "meridian": "厥阴/肝",
       "category": "活血化瘀剂",
       "components": [
         {
@@ -896,11 +971,13 @@
         },
         {
           "name": "黄芩",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "甘草",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "桃仁",
@@ -912,15 +989,18 @@
         },
         {
           "name": "芍药",
-          "dosage": "四两"
+          "dosage": "四两",
+          "clinical": "4钱"
         },
         {
           "name": "生地",
-          "dosage": "十两"
+          "dosage": "十两",
+          "clinical": "10钱"
         },
         {
           "name": "干漆",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         },
         {
           "name": "虻虫",
@@ -954,20 +1034,23 @@
       "id": "daxianxiong_tang_jj",
       "name": "大黄附子汤",
       "alias": "",
-      "meridian": "阳明/少阴",
+      "meridian": "太阴/少阴",
       "category": "泻下剂",
       "components": [
         {
           "name": "大黄",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "炮附子",
-          "dosage": "三枚"
+          "dosage": "三枚",
+          "clinical": "3钱"
         },
         {
           "name": "细辛",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         }
       ],
       "indication": "胁下偏痛，发热，脉紧弦者。",
@@ -989,12 +1072,14 @@
         {
           "name": "大黄",
           "dosage": "二两",
-          "role": "泻热消痞"
+          "role": "泻热消痞",
+          "clinical": "2钱"
         },
         {
           "name": "黄连",
           "dosage": "一两",
-          "role": "清热燥湿"
+          "role": "清热燥湿",
+          "clinical": "1钱"
         }
       ],
       "indication": "心下痞，按之濡，其脉关上浮者。",
@@ -1012,40 +1097,48 @@
       "id": "benqi_tang",
       "name": "奔豚汤",
       "alias": "",
-      "meridian": "肝/冲脉",
+      "meridian": "厥阴",
       "category": "理气剂",
       "components": [
         {
           "name": "甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "川芎",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "当归",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "半夏",
-          "dosage": "四两"
+          "dosage": "四两",
+          "clinical": "4钱"
         },
         {
           "name": "黄芩",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "生葛",
-          "dosage": "五两"
+          "dosage": "五两",
+          "clinical": "5钱"
         },
         {
           "name": "芍药",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "生姜",
-          "dosage": "四两"
+          "dosage": "四两",
+          "clinical": "4钱"
         },
         {
           "name": "甘李根白皮",
@@ -1066,7 +1159,7 @@
       "id": "xiaobanxia_jia_fuling_tang",
       "name": "小半夏加茯苓汤",
       "alias": "",
-      "meridian": "胃",
+      "meridian": "太阴/胃",
       "category": "化痰剂",
       "components": [
         {
@@ -1075,17 +1168,20 @@
         },
         {
           "name": "生姜",
-          "dosage": "半斤"
+          "dosage": "半斤",
+          "clinical": "8钱"
         },
         {
           "name": "茯苓",
           "dosage": "三两",
-          "role": "利水宁心"
+          "role": "利水宁心",
+          "clinical": "3钱"
         }
       ],
       "indication": "卒呕吐，心下痞，膈间有水，眩悸者。",
       "contraindication": "阴虚者慎用。",
       "explanation": "水饮停于胃脘。半夏生姜降逆止呕，茯苓利水。膈间有水+眩悸=水饮上泛。",
+      "dosage": "以水七升，煮取一升五合，分温再服。",
       "keywords": [
         "呕吐",
         "心下痞",
@@ -1097,7 +1193,7 @@
       "id": "xiao_xia_xia_tang",
       "name": "小半夏汤",
       "alias": "",
-      "meridian": "胃",
+      "meridian": "太阴/胃",
       "category": "化痰剂",
       "components": [
         {
@@ -1106,12 +1202,14 @@
         },
         {
           "name": "生姜",
-          "dosage": "半斤"
+          "dosage": "半斤",
+          "clinical": "8钱"
         }
       ],
       "indication": "诸呕吐，谷不得下者。",
       "contraindication": "阴虚者慎用。",
       "explanation": "水饮停胃，胃气上逆。半夏降逆化饮，生姜散寒止呕。为止呕祖方。",
+      "dosage": "以水七升，煮取一升半，分温再服。",
       "keywords": [
         "呕吐",
         "谷不得下",
@@ -1127,16 +1225,19 @@
       "components": [
         {
           "name": "桂枝",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
           "dosage": "六两",
-          "role": "柔肝缓急"
+          "role": "柔肝缓急",
+          "clinical": "6钱"
         },
         {
           "name": "生姜",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "大枣",
@@ -1144,7 +1245,8 @@
         },
         {
           "name": "炙甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "饴糖",
@@ -1174,12 +1276,14 @@
         {
           "name": "大黄",
           "dosage": "四两",
-          "role": "攻下热结"
+          "role": "攻下热结",
+          "clinical": "4钱"
         },
         {
           "name": "厚朴",
           "dosage": "二两",
-          "role": "行气除满"
+          "role": "行气除满",
+          "clinical": "2钱"
         },
         {
           "name": "枳实",
@@ -1208,17 +1312,20 @@
         {
           "name": "柴胡",
           "dosage": "半斤",
-          "role": "和解少阳"
+          "role": "和解少阳",
+          "clinical": "8钱"
         },
         {
           "name": "黄芩",
           "dosage": "三两",
-          "role": "清热"
+          "role": "清热",
+          "clinical": "3钱"
         },
         {
           "name": "人参",
           "dosage": "三两",
-          "role": "益气扶正"
+          "role": "益气扶正",
+          "clinical": "3钱"
         },
         {
           "name": "半夏",
@@ -1228,7 +1335,8 @@
         {
           "name": "生姜",
           "dosage": "三两",
-          "role": "和胃止呕"
+          "role": "和胃止呕",
+          "clinical": "3钱"
         },
         {
           "name": "大枣",
@@ -1238,7 +1346,8 @@
         {
           "name": "炙甘草",
           "dosage": "三两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "3钱"
         }
       ],
       "indication": "少阳病：口苦，咽干，目眩，往来寒热，胸胁苦满，默默不欲饮食，心烦喜呕。但见一证便是，不必悉具。",
@@ -1259,13 +1368,14 @@
       "id": "xiaoxianxiong_tang",
       "name": "小陷胸汤",
       "alias": "",
-      "meridian": "太阳/肺",
+      "meridian": "少阳/阳明/肺",
       "category": "清热剂",
       "components": [
         {
           "name": "黄连",
           "dosage": "一两",
-          "role": "清热燥湿"
+          "role": "清热燥湿",
+          "clinical": "1钱"
         },
         {
           "name": "半夏",
@@ -1298,27 +1408,33 @@
       "components": [
         {
           "name": "麻黄",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "细辛",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "干姜",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "炙甘草",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "桂枝",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "五味子",
@@ -1330,6 +1446,8 @@
         }
       ],
       "indication": "伤寒表不解，心下有水气，干呕发热而咳。或渴，或利，或噎，或小便不利。",
+      "contraindication": "阴虚燥咳无痰、里热口渴烦躁、表已解之纯热证忌用；发汗太过易伤阳，中病即止。",
+      "dosage": "以水一斗，先煮麻黄减二升，去上沫，纳诸药，煮取三升，去滓，温服一升。",
       "explanation": "小青龙汤治表寒里寒。麻黄桂枝解表，细辛干姜温里化饮，五味子敛肺止咳，半夏化痰。",
       "keywords": [
         "咳嗽",
@@ -1347,27 +1465,33 @@
       "components": [
         {
           "name": "麻黄",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "细辛",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "干姜",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "甘草",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "桂枝",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "五味子",
@@ -1380,6 +1504,7 @@
       ],
       "indication": "咳逆倚息不得卧。支饮（水饮停于胸膈）。",
       "contraindication": "肺热者不可用。",
+      "dosage": "以水一斗，先煮麻黄减二升，去上沫，纳诸药，煮取三升，去滓，温服一升。",
       "explanation": "支饮咳喘。小青龙汤解表化饮。水饮停于胸膈，肺气不降。",
       "keywords": [
         "咳逆倚息",
@@ -1391,28 +1516,33 @@
       "id": "jizhijuzi_tang",
       "name": "己椒苈黄丸",
       "alias": "",
-      "meridian": "肠",
+      "meridian": "阳明/肠",
       "category": "化痰剂",
       "components": [
         {
           "name": "防己",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         },
         {
           "name": "椒目",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         },
         {
           "name": "葶苈",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         },
         {
           "name": "大黄",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         }
       ],
       "indication": "腹满，口舌干燥，此肠间有水气。",
       "contraindication": "虚证者慎用。",
+      "dosage": "末之，蜜丸，如梧子大，先食饮服一丸，日三服，稍增，口中有津液，渴者加芒硝半两。",
       "explanation": "水饮走于肠间。防己利水，椒目行水，葶苈泻肺利水，大黄攻下。腹满+口干=水饮阻气化。",
       "keywords": [
         "腹满",
@@ -1429,16 +1559,19 @@
       "components": [
         {
           "name": "干姜",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         },
         {
           "name": "生附子",
-          "dosage": "一枚"
+          "dosage": "一枚",
+          "clinical": "3钱"
         }
       ],
       "indication": "产后下利虚极，白头翁加甘草阿胶汤主之。",
       "contraindication": "非阳虚者不可用。",
       "explanation": "产后阳虚下利。回阳救逆。",
+      "dosage": "以水三升，煮取一升，去滓，顿服。",
       "keywords": [
         "产后",
         "下利",
@@ -1453,19 +1586,23 @@
       "components": [
         {
           "name": "当归",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "桂枝",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "细辛",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "大枣",
@@ -1473,14 +1610,18 @@
         },
         {
           "name": "炙甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "通草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         }
       ],
       "indication": "厥阴病手足厥寒，脉细欲绝。内有久寒，冻疮，寒疝。",
+      "contraindication": "阳热亢盛、阴虚血热、脉洪大有力之实热厥逆忌用；非血虚寒凝者不宜。",
+      "dosage": "以水八升，煮取三升，去滓，温服一升，日三服。",
       "explanation": "当归补血，桂枝细辛温经散寒，通草通血脉。厥阴经血脉不通用此方。",
       "keywords": [
         "手脚冰冷",
@@ -1492,32 +1633,38 @@
       "id": "jiajian_wuzhu_yu_tang",
       "name": "当归散",
       "alias": "",
-      "meridian": "肝/脾",
+      "meridian": "厥阴/太阴",
       "category": "补益剂",
       "components": [
         {
           "name": "当归",
-          "dosage": "一斤"
+          "dosage": "一斤",
+          "clinical": "16钱"
         },
         {
           "name": "芍药",
-          "dosage": "一斤"
+          "dosage": "一斤",
+          "clinical": "16钱"
         },
         {
           "name": "川芎",
-          "dosage": "半斤"
+          "dosage": "半斤",
+          "clinical": "8钱"
         },
         {
           "name": "白术",
-          "dosage": "半斤"
+          "dosage": "半斤",
+          "clinical": "8钱"
         },
         {
           "name": "黄芩",
-          "dosage": "一斤"
+          "dosage": "一斤",
+          "clinical": "16钱"
         }
       ],
       "indication": "妇人妊娠，宜常服当归散。",
       "contraindication": "阴虚血热者慎用。",
+      "dosage": "杵为散，酒服方寸匕，日再服，妊娠常服即易产，胎无所苦，产后百病悉主之。",
       "explanation": "养血安胎。当归芍药川芎养血和血，白术健脾，黄芩清热安胎。倪师：妊娠常服方，血虚有热者宜。",
       "keywords": [
         "妊娠",
@@ -1529,36 +1676,43 @@
       "id": "danggui_shao_yao_san",
       "name": "当归芍药散",
       "alias": "",
-      "meridian": "肝/脾",
+      "meridian": "厥阴/太阴",
       "category": "补益剂",
       "components": [
         {
           "name": "当归",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
-          "dosage": "一斤"
+          "dosage": "一斤",
+          "clinical": "16钱"
         },
         {
           "name": "川芎",
-          "dosage": "半斤"
+          "dosage": "半斤",
+          "clinical": "8钱"
         },
         {
           "name": "茯苓",
-          "dosage": "四两"
+          "dosage": "四两",
+          "clinical": "4钱"
         },
         {
           "name": "白术",
-          "dosage": "四两"
+          "dosage": "四两",
+          "clinical": "4钱"
         },
         {
           "name": "泽泻",
-          "dosage": "半斤"
+          "dosage": "半斤",
+          "clinical": "8钱"
         }
       ],
       "indication": "妇人怀妊，腹中㽲痛。",
       "contraindication": "无血虚水停者慎用。",
+      "dosage": "杵为散，取方寸匕，酒和，日三服。",
       "explanation": "妊娠血虚水停。当归芍药川芎养血，茯苓白术泽泻利水。腹中㽲痛=血虚水停，筋脉失养。倪师：此方治妊娠腹痛+水肿。",
       "keywords": [
         "妊娠",
@@ -1587,7 +1741,8 @@
         },
         {
           "name": "大黄",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         }
       ],
       "indication": "伤寒有热，少腹满，应小便不利，今反利者，为有血也，当下之，不可余药，宜抵当丸。",
@@ -1625,7 +1780,8 @@
         {
           "name": "大黄",
           "dosage": "三两",
-          "role": "攻下热结"
+          "role": "攻下热结",
+          "clinical": "3钱"
         }
       ],
       "indication": "太阳病，六七日，表证仍在，脉微而沉，反不结胸，其人发狂者，以热在下焦，少腹当硬满，小便自利者。",
@@ -1643,7 +1799,7 @@
       "id": "paizhong_san",
       "name": "排脓散",
       "alias": "",
-      "meridian": "大肠",
+      "meridian": "阳明/厥阴",
       "category": "金疮药",
       "components": [
         {
@@ -1661,6 +1817,7 @@
       ],
       "indication": "疮痈脓已成。",
       "contraindication": "脓未成者当消痈。",
+      "dosage": "杵为散，取鸡子黄一枚，以药散与鸡黄相等，饮和服之，日一服。",
       "explanation": "排脓消痈。枳实行气排脓，芍药缓急，桔梗排脓。",
       "keywords": [
         "疮痈",
@@ -1672,20 +1829,23 @@
       "id": "paizhong_tang",
       "name": "排脓汤",
       "alias": "",
-      "meridian": "肺/大肠",
+      "meridian": "太阴/阳明",
       "category": "金疮药",
       "components": [
         {
           "name": "甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "桔梗",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "生姜",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         },
         {
           "name": "大枣",
@@ -1694,6 +1854,7 @@
       ],
       "indication": "疮痈脓已成，咳唾脓血。",
       "contraindication": "脓未成者慎用。",
+      "dosage": "以水三升，煮取一升，服五合，日再服。",
       "explanation": "排脓汤。桔梗排脓为主药，甘草解毒，姜枣和营。治肺痈脓已成。",
       "keywords": [
         "疮痈",
@@ -1705,17 +1866,19 @@
       "id": "wenzhuli_tang",
       "name": "文蛤散",
       "alias": "",
-      "meridian": "阳明",
+      "meridian": "太阳",
       "category": "清热剂",
       "components": [
         {
           "name": "文蛤",
           "dosage": "五两",
-          "role": "清热利湿"
+          "role": "清热利湿",
+          "clinical": "5钱"
         }
       ],
       "indication": "渴欲饮水不止者。",
       "contraindication": "无热者慎用。",
+      "dosage": "杵为散，以沸汤五合，和服方寸匕。",
       "explanation": "湿热内蕴，津不上承。文蛤清热利湿止渴。",
       "keywords": [
         "渴欲饮水不止",
@@ -1731,15 +1894,18 @@
       "components": [
         {
           "name": "桂枝",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
-          "dosage": "四两"
+          "dosage": "四两",
+          "clinical": "4钱"
         },
         {
           "name": "生姜",
-          "dosage": "四两"
+          "dosage": "四两",
+          "clinical": "4钱"
         },
         {
           "name": "大枣",
@@ -1747,12 +1913,14 @@
         },
         {
           "name": "炙甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "人参",
           "dosage": "三两",
-          "role": "益气生津"
+          "role": "益气生津",
+          "clinical": "3钱"
         }
       ],
       "indication": "发汗后，身疼痛，脉沉迟者。",
@@ -1776,12 +1944,14 @@
         {
           "name": "旋覆花",
           "dosage": "三两",
-          "role": "降气消痰"
+          "role": "降气消痰",
+          "clinical": "3钱"
         },
         {
           "name": "代赭石",
           "dosage": "一两",
-          "role": "重镇降逆"
+          "role": "重镇降逆",
+          "clinical": "1钱"
         },
         {
           "name": "半夏",
@@ -1791,12 +1961,14 @@
         {
           "name": "生姜",
           "dosage": "五两",
-          "role": "温胃散寒"
+          "role": "温胃散寒",
+          "clinical": "5钱"
         },
         {
           "name": "人参",
           "dosage": "二两",
-          "role": "益气补中"
+          "role": "益气补中",
+          "clinical": "2钱"
         },
         {
           "name": "大枣",
@@ -1804,7 +1976,8 @@
         },
         {
           "name": "炙甘草",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         }
       ],
       "indication": "伤寒发汗，若吐若下，解后，心下痞硬，噫气不除者。",
@@ -1822,7 +1995,7 @@
       "id": "jizhi_jiangsan",
       "name": "枳实芍药散",
       "alias": "",
-      "meridian": "肝/胃",
+      "meridian": "厥阴/阳明",
       "category": "理气剂",
       "components": [
         {
@@ -1836,6 +2009,7 @@
       ],
       "indication": "产后腹痛，烦满不得卧。",
       "contraindication": "虚证腹痛者慎用。",
+      "dosage": "杵为散，服方寸匕，日三服，并主痈脓，大麦粥下之。",
       "explanation": "产后气滞血瘀腹痛。枳实破气，芍药缓急。烧令黑=存性入血分。",
       "keywords": [
         "产后腹痛",
@@ -1847,7 +2021,7 @@
       "id": "zhishi_xiebai_guizhi_tang",
       "name": "枳实薤白桂枝汤",
       "alias": "",
-      "meridian": "心/胃",
+      "meridian": "少阴/阳明",
       "category": "温里剂",
       "components": [
         {
@@ -1856,7 +2030,8 @@
         },
         {
           "name": "厚朴",
-          "dosage": "四两"
+          "dosage": "四两",
+          "clinical": "4钱"
         },
         {
           "name": "薤白",
@@ -1864,7 +2039,8 @@
         },
         {
           "name": "桂枝",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         },
         {
           "name": "栝蒌实",
@@ -1873,6 +2049,7 @@
       ],
       "indication": "胸痹，心中痞气，气结在胸，胸满，胁下逆抢心。",
       "contraindication": "无气结者慎用。",
+      "dosage": "以水五升，先煮枳实厚朴，取二升，去滓，内诸药，煮数沸，分温三服。",
       "explanation": "胸痹兼气滞。枳实行气消痞，厚朴除满，薤白通阳散结，栝蒌宽胸，桂枝温通。气结在胸+胁下逆抢心=气滞严重。",
       "keywords": [
         "胸痹",
@@ -1884,16 +2061,18 @@
       "id": "zhiye_tang",
       "name": "柏叶汤",
       "alias": "",
-      "meridian": "肝/肺",
+      "meridian": "厥阴/太阴",
       "category": "止血剂",
       "components": [
         {
           "name": "柏叶",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "干姜",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "艾叶",
@@ -1906,6 +2085,7 @@
       ],
       "indication": "吐血不止者。",
       "contraindication": "实热出血者慎用干姜艾叶。",
+      "dosage": "以水五升，取马通汁一升，合煮，取一升，分温再服。",
       "explanation": "吐血不止。柏叶凉血止血，干姜艾叶温经止血（反佐），马通汁引血下行。寒热并用。",
       "keywords": [
         "吐血不止",
@@ -1921,15 +2101,18 @@
       "components": [
         {
           "name": "柴胡",
-          "dosage": "二两十六铢"
+          "dosage": "二两十六铢",
+          "clinical": "2.67钱"
         },
         {
           "name": "黄芩",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         },
         {
           "name": "人参",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         },
         {
           "name": "半夏",
@@ -1937,11 +2120,13 @@
         },
         {
           "name": "炙甘草",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         },
         {
           "name": "生姜",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         },
         {
           "name": "大枣",
@@ -1950,7 +2135,8 @@
         {
           "name": "芒硝",
           "dosage": "二两",
-          "role": "软坚润燥"
+          "role": "软坚润燥",
+          "clinical": "2钱"
         }
       ],
       "indication": "伤寒十三日不解，胸胁满而呕，日晡所发潮热，已而微利。此本柴胡证，下之以不得利，今反利者，知医以丸药下之，非其治也。潮热者，实也。",
@@ -1973,15 +2159,18 @@
       "components": [
         {
           "name": "柴胡",
-          "dosage": "四两"
+          "dosage": "四两",
+          "clinical": "4钱"
         },
         {
           "name": "黄芩",
-          "dosage": "一两半"
+          "dosage": "一两半",
+          "clinical": "1.5钱"
         },
         {
           "name": "人参",
-          "dosage": "一两半"
+          "dosage": "一两半",
+          "clinical": "1.5钱"
         },
         {
           "name": "半夏",
@@ -1989,7 +2178,8 @@
         },
         {
           "name": "生姜",
-          "dosage": "一两半"
+          "dosage": "一两半",
+          "clinical": "1.5钱"
         },
         {
           "name": "大枣",
@@ -1998,32 +2188,38 @@
         {
           "name": "茯苓",
           "dosage": "一两半",
-          "role": "利水宁心"
+          "role": "利水宁心",
+          "clinical": "1.5钱"
         },
         {
           "name": "大黄",
           "dosage": "二两",
-          "role": "泻热和胃"
+          "role": "泻热和胃",
+          "clinical": "2钱"
         },
         {
           "name": "龙骨",
           "dosage": "一两半",
-          "role": "镇惊安神"
+          "role": "镇惊安神",
+          "clinical": "1.5钱"
         },
         {
           "name": "牡蛎",
           "dosage": "一两半",
-          "role": "敛阴潜阳"
+          "role": "敛阴潜阳",
+          "clinical": "1.5钱"
         },
         {
           "name": "铅丹",
           "dosage": "一两半",
-          "role": "镇惊坠痰"
+          "role": "镇惊坠痰",
+          "clinical": "1.5钱"
         },
         {
           "name": "桂枝",
           "dosage": "一两半",
-          "role": "通阳化气"
+          "role": "通阳化气",
+          "clinical": "1.5钱"
         }
       ],
       "indication": "伤寒八九日，下之，胸满烦惊，小便不利，谵语，一身尽重，不可转侧者。",
@@ -2040,41 +2236,48 @@
     {
       "id": "chaihu_guizhi_ganjiang_tang",
       "name": "柴胡桂枝干姜汤",
-      "alias": "",
+      "alias": "柴胡桂姜汤",
       "meridian": "少阳/太阴",
       "category": "和解剂",
       "components": [
         {
           "name": "柴胡",
-          "dosage": "半斤"
+          "dosage": "半斤",
+          "clinical": "8钱"
         },
         {
           "name": "桂枝",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "干姜",
           "dosage": "二两",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "2钱"
         },
         {
           "name": "栝蒌根",
           "dosage": "四两",
-          "role": "生津止渴"
+          "role": "生津止渴",
+          "clinical": "4钱"
         },
         {
           "name": "黄芩",
           "dosage": "三两",
-          "role": "清热"
+          "role": "清热",
+          "clinical": "3钱"
         },
         {
           "name": "牡蛎",
           "dosage": "二两",
-          "role": "软坚散结"
+          "role": "软坚散结",
+          "clinical": "2钱"
         },
         {
           "name": "炙甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         }
       ],
       "indication": "伤寒五六日，已发汗而复下之，胸胁满微结，小便不利，渴而不呕，但头汗出，往来寒热，心烦者。",
@@ -2098,23 +2301,28 @@
       "components": [
         {
           "name": "桂枝",
-          "dosage": "一两半"
+          "dosage": "一两半",
+          "clinical": "1.5钱"
         },
         {
           "name": "芍药",
-          "dosage": "一两半"
+          "dosage": "一两半",
+          "clinical": "1.5钱"
         },
         {
           "name": "黄芩",
-          "dosage": "一两半"
+          "dosage": "一两半",
+          "clinical": "1.5钱"
         },
         {
           "name": "人参",
-          "dosage": "一两半"
+          "dosage": "一两半",
+          "clinical": "1.5钱"
         },
         {
           "name": "炙甘草",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         },
         {
           "name": "半夏",
@@ -2122,11 +2330,13 @@
         },
         {
           "name": "柴胡",
-          "dosage": "四两"
+          "dosage": "四两",
+          "clinical": "4钱"
         },
         {
           "name": "生姜",
-          "dosage": "一两半"
+          "dosage": "一两半",
+          "clinical": "1.5钱"
         },
         {
           "name": "大枣",
@@ -2160,7 +2370,8 @@
         {
           "name": "厚朴",
           "dosage": "四两",
-          "role": "行气除满"
+          "role": "行气除满",
+          "clinical": "4钱"
         },
         {
           "name": "枳实",
@@ -2192,7 +2403,8 @@
         },
         {
           "name": "大黄",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         },
         {
           "name": "枳实",
@@ -2206,6 +2418,7 @@
       "indication": "酒黄疸，心中懊憹或热痛。",
       "contraindication": "寒湿者慎用。",
       "explanation": "酒疸=饮酒过度致黄疸。栀子清热，大黄泄热，枳实破气，豆豉宣透。心中懊憹热痛=热蕴中焦。",
+      "dosage": "以水六升，煮取二升，分温三服。",
       "keywords": [
         "酒疸",
         "心中懊憹",
@@ -2227,7 +2440,8 @@
         {
           "name": "干姜",
           "dosage": "二两",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "2钱"
         },
         {
           "name": "豆豉",
@@ -2289,7 +2503,8 @@
         {
           "name": "炙甘草",
           "dosage": "二两",
-          "role": "益气和中"
+          "role": "益气和中",
+          "clinical": "2钱"
         },
         {
           "name": "豆豉",
@@ -2346,23 +2561,28 @@
       "components": [
         {
           "name": "栝蒌根",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "桂枝",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "生姜",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "大枣",
@@ -2371,6 +2591,7 @@
       ],
       "indication": "太阳病，其证备，身体强几几然，脉反沉迟，此为痉。",
       "contraindication": "无痉病者慎用。",
+      "dosage": "以水九升，煮取三升，分温三服，取微汗。",
       "explanation": "痉病兼津液不足。桂枝汤解表，栝蒌根生津舒经。",
       "keywords": [
         "痉",
@@ -2382,7 +2603,7 @@
       "id": "gualou_xiebai_banxia_tang",
       "name": "栝蒌薤白半夏汤",
       "alias": "",
-      "meridian": "心/肺",
+      "meridian": "少阴/太阴",
       "category": "温里剂",
       "components": [
         {
@@ -2391,7 +2612,8 @@
         },
         {
           "name": "薤白",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "半夏",
@@ -2405,6 +2627,7 @@
       ],
       "indication": "胸痹不得卧，心痛彻背者。",
       "contraindication": "痰热者慎用。",
+      "dosage": "以水一斗，煮取四升，温服一升，日三服。",
       "explanation": "胸痹重证，痰浊更甚。比栝蒌薤白白酒汤加半夏，化痰降逆力量更强。不得卧+心痛彻背=痰浊闭阻严重。",
       "keywords": [
         "胸痹",
@@ -2416,7 +2639,7 @@
       "id": "gualou_xiebai_baijiu_tang",
       "name": "栝蒌薤白白酒汤",
       "alias": "",
-      "meridian": "心/肺",
+      "meridian": "少阴/太阴",
       "category": "温里剂",
       "components": [
         {
@@ -2437,6 +2660,7 @@
       ],
       "indication": "胸痹之病，喘息咳唾，胸背痛，短气，寸口脉沉而迟，关上小紧数。",
       "contraindication": "阴虚火旺者慎用。",
+      "dosage": "以水七升，煮取二升，分温再服。",
       "explanation": "胸阳不振，痰浊闭阻。薤白通阳散结，栝蒌宽胸涤痰，白酒行气活血助药力上行。倪师：此为胸痹基础方。",
       "keywords": [
         "胸痹",
@@ -2454,20 +2678,24 @@
       "components": [
         {
           "name": "桂枝",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "生姜",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "厚朴",
           "dosage": "二两",
-          "role": "去脾湿，降气"
+          "role": "去脾湿，降气",
+          "clinical": "2钱"
         },
         {
           "name": "杏仁",
@@ -2480,7 +2708,8 @@
         },
         {
           "name": "炙甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         }
       ],
       "indication": "太阳病，下之后，微喘者。喘家作。",
@@ -2505,15 +2734,18 @@
         {
           "name": "桂枝",
           "dosage": "五两",
-          "role": "平冲降逆"
+          "role": "平冲降逆",
+          "clinical": "5钱"
         },
         {
           "name": "芍药",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "生姜",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "大枣",
@@ -2521,7 +2753,8 @@
         },
         {
           "name": "炙甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         }
       ],
       "indication": "发汗后，烧针令其汗，针处被寒，核起而赤者，必发奔豚，气从少腹上冲心者。",
@@ -2543,20 +2776,24 @@
       "components": [
         {
           "name": "桂枝",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "葛根",
           "dosage": "四两",
-          "role": "升津液，舒经脉"
+          "role": "升津液，舒经脉",
+          "clinical": "4钱"
         },
         {
           "name": "生姜",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "大枣",
@@ -2564,7 +2801,8 @@
         },
         {
           "name": "炙甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         }
       ],
       "indication": "太阳病，项背强几几，汗出恶风。",
@@ -2587,15 +2825,18 @@
       "components": [
         {
           "name": "桂枝",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "生姜",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "大枣",
@@ -2603,12 +2844,14 @@
         },
         {
           "name": "炙甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "炮附子",
           "dosage": "一枚",
-          "role": "固表阳，止汗"
+          "role": "固表阳，止汗",
+          "clinical": "3钱"
         }
       ],
       "indication": "太阳病，发汗，遂漏不止，其人恶风，小便难，四肢微急，难以屈伸者。",
@@ -2627,20 +2870,23 @@
       "id": "guizhi_jia_longgu_muli_tang",
       "name": "桂枝加龙骨牡蛎汤",
       "alias": "",
-      "meridian": "太阳",
+      "meridian": "太阳/少阴",
       "category": "解表剂",
       "components": [
         {
           "name": "桂枝",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "生姜",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "大枣",
@@ -2648,17 +2894,20 @@
         },
         {
           "name": "炙甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "龙骨",
           "dosage": "二两",
-          "role": "镇惊潜阳"
+          "role": "镇惊潜阳",
+          "clinical": "2钱"
         },
         {
           "name": "牡蛎",
           "dosage": "二两",
-          "role": "敛阴潜阳"
+          "role": "敛阴潜阳",
+          "clinical": "2钱"
         }
       ],
       "indication": "火逆下之，因烧针烦躁者。失精家，少腹弦急，阴头寒，目眩发落。",
@@ -2682,21 +2931,25 @@
       "components": [
         {
           "name": "芍药",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "生姜",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "茯苓",
           "dosage": "三两",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "3钱"
         },
         {
           "name": "白术",
           "dosage": "三两",
-          "role": "健脾燥湿"
+          "role": "健脾燥湿",
+          "clinical": "3钱"
         },
         {
           "name": "大枣",
@@ -2704,7 +2957,8 @@
         },
         {
           "name": "炙甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         }
       ],
       "indication": "服桂枝汤，或下之，仍头项强痛，翕翕发热，无汗，心下满微痛，小便不利者。",
@@ -2729,11 +2983,13 @@
       "components": [
         {
           "name": "桂枝",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "生姜",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "大枣",
@@ -2742,21 +2998,25 @@
         {
           "name": "蜀漆",
           "dosage": "三两",
-          "role": "涌吐痰实"
+          "role": "涌吐痰实",
+          "clinical": "3钱"
         },
         {
           "name": "龙骨",
           "dosage": "四两",
-          "role": "镇惊潜阳"
+          "role": "镇惊潜阳",
+          "clinical": "4钱"
         },
         {
           "name": "牡蛎",
           "dosage": "五两",
-          "role": "敛阴潜阳"
+          "role": "敛阴潜阳",
+          "clinical": "5钱"
         },
         {
           "name": "炙甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         }
       ],
       "indication": "伤寒脉浮，以火灸劫之，亡阳必惊狂，卧起不安者。",
@@ -2782,17 +3042,20 @@
         {
           "name": "桂枝",
           "dosage": "三两",
-          "role": "壮心阳，发汗解肌"
+          "role": "壮心阳，发汗解肌",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
           "dosage": "三两",
-          "role": "敛阴和营"
+          "role": "敛阴和营",
+          "clinical": "3钱"
         },
         {
           "name": "生姜",
           "dosage": "三两",
-          "role": "温胃散寒"
+          "role": "温胃散寒",
+          "clinical": "3钱"
         },
         {
           "name": "大枣",
@@ -2802,7 +3065,8 @@
         {
           "name": "炙甘草",
           "dosage": "二两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "2钱"
         }
       ],
       "indication": "太阳中风：发热，汗出，恶风，脉缓。头痛，鼻鸣，干呕。",
@@ -2828,12 +3092,14 @@
         {
           "name": "桂枝",
           "dosage": "四两",
-          "role": "壮心阳"
+          "role": "壮心阳",
+          "clinical": "4钱"
         },
         {
           "name": "炙甘草",
           "dosage": "二两",
-          "role": "补中缓急"
+          "role": "补中缓急",
+          "clinical": "2钱"
         }
       ],
       "indication": "发汗过多，其人叉手自冒心，心下悸，欲得按者。",
@@ -2856,41 +3122,50 @@
       "components": [
         {
           "name": "桂枝",
-          "dosage": "四两"
+          "dosage": "四两",
+          "clinical": "4钱"
         },
         {
           "name": "芍药",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "麻黄",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "生姜",
-          "dosage": "五两"
+          "dosage": "五两",
+          "clinical": "5钱"
         },
         {
           "name": "白术",
-          "dosage": "五两"
+          "dosage": "五两",
+          "clinical": "5钱"
         },
         {
           "name": "知母",
           "dosage": "四两",
-          "role": "清热养阴"
+          "role": "清热养阴",
+          "clinical": "4钱"
         },
         {
           "name": "防风",
           "dosage": "四两",
-          "role": "祛风"
+          "role": "祛风",
+          "clinical": "4钱"
         },
         {
           "name": "炮附子",
-          "dosage": "二枚"
+          "dosage": "二枚",
+          "clinical": "3钱"
         }
       ],
       "indication": "诸肢节疼痛，身体尪羸，脚肿如脱，头眩短气，温温欲吐。",
@@ -2914,16 +3189,19 @@
         {
           "name": "桂枝",
           "dosage": "四两",
-          "role": "温经通阳"
+          "role": "温经通阳",
+          "clinical": "4钱"
         },
         {
           "name": "炮附子",
           "dosage": "三枚",
-          "role": "温里散寒"
+          "role": "温里散寒",
+          "clinical": "3钱"
         },
         {
           "name": "生姜",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "大枣",
@@ -2931,7 +3209,8 @@
         },
         {
           "name": "炙甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         }
       ],
       "indication": "伤寒八九日，风湿相搏，身体疼烦，不能自转侧，不呕不渴，脉浮虚而涩者。",
@@ -2960,22 +3239,26 @@
         {
           "name": "大黄",
           "dosage": "四两",
-          "role": "攻下热结"
+          "role": "攻下热结",
+          "clinical": "4钱"
         },
         {
           "name": "桂枝",
           "dosage": "二两",
-          "role": "通阳化瘀"
+          "role": "通阳化瘀",
+          "clinical": "2钱"
         },
         {
           "name": "炙甘草",
           "dosage": "二两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "2钱"
         },
         {
           "name": "芒硝",
           "dosage": "二两",
-          "role": "软坚润燥"
+          "role": "软坚润燥",
+          "clinical": "2钱"
         }
       ],
       "indication": "太阳病不解，热结膀胱，其人如狂，血自下，下者愈。其外不解者，尚未可攻，当先解其外。外解已，但少腹急结者，乃可攻之。",
@@ -3000,12 +3283,14 @@
         {
           "name": "赤石脂",
           "dosage": "一斤",
-          "role": "涩肠固脱"
+          "role": "涩肠固脱",
+          "clinical": "16钱"
         },
         {
           "name": "干姜",
           "dosage": "一两",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "1钱"
         },
         {
           "name": "粳米",
@@ -3028,24 +3313,28 @@
       "id": "xie_xin_tang_jj",
       "name": "泻心汤",
       "alias": "大黄黄连泻心汤",
-      "meridian": "心/胃",
+      "meridian": "少阴/阳明",
       "category": "清热剂",
       "components": [
         {
           "name": "大黄",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "黄连",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         },
         {
           "name": "黄芩",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         }
       ],
       "indication": "心气不足，吐血衄血。",
       "contraindication": "虚寒出血者不可用。",
+      "dosage": "以水三升，煮取一升，顿服之。",
       "explanation": "心胃火盛，迫血妄行。大黄黄连黄芩苦寒泻火止血。火降则血自归经。",
       "keywords": [
         "吐血",
@@ -3057,48 +3346,58 @@
       "id": "xiong_gui_tang",
       "name": "温经汤",
       "alias": "",
-      "meridian": "肝/冲脉",
+      "meridian": "厥阴",
       "category": "温里剂",
       "components": [
         {
           "name": "吴茱萸",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "当归",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "川芎",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "芍药",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "人参",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "桂枝",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "阿胶",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "丹皮",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "生姜",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "半夏",
@@ -3111,6 +3410,7 @@
       ],
       "indication": "妇人少腹寒，久不受胎。兼取崩中去血，或月水来过多，及至期不来。",
       "contraindication": "血热者慎用。",
+      "dosage": "以水一斗，煮取三升，分温二服，亦主妇人少腹寒，久不受胎。",
       "explanation": "冲任虚寒兼瘀。温经汤温经散寒、养血调经。吴茱萸桂枝温经，归芍芎养血，阿胶麦冬滋阴，丹皮活血。倪师治月经病常用此方。",
       "keywords": [
         "少腹寒",
@@ -3123,37 +3423,43 @@
       "id": "zhigancao_tang",
       "name": "炙甘草汤",
       "alias": "复脉汤",
-      "meridian": "太阳/心",
+      "meridian": "少阴/心",
       "category": "补益剂",
       "components": [
         {
           "name": "炙甘草",
           "dosage": "四两",
-          "role": "益气复脉"
+          "role": "益气复脉",
+          "clinical": "4钱"
         },
         {
           "name": "生姜",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "人参",
           "dosage": "二两",
-          "role": "益气"
+          "role": "益气",
+          "clinical": "2钱"
         },
         {
           "name": "生地黄",
           "dosage": "一斤",
-          "role": "滋阴养血"
+          "role": "滋阴养血",
+          "clinical": "16钱"
         },
         {
           "name": "桂枝",
           "dosage": "三两",
-          "role": "通阳"
+          "role": "通阳",
+          "clinical": "3钱"
         },
         {
           "name": "阿胶",
           "dosage": "二两",
-          "role": "滋阴养血"
+          "role": "滋阴养血",
+          "clinical": "2钱"
         },
         {
           "name": "麦门冬",
@@ -3185,17 +3491,19 @@
       "id": "langdangwan",
       "name": "狼牙汤",
       "alias": "",
-      "meridian": "外用",
+      "meridian": "厥阴/外用",
       "category": "清热剂",
       "components": [
         {
           "name": "狼牙",
           "dosage": "三两",
-          "role": "清热杀虫"
+          "role": "清热杀虫",
+          "clinical": "3钱"
         }
       ],
       "indication": "妇人阴中生疮。",
       "contraindication": "内服有毒，仅可外用。",
+      "dosage": "以水四升，煮取半升，以绵缠箸如茧，浸汤，沥阴中，日四遍。",
       "explanation": "外用杀虫止痒。狼牙即牙子（狼牙草）。",
       "keywords": [
         "阴中生疮",
@@ -3206,25 +3514,29 @@
       "id": "chizhishengjiangbanxiagancaoren_tang",
       "name": "猪苓散",
       "alias": "",
-      "meridian": "膀胱",
+      "meridian": "太阳/膀胱",
       "category": "祛湿剂",
       "components": [
         {
           "name": "猪苓",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         },
         {
           "name": "茯苓",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         },
         {
           "name": "白术",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         }
       ],
       "indication": "呕吐而病在膈上，后思水者，猪苓散主之。",
       "contraindication": "阴虚者慎用。",
       "explanation": "水饮在膈上致呕。猪苓茯苓利水，白术健脾。思水=水饮去后胃中津液不足。",
+      "dosage": "杵为散，饮服方寸匕，日三服。",
       "keywords": [
         "呕吐",
         "膈上",
@@ -3241,27 +3553,32 @@
         {
           "name": "猪苓",
           "dosage": "一两",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "1钱"
         },
         {
           "name": "茯苓",
           "dosage": "一两",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "1钱"
         },
         {
           "name": "泽泻",
           "dosage": "一两",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "1钱"
         },
         {
           "name": "阿胶",
           "dosage": "一两",
-          "role": "滋阴养血"
+          "role": "滋阴养血",
+          "clinical": "1钱"
         },
         {
           "name": "滑石",
           "dosage": "一两",
-          "role": "利水通淋"
+          "role": "利水通淋",
+          "clinical": "1钱"
         }
       ],
       "indication": "少阴病，下利六七日，咳而呕渴，心烦不得眠者。阳明病，脉浮发热，渴欲饮水，小便不利者。",
@@ -3285,22 +3602,26 @@
         {
           "name": "人参",
           "dosage": "三两",
-          "role": "益气补中"
+          "role": "益气补中",
+          "clinical": "3钱"
         },
         {
           "name": "干姜",
           "dosage": "三两",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "3钱"
         },
         {
           "name": "白术",
           "dosage": "三两",
-          "role": "健脾燥湿"
+          "role": "健脾燥湿",
+          "clinical": "3钱"
         },
         {
           "name": "炙甘草",
           "dosage": "三两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "3钱"
         }
       ],
       "indication": "太阴病：腹满而吐，食不下，自利益甚，时腹自痛。霍乱头痛发热，身疼痛，寒多不用水者。",
@@ -3320,18 +3641,20 @@
       "id": "gancao_ganjiang_tang",
       "name": "甘草干姜汤",
       "alias": "",
-      "meridian": "太阴",
+      "meridian": "太阳/太阴",
       "category": "温里剂",
       "components": [
         {
           "name": "炙甘草",
           "dosage": "四两",
-          "role": "补中缓急"
+          "role": "补中缓急",
+          "clinical": "4钱"
         },
         {
           "name": "干姜",
           "dosage": "二两",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "2钱"
         }
       ],
       "indication": "伤寒脉浮，自汗出，小便数，心烦，微恶寒，脚挛急。厥逆，咽中干，烦躁，吐逆者。",
@@ -3356,12 +3679,14 @@
         {
           "name": "干姜",
           "dosage": "一两",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "1钱"
         },
         {
           "name": "生附子",
           "dosage": "一枚",
-          "role": "回阳救逆"
+          "role": "回阳救逆",
+          "clinical": "3钱"
         }
       ],
       "indication": "下之后，复发汗，昼日烦躁不得眠，夜而安静，不呕不渴，无表证，脉沉微，身无大热者。",
@@ -3385,7 +3710,8 @@
         {
           "name": "炙甘草",
           "dosage": "四两",
-          "role": "补中和药"
+          "role": "补中和药",
+          "clinical": "4钱"
         },
         {
           "name": "半夏",
@@ -3393,19 +3719,23 @@
         },
         {
           "name": "黄芩",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "干姜",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "人参",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "黄连",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         },
         {
           "name": "大枣",
@@ -3434,22 +3764,26 @@
         {
           "name": "炙甘草",
           "dosage": "二两",
-          "role": "缓急止痛"
+          "role": "缓急止痛",
+          "clinical": "2钱"
         },
         {
           "name": "炮附子",
           "dosage": "二枚",
-          "role": "温里散寒"
+          "role": "温里散寒",
+          "clinical": "3钱"
         },
         {
           "name": "白术",
           "dosage": "二两",
-          "role": "健脾燥湿"
+          "role": "健脾燥湿",
+          "clinical": "2钱"
         },
         {
           "name": "桂枝",
           "dosage": "四两",
-          "role": "温经通阳"
+          "role": "温经通阳",
+          "clinical": "4钱"
         }
       ],
       "indication": "风湿相搏，骨节疼烦，掣痛不得屈伸，近之则痛剧，汗出短气，小便不利，恶风不欲去衣，或身微肿者。",
@@ -3468,20 +3802,23 @@
       "id": "gancao_fuzi_jj",
       "name": "甘草麻黄汤",
       "alias": "",
-      "meridian": "肺/脾",
+      "meridian": "太阳/太阴",
       "category": "化痰剂",
       "components": [
         {
           "name": "甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "麻黄",
-          "dosage": "四两"
+          "dosage": "四两",
+          "clinical": "4钱"
         }
       ],
       "indication": "皮水，身面浮肿，小便不利。",
       "contraindication": "风水有热者慎用。",
+      "dosage": "以水五升，先煮麻黄去上沫，内甘草，煮取三升，温服一升，重覆汗出，不汗再服，慎风寒。",
       "explanation": "皮水表实。麻黄发汗宣肺利水，甘草和中。二味药精简。",
       "keywords": [
         "皮水",
@@ -3493,7 +3830,7 @@
       "id": "gan_sui_ban_xia_tang",
       "name": "甘遂半夏汤",
       "alias": "",
-      "meridian": "肠/心",
+      "meridian": "太阴/阳明",
       "category": "化痰剂",
       "components": [
         {
@@ -3516,6 +3853,7 @@
       ],
       "indication": "病者脉伏，其人欲自利，利反快，虽利，心下续坚满，此为留饮欲去故也。",
       "contraindication": "体虚者慎用。",
+      "dosage": "以水一升五合，先煮肥大枣十枚，取八合，去滓，纳药末，强人服一钱匕，羸人服半钱匕，平旦温服之；不下者，明日更加半钱匕。得快利后，糜粥自养。",
       "explanation": "留饮欲去不去。甘遂攻逐水饮为君，半夏散结，芍药缓急，甘草和药。利反快=水饮去则舒。心下续坚满=水饮未尽。",
       "keywords": [
         "留饮",
@@ -3531,7 +3869,8 @@
       "components": [
         {
           "name": "甘草",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "小麦",
@@ -3543,6 +3882,8 @@
         }
       ],
       "indication": "妇人脏躁：悲伤欲哭，像如神灵所作，数欠伸。",
+      "contraindication": "痰火内盛、实热证及湿浊中阻者忌用；肥胖痰湿重者慎用。",
+      "dosage": "以水六升，煮取三升，温分三服，亦补脾气。",
       "explanation": "三味药煮粥吃都行。小麦养心，大枣补脾，甘草缓急。治妇人脏躁情志病。",
       "keywords": [
         "脏躁",
@@ -3561,7 +3902,8 @@
         {
           "name": "生姜",
           "dosage": "四两",
-          "role": "温胃散水"
+          "role": "温胃散水",
+          "clinical": "4钱"
         },
         {
           "name": "半夏",
@@ -3569,19 +3911,23 @@
         },
         {
           "name": "黄芩",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "干姜",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         },
         {
           "name": "人参",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "黄连",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         },
         {
           "name": "大枣",
@@ -3589,7 +3935,8 @@
         },
         {
           "name": "炙甘草",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         }
       ],
       "indication": "伤寒汗出解之后，胃中不和，心下痞硬，干噫食臭，胁下有水气，腹中雷鸣下利者。",
@@ -3608,37 +3955,44 @@
       "id": "baibaitouweng_jiagancao_ejiao_tang",
       "name": "白头翁加甘草阿胶汤",
       "alias": "",
-      "meridian": "肝/大肠",
+      "meridian": "厥阴/阳明",
       "category": "清热剂",
       "components": [
         {
           "name": "白头翁",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "黄连",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "黄柏",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "秦皮",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "阿胶",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         }
       ],
       "indication": "产后下利虚极。",
       "contraindication": "虚寒下利者不可用。",
       "explanation": "产后热利兼虚。白头翁汤清热止利，甘草阿胶养血缓中。产后体虚故加甘草阿胶扶正。",
+      "dosage": "以水七升，煮取二升半，内胶令消尽，分温三服。",
       "keywords": [
         "产后",
         "下利",
@@ -3649,28 +4003,32 @@
     {
       "id": "baizhu_fuzi_tang",
       "name": "白术附子汤",
-      "alias": "",
+      "alias": "去桂加白术汤",
       "meridian": "太阳/太阴",
       "category": "祛湿剂",
       "components": [
         {
           "name": "白术",
           "dosage": "二两",
-          "role": "健脾燥湿"
+          "role": "健脾燥湿",
+          "clinical": "2钱"
         },
         {
           "name": "炮附子",
           "dosage": "一枚半",
-          "role": "温里散寒"
+          "role": "温里散寒",
+          "clinical": "3钱"
         },
         {
           "name": "桂枝",
           "dosage": "四两",
-          "role": "温经通阳"
+          "role": "温经通阳",
+          "clinical": "4钱"
         },
         {
           "name": "生姜",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "大枣",
@@ -3678,7 +4036,8 @@
         },
         {
           "name": "炙甘草",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         }
       ],
       "indication": "伤寒八九日，风湿相搏，身体疼烦，不能自转侧，不呕不渴，脉浮虚而涩者。",
@@ -3701,15 +4060,18 @@
       "components": [
         {
           "name": "知母",
-          "dosage": "六两"
+          "dosage": "六两",
+          "clinical": "6钱"
         },
         {
           "name": "石膏",
-          "dosage": "一斤"
+          "dosage": "一斤",
+          "clinical": "16钱"
         },
         {
           "name": "炙甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "粳米",
@@ -3718,7 +4080,8 @@
         {
           "name": "人参",
           "dosage": "三两",
-          "role": "益气生津"
+          "role": "益气生津",
+          "clinical": "3钱"
         }
       ],
       "indication": "白虎汤证兼气阴两伤：口燥渴，舌上干燥，大烦渴不解，脉洪大。汗大出后，大烦渴不解。",
@@ -3741,11 +4104,13 @@
       "components": [
         {
           "name": "知母",
-          "dosage": "六两"
+          "dosage": "六两",
+          "clinical": "6钱"
         },
         {
           "name": "石膏",
-          "dosage": "一斤"
+          "dosage": "一斤",
+          "clinical": "16钱"
         },
         {
           "name": "粳米",
@@ -3753,12 +4118,14 @@
         },
         {
           "name": "炙甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "桂枝",
           "dosage": "三两",
-          "role": "解表散邪"
+          "role": "解表散邪",
+          "clinical": "3钱"
         }
       ],
       "indication": "温疟者，其脉如平，身无寒但热，骨节疼烦，时呕。",
@@ -3781,17 +4148,20 @@
         {
           "name": "知母",
           "dosage": "六两",
-          "role": "清热除烦生津"
+          "role": "清热除烦生津",
+          "clinical": "6钱"
         },
         {
           "name": "石膏",
           "dosage": "一斤",
-          "role": "清肺胃热"
+          "role": "清肺胃热",
+          "clinical": "16钱"
         },
         {
           "name": "炙甘草",
           "dosage": "二两",
-          "role": "益气和中"
+          "role": "益气和中",
+          "clinical": "2钱"
         },
         {
           "name": "粳米",
@@ -3815,7 +4185,7 @@
       "id": "baihe_di_huang_tang",
       "name": "百合地黄汤",
       "alias": "",
-      "meridian": "心/肺",
+      "meridian": "少阴/太阴",
       "category": "清热剂",
       "components": [
         {
@@ -3843,7 +4213,7 @@
       "id": "baihe_jinzi_shigao_tang",
       "name": "百合鸡子黄汤",
       "alias": "",
-      "meridian": "心/肺",
+      "meridian": "少阴/太阴",
       "category": "补益剂",
       "components": [
         {
@@ -3875,27 +4245,32 @@
         {
           "name": "茯苓",
           "dosage": "三两",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
           "dosage": "三两",
-          "role": "柔肝利水"
+          "role": "柔肝利水",
+          "clinical": "3钱"
         },
         {
           "name": "生姜",
           "dosage": "三两",
-          "role": "温胃散寒"
+          "role": "温胃散寒",
+          "clinical": "3钱"
         },
         {
           "name": "白术",
           "dosage": "二两",
-          "role": "健脾燥湿"
+          "role": "健脾燥湿",
+          "clinical": "2钱"
         },
         {
           "name": "炮附子",
           "dosage": "一枚",
-          "role": "温阳化气"
+          "role": "温阳化气",
+          "clinical": "3钱"
         }
       ],
       "indication": "少阴病，二三日不已，至四五日，腹痛，小便不利，四肢沉重疼痛，自下利者，此为有水气。其人或咳，或小便利，或下利，或呕者。",
@@ -3914,20 +4289,23 @@
       "id": "zizhisan",
       "name": "紫参汤",
       "alias": "",
-      "meridian": "肺/大肠",
+      "meridian": "太阴/阳明",
       "category": "清热剂",
       "components": [
         {
           "name": "紫参",
-          "dosage": "半斤"
+          "dosage": "半斤",
+          "clinical": "8钱"
         },
         {
           "name": "甘草",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         }
       ],
       "indication": "下利肺痛。",
       "contraindication": "虚寒下利者慎用。",
+      "dosage": "以水五升，先煮紫参取二升，内甘草煮取一升半，分温三服。",
       "explanation": "紫参清热解毒止利，甘草和中。肺与大肠相表里，下利+肺痛=热利。",
       "keywords": [
         "下利",
@@ -3966,38 +4344,48 @@
       "components": [
         {
           "name": "熟地",
-          "dosage": "八两"
+          "dosage": "八两",
+          "clinical": "8钱"
         },
         {
           "name": "山药",
-          "dosage": "四两"
+          "dosage": "四两",
+          "clinical": "4钱"
         },
         {
           "name": "山茱萸",
-          "dosage": "四两"
+          "dosage": "四两",
+          "clinical": "4钱"
         },
         {
           "name": "丹皮",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "茯苓",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "泽泻",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "桂枝",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         },
         {
           "name": "炮附子",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         }
       ],
       "indication": "虚劳腰痛，少腹拘急，小便不利。脚冷，大便稀。治虚劳通用方。",
+      "contraindication": "阴虚火旺、实热证忌用；表证未解、孕妇慎用。",
+      "dosage": "末之炼蜜和丸，梧子大，酒下十五丸，加至二十丸，日再服。",
       "explanation": "三补三泻。桂枝强心移热小肠，炮附子固下焦之阳。肾气丸让脚热，治虚劳手脚冷。",
       "keywords": [
         "腰痛",
@@ -4017,12 +4405,14 @@
         {
           "name": "芍药",
           "dosage": "四两",
-          "role": "柔肝缓急止痛"
+          "role": "柔肝缓急止痛",
+          "clinical": "4钱"
         },
         {
           "name": "炙甘草",
           "dosage": "二两",
-          "role": "甘缓和中"
+          "role": "甘缓和中",
+          "clinical": "2钱"
         }
       ],
       "indication": "脚挛急（芍药甘草附子汤证之轻者）。平人可用治腿抽筋。",
@@ -4040,23 +4430,26 @@
       "id": "shaoyao_gancao_fuzi_tang",
       "name": "芍药甘草附子汤",
       "alias": "",
-      "meridian": "太阳",
+      "meridian": "少阴",
       "category": "温里剂",
       "components": [
         {
           "name": "芍药",
           "dosage": "三两",
-          "role": "柔肝缓急"
+          "role": "柔肝缓急",
+          "clinical": "3钱"
         },
         {
           "name": "炙甘草",
           "dosage": "二两",
-          "role": "甘缓和中"
+          "role": "甘缓和中",
+          "clinical": "2钱"
         },
         {
           "name": "炮附子",
           "dosage": "一枚",
-          "role": "温经散寒"
+          "role": "温经散寒",
+          "clinical": "3钱"
         }
       ],
       "indication": "发汗，病不解，反恶寒者，虚故也。",
@@ -4080,22 +4473,26 @@
         {
           "name": "茯苓",
           "dosage": "四两",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "4钱"
         },
         {
           "name": "桂枝",
           "dosage": "三两",
-          "role": "温阳化气"
+          "role": "温阳化气",
+          "clinical": "3钱"
         },
         {
           "name": "白术",
           "dosage": "二两",
-          "role": "健脾燥湿"
+          "role": "健脾燥湿",
+          "clinical": "2钱"
         },
         {
           "name": "炙甘草",
           "dosage": "二两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "2钱"
         }
       ],
       "indication": "伤寒，若吐若下后，心下逆满，气上冲胸，起则头眩，脉沉紧。发汗则动经，身为振振摇者。",
@@ -4119,15 +4516,18 @@
       "components": [
         {
           "name": "茯苓",
-          "dosage": "半斤"
+          "dosage": "半斤",
+          "clinical": "8钱"
         },
         {
           "name": "桂枝",
-          "dosage": "四两"
+          "dosage": "四两",
+          "clinical": "4钱"
         },
         {
           "name": "炙甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "大枣",
@@ -4148,7 +4548,7 @@
       "id": "kushen_tang",
       "name": "苦参汤",
       "alias": "",
-      "meridian": "外用",
+      "meridian": "厥阴/外用",
       "category": "外用剂",
       "components": [
         {
@@ -4175,26 +4575,33 @@
       "components": [
         {
           "name": "茯苓",
-          "dosage": "四两"
+          "dosage": "四两",
+          "clinical": "4钱"
         },
         {
           "name": "人参",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         },
         {
           "name": "生附子",
-          "dosage": "一枚"
+          "dosage": "一枚",
+          "clinical": "3钱"
         },
         {
           "name": "干姜",
-          "dosage": "一两半"
+          "dosage": "一两半",
+          "clinical": "1.5钱"
         },
         {
           "name": "炙甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         }
       ],
       "indication": "发汗若下之，病仍不解，烦躁者。",
+      "contraindication": "纯实热、阳证烦躁及非亡阳厥逆者不宜。",
+      "dosage": "以水五升，煮取三升，去滓，温服七合，日三服。",
       "explanation": "四逆汤加茯苓人参。阳虚兼水饮，烦躁是阳虚欲脱。茯苓利水，人参补气，四逆汤回阳。",
       "keywords": [
         "烦躁",
@@ -4212,17 +4619,20 @@
         {
           "name": "茯苓",
           "dosage": "半斤",
-          "role": "利水宁心"
+          "role": "利水宁心",
+          "clinical": "8钱"
         },
         {
           "name": "桂枝",
           "dosage": "四两",
-          "role": "平冲降逆"
+          "role": "平冲降逆",
+          "clinical": "4钱"
         },
         {
           "name": "炙甘草",
           "dosage": "二两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "2钱"
         },
         {
           "name": "大枣",
@@ -4251,22 +4661,26 @@
         {
           "name": "茯苓",
           "dosage": "二两",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "2钱"
         },
         {
           "name": "桂枝",
           "dosage": "二两",
-          "role": "温阳化气"
+          "role": "温阳化气",
+          "clinical": "2钱"
         },
         {
           "name": "炙甘草",
           "dosage": "一两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "1钱"
         },
         {
           "name": "生姜",
           "dosage": "三两",
-          "role": "温胃散寒"
+          "role": "温胃散寒",
+          "clinical": "3钱"
         }
       ],
       "indication": "伤寒汗出而渴者，五苓散主之；不渴者，茯苓甘草汤主之。心下悸者。",
@@ -4283,7 +4697,7 @@
       "id": "yinchen_wuling_san",
       "name": "茵陈五苓散",
       "alias": "",
-      "meridian": "肝/膀胱",
+      "meridian": "厥阴/太阳",
       "category": "祛湿剂",
       "components": [
         {
@@ -4297,6 +4711,7 @@
       ],
       "indication": "黄疸病，茵陈五苓散主之。",
       "contraindication": "热重于湿者当用茵陈蒿汤。",
+      "dosage": "上二味和，先食饮服方寸匕，日三服。",
       "explanation": "湿重于热的黄疸。茵陈退黄，五苓散利水渗湿。比茵陈蒿汤力量缓和。",
       "keywords": [
         "黄疸",
@@ -4307,13 +4722,14 @@
       "id": "yinchen_hao_tang_jj",
       "name": "茵陈蒿汤",
       "alias": "",
-      "meridian": "肝/胆/脾",
+      "meridian": "阳明/太阴/少阳",
       "category": "清热剂",
       "components": [
         {
           "name": "茵陈蒿",
           "dosage": "六两",
-          "role": "清热利湿退黄"
+          "role": "清热利湿退黄",
+          "clinical": "6钱"
         },
         {
           "name": "栀子",
@@ -4323,11 +4739,13 @@
         {
           "name": "大黄",
           "dosage": "二两",
-          "role": "攻下泄热"
+          "role": "攻下泄热",
+          "clinical": "2钱"
         }
       ],
       "indication": "谷疸之为病，寒热不食，食即头眩，心胸不安，久久发黄为谷疸。阳明病发热汗出者，此为热越，不能发黄也。但头汗出，身无汗，剂颈而还，小便不利，渴引水浆者，此为瘀热在里，身必发黄。",
       "contraindication": "寒湿黄疸者慎用。",
+      "dosage": "以水一斗二升，先煮茵陈减六升，纳二味，煮取三升，去滓，分温三服。",
       "explanation": "湿热黄疸。茵陈清热利湿退黄为君，栀子清三焦热，大黄通腑泄热。头汗出+小便不利+身黄=湿热瘀里。",
       "keywords": [
         "黄疸",
@@ -4346,23 +4764,28 @@
       "components": [
         {
           "name": "葛根",
-          "dosage": "四两"
+          "dosage": "四两",
+          "clinical": "4钱"
         },
         {
           "name": "麻黄",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "桂枝",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "生姜",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "大枣",
@@ -4370,7 +4793,8 @@
         },
         {
           "name": "炙甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "半夏",
@@ -4398,25 +4822,30 @@
         {
           "name": "葛根",
           "dosage": "四两",
-          "role": "升津舒经"
+          "role": "升津舒经",
+          "clinical": "4钱"
         },
         {
           "name": "麻黄",
           "dosage": "三两",
-          "role": "发汗解表"
+          "role": "发汗解表",
+          "clinical": "3钱"
         },
         {
           "name": "桂枝",
           "dosage": "二两",
-          "role": "温经散寒"
+          "role": "温经散寒",
+          "clinical": "2钱"
         },
         {
           "name": "生姜",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "大枣",
@@ -4424,7 +4853,8 @@
         },
         {
           "name": "炙甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         }
       ],
       "indication": "太阳病，项背强几几，无汗恶风者。太阳阳明合病自下利者。",
@@ -4449,22 +4879,26 @@
         {
           "name": "葛根",
           "dosage": "半斤",
-          "role": "升清止利"
+          "role": "升清止利",
+          "clinical": "8钱"
         },
         {
           "name": "黄芩",
           "dosage": "三两",
-          "role": "清热燥湿"
+          "role": "清热燥湿",
+          "clinical": "3钱"
         },
         {
           "name": "黄连",
           "dosage": "三两",
-          "role": "清热燥湿"
+          "role": "清热燥湿",
+          "clinical": "3钱"
         },
         {
           "name": "炙甘草",
           "dosage": "二两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "2钱"
         }
       ],
       "indication": "太阳病，桂枝证，医反下之，利遂不止，脉促者，表未解也。喘而汗出者。",
@@ -4483,7 +4917,7 @@
       "id": "tingli_dazao_xiefei_tang",
       "name": "葶苈大枣泻肺汤",
       "alias": "",
-      "meridian": "肺",
+      "meridian": "太阴/肺",
       "category": "化痰剂",
       "components": [
         {
@@ -4511,7 +4945,7 @@
       "id": "puleisan",
       "name": "蒲灰散",
       "alias": "",
-      "meridian": "膀胱",
+      "meridian": "太阳/膀胱",
       "category": "祛湿剂",
       "components": [
         {
@@ -4525,6 +4959,7 @@
       ],
       "indication": "小便不利，或有水气。",
       "contraindication": "无瘀热者慎用。",
+      "dosage": "杵为散，饮服方寸匕，日三服。",
       "explanation": "蒲灰（蒲黄灰）活血利水，滑石利水通淋。治小便不利兼瘀热。",
       "keywords": [
         "小便不利",
@@ -4535,22 +4970,25 @@
       "id": "fu_zi_sheng_jiang_ji_shi_tang",
       "name": "薏苡附子散",
       "alias": "",
-      "meridian": "心/阳",
+      "meridian": "少阴/心",
       "category": "温里剂",
       "components": [
         {
           "name": "薏苡仁",
-          "dosage": "十五两"
+          "dosage": "十五两",
+          "clinical": "15钱"
         },
         {
           "name": "炮附子",
           "dosage": "十枚",
-          "role": "温阳散寒"
+          "role": "温阳散寒",
+          "clinical": "3钱"
         }
       ],
       "indication": "胸痹缓急者（胸痹发作有时，缓则如常人）。",
       "contraindication": "阴虚者慎用。",
       "explanation": "胸痹阳虚寒盛。附子温阳散寒止痛，薏苡仁除湿舒筋。散剂缓服。",
+      "dosage": "杵为散，服方寸匕，日三服。",
       "keywords": [
         "胸痹",
         "缓急",
@@ -4561,7 +4999,7 @@
       "id": "yiyi_fuzi_baijiang_san",
       "name": "薏苡附子败酱散",
       "alias": "",
-      "meridian": "大肠",
+      "meridian": "阳明/厥阴",
       "category": "金疮药",
       "components": [
         {
@@ -4580,6 +5018,7 @@
       ],
       "indication": "肠痈之为病，其身甲错，腹皮急，按之濡，如肿状，腹无积聚，身无热，脉数。",
       "contraindication": "肠痈热盛者当用大黄牡丹汤。",
+      "dosage": "以水二升，煎减半，顿服，小便当下。",
       "explanation": "肠痈脓已成。薏苡仁排脓，败酱草清热排脓，附子温通。身无热+脉数=脓已成而正气不足。",
       "keywords": [
         "肠痈",
@@ -4591,7 +5030,7 @@
       "id": "shechuangzi_san",
       "name": "蛇床子散",
       "alias": "",
-      "meridian": "外用",
+      "meridian": "少阴/外用",
       "category": "祛湿剂",
       "components": [
         {
@@ -4603,6 +5042,7 @@
       "indication": "妇人阴寒。",
       "contraindication": "内服需慎。",
       "explanation": "外用燥湿杀虫止痒。蛇床子为外治妇科要药。",
+      "dosage": "末之，以白粉少许，和合相得，如枣大，绵裹内之，自然温。",
       "keywords": [
         "阴寒",
         "外用"
@@ -4612,7 +5052,7 @@
       "id": "helisan",
       "name": "诃黎勒散",
       "alias": "",
-      "meridian": "大肠",
+      "meridian": "阳明/太阴",
       "category": "补益剂",
       "components": [
         {
@@ -4623,6 +5063,7 @@
       ],
       "indication": "气利（矢气时大便随之而出）。",
       "contraindication": "湿热初起者忌涩。",
+      "dosage": "粥饮和，顿服。",
       "explanation": "气虚下陷，大便随矢气而出。诃黎勒涩肠固脱。散剂顿服。",
       "keywords": [
         "气利",
@@ -4640,12 +5081,14 @@
         {
           "name": "大黄",
           "dosage": "四两",
-          "role": "攻下热结"
+          "role": "攻下热结",
+          "clinical": "4钱"
         },
         {
           "name": "炙甘草",
           "dosage": "二两",
-          "role": "缓和药性"
+          "role": "缓和药性",
+          "clinical": "2钱"
         },
         {
           "name": "芒硝",
@@ -4668,20 +5111,23 @@
       "id": "yuebi_jia_banxia_tang",
       "name": "越婢加半夏汤",
       "alias": "",
-      "meridian": "肺",
+      "meridian": "太阳/太阴",
       "category": "化痰剂",
       "components": [
         {
           "name": "麻黄",
-          "dosage": "六两"
+          "dosage": "六两",
+          "clinical": "6钱"
         },
         {
           "name": "石膏",
-          "dosage": "半斤"
+          "dosage": "半斤",
+          "clinical": "8钱"
         },
         {
           "name": "生姜",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "大枣",
@@ -4689,7 +5135,8 @@
         },
         {
           "name": "炙甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "半夏",
@@ -4699,6 +5146,7 @@
       "indication": "咳而上气，此为肺胀，其人喘，目如脱状。",
       "contraindication": "无痰饮者慎用。",
       "explanation": "肺胀咳喘。越婢汤宣肺清热，半夏化痰降逆。目如脱状=咳喘严重。",
+      "dosage": "以水六升，先煮麻黄，去上沫，内诸药，煮取三升，分温三服。",
       "keywords": [
         "肺胀",
         "咳而上气",
@@ -4710,20 +5158,23 @@
       "id": "yuebi_tang",
       "name": "越婢汤",
       "alias": "",
-      "meridian": "肺/脾",
+      "meridian": "太阳/太阴",
       "category": "化痰剂",
       "components": [
         {
           "name": "麻黄",
-          "dosage": "六两"
+          "dosage": "六两",
+          "clinical": "6钱"
         },
         {
           "name": "石膏",
-          "dosage": "半斤"
+          "dosage": "半斤",
+          "clinical": "8钱"
         },
         {
           "name": "生姜",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "大枣",
@@ -4731,11 +5182,13 @@
         },
         {
           "name": "炙甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         }
       ],
       "indication": "风水恶风，一身悉肿，脉浮不渴，续自汗出，无大热。",
       "contraindication": "无表证者慎用。",
+      "dosage": "以水六升，先煮麻黄，去上沫，内诸药，煮取三升，分温三服。",
       "explanation": "风水夹热。麻黄宣肺利水，石膏清里热。一身悉肿+自汗出=风水在表兼里热。",
       "keywords": [
         "风水",
@@ -4753,15 +5206,18 @@
       "components": [
         {
           "name": "生附子",
-          "dosage": "大者一枚"
+          "dosage": "大者一枚",
+          "clinical": "3钱"
         },
         {
           "name": "干姜",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "炙甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "猪胆汁",
@@ -4790,17 +5246,20 @@
         {
           "name": "生附子",
           "dosage": "大者一枚",
-          "role": "回阳救逆"
+          "role": "回阳救逆",
+          "clinical": "3钱"
         },
         {
           "name": "干姜",
           "dosage": "三两",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "3钱"
         },
         {
           "name": "炙甘草",
           "dosage": "二两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "2钱"
         }
       ],
       "indication": "少阴病，下利清谷，里寒外热，手足厥逆，脉微欲绝，身反不恶寒，其人面色赤，或腹痛，或干呕，或咽痛，或利止脉不出者。",
@@ -4819,7 +5278,7 @@
       "id": "suanzaoren_tang",
       "name": "酸枣仁汤",
       "alias": "",
-      "meridian": "肝/心",
+      "meridian": "厥阴/少阴",
       "category": "安神剂",
       "components": [
         {
@@ -4829,22 +5288,26 @@
         },
         {
           "name": "甘草",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         },
         {
           "name": "知母",
           "dosage": "二两",
-          "role": "清热除烦"
+          "role": "清热除烦",
+          "clinical": "2钱"
         },
         {
           "name": "茯苓",
           "dosage": "二两",
-          "role": "宁心安神"
+          "role": "宁心安神",
+          "clinical": "2钱"
         },
         {
           "name": "川芎",
           "dosage": "二两",
-          "role": "调血养肝"
+          "role": "调血养肝",
+          "clinical": "2钱"
         }
       ],
       "indication": "虚劳虚烦不得眠。",
@@ -4866,27 +5329,33 @@
       "components": [
         {
           "name": "防己",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "黄芪",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "桂枝",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "茯苓",
-          "dosage": "六两"
+          "dosage": "六两",
+          "clinical": "6钱"
         },
         {
           "name": "炙甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         }
       ],
       "indication": "皮水为病，四肢肿，水气在皮肤中，四肢聂聂动者。",
       "contraindication": "无皮水者慎用。",
+      "dosage": "以水六升，煮取二升，分温三服。",
       "explanation": "皮水=水行皮中。防己茯苓利水，黄芪益气固表，桂枝通阳化气。四肢聂聂动=水气在皮肤中跳动。",
       "keywords": [
         "皮水",
@@ -4904,12 +5373,14 @@
         {
           "name": "防己",
           "dosage": "一两",
-          "role": "祛风利水"
+          "role": "祛风利水",
+          "clinical": "1钱"
         },
         {
           "name": "黄芪",
           "dosage": "一两一分",
-          "role": "益气固表"
+          "role": "益气固表",
+          "clinical": "1钱"
         },
         {
           "name": "白术",
@@ -4918,7 +5389,8 @@
         },
         {
           "name": "炙甘草",
-          "dosage": "半两"
+          "dosage": "半两",
+          "clinical": "0.5钱"
         }
       ],
       "indication": "风湿，脉浮身重，汗出恶风者。",
@@ -4942,27 +5414,32 @@
         {
           "name": "炮附子",
           "dosage": "二枚",
-          "role": "温经散寒"
+          "role": "温经散寒",
+          "clinical": "3钱"
         },
         {
           "name": "茯苓",
           "dosage": "三两",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "3钱"
         },
         {
           "name": "人参",
           "dosage": "二两",
-          "role": "益气"
+          "role": "益气",
+          "clinical": "2钱"
         },
         {
           "name": "白术",
           "dosage": "四两",
-          "role": "健脾燥湿"
+          "role": "健脾燥湿",
+          "clinical": "4钱"
         },
         {
           "name": "芍药",
           "dosage": "三两",
-          "role": "柔肝缓急"
+          "role": "柔肝缓急",
+          "clinical": "3钱"
         }
       ],
       "indication": "少阴病，得之一二日，口中和，其背恶寒者，当灸之。少阴病，身体痛，手足寒，骨节痛，脉沉者。",
@@ -4986,20 +5463,24 @@
       "components": [
         {
           "name": "大黄",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "黄连",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         },
         {
           "name": "黄芩",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         },
         {
           "name": "炮附子",
           "dosage": "一枚",
-          "role": "温经固表"
+          "role": "温经固表",
+          "clinical": "3钱"
         }
       ],
       "indication": "心下痞，而复恶寒汗出者。",
@@ -5023,7 +5504,8 @@
         {
           "name": "炮附子",
           "dosage": "一枚",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "3钱"
         },
         {
           "name": "半夏",
@@ -5033,7 +5515,8 @@
         {
           "name": "甘草",
           "dosage": "一两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "1钱"
         },
         {
           "name": "大枣",
@@ -5060,7 +5543,7 @@
       "id": "biejia_jian_wan",
       "name": "鳖甲煎丸",
       "alias": "",
-      "meridian": "肝/脾",
+      "meridian": "厥阴/太阴",
       "category": "活血化瘀剂",
       "components": [
         {
@@ -5171,7 +5654,7 @@
       "id": "mai_men_dong_tang",
       "name": "麦门冬汤",
       "alias": "",
-      "meridian": "肺/胃",
+      "meridian": "太阴/阳明",
       "category": "补益剂",
       "components": [
         {
@@ -5186,11 +5669,13 @@
         },
         {
           "name": "人参",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "粳米",
@@ -5221,7 +5706,8 @@
         {
           "name": "麻黄",
           "dosage": "四两",
-          "role": "宣肺平喘"
+          "role": "宣肺平喘",
+          "clinical": "4钱"
         },
         {
           "name": "杏仁",
@@ -5231,12 +5717,14 @@
         {
           "name": "石膏",
           "dosage": "半斤",
-          "role": "清肺热"
+          "role": "清肺热",
+          "clinical": "8钱"
         },
         {
           "name": "炙甘草",
           "dosage": "二两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "2钱"
         }
       ],
       "indication": "发汗后，不可更行桂枝汤。汗出而喘，无大热者。",
@@ -5260,11 +5748,13 @@
       "components": [
         {
           "name": "麻黄",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "桂枝",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "杏仁",
@@ -5272,12 +5762,14 @@
         },
         {
           "name": "炙甘草",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         },
         {
           "name": "白术",
           "dosage": "四两",
-          "role": "健脾燥湿"
+          "role": "健脾燥湿",
+          "clinical": "4钱"
         }
       ],
       "indication": "湿家身烦疼。",
@@ -5300,7 +5792,8 @@
         {
           "name": "麻黄",
           "dosage": "半两",
-          "role": "轻宣肺气"
+          "role": "轻宣肺气",
+          "clinical": "0.5钱"
         },
         {
           "name": "杏仁",
@@ -5309,11 +5802,13 @@
         {
           "name": "薏苡仁",
           "dosage": "半两",
-          "role": "利湿除痹"
+          "role": "利湿除痹",
+          "clinical": "0.5钱"
         },
         {
           "name": "炙甘草",
-          "dosage": "一两"
+          "dosage": "一两",
+          "clinical": "1钱"
         }
       ],
       "indication": "病者一身尽疼，发热，日晡所剧者，名风湿。此病伤于汗出当风，或久伤取冷所致。",
@@ -5336,12 +5831,14 @@
         {
           "name": "麻黄",
           "dosage": "三两",
-          "role": "开毛孔，发汗解表"
+          "role": "开毛孔，发汗解表",
+          "clinical": "3钱"
         },
         {
           "name": "桂枝",
           "dosage": "二两",
-          "role": "温经散寒"
+          "role": "温经散寒",
+          "clinical": "2钱"
         },
         {
           "name": "杏仁",
@@ -5351,7 +5848,8 @@
         {
           "name": "炙甘草",
           "dosage": "一两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "1钱"
         }
       ],
       "indication": "太阳伤寒：或已发热，或未发热，必恶寒，体痛，呕逆，脉阴阳俱紧。",
@@ -5377,17 +5875,20 @@
         {
           "name": "麻黄",
           "dosage": "二两",
-          "role": "发汗解表"
+          "role": "发汗解表",
+          "clinical": "2钱"
         },
         {
           "name": "炮附子",
           "dosage": "一枚",
-          "role": "温经助阳"
+          "role": "温经助阳",
+          "clinical": "3钱"
         },
         {
           "name": "炙甘草",
           "dosage": "二两",
-          "role": "调和缓中"
+          "role": "调和缓中",
+          "clinical": "2钱"
         }
       ],
       "indication": "少阴病，得之二三日，麻黄附子甘草汤微发汗。以二三日无证，故微发汗也。",
@@ -5411,17 +5912,20 @@
         {
           "name": "麻黄",
           "dosage": "二两",
-          "role": "发汗解表"
+          "role": "发汗解表",
+          "clinical": "2钱"
         },
         {
           "name": "炮附子",
           "dosage": "一枚",
-          "role": "温经助阳"
+          "role": "温经助阳",
+          "clinical": "3钱"
         },
         {
           "name": "细辛",
           "dosage": "二两",
-          "role": "温经散寒，化饮"
+          "role": "温经散寒，化饮",
+          "clinical": "2钱"
         }
       ],
       "indication": "少阴病，始得之，反发热，脉沉者。",
@@ -5440,41 +5944,49 @@
       "id": "huangtu_tang",
       "name": "黄土汤",
       "alias": "",
-      "meridian": "脾",
+      "meridian": "太阴/脾",
       "category": "止血剂",
       "components": [
         {
           "name": "甘草",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "干地黄",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "白术",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "炮附子",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "阿胶",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "黄芩",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "灶中黄土",
           "dosage": "半斤",
-          "role": "温中止血"
+          "role": "温中止血",
+          "clinical": "8钱"
         }
       ],
       "indication": "下血，先便后血，此远血也。",
       "contraindication": "热盛出血者不可用。",
+      "dosage": "以水八升，煮取三升，分温三服。",
       "explanation": "脾阳虚不能统血。灶中黄土温中止血，附子白术温阳健脾，地黄阿胶养血，黄芩防温燥太过。先便后血=远血（上消化道出血）。",
       "keywords": [
         "下血",
@@ -5492,15 +6004,18 @@
       "components": [
         {
           "name": "黄芩",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "炙甘草",
-          "dosage": "二两"
+          "dosage": "二两",
+          "clinical": "2钱"
         },
         {
           "name": "大枣",
@@ -5514,7 +6029,8 @@
         {
           "name": "生姜",
           "dosage": "三两",
-          "role": "和胃止呕"
+          "role": "和胃止呕",
+          "clinical": "3钱"
         }
       ],
       "indication": "太阳与少阳合病，自下利者，兼呕。",
@@ -5537,17 +6053,20 @@
         {
           "name": "黄芩",
           "dosage": "二两",
-          "role": "清热燥湿"
+          "role": "清热燥湿",
+          "clinical": "2钱"
         },
         {
           "name": "芍药",
           "dosage": "二两",
-          "role": "柔肝缓急"
+          "role": "柔肝缓急",
+          "clinical": "2钱"
         },
         {
           "name": "炙甘草",
           "dosage": "二两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "2钱"
         },
         {
           "name": "大枣",
@@ -5576,19 +6095,23 @@
         {
           "name": "黄芪",
           "dosage": "三两",
-          "role": "益气固表"
+          "role": "益气固表",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "桂枝",
-          "dosage": "三两"
+          "dosage": "三两",
+          "clinical": "3钱"
         },
         {
           "name": "生姜",
-          "dosage": "六两"
+          "dosage": "六两",
+          "clinical": "6钱"
         },
         {
           "name": "大枣",
@@ -5616,27 +6139,32 @@
         {
           "name": "黄连",
           "dosage": "三两",
-          "role": "清上热"
+          "role": "清上热",
+          "clinical": "3钱"
         },
         {
           "name": "炙甘草",
           "dosage": "三两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "3钱"
         },
         {
           "name": "干姜",
           "dosage": "三两",
-          "role": "温下寒"
+          "role": "温下寒",
+          "clinical": "3钱"
         },
         {
           "name": "桂枝",
           "dosage": "三两",
-          "role": "通阳散寒"
+          "role": "通阳散寒",
+          "clinical": "3钱"
         },
         {
           "name": "人参",
           "dosage": "二两",
-          "role": "益气补中"
+          "role": "益气补中",
+          "clinical": "2钱"
         },
         {
           "name": "半夏",
@@ -5669,22 +6197,26 @@
         {
           "name": "黄连",
           "dosage": "四两",
-          "role": "清心火"
+          "role": "清心火",
+          "clinical": "4钱"
         },
         {
           "name": "黄芩",
           "dosage": "二两",
-          "role": "清热"
+          "role": "清热",
+          "clinical": "2钱"
         },
         {
           "name": "芍药",
           "dosage": "二两",
-          "role": "敛阴和营"
+          "role": "敛阴和营",
+          "clinical": "2钱"
         },
         {
           "name": "阿胶",
           "dosage": "三两",
-          "role": "滋阴养血"
+          "role": "滋阴养血",
+          "clinical": "3钱"
         },
         {
           "name": "鸡子黄",
@@ -5718,17 +6250,20 @@
         {
           "name": "芍药",
           "dosage": "半斤",
-          "role": "缓急止痛"
+          "role": "缓急止痛",
+          "clinical": "8钱"
         },
         {
           "name": "枳实",
           "dosage": "半斤",
-          "role": "行气除满"
+          "role": "行气除满",
+          "clinical": "8钱"
         },
         {
           "name": "大黄",
           "dosage": "一斤",
-          "role": "泻热通便"
+          "role": "泻热通便",
+          "clinical": "16钱"
         },
         {
           "name": "厚朴",
@@ -5763,22 +6298,26 @@
         {
           "name": "白头翁",
           "dosage": "二两",
-          "role": "清热解毒凉血"
+          "role": "清热解毒凉血",
+          "clinical": "2钱"
         },
         {
           "name": "黄连",
           "dosage": "三两",
-          "role": "清热燥湿"
+          "role": "清热燥湿",
+          "clinical": "3钱"
         },
         {
           "name": "黄柏",
           "dosage": "三两",
-          "role": "清热燥湿"
+          "role": "清热燥湿",
+          "clinical": "3钱"
         },
         {
           "name": "秦皮",
           "dosage": "三两",
-          "role": "清热燥湿"
+          "role": "清热燥湿",
+          "clinical": "3钱"
         }
       ],
       "indication": "热利下重者，白头翁汤主之。",
@@ -5797,7 +6336,7 @@
     {
       "name": "十枣汤",
       "alias": "",
-      "meridian": "太阳/阳明",
+      "meridian": "太阳/太阴",
       "category": "化痰剂",
       "components": [
         {
@@ -5867,7 +6406,8 @@
         {
           "name": "大黄",
           "dosage": "半斤",
-          "role": "泻热通便"
+          "role": "泻热通便",
+          "clinical": "8钱"
         },
         {
           "name": "芒硝",
@@ -5904,7 +6444,7 @@
     },
     {
       "name": "三物小白散",
-      "alias": "白散",
+      "alias": "白散,桔梗白散",
       "meridian": "太阳",
       "category": "温里剂",
       "components": [
@@ -5944,17 +6484,20 @@
         {
           "name": "禹余粮",
           "dosage": "四两",
-          "role": "涩肠止泻"
+          "role": "涩肠止泻",
+          "clinical": "4钱"
         },
         {
           "name": "人参",
           "dosage": "三两",
-          "role": "补气固脱"
+          "role": "补气固脱",
+          "clinical": "3钱"
         },
         {
           "name": "附子",
           "dosage": "二枚炮",
-          "role": "温阳固脱"
+          "role": "温阳固脱",
+          "clinical": "3钱"
         }
       ],
       "indication": "汗家重发汗，必恍惚心乱，小便已阴疼，与禹余粮丸。",
@@ -5977,22 +6520,26 @@
         {
           "name": "桂枝",
           "dosage": "一两十七铢",
-          "role": "解肌发表"
+          "role": "解肌发表",
+          "clinical": "1.71钱"
         },
         {
           "name": "芍药",
           "dosage": "一两六铢",
-          "role": "调和营卫"
+          "role": "调和营卫",
+          "clinical": "1.25钱"
         },
         {
           "name": "麻黄",
           "dosage": "十六铢",
-          "role": "发汗解表"
+          "role": "发汗解表",
+          "clinical": "0.67钱"
         },
         {
           "name": "生姜",
           "dosage": "一两六铢",
-          "role": "散寒止呕"
+          "role": "散寒止呕",
+          "clinical": "1.25钱"
         },
         {
           "name": "杏仁",
@@ -6002,7 +6549,8 @@
         {
           "name": "甘草",
           "dosage": "一两二铢",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "1.08钱"
         },
         {
           "name": "大枣",
@@ -6030,22 +6578,26 @@
         {
           "name": "桂枝",
           "dosage": "十八铢",
-          "role": "解肌发表"
+          "role": "解肌发表",
+          "clinical": "0.75钱"
         },
         {
           "name": "芍药",
           "dosage": "十八铢",
-          "role": "调和营卫"
+          "role": "调和营卫",
+          "clinical": "0.75钱"
         },
         {
           "name": "麻黄",
           "dosage": "十八铢",
-          "role": "发汗解表"
+          "role": "发汗解表",
+          "clinical": "0.75钱"
         },
         {
           "name": "甘草",
           "dosage": "十八铢",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "0.75钱"
         },
         {
           "name": "大枣",
@@ -6055,12 +6607,14 @@
         {
           "name": "生姜",
           "dosage": "一两二铢",
-          "role": "散寒止呕"
+          "role": "散寒止呕",
+          "clinical": "1.08钱"
         },
         {
           "name": "石膏",
           "dosage": "二十四铢",
-          "role": "清热除烦"
+          "role": "清热除烦",
+          "clinical": "1钱"
         }
       ],
       "indication": "太阳病，发热恶寒，热多寒少，脉微弱者，此无阳也，不可发汗，宜桂枝二越婢一汤。",
@@ -6077,7 +6631,7 @@
     {
       "name": "栀子生姜豉汤",
       "alias": "",
-      "meridian": "阳明",
+      "meridian": "太阳/阳明",
       "category": "清热剂",
       "components": [
         {
@@ -6088,7 +6642,8 @@
         {
           "name": "生姜",
           "dosage": "五两",
-          "role": "散寒止呕"
+          "role": "散寒止呕",
+          "clinical": "5钱"
         },
         {
           "name": "香豉",
@@ -6116,27 +6671,32 @@
         {
           "name": "当归",
           "dosage": "三两",
-          "role": "养血活血"
+          "role": "养血活血",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
           "dosage": "三两",
-          "role": "柔肝缓急"
+          "role": "柔肝缓急",
+          "clinical": "3钱"
         },
         {
           "name": "桂枝",
           "dosage": "三两",
-          "role": "温经散寒"
+          "role": "温经散寒",
+          "clinical": "3钱"
         },
         {
           "name": "细辛",
           "dosage": "三两",
-          "role": "散寒通脉"
+          "role": "散寒通脉",
+          "clinical": "3钱"
         },
         {
           "name": "甘草",
           "dosage": "二两炙",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "2钱"
         },
         {
           "name": "大枣",
@@ -6146,7 +6706,8 @@
         {
           "name": "通草",
           "dosage": "二两",
-          "role": "通利血脉"
+          "role": "通利血脉",
+          "clinical": "2钱"
         },
         {
           "name": "吴茱萸",
@@ -6156,7 +6717,8 @@
         {
           "name": "生姜",
           "dosage": "半斤",
-          "role": "散寒止呕"
+          "role": "散寒止呕",
+          "clinical": "8钱"
         }
       ],
       "indication": "内有久寒者，当归四逆加吴茱萸生姜汤主之。",
@@ -6180,17 +6742,20 @@
         {
           "name": "厚朴",
           "dosage": "半斤",
-          "role": "行气除满"
+          "role": "行气除满",
+          "clinical": "8钱"
         },
         {
           "name": "甘草",
           "dosage": "三两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "3钱"
         },
         {
           "name": "大黄",
           "dosage": "三两",
-          "role": "泻热通便"
+          "role": "泻热通便",
+          "clinical": "3钱"
         },
         {
           "name": "枳实",
@@ -6200,7 +6765,8 @@
         {
           "name": "桂枝",
           "dosage": "二两",
-          "role": "解表散寒"
+          "role": "解表散寒",
+          "clinical": "2钱"
         },
         {
           "name": "大枣",
@@ -6210,7 +6776,8 @@
         {
           "name": "生姜",
           "dosage": "五两",
-          "role": "散寒止呕"
+          "role": "散寒止呕",
+          "clinical": "5钱"
         }
       ],
       "indication": "病腹满，发热十日，脉浮而数，饮食如故，厚朴七物汤主之。",
@@ -6239,12 +6806,14 @@
         {
           "name": "干姜",
           "dosage": "四两",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "4钱"
         },
         {
           "name": "人参",
           "dosage": "二两",
-          "role": "补气健脾"
+          "role": "补气健脾",
+          "clinical": "2钱"
         },
         {
           "name": "饴糖",
@@ -6273,22 +6842,26 @@
         {
           "name": "茯苓",
           "dosage": "四两",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "4钱"
         },
         {
           "name": "半夏",
           "dosage": "四两",
-          "role": "燥湿化痰"
+          "role": "燥湿化痰",
+          "clinical": "4钱"
         },
         {
           "name": "乌头",
           "dosage": "二两炮",
-          "role": "温里散寒"
+          "role": "温里散寒",
+          "clinical": "2钱"
         },
         {
           "name": "细辛",
           "dosage": "一两",
-          "role": "散寒止痛"
+          "role": "散寒止痛",
+          "clinical": "1钱"
         }
       ],
       "indication": "寒气厥逆，赤丸主之。",
@@ -6311,17 +6884,20 @@
         {
           "name": "当归",
           "dosage": "三两",
-          "role": "养血活血"
+          "role": "养血活血",
+          "clinical": "3钱"
         },
         {
           "name": "生姜",
           "dosage": "五两",
-          "role": "散寒止呕"
+          "role": "散寒止呕",
+          "clinical": "5钱"
         },
         {
           "name": "羊肉",
           "dosage": "一斤",
-          "role": "温中补虚"
+          "role": "温中补虚",
+          "clinical": "16钱"
         }
       ],
       "indication": "寒疝腹中痛，及胁痛里急者，当归生姜羊肉汤主之。",
@@ -6350,17 +6926,20 @@
         {
           "name": "桂枝",
           "dosage": "三两",
-          "role": "解表散寒"
+          "role": "解表散寒",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
           "dosage": "三两",
-          "role": "柔肝缓急"
+          "role": "柔肝缓急",
+          "clinical": "3钱"
         },
         {
           "name": "甘草",
           "dosage": "二两炙",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "2钱"
         },
         {
           "name": "大枣",
@@ -6370,7 +6949,8 @@
         {
           "name": "生姜",
           "dosage": "三两",
-          "role": "散寒止呕"
+          "role": "散寒止呕",
+          "clinical": "3钱"
         }
       ],
       "indication": "寒疝腹中痛，逆冷，手足不仁，若身疼痛，灸刺诸药不能治，抵当乌头桂枝汤主之。",
@@ -6387,13 +6967,14 @@
     {
       "name": "旋覆花汤",
       "alias": "",
-      "meridian": "肝/胃",
+      "meridian": "厥阴/阳明",
       "category": "化痰剂",
       "components": [
         {
           "name": "旋覆花",
           "dosage": "三两",
-          "role": "降气化痰"
+          "role": "降气化痰",
+          "clinical": "3钱"
         },
         {
           "name": "葱",
@@ -6426,22 +7007,26 @@
         {
           "name": "甘草",
           "dosage": "二两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "2钱"
         },
         {
           "name": "干姜",
           "dosage": "四两",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "4钱"
         },
         {
           "name": "茯苓",
           "dosage": "四两",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "4钱"
         },
         {
           "name": "白术",
           "dosage": "二两",
-          "role": "健脾燥湿"
+          "role": "健脾燥湿",
+          "clinical": "2钱"
         }
       ],
       "indication": "肾着之病，其人身体重，腰中冷，如坐水中，形如水状，反不渴，小便自利，饮食如故，病属下焦，身劳汗出，衣里冷湿，久久得之，腰以下冷痛，腹重如带五千钱，甘姜苓术汤主之。",
@@ -6465,7 +7050,8 @@
         {
           "name": "木防己",
           "dosage": "三两",
-          "role": "利水消肿"
+          "role": "利水消肿",
+          "clinical": "3钱"
         },
         {
           "name": "石膏",
@@ -6475,12 +7061,14 @@
         {
           "name": "桂枝",
           "dosage": "二两",
-          "role": "温阳化饮"
+          "role": "温阳化饮",
+          "clinical": "2钱"
         },
         {
           "name": "人参",
           "dosage": "四两",
-          "role": "补气扶正"
+          "role": "补气扶正",
+          "clinical": "4钱"
         }
       ],
       "indication": "膈间支饮，其人喘满，心下痞坚，面色黧黑，其脉沉紧，得之数十日，医吐下之不愈，木防己汤主之。",
@@ -6503,17 +7091,20 @@
         {
           "name": "木防己",
           "dosage": "三两",
-          "role": "利水消肿"
+          "role": "利水消肿",
+          "clinical": "3钱"
         },
         {
           "name": "桂枝",
           "dosage": "二两",
-          "role": "温阳化饮"
+          "role": "温阳化饮",
+          "clinical": "2钱"
         },
         {
           "name": "人参",
           "dosage": "四两",
-          "role": "补气扶正"
+          "role": "补气扶正",
+          "clinical": "4钱"
         },
         {
           "name": "芒硝",
@@ -6523,7 +7114,8 @@
         {
           "name": "茯苓",
           "dosage": "四两",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "4钱"
         }
       ],
       "indication": "木防己汤证，虚者即愈，实者三日复发，复与不愈者，宜木防己去石膏加茯苓芒硝汤。",
@@ -6546,12 +7138,14 @@
         {
           "name": "泽泻",
           "dosage": "五两",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "5钱"
         },
         {
           "name": "白术",
           "dosage": "二两",
-          "role": "健脾燥湿"
+          "role": "健脾燥湿",
+          "clinical": "2钱"
         }
       ],
       "indication": "心下有支饮，其人苦冒眩，泽泻汤主之。",
@@ -6579,7 +7173,8 @@
         {
           "name": "大黄",
           "dosage": "六两",
-          "role": "泻热通便"
+          "role": "泻热通便",
+          "clinical": "6钱"
         },
         {
           "name": "枳实",
@@ -6607,12 +7202,14 @@
         {
           "name": "茯苓",
           "dosage": "四两",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "4钱"
         },
         {
           "name": "甘草",
           "dosage": "三两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "3钱"
         },
         {
           "name": "五味子",
@@ -6622,12 +7219,14 @@
         {
           "name": "干姜",
           "dosage": "三两",
-          "role": "温肺化饮"
+          "role": "温肺化饮",
+          "clinical": "3钱"
         },
         {
           "name": "细辛",
           "dosage": "三两",
-          "role": "散寒化饮"
+          "role": "散寒化饮",
+          "clinical": "3钱"
         }
       ],
       "indication": "咳满即止，而更复渴，冲气复发者，以细辛、干姜为热药也，服之当遂渴，而渴反止者，为支饮也。支饮者法当冒，冒者必呕，呕者复内半夏以去其水。",
@@ -6651,12 +7250,14 @@
         {
           "name": "茯苓",
           "dosage": "四两",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "4钱"
         },
         {
           "name": "甘草",
           "dosage": "三两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "3钱"
         },
         {
           "name": "五味子",
@@ -6666,12 +7267,14 @@
         {
           "name": "干姜",
           "dosage": "三两",
-          "role": "温肺化饮"
+          "role": "温肺化饮",
+          "clinical": "3钱"
         },
         {
           "name": "细辛",
           "dosage": "三两",
-          "role": "散寒化饮"
+          "role": "散寒化饮",
+          "clinical": "3钱"
         },
         {
           "name": "半夏",
@@ -6699,12 +7302,14 @@
         {
           "name": "茯苓",
           "dosage": "四两",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "4钱"
         },
         {
           "name": "甘草",
           "dosage": "三两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "3钱"
         },
         {
           "name": "五味子",
@@ -6714,12 +7319,14 @@
         {
           "name": "干姜",
           "dosage": "三两",
-          "role": "温肺化饮"
+          "role": "温肺化饮",
+          "clinical": "3钱"
         },
         {
           "name": "细辛",
           "dosage": "三两",
-          "role": "散寒化饮"
+          "role": "散寒化饮",
+          "clinical": "3钱"
         },
         {
           "name": "半夏",
@@ -6752,12 +7359,14 @@
         {
           "name": "茯苓",
           "dosage": "四两",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "4钱"
         },
         {
           "name": "甘草",
           "dosage": "三两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "3钱"
         },
         {
           "name": "五味子",
@@ -6767,12 +7376,14 @@
         {
           "name": "干姜",
           "dosage": "三两",
-          "role": "温肺化饮"
+          "role": "温肺化饮",
+          "clinical": "3钱"
         },
         {
           "name": "细辛",
           "dosage": "三两",
-          "role": "散寒化饮"
+          "role": "散寒化饮",
+          "clinical": "3钱"
         },
         {
           "name": "半夏",
@@ -6787,7 +7398,8 @@
         {
           "name": "大黄",
           "dosage": "三两",
-          "role": "泻热通便"
+          "role": "泻热通便",
+          "clinical": "3钱"
         }
       ],
       "indication": "苓甘五味加姜辛半夏杏仁汤证兼面热如醉者。",
@@ -6804,33 +7416,38 @@
     {
       "name": "栝蒌瞿麦丸",
       "alias": "",
-      "meridian": "太阳/肾",
+      "meridian": "少阴/太阳",
       "category": "祛湿剂",
       "components": [
         {
           "name": "栝蒌根",
           "dosage": "二两",
-          "role": "生津止渴"
+          "role": "生津止渴",
+          "clinical": "2钱"
         },
         {
           "name": "瞿麦",
           "dosage": "一两",
-          "role": "利水通淋"
+          "role": "利水通淋",
+          "clinical": "1钱"
         },
         {
           "name": "附子",
           "dosage": "一枚炮",
-          "role": "温阳化气"
+          "role": "温阳化气",
+          "clinical": "3钱"
         },
         {
           "name": "薯蓣",
           "dosage": "三两",
-          "role": "补脾益肾"
+          "role": "补脾益肾",
+          "clinical": "3钱"
         },
         {
           "name": "茯苓",
           "dosage": "三两",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "3钱"
         }
       ],
       "indication": "小便不利者，有水气，其人苦渴，栝蒌瞿麦丸主之。",
@@ -6886,12 +7503,14 @@
         {
           "name": "茯苓",
           "dosage": "半斤",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "8钱"
         },
         {
           "name": "白术",
           "dosage": "二两",
-          "role": "健脾燥湿"
+          "role": "健脾燥湿",
+          "clinical": "2钱"
         },
         {
           "name": "戎盐",
@@ -6913,23 +7532,26 @@
     {
       "name": "越婢加术汤",
       "alias": "",
-      "meridian": "太阴/肺",
+      "meridian": "太阳/太阴",
       "category": "化痰剂",
       "components": [
         {
           "name": "麻黄",
           "dosage": "六两",
-          "role": "发汗利水"
+          "role": "发汗利水",
+          "clinical": "6钱"
         },
         {
           "name": "石膏",
           "dosage": "半斤",
-          "role": "清热除烦"
+          "role": "清热除烦",
+          "clinical": "8钱"
         },
         {
           "name": "生姜",
           "dosage": "三两",
-          "role": "散寒止呕"
+          "role": "散寒止呕",
+          "clinical": "3钱"
         },
         {
           "name": "大枣",
@@ -6939,12 +7561,14 @@
         {
           "name": "甘草",
           "dosage": "二两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "2钱"
         },
         {
           "name": "白术",
           "dosage": "四两",
-          "role": "健脾燥湿"
+          "role": "健脾燥湿",
+          "clinical": "4钱"
         }
       ],
       "indication": "里水，越婢加术汤主之，甘草麻黄汤亦主之。",
@@ -6967,17 +7591,20 @@
         {
           "name": "麻黄",
           "dosage": "三两",
-          "role": "发汗利水"
+          "role": "发汗利水",
+          "clinical": "3钱"
         },
         {
           "name": "甘草",
           "dosage": "二两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "2钱"
         },
         {
           "name": "附子",
           "dosage": "一枚炮",
-          "role": "温阳化气"
+          "role": "温阳化气",
+          "clinical": "3钱"
         }
       ],
       "indication": "水之为病，其脉沉小，属少阴；浮者为风，无水虚胀者，为气。水，发其汗即已。脉沉者宜麻黄附子汤；浮者宜杏子汤。",
@@ -7001,17 +7628,20 @@
         {
           "name": "黄芪",
           "dosage": "五两",
-          "role": "益气固表"
+          "role": "益气固表",
+          "clinical": "5钱"
         },
         {
           "name": "芍药",
           "dosage": "三两",
-          "role": "柔肝缓急"
+          "role": "柔肝缓急",
+          "clinical": "3钱"
         },
         {
           "name": "桂枝",
           "dosage": "三两",
-          "role": "调和营卫"
+          "role": "调和营卫",
+          "clinical": "3钱"
         }
       ],
       "indication": "黄汗之病，身体肿，发热，汗出而渴，状如风水，汗沾衣，色正黄如药汁，脉自沉，何从得之？师曰：以汗出入水中浴，水从汗孔入得之，宜芪芍桂酒汤主之。",
@@ -7034,22 +7664,26 @@
         {
           "name": "桂枝",
           "dosage": "三两",
-          "role": "解肌发表"
+          "role": "解肌发表",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
           "dosage": "三两",
-          "role": "调和营卫"
+          "role": "调和营卫",
+          "clinical": "3钱"
         },
         {
           "name": "甘草",
           "dosage": "二两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "2钱"
         },
         {
           "name": "生姜",
           "dosage": "三两",
-          "role": "散寒止呕"
+          "role": "散寒止呕",
+          "clinical": "3钱"
         },
         {
           "name": "大枣",
@@ -7059,7 +7693,8 @@
         {
           "name": "黄芪",
           "dosage": "二两",
-          "role": "益气固表"
+          "role": "益气固表",
+          "clinical": "2钱"
         }
       ],
       "indication": "黄汗之病，两胫自冷；假令发热，此属历节。食已汗出，又身常暮盗汗出者，此劳气也，若汗出已，反发热者，久久其身必甲错，发热不止者，必生恶疮。若身重，汗出已辄轻者，久久必身瞤，瞤即胸中痛，又从腰以上必汗出，下无汗，腰髋弛痛，如有物在皮中状，剧者不能食，身疼重，烦躁，小便不利，此为黄汗，桂枝加黄芪汤主之。",
@@ -7087,7 +7722,8 @@
         {
           "name": "白术",
           "dosage": "二两",
-          "role": "健脾燥湿"
+          "role": "健脾燥湿",
+          "clinical": "2钱"
         }
       ],
       "indication": "心下坚，大如盘，边如旋盘，水饮所作，枳术汤主之。",
@@ -7138,17 +7774,20 @@
         {
           "name": "大黄",
           "dosage": "四两",
-          "role": "泻热通便"
+          "role": "泻热通便",
+          "clinical": "4钱"
         },
         {
           "name": "黄柏",
           "dosage": "四两",
-          "role": "清热燥湿"
+          "role": "清热燥湿",
+          "clinical": "4钱"
         },
         {
           "name": "硝石",
           "dosage": "四两",
-          "role": "软坚散结"
+          "role": "软坚散结",
+          "clinical": "4钱"
         },
         {
           "name": "栀子",
@@ -7176,7 +7815,8 @@
         {
           "name": "猪膏",
           "dosage": "半斤",
-          "role": "润肠通便"
+          "role": "润肠通便",
+          "clinical": "8钱"
         },
         {
           "name": "乱发",
@@ -7209,7 +7849,8 @@
         {
           "name": "当归",
           "dosage": "三两",
-          "role": "养血活血"
+          "role": "养血活血",
+          "clinical": "3钱"
         }
       ],
       "indication": "病者脉数，无热，微烦，默默但欲卧，汗出，初得之三四日，目赤如鸠眼；七八日，目四眦黑。若能食者，脓已成也，赤豆当归散主之。",
@@ -7288,12 +7929,14 @@
         {
           "name": "橘皮",
           "dosage": "四两",
-          "role": "理气和胃"
+          "role": "理气和胃",
+          "clinical": "4钱"
         },
         {
           "name": "生姜",
           "dosage": "半斤",
-          "role": "散寒止呕"
+          "role": "散寒止呕",
+          "clinical": "8钱"
         }
       ],
       "indication": "干呕哕，若手足厥者，橘皮汤主之。",
@@ -7331,17 +7974,20 @@
         {
           "name": "生姜",
           "dosage": "半斤",
-          "role": "散寒止呕"
+          "role": "散寒止呕",
+          "clinical": "8钱"
         },
         {
           "name": "人参",
           "dosage": "一两",
-          "role": "补气扶正"
+          "role": "补气扶正",
+          "clinical": "1钱"
         },
         {
           "name": "甘草",
           "dosage": "五两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "5钱"
         }
       ],
       "indication": "哕逆者，橘皮竹茹汤主之。",
@@ -7364,27 +8010,32 @@
         {
           "name": "文蛤",
           "dosage": "五两",
-          "role": "清热化痰"
+          "role": "清热化痰",
+          "clinical": "5钱"
         },
         {
           "name": "麻黄",
           "dosage": "三两",
-          "role": "发汗解表"
+          "role": "发汗解表",
+          "clinical": "3钱"
         },
         {
           "name": "甘草",
           "dosage": "三两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "3钱"
         },
         {
           "name": "生姜",
           "dosage": "三两",
-          "role": "散寒止呕"
+          "role": "散寒止呕",
+          "clinical": "3钱"
         },
         {
           "name": "石膏",
           "dosage": "五两",
-          "role": "清热除烦"
+          "role": "清热除烦",
+          "clinical": "5钱"
         },
         {
           "name": "大枣",
@@ -7417,32 +8068,38 @@
         {
           "name": "茯苓",
           "dosage": "半斤",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "8钱"
         },
         {
           "name": "泽泻",
           "dosage": "四两",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "4钱"
         },
         {
           "name": "甘草",
           "dosage": "二两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "2钱"
         },
         {
           "name": "桂枝",
           "dosage": "二两",
-          "role": "温阳化饮"
+          "role": "温阳化饮",
+          "clinical": "2钱"
         },
         {
           "name": "白术",
           "dosage": "三两",
-          "role": "健脾燥湿"
+          "role": "健脾燥湿",
+          "clinical": "3钱"
         },
         {
           "name": "生姜",
           "dosage": "四两",
-          "role": "散寒止呕"
+          "role": "散寒止呕",
+          "clinical": "4钱"
         }
       ],
       "indication": "胃反，吐而渴欲饮水者，茯苓泽泻汤主之。",
@@ -7557,7 +8214,8 @@
         {
           "name": "桂枝",
           "dosage": "半两",
-          "role": "温经散寒"
+          "role": "温经散寒",
+          "clinical": "0.5钱"
         }
       ],
       "indication": "阴狐疝气者，偏有大小，时时上下，蜘蛛散主之。",
@@ -7580,17 +8238,20 @@
         {
           "name": "甘草",
           "dosage": "二两",
-          "role": "缓急止痛"
+          "role": "缓急止痛",
+          "clinical": "2钱"
         },
         {
           "name": "粉",
           "dosage": "一两",
-          "role": "杀虫"
+          "role": "杀虫",
+          "clinical": "1钱"
         },
         {
           "name": "蜜",
           "dosage": "四两",
-          "role": "安蛔止痛"
+          "role": "安蛔止痛",
+          "clinical": "4钱"
         }
       ],
       "indication": "蛔虫之为病，令人吐涎，心痛，发作有时，毒药不止，甘草粉蜜汤主之。",
@@ -7607,33 +8268,38 @@
     {
       "name": "桂枝茯苓丸",
       "alias": "夺命丹",
-      "meridian": "太阴/肝",
+      "meridian": "厥阴/肝",
       "category": "金疮药",
       "components": [
         {
           "name": "桂枝",
           "dosage": "三两",
-          "role": "温经活血"
+          "role": "温经活血",
+          "clinical": "3钱"
         },
         {
           "name": "茯苓",
           "dosage": "三两",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "3钱"
         },
         {
           "name": "丹皮",
           "dosage": "三两",
-          "role": "清热凉血"
+          "role": "清热凉血",
+          "clinical": "3钱"
         },
         {
           "name": "桃仁",
           "dosage": "三两",
-          "role": "活血化瘀"
+          "role": "活血化瘀",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
           "dosage": "三两",
-          "role": "柔肝缓急"
+          "role": "柔肝缓急",
+          "clinical": "3钱"
         }
       ],
       "indication": "妇人宿有症病，经断未及三月，而得漏下不止，胎动在脐上者，为症痼害。所以血不止者，其症不去故也，当下其症，桂枝茯苓丸主之。",
@@ -7657,17 +8323,20 @@
         {
           "name": "干姜",
           "dosage": "一两",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "1钱"
         },
         {
           "name": "人参",
           "dosage": "一两",
-          "role": "补气健脾"
+          "role": "补气健脾",
+          "clinical": "1钱"
         },
         {
           "name": "半夏",
           "dosage": "二两",
-          "role": "燥湿降逆"
+          "role": "燥湿降逆",
+          "clinical": "2钱"
         }
       ],
       "indication": "妊娠呕吐不止，干姜人参半夏丸主之。",
@@ -7690,17 +8359,20 @@
         {
           "name": "当归",
           "dosage": "四两",
-          "role": "养血活血"
+          "role": "养血活血",
+          "clinical": "4钱"
         },
         {
           "name": "贝母",
           "dosage": "四两",
-          "role": "清热化痰"
+          "role": "清热化痰",
+          "clinical": "4钱"
         },
         {
           "name": "苦参",
           "dosage": "四两",
-          "role": "清热利湿"
+          "role": "清热利湿",
+          "clinical": "4钱"
         }
       ],
       "indication": "妊娠，小便难，饮食如故，当归贝母苦参丸主之。",
@@ -7723,12 +8395,14 @@
         {
           "name": "葵子",
           "dosage": "一斤",
-          "role": "利水通淋"
+          "role": "利水通淋",
+          "clinical": "16钱"
         },
         {
           "name": "茯苓",
           "dosage": "三两",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "3钱"
         }
       ],
       "indication": "妊娠有水气，身重，小便不利，洒淅恶寒，起即头眩，葵子茯苓散主之。",
@@ -7789,7 +8463,8 @@
         {
           "name": "大黄",
           "dosage": "二两",
-          "role": "泻热逐瘀"
+          "role": "泻热逐瘀",
+          "clinical": "2钱"
         },
         {
           "name": "桃仁",
@@ -7827,37 +8502,44 @@
         {
           "name": "葛根",
           "dosage": "三两",
-          "role": "解肌发表"
+          "role": "解肌发表",
+          "clinical": "3钱"
         },
         {
           "name": "防风",
           "dosage": "一两",
-          "role": "祛风解表"
+          "role": "祛风解表",
+          "clinical": "1钱"
         },
         {
           "name": "桔梗",
           "dosage": "一两",
-          "role": "宣肺排脓"
+          "role": "宣肺排脓",
+          "clinical": "1钱"
         },
         {
           "name": "桂枝",
           "dosage": "一两",
-          "role": "解肌发表"
+          "role": "解肌发表",
+          "clinical": "1钱"
         },
         {
           "name": "人参",
           "dosage": "一两",
-          "role": "补气扶正"
+          "role": "补气扶正",
+          "clinical": "1钱"
         },
         {
           "name": "甘草",
           "dosage": "一两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "1钱"
         },
         {
           "name": "生姜",
           "dosage": "一两",
-          "role": "散寒止呕"
+          "role": "散寒止呕",
+          "clinical": "1钱"
         },
         {
           "name": "大枣",
@@ -7935,22 +8617,26 @@
         {
           "name": "厚朴",
           "dosage": "三两",
-          "role": "行气除满"
+          "role": "行气除满",
+          "clinical": "3钱"
         },
         {
           "name": "茯苓",
           "dosage": "四两",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "4钱"
         },
         {
           "name": "生姜",
           "dosage": "五两",
-          "role": "散寒止呕"
+          "role": "散寒止呕",
+          "clinical": "5钱"
         },
         {
           "name": "紫苏叶",
           "dosage": "二两",
-          "role": "行气解郁"
+          "role": "行气解郁",
+          "clinical": "2钱"
         }
       ],
       "indication": "妇人咽中如有炙脔，半夏厚朴汤主之。",
@@ -7974,22 +8660,26 @@
         {
           "name": "土瓜根",
           "dosage": "三两",
-          "role": "活血化瘀"
+          "role": "活血化瘀",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
           "dosage": "三两",
-          "role": "柔肝缓急"
+          "role": "柔肝缓急",
+          "clinical": "3钱"
         },
         {
           "name": "桂枝",
           "dosage": "三两",
-          "role": "温经活血"
+          "role": "温经活血",
+          "clinical": "3钱"
         },
         {
           "name": "蟅虫",
           "dosage": "三两",
-          "role": "破血逐瘀"
+          "role": "破血逐瘀",
+          "clinical": "3钱"
         }
       ],
       "indication": "带下经水不利，少腹满痛，经一月再见者，土瓜根散主之。",
@@ -8012,12 +8702,14 @@
         {
           "name": "阿胶",
           "dosage": "三两",
-          "role": "补血止血"
+          "role": "补血止血",
+          "clinical": "3钱"
         },
         {
           "name": "干姜",
           "dosage": "三两",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "3钱"
         }
       ],
       "indication": "妇人陷经，漏下黑不解，胶姜汤主之。",
@@ -8159,7 +8851,8 @@
         {
           "name": "石膏",
           "dosage": "一斤",
-          "role": "清热生津"
+          "role": "清热生津",
+          "clinical": "16钱"
         },
         {
           "name": "半夏",
@@ -8174,12 +8867,14 @@
         {
           "name": "人参",
           "dosage": "二两",
-          "role": "补气生津"
+          "role": "补气生津",
+          "clinical": "2钱"
         },
         {
           "name": "甘草",
           "dosage": "二两炙",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "2钱"
         },
         {
           "name": "粳米",
@@ -8212,7 +8907,8 @@
         {
           "name": "知母",
           "dosage": "三两",
-          "role": "清热养阴"
+          "role": "清热养阴",
+          "clinical": "3钱"
         }
       ],
       "indication": "发汗后，百合病不解者，百合知母汤主之。",
@@ -8240,7 +8936,8 @@
         {
           "name": "滑石",
           "dosage": "三两",
-          "role": "利水通淋"
+          "role": "利水通淋",
+          "clinical": "3钱"
         },
         {
           "name": "代赭石",
@@ -8296,12 +8993,14 @@
         {
           "name": "百合",
           "dosage": "一两炙",
-          "role": "润肺清心"
+          "role": "润肺清心",
+          "clinical": "1钱"
         },
         {
           "name": "滑石",
           "dosage": "二两",
-          "role": "利水通淋"
+          "role": "利水通淋",
+          "clinical": "2钱"
         }
       ],
       "indication": "百合病变发热者，百合滑石散主之。",
@@ -8377,7 +9076,8 @@
         {
           "name": "生地黄",
           "dosage": "二斤",
-          "role": "清热凉血"
+          "role": "清热凉血",
+          "clinical": "32钱"
         }
       ],
       "indication": "病如狂状，妄行，独语不休，无寒热，其脉浮，防己地黄汤主之。",
@@ -8494,62 +9194,74 @@
         {
           "name": "大黄",
           "dosage": "四两",
-          "role": "泻热通便"
+          "role": "泻热通便",
+          "clinical": "4钱"
         },
         {
           "name": "干姜",
           "dosage": "四两",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "4钱"
         },
         {
           "name": "龙骨",
           "dosage": "四两",
-          "role": "潜阳安神"
+          "role": "潜阳安神",
+          "clinical": "4钱"
         },
         {
           "name": "桂枝",
           "dosage": "三两",
-          "role": "温经通络"
+          "role": "温经通络",
+          "clinical": "3钱"
         },
         {
           "name": "甘草",
           "dosage": "三两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "3钱"
         },
         {
           "name": "牡蛎",
           "dosage": "二两",
-          "role": "潜阳散结"
+          "role": "潜阳散结",
+          "clinical": "2钱"
         },
         {
           "name": "寒水石",
           "dosage": "六两",
-          "role": "清热泻火"
+          "role": "清热泻火",
+          "clinical": "6钱"
         },
         {
           "name": "滑石",
           "dosage": "六两",
-          "role": "利水通淋"
+          "role": "利水通淋",
+          "clinical": "6钱"
         },
         {
           "name": "赤石脂",
           "dosage": "六两",
-          "role": "固涩收敛"
+          "role": "固涩收敛",
+          "clinical": "6钱"
         },
         {
           "name": "白石脂",
           "dosage": "六两",
-          "role": "固涩收敛"
+          "role": "固涩收敛",
+          "clinical": "6钱"
         },
         {
           "name": "紫石英",
           "dosage": "六两",
-          "role": "镇心安神"
+          "role": "镇心安神",
+          "clinical": "6钱"
         },
         {
           "name": "石膏",
           "dosage": "六两",
-          "role": "清热除烦"
+          "role": "清热除烦",
+          "clinical": "6钱"
         }
       ],
       "indication": "大人风引，少小惊痫瘛疭，日数十发，医所不疗，除热方，风引汤主之。",
@@ -8573,7 +9285,8 @@
         {
           "name": "大附子",
           "dosage": "一枚炮",
-          "role": "温经散寒"
+          "role": "温经散寒",
+          "clinical": "3钱"
         },
         {
           "name": "盐",
@@ -8644,62 +9357,74 @@
         {
           "name": "麻黄",
           "dosage": "一两",
-          "role": "发汗解表"
+          "role": "发汗解表",
+          "clinical": "1钱"
         },
         {
           "name": "桂枝",
           "dosage": "一两",
-          "role": "温经通络"
+          "role": "温经通络",
+          "clinical": "1钱"
         },
         {
           "name": "甘草",
           "dosage": "一两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "1钱"
         },
         {
           "name": "杏仁",
           "dosage": "一两",
-          "role": "宣肺降气"
+          "role": "宣肺降气",
+          "clinical": "1钱"
         },
         {
           "name": "人参",
           "dosage": "一两",
-          "role": "补气扶正"
+          "role": "补气扶正",
+          "clinical": "1钱"
         },
         {
           "name": "川芎",
           "dosage": "一两",
-          "role": "活血行气"
+          "role": "活血行气",
+          "clinical": "1钱"
         },
         {
           "name": "黄芩",
           "dosage": "一两",
-          "role": "清热燥湿"
+          "role": "清热燥湿",
+          "clinical": "1钱"
         },
         {
           "name": "芍药",
           "dosage": "一两",
-          "role": "柔肝缓急"
+          "role": "柔肝缓急",
+          "clinical": "1钱"
         },
         {
           "name": "防风",
           "dosage": "一两半",
-          "role": "祛风解表"
+          "role": "祛风解表",
+          "clinical": "1.5钱"
         },
         {
           "name": "防己",
           "dosage": "一两",
-          "role": "祛风利湿"
+          "role": "祛风利湿",
+          "clinical": "1钱"
         },
         {
           "name": "附子",
           "dosage": "一枚炮",
-          "role": "温阳通络"
+          "role": "温阳通络",
+          "clinical": "3钱"
         },
         {
           "name": "生姜",
           "dosage": "五两",
-          "role": "散寒止呕"
+          "role": "散寒止呕",
+          "clinical": "5钱"
         }
       ],
       "indication": "中风卒然不知人，手足拘急，或半身不遂，口眼歪斜，小续命汤主之。",
@@ -8727,22 +9452,26 @@
         {
           "name": "蜀椒",
           "dosage": "一两",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "1钱"
         },
         {
           "name": "干姜",
           "dosage": "一两",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "1钱"
         },
         {
           "name": "附子",
           "dosage": "半两炮",
-          "role": "温阳散寒"
+          "role": "温阳散寒",
+          "clinical": "0.5钱"
         },
         {
           "name": "赤石脂",
           "dosage": "一两",
-          "role": "固涩收敛"
+          "role": "固涩收敛",
+          "clinical": "1钱"
         }
       ],
       "indication": "心痛彻背，背痛彻心，乌头赤石脂丸主之。",
@@ -8766,7 +9495,8 @@
         {
           "name": "茯苓",
           "dosage": "三两",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "3钱"
         },
         {
           "name": "杏仁",
@@ -8776,7 +9506,8 @@
         {
           "name": "甘草",
           "dosage": "一两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "1钱"
         }
       ],
       "indication": "胸痹，胸中气塞，短气，茯苓杏仁甘草汤主之；橘枳姜汤亦主之。",
@@ -8799,17 +9530,20 @@
         {
           "name": "橘皮",
           "dosage": "一斤",
-          "role": "理气化痰"
+          "role": "理气化痰",
+          "clinical": "16钱"
         },
         {
           "name": "枳实",
           "dosage": "三两",
-          "role": "行气消痞"
+          "role": "行气消痞",
+          "clinical": "3钱"
         },
         {
           "name": "生姜",
           "dosage": "半斤",
-          "role": "散寒化饮"
+          "role": "散寒化饮",
+          "clinical": "8钱"
         }
       ],
       "indication": "胸痹，胸中气塞，短气，茯苓杏仁甘草汤主之；橘枳姜汤亦主之。",
@@ -8832,12 +9566,14 @@
         {
           "name": "桂枝",
           "dosage": "三两",
-          "role": "温阳通络"
+          "role": "温阳通络",
+          "clinical": "3钱"
         },
         {
           "name": "生姜",
           "dosage": "三两",
-          "role": "散寒化饮"
+          "role": "散寒化饮",
+          "clinical": "3钱"
         },
         {
           "name": "枳实",
@@ -8865,22 +9601,26 @@
         {
           "name": "黄芪",
           "dosage": "一两半",
-          "role": "益气固表"
+          "role": "益气固表",
+          "clinical": "1.5钱"
         },
         {
           "name": "桂枝",
           "dosage": "三两",
-          "role": "温经通络"
+          "role": "温经通络",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
           "dosage": "六两",
-          "role": "柔肝缓急"
+          "role": "柔肝缓急",
+          "clinical": "6钱"
         },
         {
           "name": "生姜",
           "dosage": "三两",
-          "role": "散寒止呕"
+          "role": "散寒止呕",
+          "clinical": "3钱"
         },
         {
           "name": "大枣",
@@ -8890,7 +9630,8 @@
         {
           "name": "甘草",
           "dosage": "二两炙",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "2钱"
         },
         {
           "name": "饴糖",
@@ -8918,27 +9659,32 @@
         {
           "name": "桂枝",
           "dosage": "四两",
-          "role": "解表散寒"
+          "role": "解表散寒",
+          "clinical": "4钱"
         },
         {
           "name": "甘草",
           "dosage": "四两炙",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "4钱"
         },
         {
           "name": "白术",
           "dosage": "三两",
-          "role": "健脾燥湿"
+          "role": "健脾燥湿",
+          "clinical": "3钱"
         },
         {
           "name": "人参",
           "dosage": "三两",
-          "role": "补气健脾"
+          "role": "补气健脾",
+          "clinical": "3钱"
         },
         {
           "name": "干姜",
           "dosage": "三两",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "3钱"
         }
       ],
       "indication": "太阳病，外证未除，而数下之，遂协热而利，利下不止，心下痞硬，表里不解者，桂枝人参汤主之。",
@@ -8961,12 +9707,14 @@
         {
           "name": "赤石脂",
           "dosage": "一斤碎",
-          "role": "涩肠止泻"
+          "role": "涩肠止泻",
+          "clinical": "16钱"
         },
         {
           "name": "禹余粮",
           "dosage": "一斤碎",
-          "role": "涩肠止泻"
+          "role": "涩肠止泻",
+          "clinical": "16钱"
         }
       ],
       "indication": "伤寒服汤药，下利不止，心下痞硬，服泻心汤已，复以他药下之，利不止，医以理中与之，利益甚。理中者，理中焦，此利在下焦，赤石脂禹余粮汤主之。",
@@ -8989,7 +9737,8 @@
         {
           "name": "升麻",
           "dosage": "二两",
-          "role": "清热解毒"
+          "role": "清热解毒",
+          "clinical": "2钱"
         },
         {
           "name": "鳖甲",
@@ -8999,22 +9748,26 @@
         {
           "name": "当归",
           "dosage": "一两",
-          "role": "养血活血"
+          "role": "养血活血",
+          "clinical": "1钱"
         },
         {
           "name": "蜀椒",
           "dosage": "一两去汗",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "1钱"
         },
         {
           "name": "雄黄",
           "dosage": "半两研",
-          "role": "解毒杀虫"
+          "role": "解毒杀虫",
+          "clinical": "0.5钱"
         },
         {
           "name": "甘草",
           "dosage": "二两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "2钱"
         }
       ],
       "indication": "阳毒之为病，面赤斑斑如锦纹，咽喉痛，唾脓血，五日可治，七日不可治，升麻鳖甲汤主之。阴毒之为病，面目青，身痛如被杖，咽喉痛，五日可治，七日不可治，升麻鳖甲汤去雄黄蜀椒主之。",
@@ -9038,22 +9791,26 @@
         {
           "name": "天雄",
           "dosage": "三两炮",
-          "role": "温阳散寒"
+          "role": "温阳散寒",
+          "clinical": "3钱"
         },
         {
           "name": "白术",
           "dosage": "八两",
-          "role": "健脾燥湿"
+          "role": "健脾燥湿",
+          "clinical": "8钱"
         },
         {
           "name": "桂枝",
           "dosage": "六两",
-          "role": "温经通络"
+          "role": "温经通络",
+          "clinical": "6钱"
         },
         {
           "name": "龙骨",
           "dosage": "三两",
-          "role": "潜阳固涩"
+          "role": "潜阳固涩",
+          "clinical": "3钱"
         }
       ],
       "indication": "天雄散方：主男子失精，腰膝冷痛。",
@@ -9076,17 +9833,20 @@
         {
           "name": "桂枝",
           "dosage": "三两",
-          "role": "解表散寒"
+          "role": "解表散寒",
+          "clinical": "3钱"
         },
         {
           "name": "甘草",
           "dosage": "二两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "2钱"
         },
         {
           "name": "生姜",
           "dosage": "三两",
-          "role": "散寒止呕"
+          "role": "散寒止呕",
+          "clinical": "3钱"
         },
         {
           "name": "大枣",
@@ -9096,17 +9856,20 @@
         {
           "name": "麻黄",
           "dosage": "二两",
-          "role": "发汗解表"
+          "role": "发汗解表",
+          "clinical": "2钱"
         },
         {
           "name": "细辛",
           "dosage": "二两",
-          "role": "散寒止痛"
+          "role": "散寒止痛",
+          "clinical": "2钱"
         },
         {
           "name": "附子",
           "dosage": "一枚炮",
-          "role": "温阳散寒"
+          "role": "温阳散寒",
+          "clinical": "3钱"
         }
       ],
       "indication": "气分，心下坚，大如盘，边如旋杯，水饮所作，桂甘姜枣麻辛附子汤主之。",
@@ -9121,8 +9884,9 @@
       "id": "guigan_jiangzao_maxinfuzi_tang"
     },
     {
-      "name": "烧棍散",
-      "alias": "",
+      "id": "shaokun_san",
+      "name": "烧裈散",
+      "alias": "烧棍散",
       "meridian": "厥阴",
       "category": "祛湿剂",
       "components": [
@@ -9132,16 +9896,18 @@
           "role": "导浊引邪"
         }
       ],
-      "indication": "伤寒阴阳易之为病，其人身体重，少气，少腹里急，或引阴中拘挛，热上冲胸，头重不欲举，眼中生花，膝胫拘急者，烧棍散主之。",
-      "contraindication": "非阴阳易者不宜",
-      "dosage": "上一味，以水和，服方寸匕，日三服，小便即利，阴头微肿，此为愈矣",
+      "indication": "伤寒阴阳易之为病，其人身体重，少气，少腹里急，或引阴中拘挛，热上冲胸，头重不欲举，眼中生花，膝胫拘急者，烧裈散主之。",
+      "contraindication": "非阴阳易者不宜。",
+      "dosage": "上一味，以水和，服方寸匕，日三服，小便即利，阴头微肿，此为愈矣。",
       "explanation": "阴阳易，伤寒后房事传染。中裈烧灰，取同气相求之意，导浊邪外出。",
       "keywords": [
         "阴阳易",
         "房劳",
-        "传染"
-      ],
-      "id": "shaokun_san"
+        "传染",
+        "身体重",
+        "少气",
+        "热上冲胸"
+      ]
     },
     {
       "name": "杏子汤",
@@ -9157,12 +9923,14 @@
         {
           "name": "麻黄",
           "dosage": "三两",
-          "role": "发汗利水"
+          "role": "发汗利水",
+          "clinical": "3钱"
         },
         {
           "name": "甘草",
           "dosage": "二两",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "2钱"
         }
       ],
       "indication": "水之为病，其脉沉小，属少阴；浮者为风，无水虚胀者，为气。水，发其汗即已。脉沉者宜麻黄附子汤；浮者宜杏子汤。",
@@ -9185,7 +9953,8 @@
         {
           "name": "熟地",
           "dosage": "一两",
-          "role": "滋阴补血"
+          "role": "滋阴补血",
+          "clinical": "1钱"
         },
         {
           "name": "鹿角胶",
@@ -9400,7 +10169,8 @@
         {
           "name": "大黄",
           "dosage": "一两",
-          "role": "攻下瘀热"
+          "role": "攻下瘀热",
+          "clinical": "1钱"
         },
         {
           "name": "甘草",
@@ -9423,13 +10193,14 @@
     {
       "name": "七厘散",
       "alias": "",
-      "meridian": "杂病",
+      "meridian": "厥阴",
       "category": "金疮药",
       "components": [
         {
           "name": "血竭",
           "dosage": "一两",
-          "role": "散瘀定痛"
+          "role": "散瘀定痛",
+          "clinical": "1钱"
         },
         {
           "name": "红花",
@@ -9494,12 +10265,14 @@
         {
           "name": "犀角",
           "dosage": "一两（现用水牛角代）",
-          "role": "清热凉血"
+          "role": "清热凉血",
+          "clinical": "1钱"
         },
         {
           "name": "地黄",
           "dosage": "半两",
-          "role": "清热凉血"
+          "role": "清热凉血",
+          "clinical": "0.5钱"
         },
         {
           "name": "芍药",
@@ -9533,7 +10306,8 @@
         {
           "name": "黄连",
           "dosage": "一两",
-          "role": "清热解毒消炎"
+          "role": "清热解毒消炎",
+          "clinical": "1钱"
         },
         {
           "name": "薏苡仁",
@@ -9622,7 +10396,8 @@
         {
           "name": "黄芪",
           "dosage": "四两",
-          "role": "大补元气"
+          "role": "大补元气",
+          "clinical": "4钱"
         },
         {
           "name": "当归",
@@ -9751,7 +10526,8 @@
         {
           "name": "牡蛎",
           "dosage": "一两",
-          "role": "软坚散结"
+          "role": "软坚散结",
+          "clinical": "1钱"
         },
         {
           "name": "龙胆草",
@@ -9795,7 +10571,8 @@
         {
           "name": "牡蛎",
           "dosage": "一两",
-          "role": "软坚散结"
+          "role": "软坚散结",
+          "clinical": "1钱"
         },
         {
           "name": "白术",
@@ -9885,7 +10662,8 @@
         {
           "name": "牡蛎",
           "dosage": "一两",
-          "role": "软坚散结"
+          "role": "软坚散结",
+          "clinical": "1钱"
         },
         {
           "name": "紫根",
@@ -9945,7 +10723,8 @@
         {
           "name": "石膏",
           "dosage": "六两",
-          "role": "大寒清热逼奶水"
+          "role": "大寒清热逼奶水",
+          "clinical": "6钱"
         },
         {
           "name": "知母",
@@ -9990,7 +10769,8 @@
         {
           "name": "牡蛎",
           "dosage": "一两",
-          "role": "软坚散结"
+          "role": "软坚散结",
+          "clinical": "1钱"
         },
         {
           "name": "龙骨",
@@ -10175,7 +10955,8 @@
         {
           "name": "桔梗",
           "dosage": "一两",
-          "role": "排脓祛痰"
+          "role": "排脓祛痰",
+          "clinical": "1钱"
         },
         {
           "name": "炙甘草",
@@ -10250,7 +11031,8 @@
         {
           "name": "炙甘草",
           "dosage": "一两",
-          "role": "大补心血"
+          "role": "大补心血",
+          "clinical": "1钱"
         },
         {
           "name": "生姜",
@@ -10461,7 +11243,8 @@
         {
           "name": "饴糖",
           "dosage": "一两",
-          "role": "补脾缓急"
+          "role": "补脾缓急",
+          "clinical": "1钱"
         },
         {
           "name": "生附子",
@@ -10621,7 +11404,8 @@
         {
           "name": "石膏",
           "dosage": "六两",
-          "role": "大寒清热降上热"
+          "role": "大寒清热降上热",
+          "clinical": "6钱"
         },
         {
           "name": "知母",
@@ -11026,7 +11810,8 @@
         {
           "name": "白芍",
           "dosage": "一两",
-          "role": "养血柔肝止脚痛"
+          "role": "养血柔肝止脚痛",
+          "clinical": "1钱"
         },
         {
           "name": "枳实",
@@ -11386,7 +12171,8 @@
         {
           "name": "赤小豆",
           "dosage": "一两",
-          "role": "利水消肿"
+          "role": "利水消肿",
+          "clinical": "1钱"
         },
         {
           "name": "黄芪",
@@ -11396,17 +12182,20 @@
         {
           "name": "薏苡仁",
           "dosage": "一两",
-          "role": "健脾渗湿"
+          "role": "健脾渗湿",
+          "clinical": "1钱"
         },
         {
           "name": "芡实",
           "dosage": "一两",
-          "role": "固肾涩精"
+          "role": "固肾涩精",
+          "clinical": "1钱"
         },
         {
           "name": "莲子",
           "dosage": "一两",
-          "role": "补脾止泻"
+          "role": "补脾止泻",
+          "clinical": "1钱"
         },
         {
           "name": "鲤鱼",
@@ -11460,7 +12249,7 @@
     {
       "name": "麝香矾石散",
       "alias": "",
-      "meridian": "杂病",
+      "meridian": "少阴/厥阴",
       "category": "金疮药",
       "components": [
         {
@@ -11496,12 +12285,14 @@
         {
           "name": "附子",
           "dosage": "二枚",
-          "role": "温阳散寒"
+          "role": "温阳散寒",
+          "clinical": "3钱"
         },
         {
           "name": "干姜",
           "dosage": "二两",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "2钱"
         }
       ],
       "indication": "小儿足烂疮，阴证疮疡。",
@@ -11518,7 +12309,7 @@
     {
       "name": "硫磺大黄麻油外敷方",
       "alias": "烫伤第一方",
-      "meridian": "杂病",
+      "meridian": "少阴/外用",
       "category": "金疮药",
       "components": [
         {
@@ -11701,13 +12492,14 @@
     {
       "name": "矾石汤",
       "alias": "矾石泡脚方",
-      "meridian": "杂病",
+      "meridian": "厥阴/少阴",
       "category": "金疮药",
       "components": [
         {
           "name": "矾石（明矾）",
           "dosage": "二两",
-          "role": "收敛湿气、去湿解毒"
+          "role": "收敛湿气、去湿解毒",
+          "clinical": "2钱"
         }
       ],
       "indication": "香港脚、糖尿病足溃烂、脚气、脚部湿气重。",
@@ -11767,22 +12559,26 @@
         {
           "name": "桂枝",
           "dosage": "三两",
-          "role": "解肌发表"
+          "role": "解肌发表",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
           "dosage": "六两",
-          "role": "缓急止痛"
+          "role": "缓急止痛",
+          "clinical": "6钱"
         },
         {
           "name": "生姜",
           "dosage": "三两",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "3钱"
         },
         {
           "name": "甘草",
           "dosage": "二两炙",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "2钱"
         },
         {
           "name": "大枣",
@@ -11812,27 +12608,32 @@
         {
           "name": "桂枝",
           "dosage": "三两",
-          "role": "解肌发表"
+          "role": "解肌发表",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
           "dosage": "六两",
-          "role": "缓急止痛"
+          "role": "缓急止痛",
+          "clinical": "6钱"
         },
         {
           "name": "大黄",
           "dosage": "二两",
-          "role": "泻下实积"
+          "role": "泻下实积",
+          "clinical": "2钱"
         },
         {
           "name": "生姜",
           "dosage": "三两",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "3钱"
         },
         {
           "name": "甘草",
           "dosage": "二两炙",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "2钱"
         },
         {
           "name": "大枣",
@@ -11862,17 +12663,20 @@
         {
           "name": "桂枝",
           "dosage": "三两",
-          "role": "解肌发表"
+          "role": "解肌发表",
+          "clinical": "3钱"
         },
         {
           "name": "生姜",
           "dosage": "三两",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "3钱"
         },
         {
           "name": "甘草",
           "dosage": "二两炙",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "2钱"
         },
         {
           "name": "大枣",
@@ -11902,17 +12706,20 @@
         {
           "name": "桂枝",
           "dosage": "三两",
-          "role": "解肌发表"
+          "role": "解肌发表",
+          "clinical": "3钱"
         },
         {
           "name": "生姜",
           "dosage": "三两",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "3钱"
         },
         {
           "name": "甘草",
           "dosage": "二两炙",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "2钱"
         },
         {
           "name": "大枣",
@@ -11922,7 +12729,8 @@
         {
           "name": "炮附子",
           "dosage": "一枚",
-          "role": "温经复阳"
+          "role": "温经复阳",
+          "clinical": "3钱"
         }
       ],
       "indication": "太阳病误下后，脉促胸满，微恶寒。",
@@ -11947,27 +12755,32 @@
         {
           "name": "麻黄",
           "dosage": "三两",
-          "role": "发汗解表"
+          "role": "发汗解表",
+          "clinical": "3钱"
         },
         {
           "name": "芍药",
           "dosage": "三两",
-          "role": "敛阴和营"
+          "role": "敛阴和营",
+          "clinical": "3钱"
         },
         {
           "name": "干姜",
           "dosage": "三两",
-          "role": "温肺化饮"
+          "role": "温肺化饮",
+          "clinical": "3钱"
         },
         {
           "name": "细辛",
           "dosage": "三两",
-          "role": "温肺散寒"
+          "role": "温肺散寒",
+          "clinical": "3钱"
         },
         {
           "name": "桂枝",
           "dosage": "三两",
-          "role": "解肌发表"
+          "role": "解肌发表",
+          "clinical": "3钱"
         },
         {
           "name": "半夏",
@@ -11977,7 +12790,8 @@
         {
           "name": "甘草",
           "dosage": "三两炙",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "3钱"
         },
         {
           "name": "五味子",
@@ -11987,7 +12801,8 @@
         {
           "name": "石膏",
           "dosage": "二两",
-          "role": "清热除烦"
+          "role": "清热除烦",
+          "clinical": "2钱"
         }
       ],
       "indication": "肺胀，咳而上气，烦躁而喘，脉浮者，心下有水气。",
@@ -12000,31 +12815,6 @@
         "咳喘",
         "烦躁",
         "石膏"
-      ]
-    },
-    {
-      "id": "shaokun_san",
-      "name": "烧裈散",
-      "alias": "",
-      "meridian": "厥阴",
-      "category": "其他",
-      "components": [
-        {
-          "name": "妇人中裈",
-          "dosage": "近隐处",
-          "role": "引邪外出"
-        }
-      ],
-      "indication": "阴阳易，伤寒阴阳易之为病，其人身体重，少气，少腹里急，或引阴中拘挛，热上冲胸，头重不欲举，眼中生花。",
-      "contraindication": "非阴阳易者不用。",
-      "dosage": "取妇人中裈近隐处，烧灰，以水和服方寸匕，日三服。小便即利，阴头微肿，则愈。",
-      "preparation": "烧灰，以水和服方寸匕，日三服。",
-      "explanation": "阴阳易为伤寒初愈，余热未尽，因房事而传于对方。烧裈散取同气相求之意，引邪外出。",
-      "keywords": [
-        "阴阳易",
-        "身体重",
-        "少气",
-        "热上冲胸"
       ]
     },
     {
@@ -12042,12 +12832,14 @@
         {
           "name": "黄柏",
           "dosage": "二两",
-          "role": "清热燥湿"
+          "role": "清热燥湿",
+          "clinical": "2钱"
         },
         {
           "name": "甘草",
           "dosage": "一两炙",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "1钱"
         }
       ],
       "indication": "伤寒身黄发热。",
@@ -12072,12 +12864,14 @@
         {
           "name": "麻黄",
           "dosage": "二两",
-          "role": "发汗解表"
+          "role": "发汗解表",
+          "clinical": "2钱"
         },
         {
           "name": "连轺",
           "dosage": "二两",
-          "role": "清热利湿"
+          "role": "清热利湿",
+          "clinical": "2钱"
         },
         {
           "name": "杏仁",
@@ -12102,12 +12896,14 @@
         {
           "name": "生姜",
           "dosage": "二两",
-          "role": "解表散寒"
+          "role": "解表散寒",
+          "clinical": "2钱"
         },
         {
           "name": "甘草",
           "dosage": "二两炙",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "2钱"
         }
       ],
       "indication": "伤寒瘀热在里，身必发黄。",
@@ -12187,12 +12983,14 @@
         {
           "name": "干姜",
           "dosage": "一两",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "1钱"
         },
         {
           "name": "附子",
           "dosage": "一枚生用",
-          "role": "回阳救逆"
+          "role": "回阳救逆",
+          "clinical": "3钱"
         }
       ],
       "indication": "少阴病下利。",
@@ -12222,12 +13020,14 @@
         {
           "name": "干姜",
           "dosage": "一两",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "1钱"
         },
         {
           "name": "附子",
           "dosage": "一枚生用",
-          "role": "回阳救逆"
+          "role": "回阳救逆",
+          "clinical": "3钱"
         },
         {
           "name": "人尿",
@@ -12263,22 +13063,26 @@
         {
           "name": "干姜",
           "dosage": "三两",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "3钱"
         },
         {
           "name": "黄芩",
           "dosage": "三两",
-          "role": "清热燥湿"
+          "role": "清热燥湿",
+          "clinical": "3钱"
         },
         {
           "name": "黄连",
           "dosage": "三两",
-          "role": "清热燥湿"
+          "role": "清热燥湿",
+          "clinical": "3钱"
         },
         {
           "name": "人参",
           "dosage": "三两",
-          "role": "益气补中"
+          "role": "益气补中",
+          "clinical": "3钱"
         }
       ],
       "indication": "伤寒本自寒下，医复吐下之，食入口即吐。",
@@ -12302,72 +13106,86 @@
         {
           "name": "麻黄",
           "dosage": "二两半",
-          "role": "发汗解表"
+          "role": "发汗解表",
+          "clinical": "2.5钱"
         },
         {
           "name": "升麻",
           "dosage": "一两一分",
-          "role": "升阳举陷"
+          "role": "升阳举陷",
+          "clinical": "1钱"
         },
         {
           "name": "当归",
           "dosage": "一两一分",
-          "role": "养血和血"
+          "role": "养血和血",
+          "clinical": "1钱"
         },
         {
           "name": "知母",
           "dosage": "十八铢",
-          "role": "清热滋阴"
+          "role": "清热滋阴",
+          "clinical": "0.75钱"
         },
         {
           "name": "黄芩",
           "dosage": "十八铢",
-          "role": "清热燥湿"
+          "role": "清热燥湿",
+          "clinical": "0.75钱"
         },
         {
           "name": "葳蕤",
           "dosage": "十八铢",
-          "role": "滋阴润燥"
+          "role": "滋阴润燥",
+          "clinical": "0.75钱"
         },
         {
           "name": "芍药",
           "dosage": "六铢",
-          "role": "养血敛阴"
+          "role": "养血敛阴",
+          "clinical": "0.25钱"
         },
         {
           "name": "天门冬",
           "dosage": "六铢",
-          "role": "滋阴清热"
+          "role": "滋阴清热",
+          "clinical": "0.25钱"
         },
         {
           "name": "桂枝",
           "dosage": "六铢",
-          "role": "解肌发表"
+          "role": "解肌发表",
+          "clinical": "0.25钱"
         },
         {
           "name": "茯苓",
           "dosage": "六铢",
-          "role": "利水渗湿"
+          "role": "利水渗湿",
+          "clinical": "0.25钱"
         },
         {
           "name": "甘草",
           "dosage": "六铢",
-          "role": "调和诸药"
+          "role": "调和诸药",
+          "clinical": "0.25钱"
         },
         {
           "name": "石膏",
           "dosage": "六铢",
-          "role": "清热除烦"
+          "role": "清热除烦",
+          "clinical": "0.25钱"
         },
         {
           "name": "白术",
           "dosage": "六铢",
-          "role": "健脾燥湿"
+          "role": "健脾燥湿",
+          "clinical": "0.25钱"
         },
         {
           "name": "干姜",
           "dosage": "六铢",
-          "role": "温中散寒"
+          "role": "温中散寒",
+          "clinical": "0.25钱"
         }
       ],
       "indication": "伤寒六七日，大下后，寸脉沉而迟，手足厥逆，下部脉不至，喉咽不利，唾脓血，泄利不止者。",
@@ -12462,7 +13280,8 @@
         {
           "name": "猪肤",
           "dosage": "一斤",
-          "role": "滋阴润燥"
+          "role": "滋阴润燥",
+          "clinical": "16钱"
         }
       ],
       "indication": "少阴病，下利咽痛，胸满心烦。",
@@ -12488,7 +13307,8 @@
         {
           "name": "甘草",
           "dosage": "二两",
-          "role": "清热解毒"
+          "role": "清热解毒",
+          "clinical": "2钱"
         }
       ],
       "indication": "少阴病二三日，咽痛。",
@@ -12513,12 +13333,14 @@
         {
           "name": "桔梗",
           "dosage": "一两",
-          "role": "宣肺利咽"
+          "role": "宣肺利咽",
+          "clinical": "1钱"
         },
         {
           "name": "甘草",
           "dosage": "二两",
-          "role": "清热解毒"
+          "role": "清热解毒",
+          "clinical": "2钱"
         }
       ],
       "indication": "少阴病，服甘草汤不差者。",
@@ -12531,6 +13353,1433 @@
         "化脓",
         "排脓",
         "桔梗"
+      ]
+    },
+    {
+      "name": "三物黄芩汤",
+      "alias": "",
+      "meridian": "厥阴/少阴",
+      "category": "金匮·妇人产后",
+      "components": [
+        {
+          "name": "黄芩",
+          "dosage": "一两",
+          "role": "清热"
+        },
+        {
+          "name": "苦参",
+          "dosage": "二两",
+          "role": "燥湿"
+        },
+        {
+          "name": "干地黄",
+          "dosage": "四两",
+          "role": "滋阴"
+        }
+      ],
+      "indication": "妇人产后中风，发热，面正赤，喘而头痛（痉病）。",
+      "contraindication": "脾胃虚寒者慎用。",
+      "dosage": "水煎服，日三服。",
+      "explanation": "产后血虚，风邪化热入血分，黄芩清血热、苦参燥湿、地黄滋阴。",
+      "keywords": [
+        "产后",
+        "中风",
+        "血分热"
+      ],
+      "id": "kb_三物黄芩汤"
+    },
+    {
+      "name": "厚朴麻黄汤",
+      "alias": "",
+      "meridian": "太阳/阳明",
+      "category": "金匮·肺咳",
+      "components": [
+        {
+          "name": "厚朴",
+          "dosage": "五两",
+          "role": "降逆平喘"
+        },
+        {
+          "name": "麻黄",
+          "dosage": "四两",
+          "role": "宣肺"
+        },
+        {
+          "name": "石膏",
+          "dosage": "如鸡子大",
+          "role": "清热"
+        },
+        {
+          "name": "杏仁",
+          "dosage": "半升",
+          "role": "降气"
+        },
+        {
+          "name": "半夏",
+          "dosage": "半升",
+          "role": "化饮"
+        },
+        {
+          "name": "干姜",
+          "dosage": "二两",
+          "role": "温中"
+        },
+        {
+          "name": "细辛",
+          "dosage": "二两",
+          "role": "散寒饮"
+        },
+        {
+          "name": "小麦",
+          "dosage": "一升",
+          "role": "养心"
+        },
+        {
+          "name": "五味子",
+          "dosage": "半升",
+          "role": "敛肺"
+        }
+      ],
+      "indication": "咳而脉浮，上气烦躁。",
+      "contraindication": "阴虚燥咳忌。",
+      "dosage": "水煎服。",
+      "explanation": "寒饮夹热在肺，表里同病（太阳阳明合病），厚朴麻黄降逆、石膏清热。",
+      "keywords": [
+        "咳喘",
+        "脉浮",
+        "寒饮夹热"
+      ],
+      "id": "kb_厚朴麻黄汤"
+    },
+    {
+      "name": "大乌头煎",
+      "alias": "乌头煎",
+      "meridian": "厥阴",
+      "category": "金匮·腹满寒疝",
+      "components": [
+        {
+          "name": "乌头",
+          "dosage": "大者五枚",
+          "role": "散寒止痛"
+        }
+      ],
+      "indication": "寒疝绕脐痛，发则白汗出，手足厥冷。",
+      "contraindication": "乌头有毒，须久煎；阴虚火旺忌。",
+      "dosage": "水煎乌头，去渣纳蜜，分服。",
+      "explanation": "寒湿凝结厥阴，乌头大辛大热破积散寒。",
+      "keywords": [
+        "寒疝",
+        "绕脐痛",
+        "厥冷"
+      ],
+      "id": "kb_大乌头煎"
+    },
+    {
+      "name": "大黄牡丹皮汤",
+      "alias": "",
+      "meridian": "阳明/厥阴",
+      "category": "金匮·疮痈",
+      "components": [
+        {
+          "name": "大黄",
+          "dosage": "四两",
+          "role": "泻热通腑"
+        },
+        {
+          "name": "牡丹皮",
+          "dosage": "一两",
+          "role": "凉血散瘀"
+        },
+        {
+          "name": "桃仁",
+          "dosage": "五十个",
+          "role": "破血润燥"
+        },
+        {
+          "name": "瓜子",
+          "dosage": "半升",
+          "role": "排脓"
+        },
+        {
+          "name": "芒硝",
+          "dosage": "三合",
+          "role": "软坚"
+        }
+      ],
+      "indication": "肠痈，少腹肿痞，按之即痛如淋，小便自调。",
+      "contraindication": "脓已成、体虚者慎。",
+      "dosage": "水煎顿服，有脓当下。",
+      "explanation": "湿热瘀毒结于肠（阳明/厥阴血分），泻热破瘀排脓。",
+      "keywords": [
+        "肠痈",
+        "少腹肿",
+        "瘀热"
+      ],
+      "id": "kb_大黄牡丹皮汤"
+    },
+    {
+      "name": "射干麻黄汤",
+      "alias": "",
+      "meridian": "太阳",
+      "category": "金匮·肺痿肺痈",
+      "components": [
+        {
+          "name": "射干",
+          "dosage": "三两",
+          "role": "开痰散结"
+        },
+        {
+          "name": "麻黄",
+          "dosage": "四两",
+          "role": "宣肺"
+        },
+        {
+          "name": "生姜",
+          "dosage": "四两",
+          "role": "温散"
+        },
+        {
+          "name": "细辛",
+          "dosage": "三两",
+          "role": "温肺化饮"
+        },
+        {
+          "name": "紫菀",
+          "dosage": "三两",
+          "role": "润肺下气"
+        },
+        {
+          "name": "款冬花",
+          "dosage": "三两",
+          "role": "润肺止咳"
+        },
+        {
+          "name": "大枣",
+          "dosage": "七枚",
+          "role": "和中"
+        },
+        {
+          "name": "半夏",
+          "dosage": "半升",
+          "role": "化饮"
+        },
+        {
+          "name": "五味子",
+          "dosage": "半升",
+          "role": "敛肺"
+        }
+      ],
+      "indication": "咳而上气，喉中水鸡声。",
+      "contraindication": "阴虚燥咳忌。",
+      "dosage": "水煎服。",
+      "explanation": "寒饮郁肺（太阳），射干开痰、麻黄宣肺，治水鸡声之寒饮。",
+      "keywords": [
+        "咳喘",
+        "水鸡声",
+        "寒饮"
+      ],
+      "id": "kb_射干麻黄汤"
+    },
+    {
+      "name": "柴胡去半夏加栝蒌汤",
+      "alias": "",
+      "meridian": "少阳",
+      "category": "金匮·疟病",
+      "components": [
+        {
+          "name": "柴胡",
+          "dosage": "八两",
+          "role": "和解少阳"
+        },
+        {
+          "name": "人参",
+          "dosage": "三两",
+          "role": "扶正"
+        },
+        {
+          "name": "黄芩",
+          "dosage": "三两",
+          "role": "清热"
+        },
+        {
+          "name": "甘草",
+          "dosage": "三两",
+          "role": "和中"
+        },
+        {
+          "name": "生姜",
+          "dosage": "二两",
+          "role": "和胃"
+        },
+        {
+          "name": "大枣",
+          "dosage": "十二枚",
+          "role": "补脾"
+        },
+        {
+          "name": "栝蒌根",
+          "dosage": "四两",
+          "role": "生津止渴"
+        }
+      ],
+      "indication": "疟病发渴，亦治劳疟。",
+      "contraindication": "脾胃虚寒便溏慎用。",
+      "dosage": "水煎服。",
+      "explanation": "少阳疟病津伤作渴，去半夏之燥、加栝蒌根生津。",
+      "keywords": [
+        "疟",
+        "口渴",
+        "少阳"
+      ],
+      "id": "kb_柴胡去半夏加栝蒌汤"
+    },
+    {
+      "name": "栀子厚朴汤",
+      "alias": "",
+      "meridian": "太阳/阳明",
+      "category": "伤寒·误下",
+      "components": [
+        {
+          "name": "栀子",
+          "dosage": "十四个",
+          "role": "清热除烦"
+        },
+        {
+          "name": "厚朴",
+          "dosage": "四两",
+          "role": "除满"
+        },
+        {
+          "name": "枳实",
+          "dosage": "四枚",
+          "role": "破滞"
+        }
+      ],
+      "indication": "伤寒下后，心烦腹满，卧起不安。",
+      "contraindication": "虚寒痞满忌。",
+      "dosage": "水煎服，温进。",
+      "explanation": "热郁胸腹（太阳阳明），栀子除烦、朴枳消满。",
+      "keywords": [
+        "心烦",
+        "腹满",
+        "卧起不安"
+      ],
+      "id": "kb_栀子厚朴汤"
+    },
+    {
+      "name": "栀子干姜汤",
+      "alias": "",
+      "meridian": "太阳/太阴",
+      "category": "伤寒·误下",
+      "components": [
+        {
+          "name": "栀子",
+          "dosage": "十四个",
+          "role": "清上热"
+        },
+        {
+          "name": "干姜",
+          "dosage": "二两",
+          "role": "温中"
+        }
+      ],
+      "indication": "伤寒医以丸药下之，身热不去，微烦。",
+      "contraindication": "纯寒无热忌。",
+      "dosage": "水煎服。",
+      "explanation": "上热（栀子）中寒（干姜），太阳误下后寒热并存。",
+      "keywords": [
+        "身热",
+        "微烦",
+        "上热中寒"
+      ],
+      "id": "kb_栀子干姜汤"
+    },
+    {
+      "name": "桂枝加芍药生姜各一两人参三两新加汤",
+      "alias": "新加汤",
+      "meridian": "太阳",
+      "category": "伤寒·汗后",
+      "components": [
+        {
+          "name": "桂枝",
+          "dosage": "三两",
+          "role": "解肌"
+        },
+        {
+          "name": "芍药",
+          "dosage": "四两",
+          "role": "敛阴"
+        },
+        {
+          "name": "生姜",
+          "dosage": "四两",
+          "role": "宣通"
+        },
+        {
+          "name": "人参",
+          "dosage": "三两",
+          "role": "益气"
+        },
+        {
+          "name": "甘草",
+          "dosage": "二两",
+          "role": "和中"
+        },
+        {
+          "name": "大枣",
+          "dosage": "十二枚",
+          "role": "补脾"
+        }
+      ],
+      "indication": "发汗后身疼痛，脉沉迟。",
+      "contraindication": "表实无汗忌。",
+      "dosage": "水煎服，啜粥。",
+      "explanation": "汗后营卫虚、身疼痛，加芍药生姜人参益气和营。",
+      "keywords": [
+        "汗后",
+        "身痛",
+        "脉沉迟"
+      ],
+      "id": "kb_桂枝加芍药生姜各一两人参三两新加汤"
+    },
+    {
+      "name": "桂枝去芍药加蜀漆牡蛎龙骨救逆汤",
+      "alias": "救逆汤",
+      "meridian": "太阳",
+      "category": "伤寒·火逆",
+      "components": [
+        {
+          "name": "桂枝",
+          "dosage": "三两",
+          "role": "通阳"
+        },
+        {
+          "name": "甘草",
+          "dosage": "二两",
+          "role": "和中"
+        },
+        {
+          "name": "生姜",
+          "dosage": "三两",
+          "role": "和胃"
+        },
+        {
+          "name": "大枣",
+          "dosage": "十二枚",
+          "role": "补脾"
+        },
+        {
+          "name": "牡蛎",
+          "dosage": "五两",
+          "role": "敛神"
+        },
+        {
+          "name": "龙骨",
+          "dosage": "四两",
+          "role": "镇惊"
+        },
+        {
+          "name": "蜀漆",
+          "dosage": "三两",
+          "role": "涤痰截疟"
+        }
+      ],
+      "indication": "火逆下之，因烧针烦躁，惊狂卧起不安。",
+      "contraindication": "体虚者减蜀漆。",
+      "dosage": "水煎服，先煮蜀漆。",
+      "explanation": "火劫伤心神，桂枝救逆、龙牡镇惊、蜀漆涤痰。",
+      "keywords": [
+        "惊狂",
+        "烦躁",
+        "火逆"
+      ],
+      "id": "kb_桂枝去芍药加蜀漆牡蛎龙骨救逆汤"
+    },
+    {
+      "name": "桂枝去芍药加麻黄细辛附子汤",
+      "alias": "",
+      "meridian": "太阳/少阴",
+      "category": "金匮·水气",
+      "components": [
+        {
+          "name": "桂枝",
+          "dosage": "三两",
+          "role": "通阳化气"
+        },
+        {
+          "name": "生姜",
+          "dosage": "三两",
+          "role": "温散"
+        },
+        {
+          "name": "甘草",
+          "dosage": "二两",
+          "role": "和中"
+        },
+        {
+          "name": "大枣",
+          "dosage": "十二枚",
+          "role": "补脾"
+        },
+        {
+          "name": "麻黄",
+          "dosage": "二两",
+          "role": "宣发"
+        },
+        {
+          "name": "细辛",
+          "dosage": "二两",
+          "role": "温经"
+        },
+        {
+          "name": "附子",
+          "dosage": "一枚",
+          "role": "温阳"
+        }
+      ],
+      "indication": "气分，心下坚，大如盘，边如旋杯，水饮所作。",
+      "contraindication": "阴虚内热忌。",
+      "dosage": "水煎服。",
+      "explanation": "阳气不通、水饮结于心下，桂枝麻黄发越、附子细辛温阳。",
+      "keywords": [
+        "气分",
+        "心下坚",
+        "水饮"
+      ],
+      "id": "kb_桂枝去芍药加麻黄细辛附子汤"
+    },
+    {
+      "name": "桂枝甘草龙骨牡蛎汤",
+      "alias": "",
+      "meridian": "太阳",
+      "category": "伤寒·火逆",
+      "components": [
+        {
+          "name": "桂枝",
+          "dosage": "一两",
+          "role": "通阳"
+        },
+        {
+          "name": "甘草",
+          "dosage": "二两",
+          "role": "和中"
+        },
+        {
+          "name": "龙骨",
+          "dosage": "二两",
+          "role": "镇惊"
+        },
+        {
+          "name": "牡蛎",
+          "dosage": "二两",
+          "role": "敛神"
+        }
+      ],
+      "indication": "火逆下之，因烧针烦躁。",
+      "contraindication": "实热烦躁忌。",
+      "dosage": "水煎服。",
+      "explanation": "心阳受损、神不敛，桂枝甘草温心阳、龙牡镇惊。",
+      "keywords": [
+        "烦躁",
+        "火逆",
+        "心阳伤"
+      ],
+      "id": "kb_桂枝甘草龙骨牡蛎汤"
+    },
+    {
+      "name": "桂枝麻黄各半汤",
+      "alias": "",
+      "meridian": "太阳",
+      "category": "伤寒·太阳病",
+      "components": [
+        {
+          "name": "桂枝",
+          "dosage": "一两十六铢",
+          "role": "解肌"
+        },
+        {
+          "name": "芍药",
+          "dosage": "一两",
+          "role": "敛阴"
+        },
+        {
+          "name": "生姜",
+          "dosage": "一两",
+          "role": "温散"
+        },
+        {
+          "name": "甘草",
+          "dosage": "一两",
+          "role": "和中"
+        },
+        {
+          "name": "大枣",
+          "dosage": "四枚",
+          "role": "补脾"
+        },
+        {
+          "name": "麻黄",
+          "dosage": "一两",
+          "role": "发汗"
+        },
+        {
+          "name": "杏仁",
+          "dosage": "二十四枚",
+          "role": "降肺"
+        }
+      ],
+      "indication": "太阳病如疟状，发热恶寒，热多寒少，其人不呕，清便。",
+      "contraindication": "大汗出者忌。",
+      "dosage": "水煎服，微汗。",
+      "explanation": "表郁轻证，桂麻各半小发其汗。",
+      "keywords": [
+        "如疟状",
+        "表郁",
+        "小汗"
+      ],
+      "id": "kb_桂枝麻黄各半汤"
+    },
+    {
+      "name": "桂苓五味甘草汤",
+      "alias": "",
+      "meridian": "太阳/太阴",
+      "category": "金匮·痰饮",
+      "components": [
+        {
+          "name": "桂枝",
+          "dosage": "四两",
+          "role": "化气"
+        },
+        {
+          "name": "茯苓",
+          "dosage": "四两",
+          "role": "利水"
+        },
+        {
+          "name": "五味子",
+          "dosage": "半升",
+          "role": "敛肺纳气"
+        },
+        {
+          "name": "甘草",
+          "dosage": "三两",
+          "role": "和中"
+        }
+      ],
+      "indication": "青龙汤下已，多唾口燥，寸脉沉，尺脉微，气从小腹上冲胸。",
+      "contraindication": "阴虚火旺忌。",
+      "dosage": "水煎服。",
+      "explanation": "寒饮上冲，桂苓化饮、五味敛气，防冲逆。",
+      "keywords": [
+        "寒饮",
+        "气冲",
+        "多唾"
+      ],
+      "id": "kb_桂苓五味甘草汤"
+    },
+    {
+      "name": "橘枳姜汤",
+      "alias": "橘皮枳实生姜汤",
+      "meridian": "太阴",
+      "category": "金匮·胸痹",
+      "components": [
+        {
+          "name": "橘皮",
+          "dosage": "一斤",
+          "role": "理气"
+        },
+        {
+          "name": "枳实",
+          "dosage": "三两",
+          "role": "破滞"
+        },
+        {
+          "name": "生姜",
+          "dosage": "半斤",
+          "role": "温中化饮"
+        }
+      ],
+      "indication": "胸痹，胸中气塞短气。",
+      "contraindication": "阴虚燥结忌。",
+      "dosage": "水煎服。",
+      "explanation": "气滞痰阻胸中，橘姜理气、枳实破滞。",
+      "keywords": [
+        "胸痹",
+        "气塞",
+        "短气"
+      ],
+      "id": "kb_橘枳姜汤"
+    },
+    {
+      "name": "泽漆汤",
+      "alias": "",
+      "meridian": "太阴/阳明",
+      "category": "金匮·肺咳",
+      "components": [
+        {
+          "name": "半夏",
+          "dosage": "半升",
+          "role": "化饮"
+        },
+        {
+          "name": "紫参",
+          "dosage": "五两",
+          "role": "清热散结"
+        },
+        {
+          "name": "泽漆",
+          "dosage": "三斤",
+          "role": "逐水"
+        },
+        {
+          "name": "生姜",
+          "dosage": "五两",
+          "role": "温散"
+        },
+        {
+          "name": "白前",
+          "dosage": "五两",
+          "role": "降气"
+        },
+        {
+          "name": "甘草",
+          "dosage": "三两",
+          "role": "和中"
+        },
+        {
+          "name": "黄芩",
+          "dosage": "三两",
+          "role": "清热"
+        },
+        {
+          "name": "人参",
+          "dosage": "三两",
+          "role": "扶正"
+        },
+        {
+          "name": "桂枝",
+          "dosage": "三两",
+          "role": "通阳"
+        }
+      ],
+      "indication": "咳而脉沉，痰饮内停。",
+      "contraindication": "阴虚燥咳忌。",
+      "dosage": "水煎服。",
+      "explanation": "痰饮伏肺（脉沉为水），泽漆逐水、夏芩清化。",
+      "keywords": [
+        "咳喘",
+        "脉沉",
+        "痰饮"
+      ],
+      "id": "kb_泽漆汤"
+    },
+    {
+      "name": "牡蛎汤",
+      "alias": "",
+      "meridian": "少阳/太阴",
+      "category": "金匮·疟病",
+      "components": [
+        {
+          "name": "牡蛎",
+          "dosage": "四两",
+          "role": "软坚化痰"
+        },
+        {
+          "name": "麻黄",
+          "dosage": "四两",
+          "role": "宣发"
+        },
+        {
+          "name": "甘草",
+          "dosage": "二两",
+          "role": "和中"
+        },
+        {
+          "name": "蜀漆",
+          "dosage": "三两",
+          "role": "涤痰截疟"
+        }
+      ],
+      "indication": "疟多寒者，名曰牝疟。",
+      "contraindication": "体虚多汗忌。",
+      "dosage": "水煎服，蜀漆先煮。",
+      "explanation": "痰阻阳郁之牝疟，牡蛎软坚、麻黄发越、蜀漆祛痰。",
+      "keywords": [
+        "牝疟",
+        "多寒",
+        "痰疟"
+      ],
+      "id": "kb_牡蛎汤"
+    },
+    {
+      "name": "猪胆汁方",
+      "alias": "",
+      "meridian": "外用",
+      "category": "伤寒·导法",
+      "components": [
+        {
+          "name": "猪胆汁",
+          "dosage": "适量",
+          "role": "润燥通便"
+        }
+      ],
+      "indication": "阳明病自汗出，若发汗津液内竭，大便硬，不可攻，宜导之。",
+      "contraindication": "肛门破损慎用。",
+      "dosage": "灌肠导便。",
+      "explanation": "津竭便硬，外导而不犯胃气。",
+      "keywords": [
+        "便秘",
+        "津竭",
+        "外导"
+      ],
+      "id": "kb_猪胆汁方"
+    },
+    {
+      "name": "猪膏发煎",
+      "alias": "",
+      "meridian": "阳明",
+      "category": "金匮·黄疸",
+      "components": [
+        {
+          "name": "猪膏",
+          "dosage": "半斤",
+          "role": "润燥"
+        },
+        {
+          "name": "乱发",
+          "dosage": "如鸡子大三枚",
+          "role": "消瘀通秘"
+        }
+      ],
+      "indication": "诸黄，胃中燥结，小便利。",
+      "contraindication": "脾虚湿盛忌。",
+      "dosage": "煎发消，和膏服。",
+      "explanation": "胃肠燥结致黄，猪膏润燥、乱发消瘀。",
+      "keywords": [
+        "黄疸",
+        "胃燥",
+        "津枯"
+      ],
+      "id": "kb_猪膏发煎"
+    },
+    {
+      "name": "甘草干姜茯苓白术汤",
+      "alias": "肾着汤",
+      "meridian": "太阴",
+      "category": "金匮·五脏风寒",
+      "components": [
+        {
+          "name": "甘草",
+          "dosage": "二两",
+          "role": "和中"
+        },
+        {
+          "name": "白术",
+          "dosage": "二两",
+          "role": "健脾"
+        },
+        {
+          "name": "干姜",
+          "dosage": "四两",
+          "role": "温中"
+        },
+        {
+          "name": "茯苓",
+          "dosage": "四两",
+          "role": "利湿"
+        }
+      ],
+      "indication": "肾着，其人身体重，腰中冷，如坐水中，腹重如带五千钱。",
+      "contraindication": "阴虚腰痛忌。",
+      "dosage": "水煎服。",
+      "explanation": "寒湿着腰（太阴），甘姜苓术温中利湿。",
+      "keywords": [
+        "肾着",
+        "腰冷",
+        "身重"
+      ],
+      "id": "kb_甘草干姜茯苓白术汤"
+    },
+    {
+      "name": "百合洗方",
+      "alias": "",
+      "meridian": "外用",
+      "category": "金匮·百合病",
+      "components": [
+        {
+          "name": "百合",
+          "dosage": "一斤",
+          "role": "润肺清热"
+        }
+      ],
+      "indication": "百合病一月不解，变成渴者。",
+      "contraindication": "风寒表证忌。",
+      "dosage": "百合一升渍水，洗身。",
+      "explanation": "百合病变渴，外洗润燥清热。",
+      "keywords": [
+        "百合病",
+        "渴",
+        "外洗"
+      ],
+      "id": "kb_百合洗方"
+    },
+    {
+      "name": "皂荚丸",
+      "alias": "",
+      "meridian": "太阴/肺",
+      "category": "金匮·肺痿肺痈",
+      "components": [
+        {
+          "name": "皂荚",
+          "dosage": "八两",
+          "role": "祛痰开闭"
+        }
+      ],
+      "indication": "咳逆上气，时时唾浊，但坐不得眠。",
+      "contraindication": "阴虚燥咳、体虚者忌（皂荚峻烈）。",
+      "dosage": "酥炙蜜丸，枣膏汤下。",
+      "explanation": "顽痰壅肺，皂荚涤痰开闭。",
+      "keywords": [
+        "咳逆",
+        "唾浊",
+        "顽痰"
+      ],
+      "id": "kb_皂荚丸"
+    },
+    {
+      "name": "红蓝花酒",
+      "alias": "",
+      "meridian": "厥阴/肝",
+      "category": "金匮·妇人",
+      "components": [
+        {
+          "name": "红蓝花",
+          "dosage": "一两",
+          "role": "活血止痛"
+        }
+      ],
+      "indication": "妇人六十二种风，及腹中血气刺痛。",
+      "contraindication": "孕妇忌。",
+      "dosage": "酒煎，顿服。",
+      "explanation": "肝郁血滞作痛，红蓝花活血、酒行药势。",
+      "keywords": [
+        "妇人",
+        "血气刺痛",
+        "肝血瘀"
+      ],
+      "id": "kb_红蓝花酒"
+    },
+    {
+      "name": "胶艾汤",
+      "alias": "芎归胶艾汤",
+      "meridian": "厥阴/太阴",
+      "category": "金匮·妇人",
+      "components": [
+        {
+          "name": "芎䓖",
+          "dosage": "二两",
+          "role": "活血"
+        },
+        {
+          "name": "阿胶",
+          "dosage": "二两",
+          "role": "止血补血"
+        },
+        {
+          "name": "甘草",
+          "dosage": "二两",
+          "role": "和中"
+        },
+        {
+          "name": "艾叶",
+          "dosage": "三两",
+          "role": "温经止血"
+        },
+        {
+          "name": "当归",
+          "dosage": "三两",
+          "role": "养血"
+        },
+        {
+          "name": "芍药",
+          "dosage": "四两",
+          "role": "敛阴"
+        },
+        {
+          "name": "干地黄",
+          "dosage": "四两",
+          "role": "滋阴"
+        }
+      ],
+      "indication": "妇人漏下，或半产下血，或妊娠下血，腹中痛。",
+      "contraindication": "血热妄行慎用艾叶。",
+      "dosage": "水煎去渣，纳胶烊化。",
+      "explanation": "冲任虚寒、血虚夹瘀，胶艾止血、归芎调血。",
+      "keywords": [
+        "漏下",
+        "半产",
+        "妊娠下血"
+      ],
+      "id": "kb_胶艾汤"
+    },
+    {
+      "name": "苓甘五味姜辛夏杏大黄汤",
+      "alias": "",
+      "meridian": "太阴/肺",
+      "category": "金匮·痰饮",
+      "components": [
+        {
+          "name": "茯苓",
+          "dosage": "四两",
+          "role": "利水"
+        },
+        {
+          "name": "甘草",
+          "dosage": "三两",
+          "role": "和中"
+        },
+        {
+          "name": "五味子",
+          "dosage": "半升",
+          "role": "敛肺"
+        },
+        {
+          "name": "干姜",
+          "dosage": "三两",
+          "role": "温中"
+        },
+        {
+          "name": "细辛",
+          "dosage": "三两",
+          "role": "化饮"
+        },
+        {
+          "name": "半夏",
+          "dosage": "半升",
+          "role": "化饮"
+        },
+        {
+          "name": "杏仁",
+          "dosage": "半升",
+          "role": "降气"
+        },
+        {
+          "name": "大黄",
+          "dosage": "三两",
+          "role": "通腑"
+        }
+      ],
+      "indication": "支饮，面热如醉，胃热上冲。",
+      "contraindication": "虚寒便溏忌大黄。",
+      "dosage": "水煎服。",
+      "explanation": "寒饮夹胃热上冲，前方加杏降气、大黄通腑泄热。",
+      "keywords": [
+        "支饮",
+        "面热如醉",
+        "寒饮夹热"
+      ],
+      "id": "kb_苓甘五味姜辛夏杏大黄汤"
+    },
+    {
+      "name": "苓甘五味姜辛夏杏汤",
+      "alias": "",
+      "meridian": "太阴/肺",
+      "category": "金匮·痰饮",
+      "components": [
+        {
+          "name": "茯苓",
+          "dosage": "四两",
+          "role": "利水"
+        },
+        {
+          "name": "甘草",
+          "dosage": "三两",
+          "role": "和中"
+        },
+        {
+          "name": "五味子",
+          "dosage": "半升",
+          "role": "敛肺"
+        },
+        {
+          "name": "干姜",
+          "dosage": "三两",
+          "role": "温中"
+        },
+        {
+          "name": "细辛",
+          "dosage": "三两",
+          "role": "化饮"
+        },
+        {
+          "name": "半夏",
+          "dosage": "半升",
+          "role": "化饮"
+        },
+        {
+          "name": "杏仁",
+          "dosage": "半升",
+          "role": "降气"
+        }
+      ],
+      "indication": "支饮，冒而呕，纳差。",
+      "contraindication": "阴虚燥咳忌。",
+      "dosage": "水煎服。",
+      "explanation": "寒饮上逆作冒呕，前方去大黄加杏降气。",
+      "keywords": [
+        "支饮",
+        "冒呕",
+        "寒饮"
+      ],
+      "id": "kb_苓甘五味姜辛夏杏汤"
+    },
+    {
+      "name": "苓甘五味姜辛夏汤",
+      "alias": "",
+      "meridian": "太阴/肺",
+      "category": "金匮·痰饮",
+      "components": [
+        {
+          "name": "茯苓",
+          "dosage": "四两",
+          "role": "利水"
+        },
+        {
+          "name": "甘草",
+          "dosage": "三两",
+          "role": "和中"
+        },
+        {
+          "name": "五味子",
+          "dosage": "半升",
+          "role": "敛肺"
+        },
+        {
+          "name": "干姜",
+          "dosage": "三两",
+          "role": "温中"
+        },
+        {
+          "name": "细辛",
+          "dosage": "三两",
+          "role": "化饮"
+        },
+        {
+          "name": "半夏",
+          "dosage": "半升",
+          "role": "化饮"
+        }
+      ],
+      "indication": "支饮，呕冒，水去形肿。",
+      "contraindication": "阴虚燥咳忌。",
+      "dosage": "水煎服。",
+      "explanation": "寒饮呕吐，苓甘五味姜辛夏温化寒饮。",
+      "keywords": [
+        "支饮",
+        "呕",
+        "寒饮"
+      ],
+      "id": "kb_苓甘五味姜辛夏汤"
+    },
+    {
+      "name": "薯蓣丸",
+      "alias": "",
+      "meridian": "太阴",
+      "category": "金匮·血痹虚劳",
+      "components": [
+        {
+          "name": "薯蓣",
+          "dosage": "三十分",
+          "role": "健脾"
+        },
+        {
+          "name": "当归",
+          "dosage": "十分",
+          "role": "养血"
+        },
+        {
+          "name": "桂枝",
+          "dosage": "十分",
+          "role": "通阳"
+        },
+        {
+          "name": "神曲",
+          "dosage": "十分",
+          "role": "消食"
+        },
+        {
+          "name": "干地黄",
+          "dosage": "十分",
+          "role": "滋阴"
+        },
+        {
+          "name": "豆黄卷",
+          "dosage": "十分",
+          "role": "利湿"
+        },
+        {
+          "name": "甘草",
+          "dosage": "十分",
+          "role": "和中"
+        },
+        {
+          "name": "人参",
+          "dosage": "六分",
+          "role": "补气"
+        },
+        {
+          "name": "芎䓖",
+          "dosage": "六分",
+          "role": "活血"
+        },
+        {
+          "name": "芍药",
+          "dosage": "六分",
+          "role": "敛阴"
+        },
+        {
+          "name": "白术",
+          "dosage": "六分",
+          "role": "健脾"
+        },
+        {
+          "name": "杏仁",
+          "dosage": "六分",
+          "role": "润肺"
+        },
+        {
+          "name": "柴胡",
+          "dosage": "六分",
+          "role": "疏达"
+        },
+        {
+          "name": "桔梗",
+          "dosage": "五分",
+          "role": "开提"
+        },
+        {
+          "name": "茯苓",
+          "dosage": "五分",
+          "role": "利湿"
+        },
+        {
+          "name": "阿胶",
+          "dosage": "七分",
+          "role": "补血"
+        },
+        {
+          "name": "干姜",
+          "dosage": "三分",
+          "role": "温中"
+        },
+        {
+          "name": "白蔹",
+          "dosage": "二分",
+          "role": "清热"
+        },
+        {
+          "name": "防风",
+          "dosage": "六分",
+          "role": "祛风"
+        },
+        {
+          "name": "大枣",
+          "dosage": "百枚",
+          "role": "补脾"
+        }
+      ],
+      "indication": "虚劳诸不足，风气百疾。",
+      "contraindication": "实证忌。",
+      "dosage": "蜜丸，酒服。",
+      "explanation": "气血两虚、易感风邪，薯蓣丸健脾益气、祛风和营。",
+      "keywords": [
+        "虚劳",
+        "诸不足",
+        "风气"
+      ],
+      "id": "kb_薯蓣丸"
+    },
+    {
+      "name": "蜜煎导方",
+      "alias": "",
+      "meridian": "外用",
+      "category": "伤寒·导法",
+      "components": [
+        {
+          "name": "食蜜",
+          "dosage": "七合",
+          "role": "润燥通便"
+        }
+      ],
+      "indication": "阳明病自汗出，若发汗津液内竭，大便硬，宜蜜煎导。",
+      "contraindication": "肛门破损慎用。",
+      "dosage": "炼蜜挺纳谷道。",
+      "explanation": "津竭便硬，蜜煎外导润肠。",
+      "keywords": [
+        "便秘",
+        "津竭",
+        "外导"
+      ],
+      "id": "kb_蜜煎导方"
+    },
+    {
+      "name": "诃梨勒散",
+      "alias": "",
+      "meridian": "太阴",
+      "category": "金匮·呕吐哕下利",
+      "components": [
+        {
+          "name": "诃梨勒",
+          "dosage": "十枚",
+          "role": "涩肠止泻"
+        }
+      ],
+      "indication": "气利，诃梨勒散主之。",
+      "contraindication": "实热泻痢忌。",
+      "dosage": "粥饮和服。",
+      "explanation": "虚寒气利滑脱，诃梨勒涩肠固脱。",
+      "keywords": [
+        "气利",
+        "滑脱",
+        "止泻"
+      ],
+      "id": "kb_诃梨勒散"
+    },
+    {
+      "name": "雄黄熏方",
+      "alias": "",
+      "meridian": "外用",
+      "category": "金匮·百合狐惑",
+      "components": [
+        {
+          "name": "雄黄",
+          "dosage": "适量",
+          "role": "解毒杀虫"
+        }
+      ],
+      "indication": "狐惑病，蚀于肛者。",
+      "contraindication": "雄黄有毒，不可内服。",
+      "dosage": "熏肛。",
+      "explanation": "湿热虫毒蚀肛，雄黄熏之解毒。",
+      "keywords": [
+        "狐惑",
+        "蚀肛",
+        "外用"
+      ],
+      "id": "kb_雄黄熏方"
+    },
+    {
+      "id": "fuzi_lizhong_tang",
+      "name": "附子理中汤",
+      "alias": "",
+      "meridian": "太阴/少阴",
+      "category": "温里剂",
+      "components": [
+        {
+          "name": "人参",
+          "dosage": "三两",
+          "role": "补气健脾",
+          "clinical": "3钱"
+        },
+        {
+          "name": "干姜",
+          "dosage": "三两",
+          "role": "温中散寒",
+          "clinical": "3钱"
+        },
+        {
+          "name": "白术",
+          "dosage": "三两",
+          "role": "健脾燥湿",
+          "clinical": "3钱"
+        },
+        {
+          "name": "炙甘草",
+          "dosage": "三两",
+          "role": "益气和中",
+          "clinical": "3钱"
+        },
+        {
+          "name": "炮附子",
+          "dosage": "一枚",
+          "role": "温肾回阳",
+          "clinical": "1枚"
+        }
+      ],
+      "indication": "太阴少阴并病，脾肾阳虚。症见脘腹冷痛、下利清谷、手足厥冷、呕吐泄泻、畏寒蜷卧。",
+      "contraindication": "热证、阴虚内热者忌用。附子须炮制先煎以减其毒。",
+      "dosage": "上五味，以水八升，煮取三升，去滓，温服一升，日三服。",
+      "explanation": "理中汤温中散寒、补气健脾，加炮附子大辛大热以温肾回阳，脾肾双补，治脾肾阳虚之寒利寒痛。",
+      "keywords": [
+        "附子",
+        "理中",
+        "脾肾阳虚",
+        "寒利",
+        "寒痛",
+        "太阴少阴"
+      ]
+    },
+    {
+      "id": "danggui_jianzhong_tang",
+      "name": "当归建中汤",
+      "alias": "内补当归建中汤",
+      "meridian": "太阳/太阴",
+      "category": "补益剂",
+      "components": [
+        {
+          "name": "当归",
+          "dosage": "四两",
+          "role": "补血活血",
+          "clinical": "4钱"
+        },
+        {
+          "name": "桂枝",
+          "dosage": "三两",
+          "role": "温阳通脉",
+          "clinical": "3钱"
+        },
+        {
+          "name": "芍药",
+          "dosage": "六两",
+          "role": "养血缓急",
+          "clinical": "6钱"
+        },
+        {
+          "name": "生姜",
+          "dosage": "三两",
+          "role": "温中和胃",
+          "clinical": "3钱"
+        },
+        {
+          "name": "炙甘草",
+          "dosage": "二两",
+          "role": "益气和中",
+          "clinical": "2钱"
+        },
+        {
+          "name": "大枣",
+          "dosage": "十二枚",
+          "role": "补脾养血",
+          "clinical": "12枚"
+        },
+        {
+          "name": "饴糖",
+          "dosage": "六两",
+          "role": "缓中补虚",
+          "clinical": "六两"
+        }
+      ],
+      "indication": "产后虚羸不足，腹中刺痛不止，吸吸少气，或小腹拘急、痛引腰背。亦治血虚有寒之脘腹疼痛。",
+      "contraindication": "呕家、中满者不宜。孕早期慎用。",
+      "dosage": "上七味，以水七升，煮取三升，去滓，内饴糖，更上微火消解，温服一升，日三服。",
+      "explanation": "小建中汤温中补虚、和里缓急，加当归补血活血，治产后血虚、腹中刺痛。太阳太阴同调，补血与温中并行。",
+      "keywords": [
+        "当归",
+        "建中",
+        "产后",
+        "虚羸",
+        "腹中刺痛",
+        "血虚"
       ]
     }
   ]

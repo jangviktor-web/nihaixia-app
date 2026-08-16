@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>汉唐中医 · 下载 (v1.10.1)</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(160deg, #fbecec 0%, #f6f1e7 100%);
+      color: #3a2b22;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: #fffdf9;
+      border: 1px solid #ecd9c8;
+      border-radius: 18px;
+      box-shadow: 0 12px 40px rgba(150, 60, 40, 0.12);
+      max-width: 460px;
+      width: 100%;
+      padding: 34px 30px 30px;
+      text-align: center;
+    }
+    .seal {
+      display: inline-block;
+      background: #b5332e;
+      color: #fff;
+      font-size: 13px;
+      letter-spacing: 4px;
+      padding: 6px 14px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+    }
+    h1 { font-size: 27px; color: #8c2b22; letter-spacing: 2px; }
+    .sub { font-size: 14px; color: #9a8478; margin-top: 6px; }
+    .ver {
+      display: inline-block;
+      margin: 18px 0 4px;
+      background: #f3e4d6;
+      color: #8c2b22;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 6px 16px;
+      border-radius: 20px;
+    }
+    .ups { text-align: left; margin: 20px 0 8px; }
+    .ups h3 { font-size: 14px; color: #8c2b22; margin-bottom: 10px; letter-spacing: 1px; }
+    .ups li {
+      list-style: none;
+      font-size: 13.5px;
+      line-height: 1.7;
+      color: #5a4a40;
+      padding-left: 22px;
+      position: relative;
+      margin-bottom: 9px;
+    }
+    .ups li::before {
+      content: "✓";
+      position: absolute; left: 0; top: 0;
+      color: #b5332e; font-weight: 700;
+    }
+    .ups b { color: #8c2b22; }
+    .btn {
+      display: block;
+      margin: 24px auto 6px;
+      background: #b5332e;
+      color: #fff;
+      text-decoration: none;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      padding: 14px 0;
+      border-radius: 12px;
+      transition: background .2s;
+    }
+    .btn:hover { background: #9a2823; }
+    .meta { font-size: 12px; color: #b3a397; margin-top: 14px; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="seal">倪海厦 · 六经辨证</div>
+    <h1>汉唐中医</h1>
+    <div class="sub">伤寒论 · 金匮要略 · 神农本草经 问诊助手</div>
+    <div class="ver">v1.10.1（针灸审计修复 + 更新日志）</div>
+
+    <div class="ups">
+      <h3>本轮更新要点</h3>
+      <ul>
+        <li><b>针灸穴位全量审计修复</b>（达尔文实证评估）：补全缺穴 <b>379 → 408</b> 条，校对 16 处归属经脉；穴位↔处方关联解析率 <b>90% → 100%</b>。</li>
+        <li><b>穴位详情关联打通</b>：新增「倪师处方公式 / 关联穴位处方 / 关联透针透穴」三个可点按跳转区块。</li>
+        <li><b>处方错字归一</b>：修正中阳→中脘 等 16 类错别字，跳转不再断裂。</li>
+        <li><b>关于页更新日志</b>：App「关于」内展示历次更新记录。</li>
+        <li><b>更新后弹窗</b>：安装新版本首次打开自动弹出「本次更新了什么」。</li>
+        <li>全量测试 <b>174/174</b> 通过，flutter analyze 0 错误。</li>
+      </ul>
+    </div>
+
+    <a class="btn" href="./app-release.apk" download="汉唐中医_v1.10.1.apk">下载安装包 (APK)</a>
+    <div class="meta">
+      约 54 MB · 适用于 Android 5.0+<br />
+      建议在浏览器中下载后于「文件」中安装<br />
+      本应用仅供中医学习参考，不替代执业医师诊断
+    </div>
+  </div>
+</body>
+</html>

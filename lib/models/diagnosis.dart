@@ -109,6 +109,8 @@ class DiagnosisResult {
   final String? transmissionWarning;
   // 脉舌矛盾警告
   final String? pulseTongueContradiction;
+  // 证据不足，建议面诊（P0-2）
+  final bool recommendConsult;
 
   DiagnosisResult({
     required this.meridian,
@@ -137,6 +139,7 @@ class DiagnosisResult {
     this.transmission,
     this.transmissionWarning,
     this.pulseTongueContradiction,
+    this.recommendConsult = false,
   });
 
   bool get isCombined => combinedMeridian != null;

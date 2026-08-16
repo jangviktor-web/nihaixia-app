@@ -4,6 +4,7 @@ import 'knowledge_screen.dart';
 import 'bookmarks_screen.dart';
 import 'tools_screen.dart';
 import '../services/update_service.dart';
+import '../services/whats_new_service.dart';
 import '../widgets/update_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -20,6 +21,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    // 启动后弹出「本次更新了什么」（若有版本更新）
+    Future.delayed(
+        const Duration(milliseconds: 800), () => WhatsNewService.checkAndShow(context));
     // 延迟检查更新，避免影响启动速度
     Future.delayed(const Duration(seconds: 3), _checkUpdate);
   }
