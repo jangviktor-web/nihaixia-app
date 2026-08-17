@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter/services.dart';
 import 'package:nihaisha_app/engine/diagnostic_engine.dart';
-import 'package:nihaisha_app/engine/diagnostic_rules.dart';
+import 'package:nihaisha_app/engine/formula_rules.dart';
 import 'package:nihaisha_app/data/formula_repository.dart';
 import 'package:nihaisha_app/models/diagnosis.dart';
 
@@ -12,396 +11,201 @@ void main() {
     await FormulaRepository.load();
   });
 
-  group('DiagnosticEngine 初始化', () {
-    test('初始状态应为chiefComplaint阶段', () {
+  group('DiagnosticEngine 初始化（主诉入口已移除 → 直接 Q1 寒热起步）', () {
+    test('初始阶段为 temperaturePattern，扁平答案为空', () {
       final engine = DiagnosticEngine();
-      expect(engine.stage, DiagnosticStage.chiefComplaint);
+      expect(engine.stage, DiagnosticStage.temperaturePattern);
       expect(engine.selectedSymptoms, isEmpty);
       expect(engine.tenQuestionIndex, 0);
+      expect(engine.qAnswers, isEmpty);
+      expect(engine.extSymptoms, isEmpty);
     });
 
-    test('getInitialGreeting应返回包含七步问诊的问候', () {
+    test('getInitialGreeting 应包含 Q1 寒热问诊引导', () {
       final engine = DiagnosticEngine();
       final greeting = engine.getInitialGreeting();
       expect(greeting, contains('汉唐中医'));
-      expect(greeting, contains('七步'));
+      expect(greeting, contains('Q1'));
+      expect(greeting, contains('寒热'));
     });
 
-    test('getChiefComplaintOptions应返回非空列表', () {
+    test('getTemperatureQuestions 应返回 7 个寒热选项', () {
       final engine = DiagnosticEngine();
-      final options = engine.getChiefComplaintOptions();
-      expect(options, isNotEmpty);
+      expect(engine.getTemperatureQuestions().length, 7);
     });
 
-    test('getTemperatureQuestions应返回7个寒热选项', () {
-      final engine = DiagnosticEngine();
-      final options = engine.getTemperatureQuestions();
-      // 工作树规则已扩充至 7 项（含 no_fever_no_chill 寒热不显项）
-      expect(options.length, 7);
-    });
-
-    test('getTenQuestions应返回11个问题（含性别）', () {
+    test('getTenQuestions 应返回非空且每问含 key/options', () {
       final engine = DiagnosticEngine();
       final questions = engine.getTenQuestions();
-      expect(questions.length, 11); // 性别+传统十问
-    });
-
-    test('reset应恢复到初始状态', () {
-      final engine = DiagnosticEngine();
-      engine.selectChiefComplaint('headache');
-      engine.answerTemperaturePattern('fever_chills');
-      engine.reset();
-      expect(engine.stage, DiagnosticStage.chiefComplaint);
-      expect(engine.selectedSymptoms, isEmpty);
-    });
-  });
-
-  group('快照系统', () {
-    test('createSnapshot应捕获当前状态', () {
-      final engine = DiagnosticEngine();
-      engine.selectChiefComplaint('headache');
-      engine.answerTemperaturePattern('fever_chills');
-
-      final snapshot = engine.createSnapshot();
-      expect(snapshot.stage, DiagnosticStage.tonguePulse);
-      expect(snapshot.selectedSymptoms, contains('headache'));
-      expect(snapshot.answers['temperature'], 'fever_chills');
-    });
-
-    test('restoreSnapshot应恢复到快照状态', () {
-      final engine = DiagnosticEngine();
-      engine.selectChiefComplaint('headache');
-      engine.answerTemperaturePattern('fever_chills');
-      final snapshot = engine.createSnapshot();
-
-      engine.answerTonguePulse(tongueCoating: '薄白');
-      expect(engine.stage, DiagnosticStage.tenQuestions);
-
-      engine.restoreSnapshot(snapshot);
-      expect(engine.stage, DiagnosticStage.tonguePulse);
-      expect(engine.selectedSymptoms, ['headache']);
-    });
-
-    test('快照应独立于引擎状态（深拷贝）', () {
-      final engine = DiagnosticEngine();
-      engine.selectChiefComplaint('headache');
-      final snapshot = engine.createSnapshot();
-
-      engine.selectChiefComplaint('fever');
-      expect(snapshot.selectedSymptoms, ['headache']);
-    });
-  });
-
-  group('诊断流程状态机', () {
-    test('selectChiefComplaint应进入temperaturePattern阶段', () {
-      final engine = DiagnosticEngine();
-      engine.selectChiefComplaint('headache');
-      expect(engine.stage, DiagnosticStage.temperaturePattern);
-      expect(engine.selectedSymptoms, contains('headache'));
-    });
-
-    test('answerTemperaturePattern应进入tonguePulse阶段', () {
-      final engine = DiagnosticEngine();
-      engine.selectChiefComplaint('headache');
-      engine.answerTemperaturePattern('fever_chills');
-      expect(engine.stage, DiagnosticStage.tonguePulse);
-    });
-
-    test('answerTonguePulse应进入tenQuestions阶段', () {
-      final engine = DiagnosticEngine();
-      engine.selectChiefComplaint('headache');
-      engine.answerTemperaturePattern('fever_chills');
-      engine.answerTonguePulse(tongueCoating: '薄白', pulseType: '浮');
-      expect(engine.stage, DiagnosticStage.tenQuestions);
-    });
-  });
-
-  group('太阳病辨证', () {
-    test('发热+怕冷+有汗+浮缓脉 → 桂枝汤证', () {
-      final engine = DiagnosticEngine();
-      engine.selectChiefComplaint('fever');
-      engine.answerTemperaturePattern('fever_chills');
-      engine.answerTonguePulse(tongueCoating: '薄白', pulseType: '浮缓');
-
-      _completeTenQuestions(engine, answers: {
-        'sweating': '稍微活动就出汗',
-        'temperature': '手脚温热（正常）',
-      });
-
-      final result = engine.diagnose();
-      expect(result, isNotNull);
-      expect(result!.meridian, '太阳');
-      expect(result.formula, contains('桂枝'));
-    });
-
-    test('发热+怕冷+无汗+浮紧脉 → 麻黄汤证', () {
-      final engine = DiagnosticEngine();
-      engine.selectChiefComplaint('fever');
-      engine.answerTemperaturePattern('fever_chills');
-      engine.answerTonguePulse(tongueCoating: '薄白', pulseType: '浮紧');
-
-      _completeTenQuestions(engine, answers: {
-        'sweating': '不容易出汗',
-        'temperature': '全身怕冷',
-      });
-
-      final result = engine.diagnose();
-      expect(result, isNotNull);
-      expect(result!.meridian, '太阳');
-    });
-  });
-
-  group('阳明病辨证', () {
-    test('只发热不怕冷+洪脉 → 阳明经证', () {
-      final engine = DiagnosticEngine();
-      engine.selectChiefComplaint('fever');
-      engine.answerTemperaturePattern('fever_no_cold');
-      engine.answerTonguePulse(
-        tongueCoating: '黄厚',
-        tongueShape: '红',
-        pulseType: '洪',
-      );
-
-      _completeTenQuestions(engine, answers: {
-        'sweating': '稍微活动就出汗',
-        'thirst': '渴想喝冷水',
-      });
-
-      final result = engine.diagnose();
-      expect(result, isNotNull);
-      expect(result!.meridian, '阳明');
-    });
-  });
-
-  group('少阳病辨证', () {
-    test('忽冷忽热+弦脉 → 小柴胡汤证', () {
-      final engine = DiagnosticEngine();
-      engine.selectChiefComplaint('fever');
-      engine.answerTemperaturePattern('alternating_chills_fever');
-      engine.answerTonguePulse(
-        tongueCoating: '黄薄',
-        pulseType: '弦',
-      );
-
-      _completeTenQuestions(engine, answers: {
-        'sweating': '正常出汗',
-        'temperature': '全身怕冷',
-        'thirst': '口苦口干',
-      });
-
-      final result = engine.diagnose();
-      expect(result, isNotNull);
-      expect(result!.meridian, '少阳');
-      expect(result.formula, contains('柴胡'));
-    });
-  });
-
-  group('太阴病辨证', () {
-    test('只怕冷不发热+白厚苔+沉脉 → 太阴证', () {
-      final engine = DiagnosticEngine();
-      engine.selectChiefComplaint('abdominal_pain');
-      engine.answerTemperaturePattern('chills_no_fever');
-      engine.answerTonguePulse(
-        tongueCoating: '白厚',
-        tongueShape: '淡白',
-        pulseType: '沉',
-      );
-
-      _completeTenQuestions(engine, answers: {
-        'stool': '稀/拉肚子',
-        'thirst': '不渴',
-        'sweating': '不容易出汗',
-      });
-
-      final result = engine.diagnose();
-      expect(result, isNotNull);
-      expect(result!.meridian, contains('太阴'));
-    });
-  });
-
-  group('少阴病辨证', () {
-    test('只怕冷不发热+微脉+但欲寐 → 少阴证', () {
-      final engine = DiagnosticEngine();
-      engine.selectChiefComplaint('fatigue');
-      engine.answerTemperaturePattern('chills_no_fever');
-      engine.answerTonguePulse(
-        tongueCoating: '白厚',
-        tongueShape: '淡白',
-        pulseType: '微',
-      );
-
-      _completeTenQuestions(engine, answers: {
-        'energy': '但欲寐（昏昏沉沉）',
-        'temperature': '手脚冰冷',
-        'sweating': '不容易出汗',
-      });
-
-      final result = engine.diagnose();
-      expect(result, isNotNull);
-      // 可能是太阴或少阴，取决于评分
-      expect(result!.meridian, anyOf(contains('太阴'), contains('少阴')));
-    });
-  });
-
-  group('厥阴病辨证', () {
-    test('上热下寒+沉细脉 → 厥阴证', () {
-      final engine = DiagnosticEngine();
-      engine.selectChiefComplaint('fatigue');
-      engine.answerTemperaturePattern('upper_heat_lower_cold');
-      engine.answerTonguePulse(
-        tongueCoating: '黄薄',
-        pulseType: '沉细',
-      );
-
-      _completeTenQuestions(engine, answers: {
-        'temperature': '头热脚冷',
-        'energy': '烦躁不安',
-      });
-
-      final result = engine.diagnose();
-      expect(result, isNotNull);
-      expect(result!.meridian, '厥阴');
-    });
-  });
-
-  group('十问答案派生', () {
-    test('sleep答案应派生insomnia标志', () {
-      final engine = DiagnosticEngine();
-      engine.selectChiefComplaint('insomnia');
-      engine.answerTemperaturePattern('chills_no_fever');
-      engine.answerTonguePulse(tongueCoating: '薄白', pulseType: '细');
-
-      engine.answerTenQuestion('sleep', '整夜睡不着');
-
-      _completeTenQuestions(engine, skipSleep: true);
-      final result = engine.diagnose();
-      expect(result, isNotNull);
-    });
-
-    test('thirst答案应派生渴/不渴标志', () {
-      final engine = DiagnosticEngine();
-      engine.selectChiefComplaint('fever');
-      engine.answerTemperaturePattern('fever_no_cold');
-      engine.answerTonguePulse(tongueCoating: '黄厚', pulseType: '洪');
-
-      engine.answerTenQuestion('thirst', '渴想喝冷水');
-      _completeTenQuestions(engine, skipThirst: true);
-
-      final result = engine.diagnose();
-      expect(result, isNotNull);
-    });
-
-    test('stool答案应派生便秘/腹泻标志', () {
-      final engine = DiagnosticEngine();
-      engine.selectChiefComplaint('abdominal_pain');
-      engine.answerTemperaturePattern('chills_no_fever');
-      engine.answerTonguePulse(tongueCoating: '白厚', pulseType: '沉');
-
-      engine.answerTenQuestion('stool', '便秘，好几天一次');
-      _completeTenQuestions(engine, skipStool: true);
-
-      final result = engine.diagnose();
-      expect(result, isNotNull);
-    });
-
-    test('没有此症状应跳过', () {
-      final engine = DiagnosticEngine();
-      engine.selectChiefComplaint('fever');
-      engine.answerTemperaturePattern('fever_chills');
-      engine.answerTonguePulse(tongueCoating: '薄白', pulseType: '浮');
-
-      engine.answerTenQuestion('sleep', '没有此症状');
-      expect(engine.tenQuestionIndex, greaterThan(0));
-
-      _completeTenQuestions(engine, skipSleep: true);
-      final result = engine.diagnose();
-      expect(result, isNotNull);
-    });
-  });
-
-  group('传变预警', () {
-    test('太阳+口苦应产生少阳传经信号', () {
-      final engine = DiagnosticEngine();
-      engine.selectChiefComplaint('fever');
-      engine.answerTemperaturePattern('fever_chills');
-      engine.answerTonguePulse(tongueCoating: '薄白', pulseType: '浮');
-
-      _completeTenQuestions(engine, answers: {
-        'sweating': '稍微活动就出汗',
-        'thirst': '口苦口干',
-      });
-
-      final result = engine.diagnose();
-      expect(result, isNotNull);
-      if (result!.transmissionWarning != null) {
-        expect(result.transmissionWarning, contains('少阳'));
+      expect(questions, isNotEmpty);
+      for (final q in questions) {
+        expect(q.key, isNotEmpty);
+        expect(q.options, isNotEmpty);
       }
     });
+
+    test('reset 应清空扁平答案与扩展症状', () {
+      final engine = DiagnosticEngine();
+      engine.answerFlatQuestion(kQ1, 0, qOptions[kQ1]![0]);
+      engine.toggleExtSymptom('edema', true);
+      expect(engine.qAnswers, isNotEmpty);
+      engine.reset();
+      expect(engine.stage, DiagnosticStage.temperaturePattern);
+      expect(engine.qAnswers, isEmpty);
+      expect(engine.extSymptoms, isEmpty);
+    });
   });
 
-  group('处方生成', () {
-    test('诊断后应生成完整处方', () {
+  group('快照系统（扁平 Q1-Q12）', () {
+    test('createSnapshot 应捕获 qAnswers 与 extSymptoms', () {
       final engine = DiagnosticEngine();
-      engine.selectChiefComplaint('fever');
-      engine.answerTemperaturePattern('fever_chills');
-      engine.answerTonguePulse(tongueCoating: '薄白', pulseType: '浮缓');
-
-      _completeTenQuestions(engine, answers: {
-        'sweating': '稍微活动就出汗',
-      });
-
-      final result = engine.diagnose();
-      expect(result, isNotNull);
-      expect(result!.prescription, isNotNull);
-      expect(result.prescription!.components, isNotEmpty);
+      engine.answerFlatQuestion(kQ1, 0, qOptions[kQ1]![0]);
+      engine.toggleExtSymptom('edema', true);
+      final snapshot = engine.createSnapshot();
+      expect(snapshot.qAnswers[kQ1], 1);
+      expect(snapshot.extSymptoms, contains('edema'));
     });
 
-    test('处方应包含组成和方剂名', () {
+    test('restoreSnapshot 应恢复扁平状态', () {
       final engine = DiagnosticEngine();
-      engine.selectChiefComplaint('fever');
-      engine.answerTemperaturePattern('fever_chills');
-      engine.answerTonguePulse(tongueCoating: '薄白', pulseType: '浮缓');
+      engine.answerFlatQuestion(kQ1, 0, qOptions[kQ1]![0]);
+      final snapshot = engine.createSnapshot();
+      engine.answerFlatQuestion(kQ1, 6, qOptions[kQ1]![6]);
+      expect(engine.qAnswers[kQ1], 7);
+      engine.restoreSnapshot(snapshot);
+      expect(engine.qAnswers[kQ1], 1);
+    });
+  });
 
-      _completeTenQuestions(engine, answers: {
-        'sweating': '稍微活动就出汗',
-      });
+  group('扁平问诊 → 规则出方（主路径 diagnoseByRules）', () {
+    test('桂枝汤：手脚温热+易汗+缓脉+不渴+不痛', () {
+      final engine =
+          _cast({kQ1: 1, kQ4: 2, kQ2: 12, kQ3: 1, kQ5: 1, kQ10: 2});
+      final r = engine.diagnoseByRules();
+      expect(r.formula, '桂枝汤');
+      expect(r.recommendedFormulas, contains('桂枝汤'));
+      expect(r.meridian, '太阳');
+    });
 
-      final result = engine.diagnose();
-      expect(result, isNotNull);
-      final rx = result!.prescription!;
-      expect(rx.formulaName, isNotEmpty);
-      expect(rx.components, isNotEmpty);
+    test('麻黄汤：全身怕冷+无汗+浮脉+不渴+头痛前额', () {
+      final engine =
+          _cast({kQ1: 7, kQ4: 1, kQ2: 1, kQ3: 1, kQ5: 2, kQ10: 2});
+      final r = engine.diagnoseByRules();
+      expect(r.formula, '麻黄汤');
+    });
+
+    test('小柴胡汤：往来寒热+胸胁胀痛+口苦口干', () {
+      final engine = _cast(
+          {kQ1: 3, kQ5: 5, kQ3: 5, kQ9: 2, kQ8: 2, kQ10: 4, kQ7: 2, kQ12: 3});
+      final r = engine.diagnoseByRules();
+      expect(r.formula, '小柴胡汤');
+      expect(r.formula, contains('柴胡'));
+    });
+
+    test('五苓散：渴想喝冷水+小便不利+不渴分界', () {
+      final engine = _cast({kQ3: 2, kQ7: 5, kQ2: 1, kQ1: 1, kQ6: 3});
+      final r = engine.diagnoseByRules();
+      expect(r.formula, '五苓散');
+    });
+
+    test('炙甘草汤：脉结代+心悸怔忡+容易疲倦', () {
+      final engine = _cast({kQ2: 14, kQ5: 18, kQ10: 2, kQ1: 1, kQ3: 2, kQ9: 4});
+      final r = engine.diagnoseByRules();
+      expect(r.formula, '炙甘草汤');
+    });
+
+    test('白虎汤：手脚温热+大渴+大汗+数脉', () {
+      final engine = _cast({kQ1: 1, kQ3: 7, kQ4: 7, kQ2: 4, kQ10: 4, kQ5: 1});
+      final r = engine.diagnoseByRules();
+      expect(r.formula, '白虎汤');
+    });
+
+    test('蜜煎导：汗出+便秘（津液内竭）', () {
+      final engine = _cast({kQ6: 2, kQ4: 2});
+      final r = engine.diagnoseByRules();
+      expect(r.formula, '蜜煎导猪胆汁导');
+    });
+
+    test('纯便秘无汗 → 证据不足不出方', () {
+      final engine = _cast({kQ6: 2});
+      final r = engine.diagnoseByRules();
+      expect(r.formula, isEmpty);
+      expect(r.recommendConsult, isTrue);
+    });
+
+    test('四逆汤：手脚冰冷+微脉+但欲寐+下利清谷', () {
+      final engine = _cast(
+          {kQ1: 6, kQ2: 10, kQ10: 3, kQ3: 1, kQ6: 7, kQ7: 7, kQ5: 9, kQ8: 7});
+      final r = engine.diagnoseByRules();
+      expect(r.formula, '四逆汤');
+    });
+
+    test('防己黄芪汤：汗出+身重浮肿（扩展症状）', () {
+      final engine = _cast({kQ4: 2, kQ1: 7, kQ7: 5, kQ2: 11, kQ5: 8},
+          ext: {'edema'});
+      final r = engine.diagnoseByRules();
+      expect(r.formula, '防己黄芪汤');
+    });
+
+    test('大陷胸丸：★胸膈心下硬满+项背强（纯扩展症状）', () {
+      final engine = _cast(const {}, ext: {'chest_diaphragm_hard', 'nape_stiff'});
+      final r = engine.diagnoseByRules();
+      expect(r.formula, '大陷胸丸');
+    });
+
+    test('大陷胸丸缺项背强（★缺失）→ 不出方', () {
+      final engine = _cast(const {}, ext: {'chest_diaphragm_hard'});
+      final r = engine.diagnoseByRules();
+      expect(r.formula, isEmpty);
+    });
+
+    test('真武汤：手足温冷异常+小便不利+头晕目眩（去重唯一）', () {
+      final engine = _cast({kQ1: 6, kQ7: 5, kQ5: 19});
+      final r = engine.diagnoseByRules();
+      expect(r.formula, '真武汤');
+      expect(r.recommendedFormulas, ['真武汤']);
+    });
+
+    test('空输入 → 证据不足建议面诊', () {
+      final engine = DiagnosticEngine();
+      final r = engine.diagnoseByRules();
+      expect(r.formula, isEmpty);
+      expect(r.recommendConsult, isTrue);
+    });
+  });
+
+  group('同症并列推荐（co-recommended）', () {
+    test('{kQ1:7,kQ5:8} → 桂枝附子汤/桂枝芍药知母汤/乌头汤 三方并列', () {
+      final engine = _cast({kQ1: 7, kQ5: 8});
+      final r = engine.diagnoseByRules();
+      expect(r.formula, '桂枝附子汤');
+      expect(r.recommendedFormulas.toSet(),
+          {'桂枝附子汤', '桂枝芍药知母汤', '乌头汤'});
+    });
+
+    test('带下三证 → 蛇床子散/狼牙汤/矾石散 三方并列', () {
+      final engine =
+          _cast(const {}, ext: {'leukorrhea', 'vulva_cold', 'vulva_ulcer'});
+      final r = engine.diagnoseByRules();
+      expect(r.recommendedFormulas.toSet(), {'蛇床子散', '狼牙汤', '矾石散'});
+    });
+
+    test('仅阴中寒 → 只推荐蛇床子散，不牵连其他', () {
+      final engine = _cast(const {}, ext: {'vulva_cold'});
+      final r = engine.diagnoseByRules();
+      expect(r.recommendedFormulas, ['蛇床子散']);
     });
   });
 }
 
-/// 辅助函数：完成十问流程
-void _completeTenQuestions(
-  DiagnosticEngine engine, {
-  Map<String, String> answers = const {},
-  bool skipSleep = false,
-  bool skipThirst = false,
-  bool skipStool = false,
-}) {
-  final tenQuestions = engine.getTenQuestions();
-  for (final q in tenQuestions) {
-    if (skipSleep && q.key == 'sleep') {
-      engine.answerTenQuestion(q.key, '没有此症状');
-      continue;
-    }
-    if (skipThirst && q.key == 'thirst') {
-      engine.answerTenQuestion(q.key, '没有此症状');
-      continue;
-    }
-    if (skipStool && q.key == 'stool') {
-      engine.answerTenQuestion(q.key, '没有此症状');
-      continue;
-    }
-    final answer = answers[q.key];
-    if (answer != null) {
-      engine.answerTenQuestion(q.key, answer);
-    } else {
-      engine.answerTenQuestion(q.key, '没有此症状');
-    }
+/// 按 1-based 选项号扁平作答（与 chat_screen 的十问→规则桥接同源）。
+DiagnosticEngine _cast(Map<String, int> q, {Set<String> ext = const {}}) {
+  final engine = DiagnosticEngine();
+  q.forEach((key, opt) {
+    engine.answerFlatQuestion(key, opt - 1, qOptions[key]![opt - 1]);
+  });
+  for (final s in ext) {
+    engine.toggleExtSymptom(s, true);
   }
+  return engine;
 }

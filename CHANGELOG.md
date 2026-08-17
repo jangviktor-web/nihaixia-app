@@ -6,9 +6,58 @@
 >
 > **App 内更新日志**：每次发布须同步更新 `assets/data/changelog.json`（结构化条目：version/date/title/changes），它同时驱动「关于」页的更新日志展示与「更新后弹窗」。本 CHANGELOG.md 为项目根目录的人类可读备份。
 >
-> **验证基线**：全量 `flutter test` 174/174 通过；`flutter analyze` 0 新增 error；APK 经 `aapt2`（D:/sdk/build-tools/36.0.0/aapt2.exe）校验 `versionCode`/`versionName`。
+> **验证基线**：全量 `flutter test` 182/182 通过；`flutter analyze` 0 新增 error；APK 经 `aapt2`（D:/sdk/build-tools/36.0.0/aapt2.exe）校验 `versionCode`/`versionName`。
 >
 > **发布方式**：APK ≥ 20MB 超邮件附件上限，统一 CloudStudio 部署下载页（index.html + APK）后邮件发送分享链接。
+
+---
+
+## [1.10.3+10] - 2026-08-17 — 七步问诊十问模块 v3.1 改版（倪师经方口径题库 + 新信号全链路）
+
+**依据**：以倪海厦经方口径审阅用户整理的《问诊公式·全量修正版》（v3.1，12 问 106 选项），对 app 十问模块做题库、信号链路、分经路由三层优化；修正吴茱萸汤巅顶痛误用后脑痛等路由缺陷。
+
+### Changed — 十问题库（v3.1 公式）
+- **Q2 脉象 13→15 项**：新增「⑭结（时有一停·不规则）」「⑮代（固定节律停顿）」，脉象归一化同步支持（炙甘草汤结代脉可达）。
+- **Q5 疼痛 10→20 项**：新增 ⑪身痒 ⑫心下痞硬 ⑬腹胀满 ⑭麻木不仁 ⑮咽中异物感 ⑯胸痛/心痛彻背 ⑰巅顶痛 ⑱心悸/怔忡 ⑲头晕目眩 ⑳腰痛腰冷。
+- **Q6 大便 7→8 项**：新增「⑧大便色黑」（蓄血）。
+- **Q8 胃口 7→8 项**：新增「⑧恶心/呕吐（→追问呕吐类型）」。
+- **新增 Q12 呕吐类型（7 项）**：恶心不呕 / 干呕（含吐涎沫）/ 呕吐少量 / 呕吐剧烈 / 食入即吐 / 朝食暮吐 / 噫气嗳气——Q8 选「恶心/呕吐」才动态追问（独立常量 `vomitTypeQuestion`，不破坏引擎静态长度判断）。
+
+### Changed — 引擎信号链路（diagnostic_engine.dart）
+- 补建十问 **appetite 分支**（此前 Q8 答案从不被引擎处理，隐藏缺陷）。
+- 新建 **vomit_type 分支**：Q12 选项映射到引擎既有 `nausea/vomiting` 信号 + 细分字段（vomit_dry/profuse/immediate/cyclical/belching）。
+- Q5/Q6 新选项全部映射为信号字段；**21 处新信号接入分经路由**：麻黄连轺（身痒）、肾气丸（腰痛）、胸痹系列（新增 `chest_pain_radiating` 专属字段，避免胸胁胀痛误判胸痹）、抵当汤（便黑）、苓桂术甘/泽泻汤（眩晕分流）、黄芪桂枝五物（麻木）、半夏厚朴（咽异物）、旋覆代赭/生姜泻心（噫气）、茯苓泽泻（朝食暮吐）、大黄甘草（食入即吐）、干姜人参半夏丸（呕吐剧烈）、甘姜苓术/天雄散（腰痛分流）、栀子厚朴（烦躁+腹胀）、桂枝麻黄各半（身痒+无汗）、厚朴生姜半夏（腹胀）等。
+- **吴茱萸汤路由修正**：原按「后脑痛」认吴茱萸汤（错），改为按「巅顶痛」（厥阴头痛），排除逻辑同步。
+- 十问 Q10「容易疲倦」补 `fatigue` 映射（此前无字段）。
+
+### 验证 / 发布
+- strict 准确性 harness（`test/engine/diagnostic_accuracy_strict_test.dart`）：**23/23 通过**（19 经典案 + 柴胡桂枝汤十问内定少阳 + 3 个 v3.1 新用例：Q12 触发/不触发/吴茱萸汤端到端）。
+- 全量 `flutter test` **205 通过 / 2 失败**（2 失败为紫微斗数 `ziwei_solar_check_test` 探针，遗留红灯、非本次引入）。
+- `flutter analyze` 0 error。
+- 版本号对外展示格式 `1.10.3`（build 号 +10，aapt2 校验 versionCode=10 / versionName=1.10.3）。
+- 发布方式：CloudStudio 部署下载页。
+
+---
+
+## [1.10.2+9] - 2026-08-16 — 紫微斗数排盘集成 + 跨引擎精度验证
+
+**依据**：达尔文 skill 对「紫微斗数引擎集成」的实证评估，选定 `ziwei_core` v0.13.0（MIT、纯 Dart、无 GetX 依赖）作为排盘引擎，替代因 MaterialApp 架构不兼容而弃用的 `dart_iztro`；并以 `DestinyLinker/MingLi-Bench`（iztro 预排命盘）作独立参考集验证精度。
+
+### Added — 紫微斗数排盘
+- 实用工具页新增「紫微斗数排盘」入口（`tools_screen.dart`）。
+- 新增 `lib/services/ziwei_engine.dart`：封装 `ziwei_core`，将生辰转换为命盘，抽取十二宫 / 主星 / 辅星 / 四化 / 五行局 / 命主身主 / 十二大限为 App 模型。
+- 新增 `lib/screens/ziwei_chart_screen.dart`：生辰输入（公历 + 性别）+ 4×4 命盘可视化（命宫 / 身宫标记、主星、四化、辅星、中心核显示五行局 / 命主 / 身主）+ 生年四化摘要 + 十二大限简述。
+- 明确标注「民俗文化参考，非医疗诊断」，与经方医疗模块清晰分隔。
+
+### Fixed — 排盘精度（真实 bug）
+- **根因**：`ziwei_core` 默认 `useTrueSolarTime=true`（真太阳时，按 120E/30N 经度 + 均时差修正）；对**无地理位置输入的离线 app** 反而使时辰整体位移一格，与 iztro / 主流排盘不符。
+- **修复**：`ZiweiDate.fromSolar(..., useTrueSolarTime: false)` 改用平太阳时（钟表时间）。
+- 跨引擎比对定位：修复前 9 例八字差异 = 8 例时辰边界 + 1 例年柱（立春 vs 春节），修复后收敛为仅 1 例年柱流派差（已文档豁免）。
+
+### 验证 / 发布
+- 验证：用 MingLi-Bench（`fortune_api_results.json`，iztro 预排 32 道八字 + 紫微命盘）做跨引擎比对 harness（`test/ziwei_bench_test.dart`）：五行局 / 命宫 / 身宫 / 命主 / 十四主星 / 生年四化 **32/32** 全中；八字 31/32（仅 case_31 年柱立春 vs 春节）、身主 31/32（仅 case_7 铃星 vs 火星，火六局），均为已知流派约定差、文档化豁免；杂曜 0/32 属门派浮动（预期内，不断言）。
+- 全量 `flutter test` **182/182 通过**；`flutter analyze` 0 error。
+- 版本号改为对外展示格式 `1.10.2`（build 号 +9，aapt2 校验 versionCode=9 / versionName=1.10.2）。
 
 ---
 

@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 import '../engine/diagnostic_engine.dart';
+import '../engine/formula_rules.dart';
+import '../engine/rule_engine.dart';
 import '../engine/diagnostic_rules.dart';
-import '../engine/condition_families.dart';
 import '../data/formula_repository.dart';
 import '../data/settings_repository.dart';
 import '../models/diagnosis.dart';
@@ -65,16 +66,21 @@ class _ChatScreenState extends State<ChatScreen> {
   String? _selectedTongueShape;
   String? _selectedPulse;
 
-  // 当前选中的主诉 key，用于自适应寒热问法
-  String? _selectedChiefKey;
-
-  // 与发烧直接相关的主诉，使用「发烧/怕冷」问法；其余主诉使用通用寒热问法
-  static const Set<String> _feverChiefKeys = {
-    'fever_chills',
-    'fever_only',
-    'chills_only',
-    'alternating',
-    'upper_heat_lower_cold',
+  // ==================== 扁平 Q1–Q12 流程状态 ====================
+  int _flatIndex = 0;
+  final Map<String, String> _qTitles = {
+    kQ1: '🌡️ Q1 寒热感觉（必答）：你整体的寒热感觉是怎样的？',
+    kQ2: '💓 Q2 脉象（可跳）：你会摸脉吗？不会就选「不清楚」。',
+    kQ3: '🥤 Q3 渴饮（必答）：你口渴吗？想喝什么水温？',
+    kQ4: '💦 Q4 汗出：你平时容易出汗吗？什么情况下出汗？',
+    kQ5: '🤕 Q5 疼痛/不适：你哪里痛或不适？（选最贴切的一项）',
+    kQ6: '🚽 Q6 大便：你的大便情况？',
+    kQ7: '🚰 Q7 小便：小便情况？',
+    kQ8: '🍚 Q8 胃口：你的胃口怎样？',
+    kQ9: '😴 Q9 睡眠：你的睡眠怎样？',
+    kQ10: '⚡ Q10 精神：你的精神状态？',
+    kQ11: '🌸 Q11 月经/性功能（可跳过）：选「没有此症状」即跳过。',
+    kQ12: '🤮 Q12 呕吐类型：你呕吐/恶心的情况？',
   };
 
   @override
@@ -85,56 +91,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _startDiagnosis() {
     _addBotMessage(_engine.getInitialGreeting());
-    _showChiefComplaintGroups();
-  }
-
-  // ==================== 主诉两级导航（P2-C：12大类 → 证候词） ====================
-
-  void _showChiefComplaintGroups() {
-    final categories = _engine.getChiefCategories();
-    setState(() {
-      _currentOptions = [
-        ...categories.map((c) => _ChatOption(
-              label: '${c.emoji} ${c.name}',
-              description: '进入「${c.name}」细分问诊',
-              onTap: () => _showChiefComplaintTerms(c.id, c.name),
-            )),
-        _ChatOption(
-          label: '📋 直接选具体症状（25项）',
-          description: '不按大类，直接进入原有主诉列表',
-          onTap: _showChiefComplaintOptions,
-        ),
-      ];
-      _showOptions = true;
-    });
-    _scrollToBottom();
-  }
-
-  void _showChiefComplaintTerms(String categoryId, String categoryName) {
-    final terms = _engine.getConditionTermsForCategory(categoryId);
-    if (terms.isEmpty) {
-      // 该大类暂无金匮证候族，直接回到常规主诉
-      _showChiefComplaintOptions();
-      return;
-    }
-    _addBotMessage('「$categoryName」— 你的情况更接近下面哪一类？（可返回重选）');
-    setState(() {
-      _currentOptions = terms
-          .map((t) => _ChatOption(
-                label: '${t.emoji} ${t.label}',
-                description: '按「${t.label}」继续辨证',
-                onTap: () => _selectConditionTerm(t),
-              ))
-          .toList();
-      _showOptions = true;
-    });
-    _scrollToBottom();
-  }
-
-  void _selectConditionTerm(ConditionTerm term) {
-    _saveSnapshot();
-    _addUserMessage('${term.emoji} ${term.label}');
-    _engine.selectConditionOption(term.family, term.key, term.label);
     _showTemperatureOptions();
   }
 
@@ -161,39 +117,11 @@ class _ChatScreenState extends State<ChatScreen> {
     _scrollToBottom();
   }
 
-  // ==================== 主诉选择 ====================
-
-  void _showChiefComplaintOptions() {
-    final options = _engine.getChiefComplaintOptions();
-    setState(() {
-      _currentOptions = options
-          .map((o) => _ChatOption(
-                label: '${o.emoji} ${o.label}',
-                description: o.description,
-                onTap: () => _selectChiefComplaint(o.key, o.label),
-              ))
-          .toList();
-      _showOptions = true;
-    });
-  }
-
-  void _selectChiefComplaint(String key, String label) {
-    _saveSnapshot();
-    _addUserMessage(label);
-    _selectedChiefKey = key;
-    _engine.selectChiefComplaint(key);
-    _showTemperatureOptions();
-  }
-
   // ==================== 寒热辨经 ====================
 
   void _showTemperatureOptions() {
-    // 自适应问法：发烧类主诉沿用发烧/怕冷问法，其余主诉用通用寒热问法
-    final isFeverChief = _selectedChiefKey != null &&
-        _ChatScreenState._feverChiefKeys.contains(_selectedChiefKey);
-    final question = isFeverChief
-        ? '你的发烧怕冷情况是怎样的？'
-        : '你整体的寒热感觉是怎样的？（平时怕冷还是怕热，或者身体某处发凉、发热都可以告诉我）';
+    final question =
+        '你整体的寒热感觉是怎样的？（平时怕冷还是怕热，或者身体某处发凉、发热都可以告诉我）';
     _addBotMessage(question);
     final options = _engine.getTemperatureQuestions();
     setState(() {
@@ -475,6 +403,14 @@ class _ChatScreenState extends State<ChatScreen> {
     resultText += '【证型】${result.pattern}\n'
         '【方剂】${result.formula}\n';
 
+    // v3.2：必选症状相同的多个方剂同时推荐（不再静默只取一个）
+    final coFormulas = result.recommendedFormulas
+        .where((n) => n != result.formula)
+        .toList();
+    if (coFormulas.isNotEmpty) {
+      resultText += '【同症并列推荐】${coFormulas.join('、')}\n';
+    }
+
     if (formula != null && formula.components.isNotEmpty) {
       resultText += '【组成】${formula.componentsText}\n';
     }
@@ -486,6 +422,11 @@ class _ChatScreenState extends State<ChatScreen> {
       if (result.tongueShape != null) resultText += '形${result.tongueShape} ';
       if (result.pulseType != null) resultText += '脉${result.pulseType}';
       resultText += '\n';
+    }
+
+    // 未提供脉象（普通用户不会摸脉是常态）→ 标注参考性
+    if (result.pulseType == null) {
+      resultText += 'ℹ️ 未提供脉象信息，本次结论仅供参考\n';
     }
 
     resultText += '\n${result.patternDetail}\n\n💡 ${explanation}';
@@ -723,7 +664,7 @@ class _ChatScreenState extends State<ChatScreen> {
       _messages.clear();
     });
     _addBotMessage('好的，我们重新开始。');
-    _showChiefComplaintOptions();
+    _showTemperatureOptions();
   }
 
   // ==================== 导航 ====================

@@ -1,0 +1,812 @@
+import 'package:flutter/material.dart';
+import 'package:ziwei_core/ziwei_core.dart';
+import 'package:nihaisha_app/services/ziwei_engine.dart';
+import 'ziwei_reference_screen.dart';
+import 'ziwei_doc_screen.dart';
+import 'ziwei_cases_list_screen.dart';
+import '../data/ziwei_case_data.dart';
+
+/// 紫微斗数排盘界面。
+///
+/// 输入公历生辰 + 时辰 + 性别，调用 [calculateZiweiChart] 计算并可视化命盘。
+/// 结果属「民俗文化参考」，非医疗诊断。
+class ZiweiChartScreen extends StatefulWidget {
+  const ZiweiChartScreen({super.key});
+
+  @override
+  State<ZiweiChartScreen> createState() => _ZiweiChartScreenState();
+}
+
+class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
+  // 时辰表（名称, 代表小时, 时段）
+  static const _shiChen = [
+    ('子时', 0, '23:00–01:00'),
+    ('丑时', 2, '01:00–03:00'),
+    ('寅时', 4, '03:00–05:00'),
+    ('卯时', 6, '05:00–07:00'),
+    ('辰时', 8, '07:00–09:00'),
+    ('巳时', 10, '09:00–11:00'),
+    ('午时', 12, '11:00–13:00'),
+    ('未时', 14, '13:00–15:00'),
+    ('申时', 16, '15:00–17:00'),
+    ('酉时', 18, '17:00–19:00'),
+    ('戌时', 20, '19:00–21:00'),
+    ('亥时', 22, '21:00–23:00'),
+  ];
+
+  int _year = 2000;
+  int _month = 8;
+  int _day = 16;
+  int _shiChenIndex = 5; // 巳时（默认 2000-08-16 06:00 约卯时，这里取常用值）
+  bool _isMale = true;
+
+  ZiweiChart? _chart;
+  bool _calculating = false;
+  String? _error;
+
+  void _calculate() {
+    setState(() {
+      _calculating = true;
+      _error = null;
+    });
+    // 用 microtask 让 loading 先渲染
+    Future.microtask(() {
+      try {
+        final solar = DateTime(
+          _year,
+          _month,
+          _day,
+          _shiChen[_shiChenIndex].$2,
+          0,
+        );
+        final chart = calculateZiweiChart(
+          solar: solar,
+          gender: _isMale ? Gender.male : Gender.female,
+        );
+        if (mounted) {
+          setState(() {
+            _chart = chart;
+            _calculating = false;
+          });
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            _error = '排盘失败：$e';
+            _calculating = false;
+          });
+        }
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('紫微斗数排盘'),
+        actions: [
+          IconButton(
+            tooltip: '十四主星 / 十二宫位 / 倪师论命理',
+            icon: const Icon(Icons.menu_book_outlined),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ZiweiReferenceScreen()),
+            ),
+          ),
+        ],
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          // 民俗参考声明
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+            decoration: BoxDecoration(
+              color: cs.tertiaryContainer,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  size: 18,
+                  color: cs.onTertiaryContainer,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '紫微斗数属民俗文化参考，结果不构成任何医疗诊断或健康建议。',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: cs.onTertiaryContainer,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          _buildInputCard(cs),
+          const SizedBox(height: 12),
+          if (_calculating)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(24),
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          if (_error != null)
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(_error!, style: TextStyle(color: cs.error)),
+            ),
+          if (_chart != null && !_calculating) ...[
+            _buildSummaryCard(cs, _chart!),
+            const SizedBox(height: 12),
+            _buildCaseReferenceCard(cs, _chart!),
+            const SizedBox(height: 12),
+            _buildPlate(cs, _chart!),
+            const SizedBox(height: 12),
+            _buildDecadeList(cs, _chart!),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInputCard(ColorScheme cs) {
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              '生辰信息',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _Dropdown(
+                    label: '年',
+                    value: _year,
+                    items: [
+                      for (int y = 1920; y <= 2025; y++)
+                        DropdownMenuItem(value: y, child: Text('$y')),
+                    ],
+                    onChanged: (v) => setState(() => _year = v!),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _Dropdown(
+                    label: '月',
+                    value: _month,
+                    items: [
+                      for (int m = 1; m <= 12; m++)
+                        DropdownMenuItem(value: m, child: Text('$m')),
+                    ],
+                    onChanged: (v) => setState(() => _month = v!),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _Dropdown(
+                    label: '日',
+                    value: _day,
+                    items: [
+                      for (int d = 1; d <= 31; d++)
+                        DropdownMenuItem(value: d, child: Text('$d')),
+                    ],
+                    onChanged: (v) => setState(() => _day = v!),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: _Dropdown(
+                    label: '时辰',
+                    value: _shiChenIndex,
+                    items: [
+                      for (int i = 0; i < _shiChen.length; i++)
+                        DropdownMenuItem(
+                          value: i,
+                          child: Text('${_shiChen[i].$1} (${_shiChen[i].$3})'),
+                        ),
+                    ],
+                    onChanged: (v) => setState(() => _shiChenIndex = v!),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: SegmentedButton<bool>(
+                    segments: const [
+                      ButtonSegment(value: true, label: Text('男')),
+                      ButtonSegment(value: false, label: Text('女')),
+                    ],
+                    selected: {_isMale},
+                    onSelectionChanged: (s) =>
+                        setState(() => _isMale = s.first),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: _calculate,
+                icon: const Icon(Icons.auto_awesome),
+                label: const Text('开始排盘'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSummaryCard(ColorScheme cs, ZiweiChart chart) {
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Text(
+                  '八字 ',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  chart.baziFull,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              chart.lunarText,
+              style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              children: [
+                _chip('五行局', chart.elementBureauLabel, cs.primary),
+                _chip('命主', chart.mingZhuLabel ?? '—', cs.primary),
+                _chip('身主', chart.shenZhuLabel ?? '—', cs.primary),
+                _chip('性别', chart.genderLabel, cs.primary),
+              ],
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              '生年四化',
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 4),
+            Wrap(
+              spacing: 8,
+              children: chart.sihua.map((s) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: _sihuaColor(s.typeLabel).withValues(alpha: 0.14),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '${s.typeLabel}→${s.starLabelName}',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: _sihuaColor(s.typeLabel),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// 倪师案例参考：按命宫地支 + 性别匹配《天纪》紫微案例。
+  Widget _buildCaseReferenceCard(ColorScheme cs, ZiweiChart chart) {
+    final ming = chart.palaces[chart.originMingIndex].branchLabel;
+    final matched = ziweiCasesFor(ming, chart.genderLabel);
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.menu_book_outlined, size: 20, color: cs.primary),
+                const SizedBox(width: 8),
+                const Text(
+                  '倪师案例参考',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              '命宫在「$ming」· ${chart.genderLabel}。'
+              '${matched.isEmpty ? '暂未收录完全匹配案例' : '倪师《天纪》讲过 ${matched.length} 例相关案例：'}',
+              style: TextStyle(
+                fontSize: 13,
+                color: cs.onSurfaceVariant,
+                height: 1.5,
+              ),
+            ),
+            if (matched.isNotEmpty)
+              ...matched.map(
+                (e) => ListTile(
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                  leading: Text(
+                    '案${e.id}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: cs.primary,
+                    ),
+                  ),
+                  title: Text(
+                    e.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  trailing: const Icon(Icons.chevron_right, size: 18),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => ZiweiDocScreen(entry: e)),
+                  ),
+                ),
+              ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ZiweiCasesListScreen(),
+                  ),
+                ),
+                icon: const Icon(Icons.library_books_outlined, size: 16),
+                label: const Text('浏览全部案例与十二宫详解'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlate(ColorScheme cs, ZiweiChart chart) {
+    // 4×4 盘面：外围 12 宫按地支固定盘位，中心 2×2 为命盘核心。
+    // slot(0..15) → 地支索引(0子..11亥) 或 -1(核心)
+    const slotToBranch = [
+      5, 6, 7, 8, // 巳 午 未 申
+      4, -1, -1, 9, // 辰 [核][核] 酉
+      3, -1, -1, 10, // 卯 [核][核] 戌
+      2, 1, 0, 11, // 寅 丑 子 亥
+    ];
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: GridView.count(
+          crossAxisCount: 4,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 4,
+          crossAxisSpacing: 4,
+          childAspectRatio: 0.82,
+          children: [
+            for (int slot = 0; slot < 16; slot++)
+              slotToBranch[slot] == -1
+                  ? _buildCoreCell(cs, chart, slot)
+                  : _buildPalaceCell(
+                      cs,
+                      chart,
+                      chart.palaces[slotToBranch[slot]],
+                    ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCoreCell(ColorScheme cs, ZiweiChart chart, int slot) {
+    // 中心 2×2：五行局 / 命主 / 身主 / 性别
+    final info = <int, String>{
+      5: chart.elementBureauLabel,
+      6: '命主 ${chart.mingZhuLabel ?? "—"}',
+      9: '身主 ${chart.shenZhuLabel ?? "—"}',
+      10: chart.genderLabel,
+    }[slot]!;
+    final title = <int, String>{5: '五行局', 6: '', 9: '', 10: ''}[slot];
+    return Container(
+      decoration: BoxDecoration(
+        color: cs.primaryContainer,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      alignment: Alignment.center,
+      padding: const EdgeInsets.all(4),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (title != null && title.isNotEmpty)
+            Text(
+              title,
+              style: TextStyle(fontSize: 10, color: cs.onPrimaryContainer),
+            ),
+          Text(
+            info,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: cs.onPrimaryContainer,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPalaceCell(ColorScheme cs, ZiweiChart chart, ZiweiPalace p) {
+    final isLife = p.isLife;
+    final isBody = p.isBody;
+    return GestureDetector(
+      onTap: () => _showPalaceDetail(p),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: isLife
+                ? cs.error
+                : isBody
+                ? cs.tertiary
+                : cs.outlineVariant,
+            width: isLife || isBody ? 1.8 : 0.6,
+          ),
+          borderRadius: BorderRadius.circular(8),
+          color: isLife
+              ? cs.errorContainer.withValues(alpha: 0.25)
+              : isBody
+              ? cs.tertiaryContainer.withValues(alpha: 0.25)
+              : null,
+        ),
+        padding: const EdgeInsets.all(4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 宫名 + 命/身标记
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    p.roleLabel,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: cs.onSurface,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                if (isLife)
+                  _badge('命', cs.error)
+                else if (isBody)
+                  _badge('身', cs.tertiary),
+              ],
+            ),
+            Text(
+              p.ganzhiLabel,
+              style: TextStyle(fontSize: 9, color: cs.onSurfaceVariant),
+            ),
+            const SizedBox(height: 2),
+            // 主星（含四化）
+            ...p.majors.map(
+              (s) => Text(
+                s.sihua != null ? '${s.label}(${s.sihuaText})' : s.label,
+                style: TextStyle(
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w600,
+                  color: s.sihua != null
+                      ? _sihuaColor(s.sihuaText)
+                      : cs.onSurface,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            // 吉星
+            if (p.luckies.isNotEmpty)
+              Text(
+                p.luckies.map((s) => s.label).join(' '),
+                style: TextStyle(fontSize: 9, color: Colors.teal.shade700),
+                overflow: TextOverflow.ellipsis,
+              ),
+            // 煞星
+            if (p.bads.isNotEmpty)
+              Text(
+                p.bads.map((s) => s.label).join(' '),
+                style: TextStyle(fontSize: 9, color: Colors.red.shade700),
+                overflow: TextOverflow.ellipsis,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// 点按宫格：展示该宫主管（倪师天机道）与宫内星曜。
+  void _showPalaceDetail(ZiweiPalace p) {
+    final cs = Theme.of(context).colorScheme;
+    final meaning = ZiweiReferenceScreen.palaceMeanings[p.roleLabel];
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    p.roleLabel,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    p.ganzhiLabel,
+                    style: TextStyle(fontSize: 14, color: cs.onSurfaceVariant),
+                  ),
+                  const SizedBox(width: 8),
+                  if (p.isLife) _badge('命宫', cs.error),
+                  if (p.isBody) _badge('身宫', cs.tertiary),
+                ],
+              ),
+              const SizedBox(height: 6),
+              if (meaning != null)
+                Text(
+                  '主管：$meaning',
+                  style: const TextStyle(fontSize: 14, height: 1.5),
+                ),
+              const SizedBox(height: 12),
+              if (p.stars.isEmpty)
+                Text(
+                  '本宫无星曜',
+                  style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant),
+                ),
+              ...p.stars.map(
+                (s) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 3),
+                  child: Row(
+                    children: [
+                      Text(
+                        s.label,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: s.isMajor ? cs.onSurface : cs.onSurfaceVariant,
+                        ),
+                      ),
+                      if (s.brightness != null) ...[
+                        const SizedBox(width: 6),
+                        Text(
+                          '${s.brightness}',
+                          style: TextStyle(fontSize: 12, color: cs.primary),
+                        ),
+                      ],
+                      if (s.sihua != null) ...[
+                        const SizedBox(width: 6),
+                        Text(
+                          s.sihuaText,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: _sihuaColor(s.sihuaText),
+                          ),
+                        ),
+                      ],
+                      const SizedBox(width: 6),
+                      Text(
+                        _starKindLabel(s),
+                        style: TextStyle(fontSize: 11, color: cs.outline),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                '宫位主管出自倪师《天纪·天机道》· 民俗文化参考',
+                style: TextStyle(fontSize: 11, color: cs.outline),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _starKindLabel(ZiweiStar s) {
+    if (s.isMajor) return '主星';
+    if (s.isLucky) return '吉星';
+    if (s.isBad) return '煞星';
+    return '杂曜';
+  }
+
+  Widget _buildDecadeList(ColorScheme cs, ZiweiChart chart) {
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              '十二大限（十年运）',
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            ...chart.decades.map(
+              (d) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 3),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 64,
+                      child: Text(
+                        '第${d.index}大限',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: cs.primary,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 84,
+                      child: Text(
+                        d.rangeLabel,
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        '${d.roleLabel} ${d.ganzhiLabel}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: cs.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _badge(String text, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontSize: 9,
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget _chip(String label, String value, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: RichText(
+        text: TextSpan(
+          style: const TextStyle(fontSize: 12),
+          children: [
+            TextSpan(
+              text: '$label ',
+              style: TextStyle(color: Colors.grey.shade600),
+            ),
+            TextSpan(
+              text: value,
+              style: TextStyle(fontWeight: FontWeight.bold, color: color),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _sihuaColor(String t) {
+    switch (t) {
+      case '禄':
+        return Colors.redAccent;
+      case '权':
+        return Colors.orange.shade700;
+      case '科':
+        return Colors.blue.shade700;
+      case '忌':
+        return Colors.green.shade700;
+      default:
+        return Colors.black87;
+    }
+  }
+}
+
+class _Dropdown extends StatelessWidget {
+  final String label;
+  final int value;
+  final List<DropdownMenuItem<int>> items;
+  final ValueChanged<int?> onChanged;
+
+  const _Dropdown({
+    required this.label,
+    required this.value,
+    required this.items,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InputDecorator(
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<int>(
+          value: value,
+          isExpanded: true,
+          items: items,
+          onChanged: onChanged,
+        ),
+      ),
+    );
+  }
+}

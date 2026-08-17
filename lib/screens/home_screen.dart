@@ -23,7 +23,11 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     // 启动后弹出「本次更新了什么」（若有版本更新）
     Future.delayed(
-        const Duration(milliseconds: 800), () => WhatsNewService.checkAndShow(context));
+      const Duration(milliseconds: 800),
+      () {
+        if (mounted) WhatsNewService.checkAndShow(context);
+      },
+    );
     // 延迟检查更新，避免影响启动速度
     Future.delayed(const Duration(seconds: 3), _checkUpdate);
   }
@@ -46,18 +50,18 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   final List<Widget> _screens = [
-    const ChatScreen(),
     const KnowledgeScreen(),
     const ToolsScreen(),
+    const ChatScreen(),
     const BookmarksScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return MediaQuery(
-      data: MediaQuery.of(context).copyWith(
-        textScaler: TextScaler.linear(widget.textScaleFactor),
-      ),
+      data: MediaQuery.of(
+        context,
+      ).copyWith(textScaler: TextScaler.linear(widget.textScaleFactor)),
       child: Scaffold(
         body: _screens[_currentIndex],
         bottomNavigationBar: NavigationBar(
@@ -67,11 +71,6 @@ class _HomeScreenState extends State<HomeScreen> {
           },
           destinations: const [
             NavigationDestination(
-              icon: Icon(Icons.chat_bubble_outline),
-              selectedIcon: Icon(Icons.chat_bubble),
-              label: '辨证',
-            ),
-            NavigationDestination(
               icon: Icon(Icons.menu_book_outlined),
               selectedIcon: Icon(Icons.menu_book),
               label: '知识库',
@@ -80,6 +79,11 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: Icon(Icons.build_outlined),
               selectedIcon: Icon(Icons.build),
               label: '工具',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.chat_bubble_outline),
+              selectedIcon: Icon(Icons.chat_bubble),
+              label: '辨证',
             ),
             NavigationDestination(
               icon: Icon(Icons.bookmark_border),

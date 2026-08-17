@@ -161,9 +161,9 @@ class DiagnosticRules {
     ),
     CombinedPattern(
       meridians: ['太阳', '少阳'],
-      condition: 'sun_symptoms + shao_yang_symptoms',
+      condition: 'sun+shaoyang_combined',
       formula: '柴胡桂枝汤',
-      description: '太阳少阳合病，发热微恶寒，支节烦痛，微呕',
+      description: '太阳少阳合病，发热微恶寒，支节烦痛，微呕，心下支结',
       source: '伤寒论第146条',
     ),
     CombinedPattern(
@@ -909,38 +909,6 @@ class DiagnosticRules {
     },
   };
 
-  // ==================== 主诉选项（25项）====================
-  static final List<SymptomOption> chiefComplaints = [
-    // -- 表证 --
-    SymptomOption(key: 'fever_chills', label: '发烧怕冷', emoji: '🤒', description: '发热同时怕冷，太阳表证'),
-    SymptomOption(key: 'fever_only', label: '只发烧不怕冷', emoji: '🌡️', description: '发热但不怕冷，阳明或温病'),
-    SymptomOption(key: 'chills_only', label: '只怕冷不发烧', emoji: '🥶', description: '畏寒但不发热，太阴少阴'),
-    SymptomOption(key: 'alternating', label: '忽冷忽热', emoji: '🔄', description: '一阵冷一阵热，少阳证'),
-    SymptomOption(key: 'upper_heat_lower_cold', label: '上热下寒', emoji: '☯️', description: '口干口苦但手脚冰，厥阴'),
-    SymptomOption(key: 'headache', label: '头痛', emoji: '🤕', description: '头部疼痛，需辨经络'),
-    SymptomOption(key: 'neck_stiff', label: '脖子僵硬', emoji: '🦴', description: '项背强几几，太阳经输不利'),
-    SymptomOption(key: 'body_pain', label: '全身酸痛', emoji: '💪', description: '骨节疼痛，伤寒表实'),
-    SymptomOption(key: 'cough', label: '咳嗽气喘', emoji: '😷', description: '肺系症状，需辨寒热'),
-    // -- 里证 --
-    SymptomOption(key: 'abdominal_pain', label: '肚子痛', emoji: '🤢', description: '腹痛，需辨虚实寒热'),
-    SymptomOption(key: 'diarrhea', label: '拉肚子', emoji: '💨', description: '下利，需辨寒热'),
-    SymptomOption(key: 'constipation', label: '便秘', emoji: '😰', description: '大便不通，阳明腑实'),
-    SymptomOption(key: 'vomiting', label: '呕吐', emoji: '🤮', description: '呕吐，少阳太阴皆有'),
-    SymptomOption(key: 'bitter_mouth', label: '嘴苦', emoji: '😖', description: '口苦咽干，少阳胆火'),
-    // -- 虚证 --
-    SymptomOption(key: 'fatigue', label: '很累很困', emoji: '😴', description: '精神疲倦但欲寐，少阴'),
-    SymptomOption(key: 'insomnia', label: '睡不着烦躁', emoji: '😫', description: '失眠心烦，少阴热化'),
-    SymptomOption(key: 'palpitation', label: '心悸心慌', emoji: '💗', description: '心跳异常，心阳虚'),
-    SymptomOption(key: 'dizziness', label: '头晕目眩', emoji: '💫', description: '眩晕，水饮或少阳'),
-    SymptomOption(key: 'cold_limbs', label: '手脚冰冷', emoji: '🧊', description: '四肢厥冷，阳虚'),
-    // -- 杂病 --
-    SymptomOption(key: 'edema', label: '水肿', emoji: '💧', description: '身体浮肿，阳虚水泛'),
-    SymptomOption(key: 'joint_pain', label: '关节疼痛', emoji: '🦴', description: '风湿痹证'),
-    SymptomOption(key: 'skin', label: '皮肤问题', emoji: '🩹', description: '疮疡、瘙痒、过敏'),
-    SymptomOption(key: 'urination', label: '小便异常', emoji: '🚽', description: '尿频、尿痛、不利'),
-    SymptomOption(key: 'menstrual', label: '月经问题', emoji: '🩸', description: '痛经、量少、不调'),
-  ];
-
   // ==================== 寒热辨经（5项→六经定位）====================
   static final List<TemperatureOption> temperaturePatterns = [
     TemperatureOption(
@@ -999,57 +967,66 @@ class DiagnosticRules {
 
   // ==================== 倪海厦诊病十问（六经辨证优化版）====================
   // 基于《伤寒论113方六经辨证公式》优化，确保能覆盖六经关键辨证要素
+  // 性别题已从十问主列表移除（实现「性别移出十问」），改由 UI 的 defaultGender 提供；
+  // 仅在用户未设置默认性别时由 getTenQuestions 重新插入，以保留男性跳过月经题的体验。
+  static final FollowUpQuestion genderQuestion = FollowUpQuestion(
+    key: 'gender',
+    question: '请问您的性别？（影响月经问题的问诊）',
+    options: ['男', '女'],
+  );
+
+  // 十问（单轮闭环）：顺序调整为「寒热→渴饮→汗出→疼痛→大便→小便→胃口→睡眠→精神→妇人」，
+  // 把能定方的决定性信号（口苦少阳、但欲寐少阴、手脚厥冷厥阴/少阴、渴饮冷热、汗出）前置于十问内。
   static final List<FollowUpQuestion> tenQuestions = [
     FollowUpQuestion(
-      key: 'gender',
-      question: '请问您的性别？（影响月经问题的问诊）',
-      options: ['男', '女'],
+      key: 'temperature',
+      question: '【一问寒热·先分阴阳】手脚温热/发热属阳，冰冷/怕冷属阴；具体怎样？',
+      options: ['手脚温热（正常·阳）', '手心脚心热（阳·阴虚内热）', '往来寒热、忽冷忽热（半表半里·少阳）', '头热脚冷、上热下寒（厥阴）', '上半身热下半身冷（厥阴）', '手脚冰冷（阴·阳虚）', '全身怕冷（阴·少阴/太阴）'],
     ),
     FollowUpQuestion(
-      key: 'sleep',
-      question: '【一问睡眠】晚上能一觉到天亮吗？几点醒？',
-      options: ['一觉到天亮', '半夜1-3点醒', '半夜3-5点醒', '整夜睡不着', '多梦易醒', '嗜睡但睡不够'],
-    ),
-    FollowUpQuestion(
-      key: 'appetite',
-      question: '【二问胃口】三餐正常吗？有没有特别想吃或不想吃的？',
-      options: ['正常三餐', '没有胃口', '特别能吃', '饿但不想吃（厥阴）', '想吃冷的', '想吃热的', '食不下（太阴）'],
-    ),
-    FollowUpQuestion(
-      key: 'stool',
-      question: '【三问大便】每天有大便吗？成形还是稀的？颜色？',
-      options: ['每天有，成形', '便秘，好几天一次', '稀/拉肚子', '先硬后稀', '水样便', '便脓血', '下利清谷（完谷不化）'],
-    ),
-    FollowUpQuestion(
-      key: 'urine',
-      question: '【四问小便】一天几次？颜色？量多量少？',
-      options: ['5-7次淡黄色（正常）', '次数多量少', '次数少颜色深', '夜尿多', '小便不利', '小便黄赤', '小便清长'],
+      key: 'pulse',
+      question: '【二问脉象】不会摸脉？把手指搭在手腕内侧靠拇指的骨边轻按感受；没把握就直接选最后一项，不影响继续。',
+      options: ['浮（表证）·轻按就摸到，像按在鼓面上', '沉（里证）·重按才摸到，像按在水底', '迟（寒）·跳得慢，一分钟不足60次', '数（热）·跳得快，一分钟超过90次', '滑（痰饮/实）·指下圆滑，像珠子滚过', '涩（血瘀）·不流利，像刀刮竹子', '弦（少阳/痛）·绷紧挺直，像按琴弦', '紧（寒/痛）·绷得更紧，像拧紧的绳子', '细（血虚/少阴）·细如发丝', '微（阳衰·少阴）·极细极弱，似有似无', '弱（虚）·沉细而软，按之无力', '缓（湿/常）·不快不慢，从容和缓', '没摸过/不清楚', '结（时有一停·不规则）', '代（固定节律停顿）'],
     ),
     FollowUpQuestion(
       key: 'thirst',
-      question: '【五问口渴】渴不渴？想喝冷水还是热水？',
+      question: '【三问渴饮】口渴吗？想喝冷水还是热水？',
       options: ['不渴', '渴想喝冷水', '渴想喝热水', '渴但不想喝', '口苦口干（少阳）', '消渴（喝水不止渴）', '大渴（阳明）'],
     ),
     FollowUpQuestion(
-      key: 'temperature',
-      question: '【六问寒热】怕冷还是怕热？手脚温度？',
-      options: ['手脚温热（正常）', '手脚冰冷', '手心脚心热', '头热脚冷', '上半身热下半身冷', '全身怕冷', '往来寒热（忽冷忽热）'],
-    ),
-    FollowUpQuestion(
       key: 'sweating',
-      question: '【七问汗】容易出汗吗？什么时间出汗？',
+      question: '【四问汗出】平时出汗的情况？',
       options: ['不容易出汗', '稍微活动就出汗', '睡觉出汗（盗汗）', '白天也出汗（自汗）', '但头汗出', '手足汗出', '大汗出（阳明）'],
     ),
     FollowUpQuestion(
-      key: 'energy',
-      question: '【八问精神】精神体力怎样？有没有特殊感觉？',
-      options: ['精力充沛', '容易疲倦', '但欲寐（昏昏沉沉想睡）', '烦躁不安', '说话没力气', '气上撞心（感觉有气往上冲）'],
-    ),
-    // 注意：舌诊已统一在 Step 3（舌诊脉诊步骤）处理，十问中不再重复
-    FollowUpQuestion(
       key: 'pain',
-      question: '【九问疼痛】哪里痛？什么性质的痛？',
-      options: ['不痛', '头痛（前额）', '头痛（两侧）', '头痛（后脑）', '胸胁胀痛（少阳）', '腹痛喜按', '腹痛拒按', '关节游走痛', '身体痛+骨节痛（少阴）', '心下痞满（按之软）'],
+      question: '【五问疼痛】哪里不舒服、怎么痛？',
+      options: ['不痛', '头痛（前额）', '头痛（两侧）', '头痛（后脑）', '胸胁胀痛（少阳）', '腹痛喜按', '腹痛拒按', '关节游走痛', '身体痛+骨节痛（少阴）', '心下痞满（按之软）', '身痒/皮肤痒', '心下痞硬（按之硬）', '腹胀满', '身体麻木不仁', '咽中异物感', '胸痛/心痛彻背', '巅顶痛', '心悸/怔忡', '头晕目眩', '腰痛腰冷'],
+    ),
+    FollowUpQuestion(
+      key: 'stool',
+      question: '【六问大便】大便怎样？',
+      options: ['每天有，成形', '便秘，好几天一次', '稀/拉肚子', '先硬后稀', '水样便', '便脓血', '下利清谷（完谷不化）', '大便色黑'],
+    ),
+    FollowUpQuestion(
+      key: 'urine',
+      question: '【七问小便】小便怎样？',
+      options: ['5-7次淡黄色（正常）', '次数多量少', '次数少颜色深', '夜尿多', '小便不利', '小便黄赤', '小便清长'],
+    ),
+    FollowUpQuestion(
+      key: 'appetite',
+      question: '【八问胃口】三餐正常吗？有没有特别想吃或不想吃的？',
+      options: ['正常三餐', '没有胃口', '特别能吃', '饿但不想吃（厥阴）', '想吃冷的', '想吃热的', '食不下（太阴）', '恶心/呕吐（→追问呕吐类型）'],
+    ),
+    FollowUpQuestion(
+      key: 'sleep',
+      question: '【九问睡眠】晚上能一觉到天亮吗？几点醒？',
+      options: ['一觉到天亮', '半夜1-3点醒', '半夜3-5点醒', '整夜睡不着', '多梦易醒', '嗜睡但睡不够'],
+    ),
+    FollowUpQuestion(
+      key: 'energy',
+      question: '【十问精神】精神体力怎样？有没有特殊感觉？',
+      options: ['精力充沛', '容易疲倦', '但欲寐（昏昏沉沉想睡）', '烦躁不安', '说话没力气', '气上撞心（感觉有气往上冲）'],
     ),
     FollowUpQuestion(
       key: 'menstrual',
@@ -1057,6 +1034,14 @@ class DiagnosticRules {
       options: ['没有此症状', '月经正常', '痛经/量少/色暗有块', '月经量多/色红', '月经不调/先后无定期', '已绝经', '性功能正常', '性功能减退/腰酸'],
     ),
   ];
+
+  // Q12 呕吐类型题：独立常量（不放入 tenQuestions 列表，保持列表 11 项与引擎静态长度判断兼容）。
+  // 由引擎 getTenQuestions 在 Q8 选「恶心/呕吐」时动态追加到列表尾部。
+  static final FollowUpQuestion vomitTypeQuestion = FollowUpQuestion(
+    key: 'vomit_type',
+    question: '【追问呕吐】呕吐/恶心是哪一种？（不吐就跳过）',
+    options: ['恶心但不呕', '干呕（有声无物·含吐涎沫）', '呕吐少量', '呕吐剧烈', '食入即吐', '朝食暮吐/暮食朝吐', '噫气/嗳气（气往上冲）'],
+  );
 
   // ==================== 六经跟进问诊（113方公式优化版）====================
   // 基于《伤寒论113方六经辨证公式》优化，每个跟进问题对应具体方剂辨证

@@ -76,6 +76,10 @@ class DiagnosisResult {
   final String pattern;
   final String patternDetail;
   final String formula;
+  // v3.2 行为调整：当多个方剂「必选症状相同、同分并列」时，全部同时推荐，
+  // 不再用鉴别链静默只取一个。formula 仍为 tie-break 选出的主方，
+  // recommendedFormulas 为并列全部（含主方，长度=1 时即单一方）。
+  final List<String> recommendedFormulas;
   final String explanation;
   final double confidence;
   final List<String> matchedSymptoms;
@@ -117,6 +121,7 @@ class DiagnosisResult {
     required this.pattern,
     this.patternDetail = '',
     required this.formula,
+    this.recommendedFormulas = const [],
     this.explanation = '',
     this.confidence = 1.0,
     this.matchedSymptoms = const [],
@@ -207,7 +212,6 @@ class DifferentialDiagnosisResult {
 }
 
 enum DiagnosticStage {
-  chiefComplaint,
   temperaturePattern,
   tonguePulse,
   tenQuestions,

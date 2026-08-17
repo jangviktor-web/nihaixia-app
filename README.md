@@ -52,6 +52,7 @@
 | 💉 **穴位处方·透针** | 14 类针灸处方（257 条）+ 31 条透针透穴，组成穴可点按跳转详情 | 14类 |
 | ⏰ **子午流注取穴** | 输入时间自动推算开穴 | 361穴 |
 | 🔧 **经方剂量换算** | 古代度量衡（两/升/铢）→ 现代克数 | — |
+| 🔮 **紫微斗数排盘** | 十二宫 / 主星 / 四化 / 大限可视化（民俗文化参考，非医疗诊断） | — |
 | 🔄 **应用内更新** | 设置中一键检测GitHub新版本，支持下载安装 | — |
 | 📝 **更新日志与弹窗** | 「关于」页展示版本更新日志；安装新版本后自动弹出「本次更新了什么」 | — |
 | ⚙️ **诊断设置** | 默认性别/诊断详细度/自动复制处方，个性化问诊体验 | 3项 |
@@ -96,10 +97,13 @@ lib/
 │   ├── formula_repository.dart      #   方剂仓库（4级匹配策略）
 │   ├── herb_repository.dart         #   药物仓库
 │   └── database_helper.dart         #   SQLite 持久化
+├── services/                        # 第三方引擎封装
+│   └── ziwei_engine.dart           #   紫微斗数排盘引擎封装（ziwei_core）
 ├── screens/                         # UI 界面
 │   ├── chat_screen.dart             #   对话式诊断
 │   ├── knowledge_screen.dart        #   方剂/药物速查
 │   ├── diagnosis_history_screen.dart#   诊断历史趋势
+│   ├── ziwei_chart_screen.dart     #   紫微斗数排盘可视化
 │   └── tools_screen.dart            #   实用工具集
 └── assets/data/                     # 离线数据
     ├── formulas.json                #   322首方剂

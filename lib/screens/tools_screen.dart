@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'dosage_converter_screen.dart';
 import 'ziwuliuzhu_screen.dart';
 import 'diagnosis_history_screen.dart';
+import 'ziwei_chart_screen.dart';
+import 'yijing_screen.dart';
 
 class ToolsScreen extends StatelessWidget {
   const ToolsScreen({super.key});
@@ -38,6 +40,17 @@ class ToolsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           _ToolCard(
+            icon: Icons.auto_awesome,
+            title: '紫微斗数排盘',
+            subtitle: '民俗文化参考 · 十二宫 / 四化 / 大限',
+            color: colorScheme.secondary,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ZiweiChartScreen()),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _ToolCard(
             icon: Icons.access_time,
             title: '子午流注取穴计算器',
             subtitle: '输入时间自动推算开穴',
@@ -45,6 +58,17 @@ class ToolsScreen extends StatelessWidget {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const ZiWuLiuZhuScreen()),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _ToolCard(
+            icon: Icons.change_history,
+            title: '易经六十四卦',
+            subtitle: '时间/数字/手动起卦 · 卦辞爻辞 · 倪师人间道',
+            color: const Color(0xFF6D4C41),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const YiJingScreen()),
             ),
           ),
         ],

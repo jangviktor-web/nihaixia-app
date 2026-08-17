@@ -1,7 +1,9 @@
 import '../models/diagnosis.dart';
 import '../data/formula_repository.dart';
 import 'diagnostic_rules.dart';
-import 'condition_families.dart';
+import 'formula_rules.dart';
+import 'formula_rules.dart' as fr;
+import 'rule_engine.dart';
 
 /// 引擎快照，用于返回上一步
 class EngineSnapshot {
@@ -15,7 +17,9 @@ class EngineSnapshot {
   final String? tongueShape;
   final String? pulseType;
   final String? gender;
-  final String? activeConditionFamily;
+  final Map<String, int> qAnswers;
+  final Set<String> extSymptoms;
+  final int flatIndex;
 
   EngineSnapshot({
     required this.stage,
@@ -28,12 +32,14 @@ class EngineSnapshot {
     this.tongueShape,
     this.pulseType,
     this.gender,
-    this.activeConditionFamily,
+    this.qAnswers = const {},
+    this.extSymptoms = const {},
+    this.flatIndex = 0,
   });
 }
 
 class DiagnosticEngine {
-  DiagnosticStage _stage = DiagnosticStage.chiefComplaint;
+  DiagnosticStage _stage = DiagnosticStage.temperaturePattern;
   List<String> _selectedSymptoms = [];
   String? _meridianDirection;
   String? _combinedMeridian;
@@ -44,7 +50,12 @@ class DiagnosticEngine {
   String? _tongueShape;
   String? _pulseType;
   String? _gender; // 'male' or 'female'
-  String? _activeConditionFamily; // Step1 两级导航选中的金匮证候族（双轨通道B）
+
+  // —— 扁平 Q1–Q12 规则引擎接入 ——
+  // _qAnswers: {qKey: 选项号(1-based)}；_extSymptoms: 已选扩展症状 key 集合
+  Map<String, int> _qAnswers = {};
+  Set<String> _extSymptoms = {};
+  RuleMatch? _lastRuleMatch;
 
   DiagnosticStage get stage => _stage;
   List<String> get selectedSymptoms => List.unmodifiable(_selectedSymptoms);
@@ -57,7 +68,7 @@ class DiagnosticEngine {
       _selectedSymptoms.any((s) => s.contains(term));
 
   void reset() {
-    _stage = DiagnosticStage.chiefComplaint;
+    _stage = DiagnosticStage.temperaturePattern;
     _selectedSymptoms = [];
     _meridianDirection = null;
     _combinedMeridian = null;
@@ -68,12 +79,14 @@ class DiagnosticEngine {
     _tongueShape = null;
     _pulseType = null;
     _gender = null;
-    _activeConditionFamily = null;
+    _qAnswers = {};
+    _extSymptoms = {};
+    _lastRuleMatch = null;
   }
 
   // ==================== 快照系统 ====================
 
-  EngineSnapshot createSnapshot() {
+  EngineSnapshot createSnapshot([int flatIndex = 0]) {
     return EngineSnapshot(
       stage: _stage,
       selectedSymptoms: List.from(_selectedSymptoms),
@@ -85,7 +98,9 @@ class DiagnosticEngine {
       tongueShape: _tongueShape,
       pulseType: _pulseType,
       gender: _gender,
-      activeConditionFamily: _activeConditionFamily,
+      qAnswers: Map.from(_qAnswers),
+      extSymptoms: Set.from(_extSymptoms),
+      flatIndex: flatIndex,
     );
   }
 
@@ -100,78 +115,145 @@ class DiagnosticEngine {
     _tongueShape = snapshot.tongueShape;
     _pulseType = snapshot.pulseType;
     _gender = snapshot.gender;
-    _activeConditionFamily = snapshot.activeConditionFamily;
+    _qAnswers = Map.from(snapshot.qAnswers);
+    _extSymptoms = Set.from(snapshot.extSymptoms);
   }
 
   // ==================== 问候与选项 ====================
 
   String getInitialGreeting() {
     return '你好，我是汉唐中医辨证助手。\n\n'
-        '我将按照倪海厦老师的辨证方法，通过七步问诊帮你分析：\n'
-        '1️⃣ 主诉症状\n'
-        '2️⃣ 寒热辨经\n'
-        '3️⃣ 舌诊脉诊（望诊）\n'
-        '4️⃣ 倪海厦十问\n'
-        '5️⃣ 六经定位\n'
-        '6️⃣ 鉴别诊断\n'
-        '7️⃣ 用药指导\n\n'
-        '请告诉我你哪里不舒服？';
-  }
-
-  List<SymptomOption> getChiefComplaintOptions() {
-    return DiagnosticRules.chiefComplaints;
+        '我将按照倪海厦老师的辨证方法，通过《问诊公式》逐项问诊帮你分析：\n'
+        '🌡️ Q1 寒热感觉（必答）\n'
+        '💓 Q2 脉象（不会摸可选「不清楚」）\n'
+        '🥤 Q3 渴饮（必答）\n'
+        '💦 Q4 汗出\n'
+        '🤕 Q5 疼痛/不适\n'
+        '🚽 Q6 大便\n'
+        '🚰 Q7 小便\n'
+        '🍚 Q8 胃口（选「恶心呕吐」会追问呕吐）\n'
+        '😴 Q9 睡眠\n'
+        '⚡ Q10 精神\n'
+        '🌸 Q11 月经/性功能（可跳过）\n'
+        '🤮 Q12 呕吐类型（条件触发）\n'
+        '🩺 最后勾选其他不适\n\n'
+        '我们一项一项来，请先回答 Q1：你整体的寒热感觉是怎样的？';
   }
 
   List<TemperatureOption> getTemperatureQuestions() {
     return DiagnosticRules.temperaturePatterns;
   }
 
+  // ==================== 扁平 Q1–Q12 规则流程（按《问诊公式_全量修正版》） ====================
+
+  /// 扁平问诊序列：Q1 寒热 → Q2 脉(可跳) → Q3 渴(不可跳) → Q4 汗 → Q5 痛
+  /// → Q6 便 → Q7 尿 → Q8 胃口 → Q9 睡 → Q10 精神 → Q11 月经(可跳)
+  /// → Q12 呕吐(条件触发)。复用 tenQuestions（已按 v3.1 顺序 Q1..Q11 + Q8=⑧追加 Q12）。
+  List<FollowUpQuestion> getFlatQuestions({String? defaultGender}) =>
+      getTenQuestions(defaultGender: defaultGender);
+
+  /// 按选项索引(0-based)记录 Q 答案（1-based 选项号），同时走原 answerTenQuestion 保留信号副作用。
+  void answerFlatQuestion(String key, int optionIndex, String optionText) {
+    _qAnswers[key] = optionIndex + 1;
+    answerTenQuestion(key, optionText);
+  }
+
+  void toggleExtSymptom(String key, bool selected) {
+    if (selected) {
+      _extSymptoms.add(key);
+    } else {
+      _extSymptoms.remove(key);
+    }
+  }
+
+  Set<String> get extSymptoms => Set.unmodifiable(_extSymptoms);
+  Map<String, int> get qAnswers => Map.unmodifiable(_qAnswers);
+  RuleMatch? get lastRuleMatch => _lastRuleMatch;
+
+  /// 扁平 Q1–Q12 题序编排：基础 Q1..Q11；男性跳过 Q11（月经/性功能）；
+  /// Q8 选「恶心呕吐」(选项号8) 时尾部追加 Q12 呕吐类型。
+  List<String> getFlatQuestionKeys({String? defaultGender}) {
+    final keys = <String>[
+      kQ1, kQ2, kQ3, kQ4, kQ5, kQ6, kQ7, kQ8, kQ9, kQ10, kQ11,
+    ];
+    if (defaultGender == 'male') keys.remove(kQ11);
+    if (_qAnswers[kQ8] == 8) keys.add(kQ12);
+    return keys;
+  }
+
+  /// 按规则引擎出方：必选(★)全满足者入候选，按参考(Q)命中打分排序取最佳。
+  DiagnosisResult diagnoseByRules() {
+    final top = RuleEngine.top(_qAnswers, _extSymptoms);
+    _lastRuleMatch = top;
+    if (top == null) {
+      return DiagnosisResult(
+        meridian: '',
+        pattern: '辨证依据不足',
+        formula: '',
+        explanation: '当前提供的信息较少，难以确定方证。为避免误治，'
+            '建议线下就诊，由执业中医师四诊合参后辨证处方。',
+        confidence: 0.3,
+        recommendConsult: true,
+        answers: Map.from(_answers),
+      );
+    }
+    final r = top.rule;
+    // v3.2 行为调整：必选症状完全相同的多个方剂，同时推荐（不再静默只取一个）。
+    final coGroup = RuleEngine.coRecommended(_qAnswers, _extSymptoms);
+    final recommended = coGroup.isNotEmpty
+        ? coGroup.map((m) => m.rule.name).toList()
+        : [r.name];
+    final matched = <String>[];
+    r.required.forEach((k, v) {
+      final ans = _qAnswers[k];
+      if (ans != null && v.contains(ans)) {
+        matched.add(qOptions[k]?[ans - 1] ?? k);
+      }
+    });
+    for (final s in r.extRequired) {
+      if (_extSymptoms.contains(s)) matched.add(fr.extSymptoms[s] ?? s);
+    }
+    final confidence = (0.6 + 0.04 * top.requiredHits + 0.02 * top.referenceHits)
+        .clamp(0.6, 0.97);
+    return DiagnosisResult(
+      meridian: r.meridian,
+      pattern: '${r.name}证',
+      formula: r.name,
+      recommendedFormulas: recommended,
+      explanation: r.differential,
+      confidence: confidence,
+      matchedSymptoms: matched,
+      answers: Map.from(_answers),
+    );
+  }
+
   List<FollowUpQuestion> getFollowUpQuestions(String meridian) {
-    // 双轨通道：Step1 选中金匮证候族 → 先展示族鉴别树（通道B），再补六经跟进+六经杂证补充（通道A）
-    final familyQs = _activeConditionFamily != null
-        ? (ConditionFamilyData.conditionFollowUps[_activeConditionFamily] ??
-            const <FollowUpQuestion>[])
-        : const <FollowUpQuestion>[];
+    // 仅保留六经跟进 + 六经杂证补充（原"金匮证候族通道B"依赖已删除的主诉入口，不再触发）
     final meridianQs = DiagnosticRules.followUpQuestions[meridian] ?? const <FollowUpQuestion>[];
     final supplementQs =
         DiagnosticRules.meridianSupplementFollowUps[meridian] ?? const <FollowUpQuestion>[];
-    return [...familyQs, ...meridianQs, ...supplementQs];
+    return [...meridianQs, ...supplementQs];
   }
-
-  // ==================== 金匮证候族（双轨通道B） ====================
-
-  String? get activeConditionFamily => _activeConditionFamily;
-
-  void activateConditionFamily(String family) {
-    _activeConditionFamily = family;
-  }
-
-  /// Step1 两级导航选中证候词：激活证候族 + 证候词文本写入 _selectedSymptoms（含触发词，子串匹配命中）
-  void selectConditionOption(String family, String optionKey, String optionText) {
-    _activeConditionFamily = family;
-    _selectedSymptoms.add(optionText);
-    _answers[optionKey] = true;
-    _stage = DiagnosticStage.temperaturePattern;
-  }
-
-  List<ChiefCategory> getChiefCategories() => ConditionFamilyData.chiefCategories;
-
-  List<ConditionTerm> getConditionTerms() => ConditionFamilyData.conditionTerms;
-
-  List<ConditionTerm> getConditionTermsForCategory(String categoryId) =>
-      ConditionFamilyData.conditionTerms
-          .where((t) => ConditionFamilyData.familyCategory[t.family] == categoryId)
-          .toList();
-
-  List<FollowUpQuestion> getConditionFollowUps(String family) =>
-      ConditionFamilyData.conditionFollowUps[family] ?? const [];
 
   List<FollowUpQuestion> getTenQuestions({String? defaultGender}) {
     final questions = List<FollowUpQuestion>.from(DiagnosticRules.tenQuestions);
-    // 如果已设置默认性别，跳过性别问题并自动设置
+    // 如果已设置默认性别，跳过性别问题并自动设置（「性别移出十问」，减少一题）
     if (defaultGender != null && defaultGender.isNotEmpty) {
       _gender = defaultGender;
       questions.removeWhere((q) => q.key == 'gender');
+    } else {
+      // 未设置默认性别时，重新插入性别题，保留男性跳过月经题的 UX，避免回归
+      if (!questions.any((q) => q.key == 'gender')) {
+        questions.insert(0, DiagnosticRules.genderQuestion);
+      }
+    }
+    // v3.1：Q8 胃口选「恶心/呕吐」→ 尾部追加 Q12 呕吐类型追问；否则不带
+    final appetiteAns = _answers['appetite'];
+    if (appetiteAns != null &&
+        (appetiteAns.contains('恶心') || appetiteAns.contains('呕吐'))) {
+      if (!questions.any((q) => q.key == 'vomit_type')) {
+        questions.add(DiagnosticRules.vomitTypeQuestion);
+      }
     }
     return questions;
   }
@@ -183,13 +265,6 @@ class DiagnosticEngine {
   List<String> getPulseOptions() => DiagnosticRules.pulseOptions;
 
   // ==================== 诊断流程 ====================
-
-  void selectChiefComplaint(String symptomKey) {
-    _selectedSymptoms.add(symptomKey);
-    // 主诉症状同时写入 _answers，供合病评分使用
-    _answers[symptomKey] = true;
-    _stage = DiagnosticStage.temperaturePattern;
-  }
 
   void answerTemperaturePattern(String patternKey) {
     _meridianDirection = DiagnosticRules.temperatureToMeridian[patternKey];
@@ -317,6 +392,11 @@ class DiagnosticEngine {
       _answers[questionKey] = answer;
     }
 
+    // 无损桥接：十问 options 与 formula_rules 的 qOptions 逐项同序，
+    // 故用选项在十问题列表中的下标即可对应 canonical 选项号（1-based），
+    // 供规则引擎 diagnoseByRules() 主路径读取。fail-closed：找不到则跳过（不误写）。
+    _recordFlatAnswer(questionKey, answer);
+
     // 性别问题特殊处理
     if (questionKey == 'gender') {
       _gender = answer == '男' ? 'male' : 'female';
@@ -366,16 +446,28 @@ class DiagnosticEngine {
       _answers['thirst_strong'] = answer.contains('渴') && answer.contains('冷水') && !answer.contains('不渴');
       _answers['no_thirst'] = answer == '不渴';
       _answers['mouth_dry'] = answer.contains('口干');
+      // 信号前置（十步问诊改进）：十问内选「口苦口干（少阳）」即置 bitter_mouth（少阳提纲），
+      // 使少阳信号在定经前就位，不必等跟进问诊，根治柴胡桂枝汤/少阳合病被误判为太阳病的问题。
+      _answers['bitter_mouth'] = answer.contains('苦');
     }
     if (questionKey == 'stool') {
       _answers['constipated'] = answer.contains('便秘');
       _answers['diarrhea'] = answer.contains('稀') || answer.contains('拉肚子') || answer.contains('水样');
       _answers['bloody_stool'] = answer.contains('脓血');
+      _answers['black_stool'] = answer.contains('色黑');
+      _answers['undigested_stool'] = answer.contains('完谷');
     }
     if (questionKey == 'urine') {
       _answers['urine_clear'] = answer.contains('清长');
       _answers['urine_difficult'] = answer.contains('不利');
       _answers['urine_nocturia'] = answer.contains('夜尿');
+    }
+    if (questionKey == 'appetite') {
+      _answers['appetite'] = answer;
+      // v3.1：Q8 选「恶心/呕吐」→ 置 nausea 并触发 Q12 追问
+      _answers['nausea'] = answer.contains('恶心') || answer.contains('呕吐');
+      _answers['poor_appetite'] = answer.contains('没有胃口') ||
+          answer.contains('食不下') || answer.contains('饿但不想吃');
     }
     if (questionKey == 'temperature') {
       _answers['cold_limbs'] = answer.contains('冰冷');
@@ -385,6 +477,23 @@ class DiagnosticEngine {
       _answers['chills'] = answer.contains('全身怕冷');
       _answers['no_chills'] = !answer.contains('冷');
       _answers['alternating_chills'] = answer.contains('往来寒热') || answer.contains('忽冷忽热');
+    }
+    if (questionKey == 'pulse') {
+      // 选项含白话描述（如「浮（表证）·轻按就摸到」），提取核心脉名供
+      // 定经/分经的精确匹配（_pulseType == '细' 等）。选「没摸过/不清楚」
+      // 时保持 null（视为未提供脉象）；若舌脉步骤已填过脉则保留原值。
+      const pulseNames = ['浮', '沉', '迟', '数', '滑', '涩', '弦', '紧', '细', '微', '弱', '缓', '结', '代'];
+      String? norm;
+      for (final n in pulseNames) {
+        if (answer.startsWith(n)) {
+          norm = n;
+          break;
+        }
+      }
+      if (norm != null) {
+        _pulseType = norm;
+        _answers['pulse_type'] = norm;
+      }
     }
     if (questionKey == 'sweating') {
       _answers['no_sweat'] = answer.contains('不容易出汗');
@@ -403,6 +512,7 @@ class DiagnosticEngine {
       _answers['drowsy'] = answer.contains('欲寐') || answer.contains('昏昏沉沉');
       _answers['irritable'] = answer.contains('烦躁');
       _answers['weak_speech'] = answer.contains('说话没力气');
+      _answers['fatigue'] = answer.contains('容易疲倦') || answer.contains('疲倦');
       _answers['qi_rushing'] = answer.contains('气上撞心') || answer.contains('气往上冲');
     }
     // 注意：舌诊数据已统一由 Step 3 (answerTonguePulse) 处理，不再在此重复
@@ -418,6 +528,19 @@ class DiagnosticEngine {
       _answers['body_pain'] = answer.contains('身体痛');
       _answers['joint_pain'] = answer.contains('骨节');
       _answers['epigastric_fullness'] = answer.contains('心下痞');
+      // v3.1 新增 Q5 选项映射（⑪-⑳）
+      _answers['itchy_skin'] = answer.contains('身痒') || answer.contains('皮肤痒');
+      _answers['epigastric_hard'] = answer.contains('心下痞硬');
+      _answers['abdominal_distension'] = answer.contains('腹胀');
+      _answers['numbness'] = answer.contains('麻木');
+      _answers['throat_foreign_body'] = answer.contains('异物');
+      _answers['chest_pain'] = _answers['chest_pain'] == true ||
+          answer.contains('胸痛') || answer.contains('心痛') || answer.contains('彻背');
+      _answers['headache_vertex'] = answer.contains('巅顶');
+      _answers['chest_pain_radiating'] = answer.contains('心痛') || answer.contains('彻背');
+      _answers['palpitations'] = answer.contains('心悸') || answer.contains('怔忡');
+      _answers['dizziness'] = answer.contains('头晕') || answer.contains('目眩');
+      _answers['lumbar_pain'] = answer.contains('腰痛') || answer.contains('腰冷');
     }
     if (questionKey == 'menstrual') {
       _answers['menstrual_pain'] = answer.contains('痛经');
@@ -425,6 +548,19 @@ class DiagnosticEngine {
       _answers['menstrual_excess'] = answer.contains('量多');
       _answers['menstrual_deficient'] = answer.contains('量少');
       _answers['sexual_deficiency'] = answer.contains('性功能减退');
+    }
+    if (questionKey == 'vomit_type') {
+      _answers['vomit_type'] = answer;
+      // v3.1 Q12：映射到引擎既有呕吐信号（nausea/vomiting 供合病/分经读取）
+      _answers['nausea'] = answer.contains('恶心');
+      _answers['vomiting'] = answer.contains('干呕') || answer.contains('呕吐') ||
+          answer.contains('食入即吐') || answer.contains('朝食暮吐');
+      _answers['belching'] = answer.contains('噫气') || answer.contains('嗳气');
+      // 细分：供分经精确匹配
+      _answers['vomit_dry'] = answer.contains('干呕');
+      _answers['vomit_profuse'] = answer.contains('剧烈');
+      _answers['vomit_immediate'] = answer.contains('食入即吐');
+      _answers['vomit_cyclical'] = answer.contains('朝食暮吐');
     }
     // Extra symptom keys (not in ten questions but used by diagnosis methods)
     if (questionKey == 'edema') {
@@ -489,13 +625,28 @@ class DiagnosticEngine {
         _meridianDirection = '阳明';
       }
       // 4. 往来寒热 → 少阳
-      else if (_answers['temperature'] == 'alternating_chills_fever' ||
-               _answers['bitter_mouth'] == true) {
+       else if (_answers['temperature'] == 'alternating_chills_fever') {
+        _meridianDirection = '少阳';
+      } else if ((_answers['bitter_mouth'] == true || _answers['mouth_dry'] == true) &&
+               (_answers['temperature'] == 'alternating_chills_fever' ||
+                _answers['alternating_chills'] == true ||
+                _answers['pain'] == '胸胁胀痛（少阳）')) {
         _meridianDirection = '少阳';
       }
       // 5. 上热下寒 → 厥阴
       else if (_answers['temperature'] == 'upper_heat_lower_cold' ||
                (_answers['upper_heat_lower_cold'] == true && _answers['xiaoke'] == true)) {
+        _meridianDirection = '厥阴';
+      }
+      // 5.5 厥阴血虚寒凝（当归四逆汤）：手足厥冷 + 脉细/微（无阳衰欲脱）
+      // 与少阴四逆汤（脉微细+但欲寐+小便清长）鉴别：二者皆手足冷+脉细，
+      // 故须排除少阴寒化核心（但欲寐 / 小便清长）才归厥阴血虚寒凝。
+      else if ((_answers['cold_limbs'] == true ||
+                _answers['hand_foot_cold_pulse_fine'] == true) &&
+               (_pulseType == '细' || _pulseType == '微' ||
+                _pulseType == '弦细' || _pulseType == '沉细') &&
+               _answers['drowsy'] != true &&
+               _answers['urine_clear'] != true) {
         _meridianDirection = '厥阴';
       }
       // 6. 太阴 vs 少阴 精确判断（需要评分区分）
@@ -643,6 +794,9 @@ class DiagnosticEngine {
         _combinedPatternCondition = 'sun+shaoyang_diarrhea'; // 黄芩汤
       } else if (_answers['nausea'] == true || _answers['vomiting'] == true) {
         _combinedPatternCondition = 'sun+shaoyang_vomit'; // 黄芩加半夏生姜汤
+      } else {
+        // 太阳少阳合病基础方：发热微恶寒、支节烦疼、微呕、心下支结
+        _combinedPatternCondition = 'sun+shaoyang_combined'; // 柴胡桂枝汤
       }
     } else if (primary == '少阳' && yangmingScore >= 3) {
       _combinedMeridian = '阳明';
@@ -669,8 +823,15 @@ class DiagnosticEngine {
       // 少阳太阴合病：往来寒热+腹满便溏食不下
       _combinedMeridian = '太阴';
       _combinedPatternCondition = 'shaoyang+taiyin'; // 柴胡桂枝干姜汤
-    } else if (primary == '太阳' && taiyinScore >= 3) {
-      // 太阳太阴并病：里虚寒+表证未罢
+    } else if (primary == '少阳' && sunScore >= 3) {
+      // 太阳少阳合病（柴胡桂枝汤）：重算后主经归少阳，但太阳表证（发热恶寒）仍在。
+      // 原先 primary=='太阳' 分支因口苦咽干被重判为少阳而失效，此处按合病补回。
+      _combinedMeridian = '少阳';
+      _combinedPatternCondition = 'sun+shaoyang_combined'; // 柴胡桂枝汤
+    } else if ((primary == '太阳' || primary == '太阴') &&
+               sunScore >= 3 &&
+               _answers['diarrhea'] == true && taiyinScore >= 2) {
+      // 太阳太阴并病：太阳表证未罢 + 太阴虚寒下利（协热利）→ 桂枝人参汤
       _combinedMeridian = '太阴';
       _combinedPatternCondition = 'sun+taiyin'; // 桂枝人参汤
     } else if (primary == '太阳' && yangmingScore >= 3 && _answers['diarrhea'] == true) {
@@ -678,6 +839,36 @@ class DiagnosticEngine {
       _combinedMeridian = '阳明';
       _combinedPatternCondition = 'sun+yangming_diarrhea_heat'; // 葛根芩连汤
     }
+  }
+
+  /// 无损桥接：把十问选项文本映射为该 Q 的 canonical 选项号（1-based）写入 _qAnswers。
+  /// 依据：kQ1..kQ12 常量 == 十问 key，且 DiagnosticRules.tenQuestions 的 options
+  /// 与 formula_rules.qOptions 逐项同序。找不到（indexOf<0）则跳过，绝不误写。
+  void _recordFlatAnswer(String questionKey, String answer) {
+    if (!qOptions.containsKey(questionKey)) return; // 仅 kQ1..kQ12 进入规则引擎
+    List<String>? opts;
+    for (final q in DiagnosticRules.tenQuestions) {
+      if (q.key == questionKey) {
+        opts = q.options;
+        break;
+      }
+    }
+    if (questionKey == kQ12) opts = DiagnosticRules.vomitTypeQuestion.options;
+    if (opts == null) return;
+    final idx = opts.indexOf(answer);
+    if (idx < 0) return; // fail-closed
+    _qAnswers[questionKey] = idx + 1;
+  }
+
+  /// 把十问/跟进已捕获的布尔标志同步为规则引擎的扩展症状（ext）信号，
+  /// 供 v3.2 公式的 extRequired/extReference 命中。仅接入有可靠布尔对应的键，避免误映射。
+  void _syncExtSymptomsFromAnswers() {
+    if (_answers['edema'] == true) _extSymptoms.add('edema');
+    if (_answers['cough'] == true || _answers['asthma'] == true) {
+      _extSymptoms.add('cough_wheeze');
+    }
+    if (_answers['neck_stiff'] == true) _extSymptoms.add('neck_stiff');
+    if (_answers['jaundice'] == true) _extSymptoms.add('jaundice');
   }
 
   void answerFollowUp(String questionKey, String answer) {
@@ -1118,7 +1309,64 @@ class DiagnosticEngine {
   DiagnosisResult? diagnose() {
     if (_meridianDirection == null) return null;
 
-    final meridian = _meridianDirection!;
+    // 架构修正：最终诊断前，用【全部】答案（十问 + 跟进）重算「合病」，
+    // 使跟进问诊携带的少阳决定性信号（口苦咽干）能修正合病方剂
+    // （柴胡桂枝汤）。注意：不重算「定经」（_decideMeridianDirection），
+    // 以免把已正确定向的太阳证（大青龙/小青龙）误判；少阴↔厥阴纠偏见下方。
+    _detectCombinedPattern();
+    _syncExtSymptomsFromAnswers(); // 喂扩展症状给 v3.2 规则引擎
+
+    // ===== 主引擎：v3.2 公式文件（用户指定以所发文件为主） =====
+    final ruleResult = diagnoseByRules();
+    if (ruleResult.formula.isNotEmpty) {
+      // 以 v3.2 公式为权威出方；补充处方/调护/鉴别/安全护栏等字段（非风险性增强）。
+      final prescription = FormulaRepository.buildPrescription(ruleResult.formula);
+      final careAdvice = _getCareAdvice(ruleResult.meridian);
+      final differential = _matchDifferential(ruleResult.meridian, ruleResult.pattern);
+      // P0/P1 安全护栏（与兜底路径一致，避免主引擎路径丢失告警）
+      final contradiction = _detectPulseTongueContradiction();
+      final trueFalseHC = _detectTrueFalseHeatCold();
+      final medRules = _detectMedicationRules();
+      final sweatContra = _detectSweatingContraindications();
+      final bloodStasis = _detectBloodStasis();
+      final pulseCombo = _detectPulseCombination();
+      final transmission = _detectTransmission();
+      String? transmissionWarning;
+      final m = ruleResult.meridian;
+      if (m == '太阳' && (_answers['bitter_mouth'] == true || _answers['dry_throat'] == true)) {
+        transmissionWarning = '⚠️ 太阳→少阳传经信号：口苦咽干，注意是否传入少阳';
+      } else if (m == '太阳' && (_answers['thirst_strong'] == true || _answers['constipated'] == true)) {
+        transmissionWarning = '⚠️ 太阳→阳明传经信号：大渴便秘，注意是否传入阳明';
+      } else if (m == '太阴' && (_answers['drowsy'] == true || _answers['urine_clear'] == true)) {
+        transmissionWarning = '⚠️ 太阴→少阴传经信号：但欲寐、小便清长，当从少阴论治';
+      } else if (m == '少阴' && (_answers['upper_heat_lower_cold'] == true || _answers['xiaoke'] == true)) {
+        transmissionWarning = '⚠️ 少阴→厥阴传经信号：寒热错杂，注意厥阴转化';
+      }
+      return DiagnosisResult(
+        meridian: ruleResult.meridian,
+        pattern: ruleResult.pattern,
+        formula: ruleResult.formula,
+        explanation: ruleResult.explanation,
+        confidence: ruleResult.confidence,
+        matchedSymptoms: ruleResult.matchedSymptoms,
+        prescription: prescription,
+        careAdvice: careAdvice,
+        differential: differential,
+        recommendConsult: ruleResult.recommendConsult,
+        answers: Map.from(_answers),
+        pulseTongueContradiction: contradiction,
+        trueFalseHeatCold: trueFalseHC,
+        medicationRules: medRules,
+        sweatingContraindications: sweatContra,
+        bloodStasisSigns: bloodStasis,
+        pulseCombination: pulseCombo,
+        transmission: transmission,
+        transmissionWarning: transmissionWarning,
+      );
+    }
+
+    // ===== 兜底：原硬编码六经/杂病逻辑（规则引擎信号不足时） =====
+    var meridian = _meridianDirection!;
     DiagnosisResult? result;
 
     // 优先检查杂病/跨经方剂（五苓散、痞证、胸痹、蓄血等）
@@ -1163,6 +1411,21 @@ class DiagnosticEngine {
     }
 
     if (result == null) return null;
+
+    // 厥阴血虚寒凝纠偏（当归四逆汤）：十问阶段因"脉细/微"被误归少阴，
+    // 若跟进或十问存在手足厥冷/脉细欲绝，且脉为细/微/弦细/沉细、无但欲寐、无小便清长，
+    // 则当属厥阴血虚寒厥（当归四逆汤），非少阴阳衰（四逆汤）。
+    if (meridian == '少阴' &&
+        (_answers['cold_limbs'] == true || _answers['hand_foot_cold_pulse_fine'] == true) &&
+        (_pulseType == '细' || _pulseType == '微' ||
+         _pulseType == '弦细' || _pulseType == '沉细') &&
+        _answers['drowsy'] != true && _answers['urine_clear'] != true) {
+      final jueyinResult = _diagnoseJueYin(_answers);
+      if (jueyinResult != null) {
+        result = jueyinResult;
+        meridian = '厥阴';
+      }
+    }
 
     // 计算权重置信度
     final weightedConfidence = _calculateConfidence(meridian);
@@ -1715,6 +1978,7 @@ class DiagnosticEngine {
         _symSelected('发黄');
     if (hasJaundice) {
       final hasBodyPain = _answers['joint_pain'] == true ||
+          _answers['itchy_skin'] == true ||
           _symSelected('骨节疼烦') ||
           _symSelected('身痒');
       // 麻黄连轺赤小豆汤：湿热发黄+表证（身黄+身痒/骨节疼烦）
@@ -2001,7 +2265,7 @@ class DiagnosticEngine {
       );
     }
 
-    if (_symSelected('能吃但腹胀')) {
+    if (_symSelected('能吃但腹胀') || answers['abdominal_distension'] == true) {
       return DiagnosisResult(
         meridian: '太阴',
         pattern: '脾虚气滞（厚朴生姜半夏甘草人参汤证）',
@@ -2341,7 +2605,8 @@ class DiagnosticEngine {
     // 肾气丸：虚劳腰痛脚冷（腰痛+脚冷+小便不利/频数）
     final hasLoinPain = _symSelected('腰痛') ||
         _symSelected('腰酸') ||
-        answers['back_pain'] == true;
+        answers['back_pain'] == true ||
+        answers['lumbar_pain'] == true;
     final hasColdFeet = _symSelected('脚冷') ||
         _symSelected('足冷');
     if (hasLoinPain && hasColdFeet) {
@@ -2369,7 +2634,8 @@ class DiagnosticEngine {
   }
 
   DiagnosisResult _diagnoseJueYin(Map<String, dynamic> answers) {
-    final hasColdLimbs = answers['cold_limbs'] as bool?;
+    final hasColdLimbs =
+        answers['cold_limbs'] == true || answers['hand_foot_cold_pulse_fine'] == true;
 
     // 厥热胜复判断（来自六经辨证公式）
     // 厥多热少→病进；热多厥少→病退；厥热相等→病稳
@@ -2430,8 +2696,9 @@ class DiagnosticEngine {
       );
     }
 
-    // 吴茱萸汤：厥阴干呕吐涎沫，头痛
-    if (_answers['vomiting'] == true && _answers['headache_back'] == true) {
+    // 吴茱萸汤：厥阴干呕吐涎沫，头痛（v3.1：巅顶痛为主，兼容旧后脑痛信号）
+    if (_answers['vomiting'] == true &&
+        (_answers['headache_vertex'] == true || _answers['headache_back'] == true)) {
       return DiagnosisResult(
         meridian: '厥阴',
         pattern: '厥阴寒逆（吴茱萸汤证）',
@@ -2510,7 +2777,8 @@ class DiagnosticEngine {
     // 半夏泻心汤：痞证主方（心下痞满+呕+肠鸣）
     final hasEpigastric = _symSelected('心下痞') ||
         _symSelected('胃脘痞满') ||
-        _symSelected('痞硬');
+        _symSelected('痞硬') ||
+        answers['epigastric_hard'] == true;
     final hasBorborygmus = _symSelected('肠鸣') ||
         _symSelected('腹中雷鸣');
     final hasFoodStinkB = _symSelected('食臭') ||
@@ -2534,7 +2802,8 @@ class DiagnosticEngine {
 
     // 生姜泻心汤：水饮食滞痞（心下痞+干噫食臭+腹中雷鸣下利）
     final hasFoodStink = _symSelected('食臭') ||
-        _symSelected('噫气食臭');
+        _symSelected('噫气食臭') ||
+        answers['belching'] == true;
     if (hasEpigastric && hasBorborygmus && hasFoodStink) {
       return DiagnosisResult(
         meridian: '少阳',
@@ -2594,7 +2863,8 @@ class DiagnosticEngine {
     // 旋覆代赭石汤：胃虚痰阻噫气（心下痞硬+噫气不除）
     final hasBelching = _symSelected('噫气') ||
         _symSelected('嗳气') ||
-        _symSelected('打嗝');
+        _symSelected('打嗝') ||
+        answers['belching'] == true;
     if (hasEpigastric && hasBelching) {
       return DiagnosisResult(
         meridian: '阳明',
@@ -2610,7 +2880,8 @@ class DiagnosticEngine {
     // 胸痹系列
     final hasChestBi = _symSelected('胸痹') ||
         _symSelected('胸背痛') ||
-        _symSelected('喘息咳唾');
+        _symSelected('喘息咳唾') ||
+        answers['chest_pain_radiating'] == true;
     if (hasChestBi) {
       final hasShortnessBreath = _symSelected('短气') ||
           _symSelected('不得卧');
@@ -2664,7 +2935,7 @@ class DiagnosticEngine {
         _symSelected('少腹坚硬');
     final hasManic = _symSelected('发狂') ||
         _symSelected('如狂');
-    if (hasHardAbdomen && hasManic) {
+    if ((hasHardAbdomen && hasManic) || answers['black_stool'] == true) {
       return DiagnosisResult(
         meridian: '太阳',
         pattern: '蓄血重证（抵当汤证）',
@@ -2943,7 +3214,8 @@ class DiagnosticEngine {
     }
 
     // 苓桂术甘汤：心下逆满气上冲胸
-    if (_symSelected('气上冲胸') || _symSelected('起则头眩')) {
+    if (_symSelected('气上冲胸') || _symSelected('起则头眩') ||
+        (answers['dizziness'] == true && answers['urine_difficult'] == true)) {
       return DiagnosisResult(
         meridian: '太阳',
         pattern: '痰饮中焦（苓桂术甘汤证）',
@@ -2983,7 +3255,8 @@ class DiagnosticEngine {
     }
 
     // 黄芪桂枝五物汤：血痹身体不仁
-    if (_symSelected('身体不仁') || _symSelected('血痹')) {
+    if (_symSelected('身体不仁') || _symSelected('血痹') ||
+        answers['numbness'] == true) {
       return DiagnosisResult(
         meridian: '太阳',
         pattern: '血痹（黄芪桂枝五物汤证）',
@@ -3507,7 +3780,8 @@ class DiagnosticEngine {
     }
 
     // 半夏厚朴汤：妇人咽中如有炙脔
-    if (_symSelected('咽中如有炙脔') || _symSelected('梅核气')) {
+    if (_symSelected('咽中如有炙脔') || _symSelected('梅核气') ||
+        answers['throat_foreign_body'] == true) {
       return DiagnosisResult(
         meridian: '太阴',
         pattern: '梅核气（半夏厚朴汤证）',
@@ -3520,7 +3794,8 @@ class DiagnosticEngine {
     }
 
     // 泽泻汤：心下支饮苦冒眩
-    if (_symSelected('苦冒眩') || _symSelected('支饮冒眩')) {
+    if (_symSelected('苦冒眩') || _symSelected('支饮冒眩') ||
+        answers['dizziness'] == true) {
       return DiagnosisResult(
         meridian: '太阴',
         pattern: '支饮冒眩（泽泻汤证）',
@@ -4188,7 +4463,8 @@ class DiagnosticEngine {
     if (answers['vomiting'] == true && answers['cold_limbs'] == true &&
         answers['temperature'] != 'upper_heat_lower_cold' &&
         answers['drowsy'] != true &&  // 排除少阴（但欲寐）
-        answers['headache_back'] != true) {  // 排除厥阴（吴茱萸汤证）
+        answers['headache_back'] != true &&
+        answers['headache_vertex'] != true) {  // 排除厥阴（吴茱萸汤证）
       return DiagnosisResult(
         meridian: '太阴',
         pattern: '胃寒哕逆（橘皮汤证）',
@@ -4214,7 +4490,8 @@ class DiagnosticEngine {
     }
 
     // 茯苓泽泻汤：胃反吐下渴欲饮水（渴+胃反）
-    if (_symSelected('胃反') && (answers['thirsty'] == true || _symSelected('渴'))) {
+    if ((_symSelected('胃反') || answers['vomit_cyclical'] == true) &&
+        (answers['thirsty'] == true || _symSelected('渴'))) {
       return DiagnosisResult(
         meridian: '太阴',
         pattern: '水饮胃反（茯苓泽泻汤证）',
@@ -4227,7 +4504,7 @@ class DiagnosticEngine {
     }
 
     // 大黄甘草汤：食已即吐
-    if (_symSelected('食已即吐')) {
+    if (_symSelected('食已即吐') || answers['vomit_immediate'] == true) {
       return DiagnosisResult(
         meridian: '阳明',
         pattern: '胃肠实热（大黄甘草汤证）',
@@ -4522,7 +4799,8 @@ class DiagnosticEngine {
     }
 
     // 甘姜苓术汤：肾着之病腰中冷
-    if (_symSelected('腰中冷') || _symSelected('肾着')) {
+    if (_symSelected('腰中冷') || _symSelected('肾着') ||
+        (answers['lumbar_pain'] == true && answers['sexual_deficiency'] != true)) {
       return DiagnosisResult(
         meridian: '太阴',
         pattern: '肾着（甘姜苓术汤证）',
@@ -4678,7 +4956,8 @@ class DiagnosticEngine {
     // 天雄散：男子失精腰膝冷痛
     // FIX-P1-2: 天雄散（失精||腰膝冷痛）条件过宽，遮蔽六经桂枝加龙骨牡蛎汤
     // （虚劳失精+目眩+有汗）。加 has_sweat!=true：有汗虚劳失精归桂枝加龙骨牡蛎汤。
-    if ((_symSelected('失精') || _symSelected('腰膝冷痛')) &&
+    if ((_symSelected('失精') || _symSelected('腰膝冷痛') ||
+         (answers['lumbar_pain'] == true && answers['sexual_deficiency'] == true)) &&
         answers['has_sweat'] != true &&
         !_symSelected('目眩')) {
       return DiagnosisResult(
@@ -4872,7 +5151,8 @@ class DiagnosticEngine {
     }
 
     // 栀子厚朴汤：心烦腹满卧起不安（条文87）
-    if (_symSelected('心烦') && _symSelected('卧起不安')) {
+    if (_symSelected('心烦') && _symSelected('卧起不安') ||
+        (answers['irritable'] == true && answers['abdominal_distension'] == true)) {
       return DiagnosisResult(
         meridian: '阳明',
         pattern: '余热腹满（栀子厚朴汤证）',
@@ -4911,7 +5191,8 @@ class DiagnosticEngine {
     }
 
     // 桂枝麻黄各半汤：身痒热多寒少（条文23）
-    if (_symSelected('身痒') && _symSelected('热多寒少')) {
+    if (_symSelected('身痒') && _symSelected('热多寒少') ||
+        (answers['itchy_skin'] == true && answers['no_sweat'] == true)) {
       return DiagnosisResult(
         meridian: '太阳',
         pattern: '太阳如疟状（桂枝麻黄各半汤证）',
@@ -5028,7 +5309,8 @@ class DiagnosticEngine {
     }
 
     // 干姜人参半夏丸：妊娠呕吐不止（胃寒停水）
-    if (_symSelected('妊娠') && _symSelected('呕吐不止')) {
+    if ((_symSelected('妊娠') && _symSelected('呕吐不止')) ||
+        answers['vomit_profuse'] == true) {
       return DiagnosisResult(
         meridian: '太阴',
         pattern: '妊娠恶阻（干姜人参半夏丸证）',
