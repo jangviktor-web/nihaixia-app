@@ -50,7 +50,7 @@ class YiJingResultScreen extends StatelessWidget {
                     children: [
                       Icon(Icons.flag, size: 18, color: colorScheme.primary),
                       const SizedBox(width: 6),
-                      Text(cast.movingTitle,
+                      Text(cast.movingTitles.join('、'),
                           style: TextStyle(
                               color: colorScheme.onPrimaryContainer,
                               fontWeight: FontWeight.bold,
@@ -58,11 +58,23 @@ class YiJingResultScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Text('「${cast.movingText}」',
-                      style: TextStyle(
-                          fontSize: 15,
-                          height: 1.6,
-                          color: colorScheme.onPrimaryContainer)),
+                  if (cast.movingLines.isEmpty)
+                    Text('「${cast.movingText}」',
+                        style: TextStyle(
+                            fontSize: 15,
+                            height: 1.6,
+                            color: colorScheme.onPrimaryContainer))
+                  else
+                    for (var i = 0; i < cast.movingLines.length; i++) ...[
+                      if (i > 0) const SizedBox(height: 6),
+                      Text(
+                        '${cast.movingTitles[i]}：「${cast.movingTexts[i]}」',
+                        style: TextStyle(
+                            fontSize: 15,
+                            height: 1.6,
+                            color: colorScheme.onPrimaryContainer),
+                      ),
+                    ],
                 ],
               ),
             ),
@@ -70,7 +82,7 @@ class YiJingResultScreen extends StatelessWidget {
           if (cast.changed != null) ...[
             const SizedBox(height: 12),
             _ResultCard(
-              label: '变卦（${cast.moving}爻动）',
+              label: '变卦（${cast.movingLines.isEmpty ? cast.moving : cast.movingLines.length}爻动）',
               symbol: cast.changedSymbol!,
               name: '第${cast.changed!.seq}卦 · ${cast.changed!.name}',
               body: '「${cast.changed!.judgement}」',

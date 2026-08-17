@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ziwei_core/ziwei_core.dart';
 import 'package:nihaisha_app/data/yijing_data.dart';
 import 'package:nihaisha_app/engine/minggua_engine.dart';
+import 'package:nihaisha_app/engine/bazi_analysis.dart';
 import 'package:nihaisha_app/data/minggua_data.dart';
 import 'package:nihaisha_app/engine/yijing_engine.dart';
 import 'yijing_detail_screen.dart';
@@ -41,6 +42,8 @@ class _MingGuaCalculatorScreenState extends State<MingGuaCalculatorScreen> {
 
   MingGuaResult? _result;
   String? _baziNote;
+  String _baziExtra = ''; // 四柱十神 + 纳音
+  BaZiAnalysis? _baziAnalysis; // 八字详批（神煞/格局/用神）
   String? _error;
 
   void _compute() {
@@ -73,6 +76,37 @@ class _MingGuaCalculatorScreenState extends State<MingGuaCalculatorScreen> {
       setState(() {
         _baziNote = '农历 ${date.lunar}';
         _result = r;
+        // 四柱十神（日柱为日主）+ 六十甲子纳音
+        final gans = [
+          bz.year.gan.label,
+          bz.month.gan.label,
+          bz.day.gan.label,
+          bz.time.gan.label,
+        ];
+        final zhis = [
+          bz.year.zhi.label,
+          bz.month.zhi.label,
+          bz.day.zhi.label,
+          bz.time.zhi.label,
+        ];
+        final shen = [
+          shiShenOf(bz.day.gan.label, gans[0]),
+          shiShenOf(bz.day.gan.label, gans[1]),
+          '日主',
+          shiShenOf(bz.day.gan.label, gans[3]),
+        ];
+        final nayin = [
+          nayinOf(gans[0], zhis[0]),
+          nayinOf(gans[1], zhis[1]),
+          nayinOf(gans[2], zhis[2]),
+          nayinOf(gans[3], zhis[3]),
+        ];
+        const labels = ['年', '月', '日', '时'];
+        _baziExtra =
+            '十神  ${[for (var i = 0; i < 4; i++) '${labels[i]}${shen[i]}'].join(' · ')}\n'
+            '纳音  ${[for (var i = 0; i < 4; i++) '${labels[i]}${nayin[i]}'].join(' · ')}';
+        // 八字详批（神煞/格局/日主强弱/五行/用神忌神）
+        _baziAnalysis = analyzeBaZi(gans: gans, zhis: zhis);
         if (r == null) {
           _error = '此八字超出可校准范围，无法成卦（卦数无效或入中宫）；可到讲义库阅读取数方法。';
         }
@@ -155,7 +189,8 @@ class _MingGuaCalculatorScreenState extends State<MingGuaCalculatorScreen> {
                     label: '年',
                     value: _year,
                     items: [
-                      for (int y = 1920; y <= 2025; y++)
+                      // 年份上限跟随当前年（2026 起自动扩展，无需再手改）
+                      for (int y = 1920; y <= DateTime.now().year; y++)
                         DropdownMenuItem(value: y, child: Text('$y')),
                     ],
                     onChanged: (v) => setState(() => _year = v!),
@@ -265,6 +300,32 @@ class _MingGuaCalculatorScreenState extends State<MingGuaCalculatorScreen> {
                     _baziNote!,
                     style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
                   ),
+                if (_baziExtra.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: cs.surfaceContainerHighest.withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      _baziExtra,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        height: 1.6,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+                if (_baziAnalysis != null) ...[
+                  const SizedBox(height: 10),
+                  _buildBaziAnalysisCard(cs, _baziAnalysis!),
+                ],
                 const SizedBox(height: 6),
                 Text(
                   '阳数(天数)=${r.yangNumber}（−25→${r.upperNumber}）'
@@ -356,6 +417,153 @@ class _MingGuaCalculatorScreenState extends State<MingGuaCalculatorScreen> {
         ),
       ),
     );
+  }
+
+  /// 八字详批卡：格局 / 日主强弱 / 神煞 / 五行 / 用神忌神。
+  Widget _buildBaziAnalysisCard(ColorScheme cs, BaZiAnalysis a) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: cs.secondaryContainer.withValues(alpha: 0.35),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: cs.outlineVariant, width: 0.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.insights_outlined, size: 16, color: cs.primary),
+              const SizedBox(width: 6),
+              const Text('八字详批',
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+              const Spacer(),
+              Text('格局 · ${a.pattern}',
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: cs.primary)),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(a.patternDesc,
+              style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
+          const SizedBox(height: 6),
+          Wrap(
+            spacing: 6,
+            runSpacing: 4,
+            children: [
+              _chip(cs, '日主 ${a.dayMaster}', cs.onSurface),
+              _chip(cs, a.strengthLevel, _strengthColor(cs, a.strengthLevel)),
+            ],
+          ),
+          if (a.shensha.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text('神煞',
+                style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: cs.onSurfaceVariant)),
+            const SizedBox(height: 4),
+            Wrap(
+              spacing: 6,
+              runSpacing: 4,
+              children: [
+                for (final s in a.shensha)
+                  _chip(cs, '${s.name} · ${s.pillar}${s.pos}', cs.primary),
+              ],
+            ),
+          ],
+          const SizedBox(height: 6),
+          Text('五行',
+              style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: cs.onSurfaceVariant)),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              for (final e in a.fiveElements) ...[
+                Expanded(
+                  child: Container(
+                    margin: const EdgeInsets.only(right: 4),
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    decoration: BoxDecoration(
+                      color: e.status == '缺'
+                          ? cs.surfaceContainerHighest
+                          : cs.primaryContainer.withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(e.element,
+                            style: const TextStyle(
+                                fontSize: 12, fontWeight: FontWeight.bold)),
+                        Text(e.status,
+                            style: TextStyle(
+                                fontSize: 10, color: cs.onSurfaceVariant)),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Text('用神',
+                  style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: cs.primary)),
+              for (final x in a.favorable)
+                _chip(cs, x, Colors.teal.shade700),
+              Text('忌神',
+                  style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: cs.error)),
+              for (final x in a.unfavorable) _chip(cs, x, cs.error),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(a.suggestion,
+              style: TextStyle(
+                  fontSize: 12, height: 1.5, color: cs.onSurfaceVariant)),
+        ],
+      ),
+    );
+  }
+
+  Widget _chip(ColorScheme cs, String text, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withValues(alpha: 0.4), width: 0.5),
+      ),
+      child: Text(text,
+          style: TextStyle(fontSize: 11, color: color)),
+    );
+  }
+
+  Color _strengthColor(ColorScheme cs, String level) {
+    switch (level) {
+      case '极旺':
+      case '身强':
+        return Colors.deepOrange.shade800;
+      case '极弱':
+      case '身弱':
+        return Colors.blue.shade700;
+      default:
+        return cs.primary;
+    }
   }
 }
 

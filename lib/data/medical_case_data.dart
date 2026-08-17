@@ -44,10 +44,18 @@ class MedicalCase {
         mechanism.toLowerCase().contains(lower) ||
         patient.toLowerCase().contains(lower);
   }
+
+  /// 医案展示名：优先「主要诊断」，缺失时回退「中医病机」，再缺失显「（未命名）」。
+  String get displayName {
+    if (diagnosis.isNotEmpty) return diagnosis;
+    if (mechanism.isNotEmpty) return mechanism;
+    return '（未命名）';
+  }
 }
 
 /// 解析 markdown 表格文本为病例列表。
 /// 跳过表头（首格「序号」）与分隔行（含 `---`），仅收录首格为数字的行。
+/// 质量门禁：方剂为空 / 含「未公开」/ 占位「未提及」的医案直接剔除（无可用方剂）。
 List<MedicalCase> parseMedicalCaseTable(String md) {
   final lines = md.split('\n');
   final cases = <MedicalCase>[];
@@ -81,6 +89,12 @@ List<MedicalCase> parseMedicalCaseTable(String md) {
     for (var i = 0; i < padded.length; i++) {
       if (padded[i] == '---') padded[i] = '';
     }
+
+    // 质量门禁：无可用方剂的医案剔除（空 / 未公开 / 未提及）
+    final formula = padded[6];
+    if (formula.trim().isEmpty) continue;
+    if (formula.contains('未公开')) continue;
+    if (formula.trim() == '未提及') continue;
 
     cases.add(MedicalCase(
       seq: seq,

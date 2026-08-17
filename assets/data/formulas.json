@@ -6494,7 +6494,7 @@
           "clinical": "3钱"
         },
         {
-          "name": "附子",
+          "name": "炮附子",
           "dosage": "二枚炮",
           "role": "温阳固脱",
           "clinical": "3钱"
@@ -7432,7 +7432,7 @@
           "clinical": "1钱"
         },
         {
-          "name": "附子",
+          "name": "炮附子",
           "dosage": "一枚炮",
           "role": "温阳化气",
           "clinical": "3钱"
@@ -7601,7 +7601,7 @@
           "clinical": "2钱"
         },
         {
-          "name": "附子",
+          "name": "炮附子",
           "dosage": "一枚炮",
           "role": "温阳化气",
           "clinical": "3钱"
@@ -9283,8 +9283,8 @@
       "category": "外用剂",
       "components": [
         {
-          "name": "大附子",
-          "dosage": "一枚炮",
+          "name": "炮附子",
+          "dosage": "大者一枚，炮",
           "role": "温经散寒",
           "clinical": "3钱"
         },
@@ -9415,7 +9415,7 @@
           "clinical": "1钱"
         },
         {
-          "name": "附子",
+          "name": "炮附子",
           "dosage": "一枚炮",
           "role": "温阳通络",
           "clinical": "3钱"
@@ -9462,7 +9462,7 @@
           "clinical": "1钱"
         },
         {
-          "name": "附子",
+          "name": "炮附子",
           "dosage": "半两炮",
           "role": "温阳散寒",
           "clinical": "0.5钱"
@@ -9866,7 +9866,7 @@
           "clinical": "2钱"
         },
         {
-          "name": "附子",
+          "name": "炮附子",
           "dosage": "一枚炮",
           "role": "温阳散寒",
           "clinical": "3钱"
@@ -12987,7 +12987,7 @@
           "clinical": "1钱"
         },
         {
-          "name": "附子",
+          "name": "生附子",
           "dosage": "一枚生用",
           "role": "回阳救逆",
           "clinical": "3钱"
@@ -13024,7 +13024,7 @@
           "clinical": "1钱"
         },
         {
-          "name": "附子",
+          "name": "生附子",
           "dosage": "一枚生用",
           "role": "回阳救逆",
           "clinical": "3钱"
@@ -13832,8 +13832,8 @@
           "role": "温经"
         },
         {
-          "name": "附子",
-          "dosage": "一枚",
+          "name": "炮附子",
+          "dosage": "一枚，炮",
           "role": "温阳"
         }
       ],

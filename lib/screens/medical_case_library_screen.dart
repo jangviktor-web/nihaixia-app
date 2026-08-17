@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/gestures.dart';
 
 import '../data/medical_case_data.dart';
+import '../data/formula_repository.dart';
+import 'formula_detail_screen.dart';
 
 /// 倪师医案库（1257 例）可搜索浏览。
 /// 运行时解析 assets/medical_cases/cases_table.md，按诊断/方剂/结果/观点全文检索。
@@ -96,7 +99,7 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
                       margin: EdgeInsets.zero,
                       child: ListTile(
                         title: Text(
-                          '#${c.seq}  ${c.diagnosis.isEmpty ? '（未命名）' : c.diagnosis}',
+                          '#${c.seq}  ${c.displayName}',
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Column(
@@ -159,7 +162,7 @@ class MedicalCaseDetailScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text('#${c.seq} 医案')),
+      appBar: AppBar(title: Text('#${c.seq}  ${c.displayName}')),
       body: ListView.separated(
         padding: const EdgeInsets.all(14),
         itemCount: rows.length,
@@ -181,15 +184,75 @@ class MedicalCaseDetailScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: const TextStyle(fontSize: 15, height: 1.6),
-                ),
+                label == '方剂组成'
+                    ? _FormulaRichText(formula: value)
+                    : Text(
+                        value,
+                        style: const TextStyle(fontSize: 15, height: 1.6),
+                      ),
               ],
             ),
           );
         },
       ),
+    );
+  }
+}
+
+/// 方剂组成字段：把正文中的已知方剂名渲染为可点链接（跳方剂详情页）。
+/// 与闭门课 markdown 的 formula:// 联动保持一致，实现医案↔方剂交叉跳转。
+class _FormulaRichText extends StatelessWidget {
+  final String formula;
+  const _FormulaRichText({required this.formula});
+
+  @override
+  Widget build(BuildContext context) {
+    final base = DefaultTextStyle.of(context).style;
+    final cs = Theme.of(context).colorScheme;
+    final names = FormulaRepository.getAll()
+        .map((f) => f.name)
+        .where((n) => n.length >= 2)
+        .toList()
+      ..sort((a, b) => b.length.compareTo(a.length));
+    if (names.isEmpty) {
+      return Text(formula, style: base.copyWith(fontSize: 15, height: 1.6));
+    }
+    final pattern = RegExp(names.map(RegExp.escape).join('|'));
+    final spans = <InlineSpan>[];
+    int i = 0;
+    for (final m in pattern.allMatches(formula)) {
+      if (m.start > i) {
+        spans.add(TextSpan(text: formula.substring(i, m.start)));
+      }
+      final name = m.group(0)!;
+      spans.add(
+        TextSpan(
+          text: name,
+          style: TextStyle(
+            color: cs.primary,
+            decoration: TextDecoration.underline,
+            fontSize: 15,
+            height: 1.6,
+          ),
+          recognizer: TapGestureRecognizer()
+            ..onTap = () {
+              final f = FormulaRepository.getByName(name);
+              if (f != null && context.mounted) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => FormulaDetailScreen(formula: f),
+                  ),
+                );
+              }
+            },
+        ),
+      );
+      i = m.end;
+    }
+    if (i < formula.length) spans.add(TextSpan(text: formula.substring(i)));
+    return RichText(
+      text: TextSpan(style: base.copyWith(fontSize: 15, height: 1.6), children: spans),
     );
   }
 }

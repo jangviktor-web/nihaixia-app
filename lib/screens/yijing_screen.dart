@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import '../data/yijing_data.dart';
 import '../engine/yijing_engine.dart';
@@ -21,11 +23,142 @@ class _YiJingScreenState extends State<YiJingScreen> {
   int _manualLower = 1;
   int _manualMoving = 0;
 
+  // ---- 铜钱摇卦状态 ----
+  static const _coinPosNames = ['初', '二', '三', '四', '五', '上'];
+  final List<int?> _coinResults = List<int?>.filled(6, null); // 6/7/8/9
+  final List<List<bool>> _coinFaces = []; // 每爻三枚：true=字（正）
+  int _coinStep = 0; // 已摇次数（0-6）
+
   @override
   void dispose() {
     _numAController.dispose();
     _numBController.dispose();
     super.dispose();
+  }
+
+  /// 摇一次铜钱（三枚随机），记录到 [pos] 对应爻位；摇满 6 次自动解卦
+  void _castOneCoin() {
+    if (_coinStep >= 6) return;
+    setState(() {
+      final faces = [
+        Random().nextBool(),
+        Random().nextBool(),
+        Random().nextBool(),
+      ];
+      final heads = faces.where((f) => f).length;
+      // 三枚铜钱：3字=老阳9(动) / 2字1背=少阳7 / 1字2背=少阴8 / 3背=老阴6(动)
+      final value = switch (heads) {
+        3 => 9,
+        2 => 7,
+        1 => 8,
+        _ => 6,
+      };
+      _coinFaces.add(faces);
+      _coinResults[_coinStep] = value;
+      _coinStep++;
+    });
+    if (_coinStep == 6) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _openResult(YiJingEngine.castByCoins(_coinResults.cast<int>().toList()));
+        setState(() {
+          _coinStep = 0;
+          _coinResults.fillRange(0, 6, null);
+          _coinFaces.clear();
+        });
+      });
+    }
+  }
+
+  /// 铜钱爻位结果说明（6/7/8/9）
+  String _coinValueText(int v) => switch (v) {
+        9 => '老阳（三字）· 动',
+        7 => '少阳（二字一背）',
+        8 => '少阴（一字二背）',
+        _ => '老阴（三背）· 动',
+      };
+
+  /// 铜钱摇卦卡片（初爻→上爻 自下而上，行序上爻在最上）
+  Widget _buildCoinCastCard(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return _MethodCard(
+      icon: Icons.monetization_on_outlined,
+      title: '铜钱摇卦（六爻）',
+      subtitle: '三枚铜钱摇 6 次，自初爻至上爻；字数为正、背面为反',
+      color: colorScheme.errorContainer,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (var row = 5; row >= 0; row--) ...[
+            if (row < 5) const SizedBox(height: 6),
+            Row(
+              children: [
+                SizedBox(
+                  width: 44,
+                  child: Text(
+                    '${_coinPosNames[row]}爻',
+                    style: const TextStyle(
+                        fontSize: 13, fontWeight: FontWeight.w600),
+                  ),
+                ),
+                // 三枚铜钱（字=实心圆，背=空心圆）
+                for (var c = 0; c < 3; c++) ...[
+                  Icon(
+                    _coinFaces.length > row && _coinFaces[row][c]
+                        ? Icons.circle
+                        : Icons.circle_outlined,
+                    size: 16,
+                    color: _coinFaces.length > row
+                        ? (_coinFaces[row][c]
+                            ? colorScheme.primary
+                            : colorScheme.outline)
+                        : colorScheme.outlineVariant,
+                  ),
+                  const SizedBox(width: 6),
+                ],
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    _coinResults[row] == null
+                        ? (row == _coinStep ? '待摇…' : '')
+                        : _coinValueText(_coinResults[row]!),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: _coinResults[row] == 6 || _coinResults[row] == 9
+                          ? colorScheme.error
+                          : colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: _coinStep >= 6 ? null : _castOneCoin,
+                  icon: const Icon(Icons.casino_outlined),
+                  label: Text(_coinStep >= 6 ? '已完成' : '摇第 ${_coinStep + 1} 次'),
+                ),
+              ),
+              if (_coinStep > 0) ...[
+                const SizedBox(width: 8),
+                IconButton(
+                  tooltip: '重新摇',
+                  onPressed: () => setState(() {
+                    _coinStep = 0;
+                    _coinResults.fillRange(0, 6, null);
+                    _coinFaces.clear();
+                  }),
+                  icon: const Icon(Icons.refresh),
+                ),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   void _openResult(CastResult cast) {
@@ -79,6 +212,9 @@ class _YiJingScreenState extends State<YiJingScreen> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        // 铜钱摇卦（六爻）
+        _buildCoinCastCard(context),
+        const SizedBox(height: 12),
         // 时间起卦
         _MethodCard(
           icon: Icons.schedule,

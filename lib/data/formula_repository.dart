@@ -28,6 +28,11 @@ class FormulaRepository {
 
   static Formula? getByName(String name) {
     if (_formulas == null) return null;
+    // 1. 精确优先：避免长名被短名截胡（如点「茯苓四逆汤」误跳「四逆汤」页）
+    for (final f in _formulas!) {
+      if (f.name == name) return f;
+    }
+    // 2. 模糊包含兜底
     for (final f in _formulas!) {
       if (name.contains(f.name) || f.name.contains(name)) {
         return f;

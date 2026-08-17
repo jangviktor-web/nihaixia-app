@@ -13,8 +13,9 @@ import '../data/yijing_data.dart';
 
 class CastResult {
   final Hexagram primary; // 本卦
-  final int moving; // 动爻 1-6；0 表示六爻皆静
-  final Hexagram? changed; // 变卦（有动爻时）
+  final int moving; // 主断动爻 1-6；0 表示六爻皆静（多动爻时取首动爻）
+  final List<int> movingLines; // 全部动爻位置（1-6 升序）；空 = 静卦
+  final Hexagram? changed; // 变卦（有动爻时，全部动爻翻转）
   final Hexagram? nuclear; // 互卦
   final String method; // 起卦法描述
 
@@ -24,6 +25,7 @@ class CastResult {
     required this.method,
     this.changed,
     this.nuclear,
+    this.movingLines = const [],
   });
 
   String get primarySymbol => YiJingEngine.symbol(primary.seq);
@@ -33,13 +35,26 @@ class CastResult {
   /// 本卦六爻（下→上，1=阳 0=阴）
   List<int> get primaryLines => YiJingEngine.linesOf(primary);
 
-  /// 动爻爻题（如 初九 / 六五）
+  /// 主断动爻爻题（如 初九 / 六五）
   String get movingTitle => moving == 0
       ? '静卦（六爻皆静）'
       : YiJingEngine.lineTitle(moving, primaryLines[moving - 1] == 1);
 
-  /// 动爻爻辞（静卦则强调卦辞）
+  /// 全部动爻爻题（多动爻展示用；静卦返回 ['静卦（六爻皆静）']）
+  List<String> get movingTitles => movingLines.isEmpty
+      ? ['静卦（六爻皆静）']
+      : [
+          for (final p in movingLines)
+            YiJingEngine.lineTitle(p, primaryLines[p - 1] == 1),
+        ];
+
+  /// 主断动爻爻辞（静卦则强调卦辞）
   String get movingText => moving == 0 ? primary.judgement : primary.lines[moving - 1];
+
+  /// 全部动爻爻辞（多动爻展示用；静卦返回卦辞）
+  List<String> get movingTexts => movingLines.isEmpty
+      ? [primary.judgement]
+      : [for (final p in movingLines) primary.lines[p - 1]];
 }
 
 class YiJingEngine {
@@ -135,13 +150,62 @@ class YiJingEngine {
     );
   }
 
-  /// 由上下卦 + 动爻组装解卦结果（本卦 / 变卦 / 互卦）
+  /// 六爻铜钱摇卦（三枚铜钱 × 6 次，自初爻至上爻）
+  ///
+  /// [coins]：6 个值，自初爻至上爻，每个为 6/7/8/9：
+  /// - 9 老阳（三正）动爻、7 少阳（二正一反）静爻
+  /// - 8 少阴（一正二反）静爻、6 老阴（三反）动爻
+  ///
+  /// 变卦 = 本卦所有动爻（6/9）翻转；互卦 = 2/3/4 爻为下、3/4/5 爻为上。
+  static CastResult castByCoins(List<int> coins) {
+    assert(coins.length == 6, '摇卦需 6 爻结果');
+    final valid = coins.every((c) => c == 6 || c == 7 || c == 8 || c == 9);
+    assert(valid, '爻值必须为 6/7/8/9');
+
+    // 阴阳（1=阳 0=阴）：7/9 为阳，6/8 为阴
+    final lowerLines = coins.sublist(0, 3).map((c) => (c == 7 || c == 9) ? 1 : 0).toList();
+    final upperLines = coins.sublist(3, 6).map((c) => (c == 7 || c == 9) ? 1 : 0).toList();
+    final lower = _trigramLineMap[lowerLines.join('')]!;
+    final upper = _trigramLineMap[upperLines.join('')]!;
+
+    // 动爻（6/9 位置，1-6）
+    final movingLines = <int>[
+      for (var i = 0; i < 6; i++)
+        if (coins[i] == 6 || coins[i] == 9) i + 1,
+    ];
+
+    final cast = _buildMulti(upper, lower, movingLines);
+    return CastResult(
+      primary: cast.$1,
+      moving: movingLines.isEmpty ? 0 : movingLines.first,
+      movingLines: movingLines,
+      changed: cast.$2,
+      nuclear: cast.$3,
+      method: '铜钱摇卦：${movingLines.isEmpty ? '六爻皆静' : '${movingLines.length}爻动'
+          '（${movingLines.map((p) => '第$p爻').join('、')}）'}',
+    );
+  }
+
+  /// 由上下卦 + 单动爻组装解卦结果（本卦 / 变卦 / 互卦）
   static (Hexagram, Hexagram?, Hexagram?) _build(int upper, int lower, int moving) {
+    return _buildMulti(upper, lower, moving == 0 ? const [] : [moving]);
+  }
+
+  /// 由上下卦 + 动爻列表组装解卦结果（本卦 / 变卦 / 互卦）
+  ///
+  /// 变卦：所有动爻位置翻转；互卦：2/3/4 爻为下卦，3/4/5 爻为上卦。
+  static (Hexagram, Hexagram?, Hexagram?) _buildMulti(
+    int upper,
+    int lower,
+    List<int> movingLines,
+  ) {
     final primary = byUpperLower(upper, lower)!;
     Hexagram? changed;
-    if (moving > 0) {
+    if (movingLines.isNotEmpty) {
       final lines = linesOf(primary);
-      lines[moving - 1] = lines[moving - 1] == 1 ? 0 : 1; // 变爻
+      for (final p in movingLines) {
+        lines[p - 1] = lines[p - 1] == 1 ? 0 : 1; // 动爻翻转
+      }
       final newLower = _trigramLineMap[lines.sublist(0, 3).join('')]!;
       final newUpper = _trigramLineMap[lines.sublist(3, 6).join('')]!;
       changed = byUpperLower(newUpper, newLower);

@@ -13,9 +13,15 @@ class HerbRepository {
     // —— 炮制成分类（组成用炮制品，药库存生品/正名）——
     '炙甘草': '甘草',
     '生甘草': '甘草',
-    '炮附子': '附子',
-    '生附子': '附子',
-    '大附子': '附子',
+    // 附子 = 生附子 = 大附子（生品，本经「附子」条即生附子，凡不注炮者即生用）；
+    // 炮附子 = 炒附子 = 熟附子 = 制附子（火炮/炮制品）。
+    // 生附子、炮附子 各为独立药材条目（回阳救逆 vs 固表温阳，不可互代），
+    // getByName 精确命中自身；以下只登记「非独立条目的异名写法」。
+    '附子': '生附子',
+    '大附子': '生附子',
+    '炒附子': '炮附子',
+    '熟附子': '炮附子',
+    '制附子': '炮附子',
     '炮姜': '干姜',
     '生半夏': '半夏',
     '生葛': '葛根',
@@ -128,18 +134,26 @@ class HerbRepository {
     }).toList();
   }
 
-  static Herb? getByName(String name) {
-    // 先直接匹配
-    try {
-      return _herbs.firstWhere((h) => h.name == name);
-    } catch (_) {}
-    // 再用别名/古名归一
+  /// 只做「正名精确命中 + 别名归一」，不做模糊兜底。
+  /// 用于「这个词到底是不是一味药」的判定（如闭门课标签既可能是方剂也可能是单味药，
+  /// 模糊兜底会把「柴胡」误判成含柴胡的方剂）。
+  static Herb? getExactByName(String name) {
+    for (final h in _herbs) {
+      if (h.name == name) return h;
+    }
     final mapped = _canonicalOf[name];
     if (mapped != null) {
-      try {
-        return _herbs.firstWhere((h) => h.name == mapped);
-      } catch (_) {}
+      for (final h in _herbs) {
+        if (h.name == mapped) return h;
+      }
     }
+    return null;
+  }
+
+  static Herb? getByName(String name) {
+    // 先直接匹配 + 别名归一
+    final exact = getExactByName(name);
+    if (exact != null) return exact;
     // 模糊匹配
     for (final h in _herbs) {
       if (h.name.contains(name) || name.contains(h.name)) {

@@ -89,7 +89,7 @@ class ToolsScreen extends StatelessWidget {
           const SizedBox(height: 12),
           _ToolCard(
             icon: Icons.history_edu,
-            title: '倪师医案库（1257 例）',
+            title: '倪师医案库（1113 例）',
             subtitle: '全量结构化医案 · 按诊断/方剂/结果检索',
             color: const Color(0xFF00838F),
             onTap: () => Navigator.push(

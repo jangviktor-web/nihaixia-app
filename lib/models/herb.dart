@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class Herb {
   final String name;
   final String? original;
@@ -53,13 +55,13 @@ class Herb {
     );
   }
 
-  String get natureEmoji {
+  IconData get natureIcon {
     switch (natureCategory) {
-      case '热': return '🔥';
-      case '温': return '🌡️';
-      case '寒': return '❄️';
-      case '凉': return '💧';
-      default: return '⚖️';
+      case '热': return Icons.local_fire_department;
+      case '温': return Icons.thermostat;
+      case '寒': return Icons.ac_unit;
+      case '凉': return Icons.water_drop;
+      default: return Icons.balance;
     }
   }
 

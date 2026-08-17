@@ -8,6 +8,7 @@ import 'acupuncture_screen.dart';
 import 'formula_detail_screen.dart';
 import 'herb_detail_screen.dart';
 import 'meridian_detail_screen.dart';
+import 'neijing_knowledge_screen.dart';
 import 'search_tab.dart';
 
 class KnowledgeScreen extends StatefulWidget {
@@ -25,7 +26,7 @@ class _KnowledgeScreenState extends State<KnowledgeScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(length: 6, vsync: this);
   }
 
   @override
@@ -47,6 +48,7 @@ class _KnowledgeScreenState extends State<KnowledgeScreen>
             Tab(text: '方剂', icon: Icon(Icons.medication)),
             Tab(text: '本草', icon: Icon(Icons.eco)),
             Tab(text: '针灸', icon: Icon(Icons.healing)),
+            Tab(text: '内经', icon: Icon(Icons.menu_book)),
             Tab(text: '搜索', icon: Icon(Icons.search)),
           ],
         ),
@@ -58,6 +60,7 @@ class _KnowledgeScreenState extends State<KnowledgeScreen>
           _FormulaTab(),
           _HerbTab(),
           const AcupunctureScreen(),
+          const NeijingKnowledgeScreen(),
           const SearchTab(),
         ],
       ),
@@ -564,9 +567,9 @@ class _HerbTabState extends State<_HerbTab> {
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(width: 6),
-                      Text(
-                        h.natureEmoji,
-                        style: const TextStyle(fontSize: 14),
+                      Icon(
+                        h.natureIcon,
+                        size: 14,
                       ),
                     ],
                   ),

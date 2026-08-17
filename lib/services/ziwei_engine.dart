@@ -106,6 +106,46 @@ const Map<String, String> _starLabelMap = {
   'flow_qingyang': '流擎羊',
   'flow_tuoluo': '流陀罗',
   'flow_tianma': '流天马',
+  // 博士十二神（随禄存，顺时针）
+  'boshi_boshi12': '博士',
+  'lishi_boshi12': '力士',
+  'qinglong_boshi12': '青龙',
+  'xiaohao_boshi12': '小耗',
+  'jiangjun_boshi12': '将军',
+  'zoushu_boshi12': '奏书',
+  'feilian_boshi12': '飞廉',
+  'xishen_boshi12': '喜神',
+  'bingfu_boshi12': '病符',
+  'dahao_boshi12': '大耗',
+  'fubing_boshi12': '伏兵',
+  'guanfu_boshi12': '官府',
+  // 岁建十二神（随太岁）
+  'suijian_suijian12': '岁建',
+  'huiqi_suijian12': '晦气',
+  'sangmen_suijian12': '丧门',
+  'guansuo_suijian12': '贯索',
+  'guanfu_suijian12': '官符',
+  'xiaohao_suijian12': '小耗',
+  'suipo_suijian12': '岁破',
+  'dahao_suijian12': '大耗',
+  'longde_suijian12': '龙德',
+  'baihu_suijian12': '白虎',
+  'tiande_suijian12': '天德',
+  'diaoke_suijian12': '吊客',
+  'bingfu_suijian12': '病符',
+  // 将前十二神（随年支三合）
+  'jiangxing_jiangqian12': '将星',
+  'panan_jiangqian12': '攀鞍',
+  'suiyi_jiangqian12': '岁驿',
+  'wangshen_jiangqian12': '亡神',
+  'huagai_jiangqian12': '华盖',
+  'jiesha_jiangqian12': '劫煞',
+  'zaisha_jiangqian12': '灾煞',
+  'tiansha_jiangqian12': '天煞',
+  'zhibei_jiangqian12': '指背',
+  'xianchi_jiangqian12': '咸池',
+  'yuesha_jiangqian12': '月煞',
+  'xishen_jiangqian12': '息神',
 };
 
 String starLabel(String key) => _starLabelMap[key] ?? key;
@@ -418,4 +458,93 @@ int _starTypePriority(StarType type) {
     default:
       return 4;
   }
+}
+
+// ---------------------------------------------------------------------------
+// 流年盘（大限/流年/流月 基础 + 流曜落宫）
+// 流曜定位表源自 ziwei_core 0.13.0 默认规则集（MIT），按流年干支查表。
+// ---------------------------------------------------------------------------
+
+/// 流年流曜落宫标记（叠加在原局盘上展示）。
+class FlowYearMark {
+  final int year;
+  final String ganzhi; // 流年干支（如 丙午）
+  final int mingIndex; // 流年命宫地支索引 0-11
+  final int taiSuiIndex; // 流年太岁（流年地支）所在宫索引
+  final Map<int, List<String>> flowStars; // 宫索引 -> 流曜中文名列表
+
+  const FlowYearMark({
+    required this.year,
+    required this.ganzhi,
+    required this.mingIndex,
+    required this.taiSuiIndex,
+    required this.flowStars,
+  });
+}
+
+/// 流年天干（0=甲..9=癸）：`(year + 6) % 10`（与 FlowYear.createByYear 一致）。
+int _flowYearStemIndex(int year) => ((year + 6) % 10 + 10) % 10;
+
+/// 流年地支索引（0=子..11=亥）：`(year + 8) % 12`。
+int _flowYearBranchIndex(int year) => ((year + 8) % 12 + 12) % 12;
+
+/// 8 颗流曜按流年天干查表（地支索引 0=子..11=亥）。
+/// 数据源自 ziwei_core 0.13.0 `default_jsons.dart` 流曜规则（lookup 表）。
+const Map<String, List<int>> _flowStarStemTable = {
+  '流禄存': [2, 3, 5, 6, 5, 6, 8, 9, 11, 0],
+  '流天魁': [1, 0, 11, 11, 1, 0, 1, 6, 3, 3],
+  '流天钺': [7, 8, 9, 9, 7, 8, 7, 2, 5, 5],
+  '流文昌': [5, 6, 8, 9, 8, 9, 11, 0, 2, 3],
+  '流文曲': [9, 8, 6, 5, 6, 5, 3, 2, 0, 11],
+  '流擎羊': [3, 4, 6, 7, 6, 7, 9, 10, 0, 1],
+  '流陀罗': [1, 2, 4, 5, 4, 5, 7, 8, 10, 11],
+};
+
+/// 流天马按流年地支三合局查表：{子辰申→寅, 寅午戌→申, 巳酉丑→亥, 亥卯未→巳}。
+int _flowTianmaIndex(int branchIndex) {
+  const sanHe = {
+    // 子, 辰, 申 → 寅(2)
+    0: 2, 4: 2, 8: 2,
+    // 寅, 午, 戌 → 申(8)
+    2: 8, 6: 8, 10: 8,
+    // 巳, 酉, 丑 → 亥(11)
+    5: 11, 9: 11, 1: 11,
+    // 亥, 卯, 未 → 巳(5)
+    11: 5, 3: 5, 7: 5,
+  };
+  return sanHe[branchIndex]!;
+}
+
+/// 计算指定流年的流曜落宫（用于原局盘叠加流年信息）。
+///
+/// - [year] 流年公历年份
+/// 返回：流年干支、流年命宫/太岁宫位、8 颗流曜分布。
+FlowYearMark calculateFlowYearMark({required int year}) {
+  final stemIdx = _flowYearStemIndex(year);
+  final branchIdx = _flowYearBranchIndex(year);
+
+  const ganNames = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+  const zhiNames = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+
+  // 流年命宫：FlowYear.createByYear 的 placeIndex = (year + 8) % 12
+  final mingIndex = branchIdx;
+  final taiSuiIndex = branchIdx;
+
+  final flowStars = <int, List<String>>{};
+  void add(int idx, String name) {
+    flowStars.putIfAbsent(idx, () => []).add(name);
+  }
+
+  _flowStarStemTable.forEach((name, table) {
+    add(table[stemIdx], name);
+  });
+  add(_flowTianmaIndex(branchIdx), '流天马');
+
+  return FlowYearMark(
+    year: year,
+    ganzhi: '${ganNames[stemIdx]}${zhiNames[branchIdx]}',
+    mingIndex: mingIndex,
+    taiSuiIndex: taiSuiIndex,
+    flowStars: flowStars,
+  );
 }

@@ -85,9 +85,16 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: Center(
-              child: Text(
-                '${herb.natureEmoji} ${herb.natureCategory}',
-                style: const TextStyle(fontSize: 16),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(herb.natureIcon, size: 18),
+                  const SizedBox(width: 4),
+                  Text(
+                    herb.natureCategory,
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ],
               ),
             ),
           ),

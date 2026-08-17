@@ -40,11 +40,37 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
   int _shiChenIndex = 5; // 巳时（默认 2000-08-16 06:00 约卯时，这里取常用值）
   bool _isMale = true;
 
+  // ---- 流年盘状态 ----
+  FlowYearMark? _flowMark; // 当前选中的流年（null = 不显示流年叠加）
+  int? _flowYear; // 选中的流年年份
+  bool _useTrueSolarTime = true; // 真太阳时校准（专业排盘默认开启）
+  final _longitudeCtrl = TextEditingController(); // 出生地经度（东经，留空用默认 120°）
+
+  @override
+  void dispose() {
+    _longitudeCtrl.dispose();
+    super.dispose();
+  }
+
   ZiweiChart? _chart;
   bool _calculating = false;
   String? _error;
 
   void _calculate() {
+    // 校验经度输入（可选）
+    double? lng;
+    final lngText = _longitudeCtrl.text.trim();
+    if (lngText.isNotEmpty) {
+      final v = double.tryParse(lngText);
+      if (v == null || v < -180 || v > 180) {
+        setState(() {
+          _error = '经度格式不正确（范围 -180 ~ 180，如 120 或 116.41）';
+          _chart = null;
+        });
+        return;
+      }
+      lng = v;
+    }
     setState(() {
       _calculating = true;
       _error = null;
@@ -62,6 +88,8 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
         final chart = calculateZiweiChart(
           solar: solar,
           gender: _isMale ? Gender.male : Gender.female,
+          location: lng != null ? Location(lng, 30) : null,
+          useTrueSolarTime: _useTrueSolarTime,
         );
         if (mounted) {
           setState(() {
@@ -147,7 +175,9 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
             const SizedBox(height: 12),
             _buildCaseReferenceCard(cs, _chart!),
             const SizedBox(height: 12),
-            _buildPlate(cs, _chart!),
+            _buildFlowYearBar(cs, _chart!),
+            const SizedBox(height: 8),
+            _buildPlate(cs, _chart!, _flowMark),
             const SizedBox(height: 12),
             _buildDecadeList(cs, _chart!),
           ],
@@ -176,7 +206,8 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                     label: '年',
                     value: _year,
                     items: [
-                      for (int y = 1920; y <= 2025; y++)
+                      // 年份上限跟随当前年（2026 起自动扩展，无需再手改）
+                      for (int y = 1920; y <= DateTime.now().year; y++)
                         DropdownMenuItem(value: y, child: Text('$y')),
                     ],
                     onChanged: (v) => setState(() => _year = v!),
@@ -239,6 +270,35 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 4),
+            SwitchListTile(
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+              title: const Text(
+                '真太阳时校准',
+                style: TextStyle(fontSize: 13),
+              ),
+              subtitle: Text(
+                '按出生地经度校正平太阳时时差，专业排盘默认开启',
+                style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
+              ),
+              value: _useTrueSolarTime,
+              onChanged: (v) => setState(() => _useTrueSolarTime = v),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _longitudeCtrl,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+                signed: true,
+              ),
+              decoration: InputDecoration(
+                labelText: '出生地经度（东经）',
+                hintText: '留空按东经120°（UTC+8 标准线），如北京 116.41',
+                isDense: true,
+                border: const OutlineInputBorder(),
+              ),
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -403,7 +463,70 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
     );
   }
 
-  Widget _buildPlate(ColorScheme cs, ZiweiChart chart) {
+  Widget _buildFlowYearBar(ColorScheme cs, ZiweiChart chart) {
+    final birthYear = _year;
+    final maxYear = DateTime.now().year + 10;
+    final selected = _flowYear;
+    return Card(
+      elevation: 1,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        child: Row(
+          children: [
+            Icon(Icons.event_outlined, size: 18, color: cs.primary),
+            const SizedBox(width: 8),
+            const Text('流年',
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+            const SizedBox(width: 8),
+            Expanded(
+              child: DropdownButton<int>(
+                value: selected,
+                isExpanded: true,
+                underline: const SizedBox.shrink(),
+                hint: const Text('选流年看流曜落宫',
+                    style: TextStyle(fontSize: 12)),
+                items: [
+                  for (var y = birthYear; y <= maxYear; y++)
+                    DropdownMenuItem(
+                      value: y,
+                      child: Text('$y 年',
+                          style: const TextStyle(fontSize: 13)),
+                    ),
+                ],
+                onChanged: (v) {
+                  if (v == null) return;
+                  setState(() {
+                    _flowYear = v;
+                    _flowMark = calculateFlowYearMark(year: v);
+                  });
+                },
+              ),
+            ),
+            if (selected != null) ...[
+              if (_flowMark != null)
+                Text(_flowMark!.ganzhi,
+                    style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: cs.primary)),
+              const SizedBox(width: 4),
+              IconButton(
+                tooltip: '关闭流年',
+                visualDensity: VisualDensity.compact,
+                onPressed: () => setState(() {
+                  _flowYear = null;
+                  _flowMark = null;
+                }),
+                icon: const Icon(Icons.close, size: 16),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlate(ColorScheme cs, ZiweiChart chart, FlowYearMark? flow) {
     // 4×4 盘面：外围 12 宫按地支固定盘位，中心 2×2 为命盘核心。
     // slot(0..15) → 地支索引(0子..11亥) 或 -1(核心)
     const slotToBranch = [
@@ -422,7 +545,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
           physics: const NeverScrollableScrollPhysics(),
           mainAxisSpacing: 4,
           crossAxisSpacing: 4,
-          childAspectRatio: 0.82,
+          childAspectRatio: 0.72,
           children: [
             for (int slot = 0; slot < 16; slot++)
               slotToBranch[slot] == -1
@@ -431,6 +554,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                       cs,
                       chart,
                       chart.palaces[slotToBranch[slot]],
+                      flow,
                     ),
           ],
         ),
@@ -476,23 +600,37 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
     );
   }
 
-  Widget _buildPalaceCell(ColorScheme cs, ZiweiChart chart, ZiweiPalace p) {
+  Widget _buildPalaceCell(
+    ColorScheme cs,
+    ZiweiChart chart,
+    ZiweiPalace p,
+    FlowYearMark? flow,
+  ) {
     final isLife = p.isLife;
     final isBody = p.isBody;
+    final isFlowMing = flow != null && flow.mingIndex == p.index;
+    final flowStarsHere = flow?.flowStars[p.index] ?? const <String>[];
+    final flowLabel = flowStarsHere.isEmpty
+        ? null
+        : '流 ${flowStarsHere.join(' ')}';
     return GestureDetector(
-      onTap: () => _showPalaceDetail(p),
+      onTap: () => _showPalaceDetail(p, flow),
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(
-            color: isLife
+            color: isFlowMing
+                ? cs.primary
+                : isLife
                 ? cs.error
                 : isBody
                 ? cs.tertiary
                 : cs.outlineVariant,
-            width: isLife || isBody ? 1.8 : 0.6,
+            width: isFlowMing ? 2.2 : (isLife || isBody ? 1.8 : 0.6),
           ),
           borderRadius: BorderRadius.circular(8),
-          color: isLife
+          color: isFlowMing
+              ? cs.primaryContainer.withValues(alpha: 0.35)
+              : isLife
               ? cs.errorContainer.withValues(alpha: 0.25)
               : isBody
               ? cs.tertiaryContainer.withValues(alpha: 0.25)
@@ -502,7 +640,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 宫名 + 命/身标记
+            // 宫名 + 命/身/流命标记
             Row(
               children: [
                 Expanded(
@@ -516,7 +654,9 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (isLife)
+                if (isFlowMing)
+                  _badge('流命', cs.primary)
+                else if (isLife)
                   _badge('命', cs.error)
                 else if (isBody)
                   _badge('身', cs.tertiary),
@@ -555,16 +695,38 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                 style: TextStyle(fontSize: 9, color: Colors.red.shade700),
                 overflow: TextOverflow.ellipsis,
               ),
+            // 杂曜（乙级星：红鸾/天喜/天刑/天姚/三台/八座等；
+            // 博士/岁建/将前/长生十二神在点按宫格的详情中全量展示）
+            if (p.minors.isNotEmpty)
+              Text(
+                p.minors.map((s) => s.label).join(' '),
+                style: TextStyle(fontSize: 8, color: cs.onSurfaceVariant),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            // 流曜（流年盘叠加）
+            if (flowLabel != null)
+              Text(
+                flowLabel,
+                style: TextStyle(
+                  fontSize: 8,
+                  fontWeight: FontWeight.w600,
+                  color: cs.primary,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
           ],
         ),
       ),
     );
   }
 
-  /// 点按宫格：展示该宫主管（倪师天机道）与宫内星曜。
-  void _showPalaceDetail(ZiweiPalace p) {
+  /// 点按宫格：展示该宫主管（倪师天机道）与宫内星曜（含流年流曜）。
+  void _showPalaceDetail(ZiweiPalace p, FlowYearMark? flow) {
     final cs = Theme.of(context).colorScheme;
     final meaning = ZiweiReferenceScreen.palaceMeanings[p.roleLabel];
+    final flowStarsHere = flow?.flowStars[p.index] ?? const <String>[];
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
@@ -592,6 +754,8 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                   const SizedBox(width: 8),
                   if (p.isLife) _badge('命宫', cs.error),
                   if (p.isBody) _badge('身宫', cs.tertiary),
+                  if (flow != null && flow.mingIndex == p.index)
+                    _badge('流年命宫 ${flow.ganzhi}', cs.primary),
                 ],
               ),
               const SizedBox(height: 6),
@@ -646,6 +810,24 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                 ),
               ),
               const SizedBox(height: 12),
+              if (flowStarsHere.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Row(
+                    children: [
+                      Icon(Icons.event, size: 14, color: cs.primary),
+                      const SizedBox(width: 6),
+                      Text(
+                        '流曜：${flowStarsHere.join('、')}',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: cs.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               Text(
                 '宫位主管出自倪师《天纪·天机道》· 民俗文化参考',
                 style: TextStyle(fontSize: 11, color: cs.outline),
@@ -661,7 +843,18 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
     if (s.isMajor) return '主星';
     if (s.isLucky) return '吉星';
     if (s.isBad) return '煞星';
-    return '杂曜';
+    switch (s.type) {
+      case StarType.boshi12:
+        return '博士十二神';
+      case StarType.suijian12:
+        return '岁建十二神';
+      case StarType.jiangqian12:
+        return '将前十二神';
+      case StarType.changsheng12:
+        return '长生十二神';
+      default:
+        return '杂曜';
+    }
   }
 
   Widget _buildDecadeList(ColorScheme cs, ZiweiChart chart) {

@@ -1,7 +1,7 @@
 /// 四柱命卦引擎（倪师《天纪·四柱命卦》）。
 ///
 /// 算法依据《八字的排列方法》讲义，并经原文示例校准：
-///   甲子 丁卯 庚申 庚辰（阳男）→ 先天卦 天风姤 ✓
+///   甲子 丁卯 庚申 庚辰（阳男）→ 先天卦 天风姤（已校准）
 /// - 天干数：甲6 乙2 丙8 丁7 戊1 己9 庚3 辛4 壬6 癸2
 /// - 地支河图数：子1,6 丑5,10 寅3,8 卯3,8 辰5,10 巳2,7 午1,6 未5,10 申4,9 酉4,9 戌5,10 亥1,6
 /// - 阳数=干支各数中奇数之和；阴数=偶数之和
@@ -16,6 +16,47 @@ library;
 
 import '../data/yijing_data.dart';
 import 'yijing_engine.dart';
+import 'package:ziwei_core/ziwei_core.dart';
+
+/// 六十甲子纳音名（每两组一音，共 30 组，序按 甲子1..癸亥60）。
+const List<String> _nayinNames = [
+  '海中金', '炉中火', '大林木', '路旁土', '剑锋金', '山头火', '涧下水', '城头土', '白蜡金', '杨柳木',
+  '泉中水', '屋上土', '霹雳火', '松柏木', '长流水', '沙中金', '山下火', '平地木', '壁上土', '金箔金',
+  '覆灯火', '天河水', '大驿土', '钗钏金', '桑柘木', '大溪水', '沙中土', '天上火', '石榴木', '大海水',
+];
+
+/// 六十甲子纳音（如 甲子→海中金）。非法干支返回空串。
+String nayinOf(String gan, String zhi) {
+  const gans = '甲乙丙丁戊己庚辛壬癸';
+  const zhis = '子丑寅卯辰巳午未申酉戌亥';
+  final g = gans.indexOf(gan);
+  final z = zhis.indexOf(zhi);
+  if (g < 0 || z < 0) return '';
+  final seq = (g * 6 - z * 5 + 60) % 60; // 0-based 甲子序
+  return _nayinNames[seq ~/ 2];
+}
+
+/// 十神中文名表。
+const Map<String, String> _shiShenCn = {
+  'biJian': '比肩',
+  'jieCai': '劫财',
+  'shiShen': '食神',
+  'shangGuan': '伤官',
+  'pianCai': '偏财',
+  'zhengCai': '正财',
+  'qiSha': '七杀',
+  'zhengGuan': '正官',
+  'pianYin': '偏印',
+  'zhengYin': '正印',
+};
+
+/// 天干相对日主的十神（如 日主庚、见甲 → 偏财）。
+String shiShenOf(String dayGan, String gan) {
+  final dm = TianGan.values.where((g) => g.label == dayGan).firstOrNull;
+  final tg = TianGan.values.where((g) => g.label == gan).firstOrNull;
+  if (dm == null || tg == null) return '';
+  return _shiShenCn[Relationship.getShiShen(dm, tg).name] ?? '';
+}
 
 const Map<String, int> _ganNumber = {
   '甲': 6,

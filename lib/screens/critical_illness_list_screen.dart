@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../data/critical_illness_data.dart';
 import '../data/formula_repository.dart';
+import '../data/herb_repository.dart';
 import 'formula_detail_screen.dart';
+import 'herb_detail_screen.dart';
 import 'markdown_doc_screen.dart';
 
 /// 倪师闭门课·七大重症临床 列表页。
@@ -86,6 +88,23 @@ class CriticalIllnessListScreen extends StatelessWidget {
                                 materialTapTargetSize:
                                     MaterialTapTargetSize.shrinkWrap,
                                 onPressed: () {
+                                  // 标签既可能是方剂名（四逆汤），也可能是单味药
+                                  // （生附子/生硫磺/柴胡/防己）。先用「本草精确命中」
+                                  // 判定是否单味药——否则方剂库的模糊兜底会把
+                                  // 「柴胡」错跳到含柴胡的方剂上。药材名与方剂名
+                                  // 无精确同名冲突，此顺序安全。
+                                  final herb =
+                                      HerbRepository.getExactByName(t);
+                                  if (herb != null) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            HerbDetailScreen(herb: herb),
+                                      ),
+                                    );
+                                    return;
+                                  }
                                   final formula =
                                       FormulaRepository.getByName(t);
                                   if (formula != null) {

@@ -612,7 +612,7 @@ class _SearchTabState extends State<SearchTab> {
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(width: 6),
-                Text(h.natureEmoji, style: const TextStyle(fontSize: 14)),
+                Icon(h.natureIcon, size: 14),
               ],
             ),
             subtitle: Text(
