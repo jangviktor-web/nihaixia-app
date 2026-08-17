@@ -12,6 +12,49 @@
 
 ---
 
+## [1.11.0+11] - 2026-08-18 — 黄帝内经模块 + 附子生炮拆分 + 命理三件套（含闭门课重症 / 医案库）
+
+**一句话**：人纪五部（伤寒 / 金匮 / 针灸 / 本草 / 内经）在 App 内**全部就位**；本草附子按倪师体系拆出生附子 / 炮附子两条独立条目；命理工具再补流年盘、六爻摇卦、八字详批三件；医案库 1257 例检索与方剂双向联动。
+
+### Added — 黄帝内经（人纪最后一块拼图）
+- `lib/data/neijing_data.dart`：脏象 12 卡（十二官 / 五行 / 华充窍 / 情志 / 相胜 / 通于 / 倪师要点）+ 望诊五色 5 条（缟裹朱 vs 赭…）+ 眼诊 5 区（瞳孔肾 / 二圈脾 / 三圈肝 / 眼白肺 / 内眦心）+ 脉诊（平人标准 / 脉阴阳 / 8 脉象 / 5 死脉）。
+- `lib/screens/neijing_knowledge_screen.dart`：三 Tab（脏象 / 望诊 / 脉诊）；`knowledge_screen.dart` TabController 5→6 增「内经」Tab。
+- `tool/split_neijing.py` + `assets/neijing/`：2.3MB 内经文稿按篇切分 **73 篇**（前言 + 素问 72 篇；原稿第 25、66-74 篇未收录，忠于原稿不强补），CRLF→LF、重复标题清洗。
+- `lib/screens/neijing_library_screen.dart`：73 篇阅读库，篇目 Card → `MarkdownDocScreen`（linkFormulas 方剂联动）。
+- `lib/screens/neijing_search_screen.dart`：全文搜索（懒加载，实测 171ms），命中按次数降序 + 上下文片段（前后各 24 字）。
+
+### Added — 命理三件套（民俗文化参考，非医疗诊断）
+- **紫微流年盘**：`ziwei_engine.dart` 新增 `calculateFlowYearMark` 自建 8 流曜查表（流禄存 / 流天魁 / 流天钺 / 流文昌 / 流文曲 / 流擎羊 / 流陀罗 / 流天马，数据源自 ziwei_core 0.13.0 default_jsons，MIT）；盘格前加流年选择条（出生年~当前年+10），流年命宫 primary 高亮 + 流曜行；详情弹层加流年徽标与流曜区。流月盘因 ziwei_core 未暴露 plate 级接口，留待升级。
+- **六爻铜钱摇卦**：`yijing_engine.dart` 新增 `castByCoins(List<int>)`（6 个 6/7/8/9，3 字=老阳 9 动 / 2 字=少阳 7 / 1 字=少阴 8 / 3 背=老阴 6 动）；`CastResult` 支持多动爻（`movingLines` + 变卦全翻转），摇卦 UI 6 爻位逐爻摇、第 6 次自动进结果页。
+- **八字详批**：`lib/engine/bazi_analysis.dart`（独立文件）移植 tianji（MIT）`web/js/bazi.js` —— 10 神煞（天乙贵人 / 文昌 / 驿马 / 桃花 / 华盖 / 将星 / 天德 / 月德 / 禄神 / 羊刃）+ 建禄 / 羊刃 / 十神格局 + 日主强弱（得令 ±3~-1 + 得地藏干 +0.5/+0.3 + 得势透干 +1.0/+0.7，isStrong≥1.5）+ 五行分布权重（天干 1.0 + 藏干 1.0/0.6/0.4）+ 用神忌神（身强克泄耗 / 身弱生扶）；八字卡加详批卡（格局 chips / 神煞 chips / 五行五格 / 用神忌神 + 建议）。
+
+### Changed — 附子生炮拆分（本草，用户要求「生附子、炒附子在本草里分开」）
+- `herbs.json`：原「附子」更名为「炮附子」，前插独立「生附子」条目（本经 + 倪师 commentary 拆分：生附子回阳救逆强心阳、大毒需久煎；炮附子固表温肾阳）。库 464→465。
+- `herb_repository.dart _canonicalOf`：附子 / 大附子 → **生附子**；炒附子 / 熟附子 / 制附子 → **炮附子**；生附子 / 炮附子各自精确命中。
+- `formulas.json` 泛称附子按炮制显名化（不改映射会新增 7 处错跳）：炮 7 处 → 炮附子（含头风摩散「大附子一枚炮」）、生用 2 处 → 生附子（白通汤 / 白通加猪胆汁汤）、同方异名（桂甘姜枣麻辛附子汤）归一。终态：炮附子 37 / 生附子 16 / 泛称 2（附子散 / 干姜附子粉，倪师外用方未注炮制，按「不注炮者即生用」落生附子）。
+- 组成引用 **1663 处：EXACT 1468 / CANON 194 / FUZZY 0 / 死链 1**（五苓散本为方剂非药材，合理降级）。
+
+### Added — 闭门课重症临床模块 + 医案库
+- 闭门课重症临床模块 + 倪师医案库 **1257 例检索**，医案 ↔ 方剂双向联动；医案数据清洗（达尔文纪律，出处标注）。
+- 闭门课标签 chip 死链修复：新增 `HerbRepository.getExactByName()`（只做正名 + 别名，无模糊兜底），chip 改为**先判本草精确命中 → 再查方剂**；15 个标签 8 → 本草 / 7 → 方剂 / **0 死链**（先查方剂会把「柴胡」错跳到含柴胡的方剂，故顺序不可反；已验证药材名与方剂名零精确同名冲突）。
+
+### Changed — 紫微增强
+- `ziwei_engine.dart _starLabelMap` 补 **37 个十二神 key 中文名**（博士 12：博士/力士/青龙/小耗/将军/奏书/飞廉/喜神/病符/大耗/伏兵/官府；岁建 12：岁建/晦气/丧门/贯索/官符/小耗/岁破/大耗/龙德/白虎/天德/吊客/病符；将前 12：将星/攀鞍/岁驿/亡神/华盖/劫煞/灾煞/天煞/指背/咸池/月煞/息神），实测 2000-08-16 盘 12 宫 115 星**全中文、0 英文回退**；盘格补杂星行（fontSize 8，childAspectRatio 0.82→0.72）。
+- 输入卡加 **真太阳时开关（默认开）+ 经度输入**（留空 = 120E），`_calculate` 校验经度 -180~180。
+- `minggua_engine.dart` 新增 `nayinOf(gan,zhi)`（60 甲子公式 `seq=(g*6-z*5+60)%60`，30 组纳音全覆盖）+ `shiShenOf(dayGan,gan)`（复用 bazi_core `Relationship.getShiShen`）。
+
+### Fixed
+- **出生日期上限卡死 2025**：`ziwei_chart_screen.dart` 与 `minggua_calculator_screen.dart` 两处 UI 下拉硬编码 `y<=2025`（引擎为寿星历天文算法，支持 3000+ 年）→ 均改 `y <= DateTime.now().year`，每年自动跟随。
+
+### 验证 / 发布
+- `dart analyze`：**0 error**（77 条 info 级 lint 为 Flutter SDK 升级后的 `withOpacity` 弃用等提示，非阻断）。
+- 新增测试：`test/year_2026_support_test.dart`（2026 排盘 ×2 + 杂星完整性 ×4 + 十神纳音 ×2）+ `test/neijing_knowledge_test.dart` + `test/neijing_library_search_test.dart`（索引 73 条 + 阅读库冒烟 + 全文搜索冒烟），**三组 ALL PASS**（引擎断言 17/17 等，widget 测试按记忆坑模式 runAsync + pump）。
+- P0-1 emoji：本次改动 0 emoji（改动文件扫描通过）。
+- 版本：pubspec `1.10.3+10` → `1.11.0+11`（提交 6ee2726）；aapt2 校验 **versionCode=11 / versionName=1.11.0**。
+- APK：`flutter build apk --release` 成功（62.7MB 通用包 + arm64-v8a 23.3MB 等分架构包，assembleRelease 158.1s）；apksigner verify 通过（CN=HanTang release 证书），可直接真机安装。
+
+---
+
 ## [1.10.3+10] - 2026-08-17 — 七步问诊十问模块 v3.1 改版（倪师经方口径题库 + 新信号全链路）
 
 **依据**：以倪海厦经方口径审阅用户整理的《问诊公式·全量修正版》（v3.1，12 问 106 选项），对 app 十问模块做题库、信号链路、分经路由三层优化；修正吴茱萸汤巅顶痛误用后脑痛等路由缺陷。
