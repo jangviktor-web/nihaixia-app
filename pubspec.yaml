@@ -1,7 +1,7 @@
 name: nihaisha_app
 description: "汉唐中医 - 倪海厦六经辨证中医诊断助手"
 publish_to: 'none'
-version: 1.10.3+10
+version: 1.11.0+11
 
 environment:
   sdk: ^3.12.0
