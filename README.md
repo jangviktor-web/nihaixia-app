@@ -35,6 +35,12 @@
 
 ![本草针灸工具](docs/images/screenshot2.jpg)
 
+**四柱命卦 · 紫微斗数排盘 · 易经六十四卦**
+
+![四柱命卦](docs/images/screenshot_minggua.webp)
+![紫微斗数排盘](docs/images/screenshot_ziwei.webp)
+![易经六十四卦](docs/images/screenshot_yijing.webp)
+
 </div>
 
 ---
