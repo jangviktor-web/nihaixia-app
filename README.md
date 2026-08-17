@@ -53,6 +53,8 @@
 | ⏰ **子午流注取穴** | 输入时间自动推算开穴 | 361穴 |
 | 🔧 **经方剂量换算** | 古代度量衡（两/升/铢）→ 现代克数 | — |
 | 🔮 **紫微斗数排盘** | 十二宫 / 主星 / 四化 / 大限可视化（民俗文化参考，非医疗诊断） | — |
+| 📜 **易经六十四卦** | 时间 / 数字 / 手选起卦，解本卦·动爻·变卦·互卦，集成人间道 64 卦讲课文稿 | 64卦 |
+| ☯️ **四柱命卦** | 先天 / 后天卦推算（天地数法），附倪师四柱命卦讲义阅读库 | 64卦 |
 | 🔄 **应用内更新** | 设置中一键检测GitHub新版本，支持下载安装 | — |
 | 📝 **更新日志与弹窗** | 「关于」页展示版本更新日志；安装新版本后自动弹出「本次更新了什么」 | — |
 | ⚙️ **诊断设置** | 默认性别/诊断详细度/自动复制处方，个性化问诊体验 | 3项 |
@@ -64,9 +66,9 @@
 
 
 # 方式一：直接下载 APK
-V1.10.1 版本(更新日志：先后重构六经双轨诊断引擎、补齐神农本草药材库并勘误辨证逻辑，最后专项全量核验针灸穴位库，修复数据矛盾、文字错漏与双向跳转链路，配套新增版本日志弹窗并完成全量工程测试优化。)
+V1.10.3 版本（新增易经六十四卦起卦、四柱命卦计算器、紫微斗数排盘，七步问诊十问模块 v3.1 改版，诊断引擎双轨重构。）
 
-下载地址:https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.10.1/V1.10.1.apk
+下载地址:https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.10.3/V1.10.3.apk
 
 
 # 方式二：从源码构建
@@ -78,7 +80,7 @@ flutter pub get
 flutter build apk --release
 ```
 
-> 支持 Android 6.0+，APK 约 54MB，无需联网，无需注册。
+> 支持 Android 6.0+，APK 约 58MB（universal），无需联网，无需注册。
 
 ---
 
@@ -86,9 +88,13 @@ flutter build apk --release
 
 ```
 lib/
-├── engine/                          # 诊断引擎
+├── engine/                          # 引擎层
 │   ├── diagnostic_engine.dart       #   六经辨证状态机
-│   └── diagnostic_rules.dart        #   诊断规则（合病·鉴别·加减）
+│   ├── diagnostic_rules.dart        #   诊断规则（合病·鉴别·加减）
+│   ├── rule_engine.dart             #   规则引擎（双轨鉴别树）
+│   ├── formula_rules.dart           #   方剂规则（113方鉴别）
+│   ├── yijing_engine.dart           #   易经六十四卦起卦引擎
+│   └── minggua_engine.dart          #   四柱命卦（先天/后天卦）引擎
 ├── models/                          # 数据模型
 │   ├── diagnosis.dart               #   诊断结果 + 处方 + 加减
 │   ├── formula.dart                 #   方剂模型
@@ -96,20 +102,41 @@ lib/
 ├── data/                            # 数据层
 │   ├── formula_repository.dart      #   方剂仓库（4级匹配策略）
 │   ├── herb_repository.dart         #   药物仓库
+│   ├── acupoint_repository.dart     #   穴位仓库
+│   ├── acupuncture_repository.dart  #   针灸处方仓库
+│   ├── yijing_data.dart             #   易经六十四卦数据
+│   ├── yijing_lecture_data.dart     #   人间道64卦讲课文稿索引
+│   ├── minggua_data.dart            #   四柱命卦讲义数据
+│   ├── ziwei_case_data.dart         #   天纪紫微案例库
+│   ├── changelog_repository.dart    #   更新日志仓库
+│   ├── settings_repository.dart     #   设置仓库
+│   ├── search_history_repository.dart # 搜索历史仓库
 │   └── database_helper.dart         #   SQLite 持久化
-├── services/                        # 第三方引擎封装
-│   └── ziwei_engine.dart           #   紫微斗数排盘引擎封装（ziwei_core）
+├── services/                        # 第三方引擎封装 / 服务
+│   ├── ziwei_engine.dart            #   紫微斗数排盘引擎封装（ziwei_core）
+│   ├── update_service.dart          #   GitHub 版本更新检测
+│   └── whats_new_service.dart       #   更新弹窗服务
 ├── screens/                         # UI 界面
 │   ├── chat_screen.dart             #   对话式诊断
 │   ├── knowledge_screen.dart        #   方剂/药物速查
 │   ├── diagnosis_history_screen.dart#   诊断历史趋势
-│   ├── ziwei_chart_screen.dart     #   紫微斗数排盘可视化
-│   └── tools_screen.dart            #   实用工具集
-└── assets/data/                     # 离线数据
-    ├── formulas.json                #   322首方剂
-    ├── herbs.json                   #   448味药物（《神农本草经》全量）
-    ├── acupoints.json               #   408穴（十四经脉 + 经外奇穴）
-    └── acupuncture.json             #   穴位处方（14类257条 + 透针31）
+│   ├── tools_screen.dart            #   实用工具集
+│   ├── yijing_screen.dart           #   易经六十四卦（起卦+64卦+四柱命卦）
+│   ├── yijing_result_screen.dart    #   起卦结果
+│   ├── yijing_detail_screen.dart    #   单卦详情 + 讲课文稿
+│   ├── minggua_calculator_screen.dart  # 四柱命卦计算器
+│   ├── minggua_library_screen.dart  #   四柱命卦讲义库
+│   ├── ziwei_chart_screen.dart      #   紫微斗数排盘可视化
+│   ├── ziwei_cases_list_screen.dart #   天纪紫微案例列表
+│   ├── ziwei_doc_screen.dart        #   紫微案例/宫位详情
+│   ├── ziwei_reference_screen.dart  #   紫微参考（十四主星/十二宫）
+│   ├── markdown_doc_screen.dart     #   通用 Markdown 阅读页
+│   └── ...                          #   本草/针灸/子午流注/剂量换算等
+└── assets/
+    ├── data/                        #   离线 JSON（方剂/药物/穴位/针灸/更新日志）
+    ├── yijing/                      #   人间道64卦讲课文稿（64篇）
+    ├── yijing_minggua/              #   四柱命卦讲义（66篇）
+    └── ziwei/                       #   天纪紫微案例+十二宫详解（42篇）
 ```
 
 <details>
@@ -172,6 +199,10 @@ lib/
 - [x] 应用内更新检测（GitHub Releases）
 - [x] 诊断设置增强（默认性别/详细度/自动复制）
 - [x] 数据管理（清除历史/导出收藏/清理缓存）
+- [x] 紫微斗数排盘（4×4命盘 + 生年四化 + 十二大限）
+- [x] 易经六十四卦起卦（本卦/动爻/变卦/互卦 + 人间道讲课文稿）
+- [x] 四柱命卦计算器（先天/后天卦 + 讲义库）
+- [x] 七步问诊十问模块 v3.1 改版（脉象/疼痛/呕吐类型追问）
 - [ ] 舌诊 AI 辅助（TFLite 本地模型）
 - [ ] 脉诊辅助（脉象分类）
 - [ ] 方剂对比功能
@@ -191,6 +222,40 @@ lib/
 ---
 
 ## 📝 更新日志
+
+### 🎯 v1.10.3 (2026-08-17) — 易经六十四卦 · 四柱命卦 · 七步问诊十问 v3.1
+
+> 这一版把倪师《天纪》里「可工具化」的部分真正落进 App：易经起卦、四柱命卦、紫微排盘三件套就位，七步问诊的十问题库也按倪师经方口径做了一次大升级。
+
+**一、新增工具（民俗文化参考，非医疗诊断）**
+- 📜 **易经六十四卦**：时间 / 数字 / 手选三种起卦方式，自动解本卦、动爻、变卦、互卦；集成倪师《人间道》64 卦讲课文稿，点卦即读
+- ☯️ **四柱命卦计算器**：按天地数法推算先天卦 / 后天卦，附倪师四柱命卦讲义阅读库（66 篇）
+- 🔮 **紫微排盘参考库扩充**：新增天纪 28 案例 + 十二宫详解
+
+**二、七步问诊十问模块 v3.1 改版**
+- 脉象加结代、疼痛扩至 20 项（胸痛彻背 / 巅顶痛 / 心悸 / 眩晕 / 腰痛等）、大便加色黑、胃口加恶心呕吐
+- 新增呕吐类型追问（Q12）：干呕 / 食入即吐 / 朝食暮吐 / 噫气等 7 类
+- 21 处新症状信号接入诊断路由：胸痹、肾气丸、抵当、苓桂术甘、泽泻汤、半夏厚朴、旋覆代赭等方剂更易命中
+- 修复吴茱萸汤按巅顶痛识别（原误用后脑痛）
+
+**三、诊断引擎重构**
+- rule_engine / formula_rules 双轨 + 113 方鉴别树 + 六经杂证补充
+
+**四、验证**
+- `flutter analyze`：0 错误
+- `flutter test`：205 / 207 通过（2 个失败为紫微探针遗留）
+- `flutter build apk --release` 成功，aapt2 校验 `versionCode=10 / versionName=1.10.3`
+
+---
+
+### 🚀 v1.10.2 (2026-08-16) — 紫微斗数排盘集成 + 跨引擎精度验证
+
+- 实用工具页新增紫微斗数排盘（基于 ziwei_core 引擎，纯离线）
+- 4×4 命盘可视化 + 生年四化摘要 + 十二大限，标注「民俗文化参考，非医疗诊断」
+- 修复真太阳时导致时辰位移的精度 bug，改用平太阳时
+- MingLi-Bench 跨引擎比对：核心字段（五行局 / 命宫 / 主星 / 四化等）32/32 对齐；全量测试 182/182 通过
+
+---
 
 ### 🎯 v1.10.1 (2026-08-16) — 针灸穴位板块「全量体检 + 手术级修复」
 
