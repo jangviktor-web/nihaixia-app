@@ -4,6 +4,8 @@ import 'ziwuliuzhu_screen.dart';
 import 'diagnosis_history_screen.dart';
 import 'ziwei_chart_screen.dart';
 import 'yijing_screen.dart';
+import 'critical_illness_list_screen.dart';
+import 'medical_case_library_screen.dart';
 
 class ToolsScreen extends StatelessWidget {
   const ToolsScreen({super.key});
@@ -69,6 +71,32 @@ class ToolsScreen extends StatelessWidget {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const YiJingScreen()),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _ToolCard(
+            icon: Icons.medical_information,
+            title: '闭门课 · 重症临床',
+            subtitle: '血癌/红斑狼疮/脑瘤/肾衰竭/乳癌/肝癌 · 倪师重症思路',
+            color: const Color(0xFFB71C1C),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const CriticalIllnessListScreen(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _ToolCard(
+            icon: Icons.history_edu,
+            title: '倪师医案库（1257 例）',
+            subtitle: '全量结构化医案 · 按诊断/方剂/结果检索',
+            color: const Color(0xFF00838F),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const MedicalCaseLibraryScreen(),
+              ),
             ),
           ),
         ],
