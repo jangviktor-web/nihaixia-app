@@ -63,7 +63,11 @@ class _HomeScreenState extends State<HomeScreen> {
         context,
       ).copyWith(textScaler: TextScaler.linear(widget.textScaleFactor)),
       child: Scaffold(
-        body: _screens[_currentIndex],
+        // IndexedStack 常驻各 Tab，切换后保留问诊/搜索等页面 State（如聊天进度、滚动位置）
+        body: IndexedStack(
+          index: _currentIndex,
+          children: _screens,
+        ),
         bottomNavigationBar: NavigationBar(
           selectedIndex: _currentIndex,
           onDestinationSelected: (index) {

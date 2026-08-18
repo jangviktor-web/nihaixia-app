@@ -73,7 +73,9 @@ class _DosageConverterScreenState extends State<DosageConverterScreen> {
 
   String _convert() {
     final input = double.tryParse(_inputController.text);
-    if (input == null || input <= 0) return '—';
+    // tryParse 会接受 'NaN'/'Infinity'/'1e309' 等，转为 NaN/Infinity 后
+    // toStringAsFixed 会抛 UnsupportedError；统一按无效输入处理。
+    if (input == null || !input.isFinite || input <= 0) return '—';
 
     double grams;
     final factors = _weightFactors[_standard];

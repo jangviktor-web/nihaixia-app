@@ -31,10 +31,12 @@ bool _isHighRiskContraindication(String text) {
 class _StepSnapshot {
   final List<_ChatBubble> messages;
   final EngineSnapshot engineSnapshot;
+  final List<_ChatOption> options;
 
   _StepSnapshot({
     required this.messages,
     required this.engineSnapshot,
+    required this.options,
   });
 }
 
@@ -100,6 +102,7 @@ class _ChatScreenState extends State<ChatScreen> {
     _stepHistory.add(_StepSnapshot(
       messages: List.from(_messages),
       engineSnapshot: _engine.createSnapshot(),
+      options: List.of(_currentOptions),
     ));
     _canGoBack = true;
   }
@@ -111,6 +114,7 @@ class _ChatScreenState extends State<ChatScreen> {
       _messages.clear();
       _messages.addAll(snapshot.messages);
       _engine.restoreSnapshot(snapshot.engineSnapshot);
+      _currentOptions = snapshot.options;
       _showOptions = true;
       _canGoBack = _stepHistory.isNotEmpty;
     });
@@ -291,6 +295,7 @@ class _ChatScreenState extends State<ChatScreen> {
           .map((o) => _ChatOption(
                 label: o,
                 onTap: () {
+                  _saveSnapshot();
                   _addUserMessage(o);
                   _engine.answerTenQuestion(q.key, o);
                   _showTenQuestion(index + 1);
@@ -335,6 +340,7 @@ class _ChatScreenState extends State<ChatScreen> {
           .map((o) => _ChatOption(
                 label: o,
                 onTap: () {
+                  _saveSnapshot();
                   _addUserMessage(o);
                   _engine.answerFollowUp(q.key, o);
                   _showFollowUpQuestion(questions, index + 1);

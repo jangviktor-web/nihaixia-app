@@ -118,6 +118,22 @@ class _MingGuaCalculatorScreenState extends State<MingGuaCalculatorScreen> {
     }
   }
 
+  /// 某年某月的天数（闰年 2 月 29 天）。
+  int _daysInMonth(int year, int month) {
+    if (month < 1 || month > 12) return 31;
+    if (month == 2) {
+      final isLeap = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
+      return isLeap ? 29 : 28;
+    }
+    return (month == 4 || month == 6 || month == 9 || month == 11) ? 30 : 31;
+  }
+
+  /// 年月变化后，把超出当月天数的日期钳制为当月最大日（避免非法日期静默错算）。
+  void _clampDay() {
+    final maxDay = _daysInMonth(_year, _month);
+    if (_day > maxDay) _day = maxDay;
+  }
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
@@ -193,7 +209,10 @@ class _MingGuaCalculatorScreenState extends State<MingGuaCalculatorScreen> {
                       for (int y = 1920; y <= DateTime.now().year; y++)
                         DropdownMenuItem(value: y, child: Text('$y')),
                     ],
-                    onChanged: (v) => setState(() => _year = v!),
+                    onChanged: (v) => setState(() {
+                      _year = v!;
+                      _clampDay();
+                    }),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -205,7 +224,10 @@ class _MingGuaCalculatorScreenState extends State<MingGuaCalculatorScreen> {
                       for (int m = 1; m <= 12; m++)
                         DropdownMenuItem(value: m, child: Text('$m')),
                     ],
-                    onChanged: (v) => setState(() => _month = v!),
+                    onChanged: (v) => setState(() {
+                      _month = v!;
+                      _clampDay();
+                    }),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -214,7 +236,7 @@ class _MingGuaCalculatorScreenState extends State<MingGuaCalculatorScreen> {
                     label: '日',
                     value: _day,
                     items: [
-                      for (int d = 1; d <= 31; d++)
+                      for (int d = 1; d <= _daysInMonth(_year, _month); d++)
                         DropdownMenuItem(value: d, child: Text('$d')),
                     ],
                     onChanged: (v) => setState(() => _day = v!),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../engine/diagnostic_rules.dart';
 import '../data/formula_repository.dart';
 import 'formula_detail_screen.dart';
+import 'chat_screen.dart';
 
 class MeridianDetailScreen extends StatelessWidget {
   final String meridian;
@@ -29,7 +30,12 @@ class MeridianDetailScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ChatScreen()),
+              );
+            },
             tooltip: '六经辨证',
           ),
         ],

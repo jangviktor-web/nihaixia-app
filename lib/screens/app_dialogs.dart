@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import '../data/settings_repository.dart';
@@ -458,10 +459,14 @@ Future<void> downloadAndInstall(BuildContext context, UpdateInfo info) async {
 
 Future<void> installApk(dynamic file, BuildContext context) async {
   try {
-    await SystemChannels.platform.invokeMethod('SystemNavigator.open', {
-      'action': 'install',
-      'filePath': file.path,
-    });
+    // 用 open_filex 触发系统安装器（自带 Android FileProvider，APK 位于缓存目录可被授权访问）
+    final result = await OpenFilex.open(file.path);
+    if (result.type != ResultType.done) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('无法自动打开安装器，请在文件管理器中找到 APK 后手动安装')),
+      );
+    }
   } catch (e) {
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
