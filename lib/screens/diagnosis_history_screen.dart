@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../data/database_helper.dart';
+import '../widgets/meridian_icons.dart';
 
 class DiagnosisHistoryScreen extends StatefulWidget {
   const DiagnosisHistoryScreen({super.key});
@@ -232,8 +233,8 @@ class _DiagnosisHistoryScreenState extends State<DiagnosisHistoryScreen> {
         return ListTile(
           leading: CircleAvatar(
             backgroundColor: _meridianColor(meridian),
-            child: Text(_meridianEmoji(meridian),
-                style: const TextStyle(fontSize: 16)),
+            child: Icon(meridianIcon(meridian),
+                size: 16, color: Colors.white),
           ),
           title: Text('$meridian · $pattern',
               style: const TextStyle(fontWeight: FontWeight.w600)),
@@ -265,25 +266,6 @@ class _DiagnosisHistoryScreenState extends State<DiagnosisHistoryScreen> {
         return const Color(0xFF607D8B);
       default:
         return const Color(0xFF795548);
-    }
-  }
-
-  String _meridianEmoji(String meridian) {
-    switch (meridian) {
-      case '太阳':
-        return '☀️';
-      case '阳明':
-        return '🔥';
-      case '少阳':
-        return '🌅';
-      case '太阴':
-        return '🌙';
-      case '少阴':
-        return '🌑';
-      case '厥阴':
-        return '☯️';
-      default:
-        return '🏥';
     }
   }
 

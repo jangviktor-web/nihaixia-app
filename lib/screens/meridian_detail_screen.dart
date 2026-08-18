@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../engine/diagnostic_rules.dart';
 import '../data/formula_repository.dart';
+import '../widgets/meridian_icons.dart';
 import 'formula_detail_screen.dart';
 import 'chat_screen.dart';
 
@@ -26,7 +27,7 @@ class MeridianDetailScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${details['emoji']} ${meridian}病'),
+        title: Text('$meridian病'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -59,7 +60,7 @@ class MeridianDetailScreen extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text(details['emoji'], style: const TextStyle(fontSize: 36)),
+                      Icon(meridianIcon(meridian), size: 36, color: color),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
@@ -302,12 +303,19 @@ class _TransmissionCard extends StatelessWidget {
                   color: color,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Text(
-                  '${details['emoji']} $meridian',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(meridianIcon(meridian), size: 12, color: Colors.white),
+                    const SizedBox(width: 4),
+                    Text(
+                      meridian,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

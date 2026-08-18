@@ -124,19 +124,19 @@ class DiagnosticEngine {
   String getInitialGreeting() {
     return '你好，我是汉唐中医辨证助手。\n\n'
         '我将按照倪海厦老师的辨证方法，通过《问诊公式》逐项问诊帮你分析：\n'
-        '🌡️ Q1 寒热感觉（必答）\n'
-        '💓 Q2 脉象（不会摸可选「不清楚」）\n'
-        '🥤 Q3 渴饮（必答）\n'
-        '💦 Q4 汗出\n'
-        '🤕 Q5 疼痛/不适\n'
-        '🚽 Q6 大便\n'
-        '🚰 Q7 小便\n'
-        '🍚 Q8 胃口（选「恶心呕吐」会追问呕吐）\n'
-        '😴 Q9 睡眠\n'
-        '⚡ Q10 精神\n'
-        '🌸 Q11 月经/性功能（可跳过）\n'
-        '🤮 Q12 呕吐类型（条件触发）\n'
-        '🩺 最后勾选其他不适\n\n'
+        'Q1 寒热感觉（必答）\n'
+        'Q2 脉象（不会摸可选「不清楚」）\n'
+        'Q3 渴饮（必答）\n'
+        'Q4 汗出\n'
+        'Q5 疼痛/不适\n'
+        'Q6 大便\n'
+        'Q7 小便\n'
+        'Q8 胃口（选「恶心呕吐」会追问呕吐）\n'
+        'Q9 睡眠\n'
+        'Q10 精神\n'
+        'Q11 月经/性功能（可跳过）\n'
+        'Q12 呕吐类型（条件触发）\n'
+        '最后勾选其他不适\n\n'
         '我们一项一项来，请先回答 Q1：你整体的寒热感觉是怎样的？';
   }
 
@@ -1133,39 +1133,39 @@ class DiagnosticEngine {
 
     // 数脉+淡白舌 → 真寒假热（以舌为准→寒）
     if (_pulseType == '数' && (_tongueShape == '淡白' || _tongueShape == '淡红')) {
-      warning = '⚠️ 脉数（热象）但舌淡白（虚寒），脉舌矛盾';
+      warning = '脉数（热象）但舌淡白（虚寒），脉舌矛盾';
       suggestion = '以舌为准→真寒假热可能。查：渴喜热饮？小便清长？四肢厥冷？按之脉无力？';
     }
     // 迟脉+红舌 → 真热假寒（以舌为准→热）
     else if (_pulseType == '迟' && (_tongueShape == '红' || _tongueShape == '绛紫')) {
-      warning = '⚠️ 脉迟（寒象）但舌红（热象），脉舌矛盾';
+      warning = '脉迟（寒象）但舌红（热象），脉舌矛盾';
       suggestion = '以舌为准→真热假寒可能。查：胸腹热？渴喜冷饮？小便黄赤？';
     }
     // 浮脉+厚腻苔 → 里证为主（以舌为准→里）
     else if ((_pulseType == '浮') && (_tongueCoating == '白厚' || _tongueCoating == '黄厚')) {
-      warning = '⚠️ 脉浮（表证）但苔厚腻（里证），脉舌矛盾';
+      warning = '脉浮（表证）但苔厚腻（里证），脉舌矛盾';
       suggestion = '以舌为准→里证为主，脉浮为假象。可能为真寒假热。';
     }
     // 沉脉+薄白苔 → 可能表证未解
     else if (_pulseType == '沉' && _tongueCoating == '薄白') {
-      warning = '⚠️ 脉沉（里证）但苔薄白（正常/表证），脉舌不一致';
+      warning = '脉沉（里证）但苔薄白（正常/表证），脉舌不一致';
       suggestion = '可能为里证初起或表证已解，需结合问诊判断。';
     }
     // 弦脉+淡白苔 → 少阳兼太阴
     else if (_pulseType == '弦' && (_tongueShape == '淡白' || _tongueShape == '淡红') && _tongueCoating == '白厚') {
-      warning = '⚠️ 脉弦（少阳）但舌淡苔白（太阴虚寒），寒热矛盾';
+      warning = '脉弦（少阳）但舌淡苔白（太阴虚寒），寒热矛盾';
       suggestion = '以舌为准→少阳兼太阴虚。柴胡桂枝干姜汤证可能。';
     }
 
     if (warning != null) {
-      return '$warning\n💡 $suggestion';
+      return '$warning\n$suggestion';
     }
 
     // 检查预设的矛盾组合
     final key = '${_pulseType}脉+${_tongueCoating}苔';
     final contradiction = DiagnosticRules.pulseTongueContradictions[key];
     if (contradiction != null) {
-      return '${contradiction['warning']}\n💡 ${contradiction['suggestion']}';
+      return '${contradiction['warning']}\n${contradiction['suggestion']}';
     }
 
     return null;
@@ -1334,13 +1334,13 @@ class DiagnosticEngine {
       String? transmissionWarning;
       final m = ruleResult.meridian;
       if (m == '太阳' && (_answers['bitter_mouth'] == true || _answers['dry_throat'] == true)) {
-        transmissionWarning = '⚠️ 太阳→少阳传经信号：口苦咽干，注意是否传入少阳';
+        transmissionWarning = '太阳→少阳传经信号：口苦咽干，注意是否传入少阳';
       } else if (m == '太阳' && (_answers['thirst_strong'] == true || _answers['constipated'] == true)) {
-        transmissionWarning = '⚠️ 太阳→阳明传经信号：大渴便秘，注意是否传入阳明';
+        transmissionWarning = '太阳→阳明传经信号：大渴便秘，注意是否传入阳明';
       } else if (m == '太阴' && (_answers['drowsy'] == true || _answers['urine_clear'] == true)) {
-        transmissionWarning = '⚠️ 太阴→少阴传经信号：但欲寐、小便清长，当从少阴论治';
+        transmissionWarning = '太阴→少阴传经信号：但欲寐、小便清长，当从少阴论治';
       } else if (m == '少阴' && (_answers['upper_heat_lower_cold'] == true || _answers['xiaoke'] == true)) {
-        transmissionWarning = '⚠️ 少阴→厥阴传经信号：寒热错杂，注意厥阴转化';
+        transmissionWarning = '少阴→厥阴传经信号：寒热错杂，注意厥阴转化';
       }
       return DiagnosisResult(
         meridian: ruleResult.meridian,
@@ -1486,13 +1486,13 @@ class DiagnosticEngine {
     // 传变预警（来自六经辨证公式）
     String? transmissionWarning;
     if (meridian == '太阳' && (_answers['bitter_mouth'] == true || _answers['dry_throat'] == true)) {
-      transmissionWarning = '⚠️ 太阳→少阳传经信号：口苦咽干，注意是否传入少阳';
+      transmissionWarning = '太阳→少阳传经信号：口苦咽干，注意是否传入少阳';
     } else if (meridian == '太阳' && (_answers['thirst_strong'] == true || _answers['constipated'] == true)) {
-      transmissionWarning = '⚠️ 太阳→阳明传经信号：大渴便秘，注意是否传入阳明';
+      transmissionWarning = '太阳→阳明传经信号：大渴便秘，注意是否传入阳明';
     } else if (meridian == '太阴' && (_answers['drowsy'] == true || _answers['urine_clear'] == true)) {
-      transmissionWarning = '⚠️ 太阴→少阴传经信号：但欲寐、小便清长，当从少阴论治';
+      transmissionWarning = '太阴→少阴传经信号：但欲寐、小便清长，当从少阴论治';
     } else if (meridian == '少阴' && (_answers['upper_heat_lower_cold'] == true || _answers['xiaoke'] == true)) {
-      transmissionWarning = '⚠️ 少阴→厥阴传经信号：寒热错杂，注意厥阴转化';
+      transmissionWarning = '少阴→厥阴传经信号：寒热错杂，注意厥阴转化';
     }
 
     // 处方生成 — 匹配方剂并检查加减法

@@ -71,18 +71,18 @@ class _ChatScreenState extends State<ChatScreen> {
   // ==================== 扁平 Q1–Q12 流程状态 ====================
   int _flatIndex = 0;
   final Map<String, String> _qTitles = {
-    kQ1: '🌡️ Q1 寒热感觉（必答）：你整体的寒热感觉是怎样的？',
-    kQ2: '💓 Q2 脉象（可跳）：你会摸脉吗？不会就选「不清楚」。',
-    kQ3: '🥤 Q3 渴饮（必答）：你口渴吗？想喝什么水温？',
-    kQ4: '💦 Q4 汗出：你平时容易出汗吗？什么情况下出汗？',
-    kQ5: '🤕 Q5 疼痛/不适：你哪里痛或不适？（选最贴切的一项）',
-    kQ6: '🚽 Q6 大便：你的大便情况？',
-    kQ7: '🚰 Q7 小便：小便情况？',
-    kQ8: '🍚 Q8 胃口：你的胃口怎样？',
-    kQ9: '😴 Q9 睡眠：你的睡眠怎样？',
-    kQ10: '⚡ Q10 精神：你的精神状态？',
-    kQ11: '🌸 Q11 月经/性功能（可跳过）：选「没有此症状」即跳过。',
-    kQ12: '🤮 Q12 呕吐类型：你呕吐/恶心的情况？',
+    kQ1: 'Q1 寒热感觉（必答）：你整体的寒热感觉是怎样的？',
+    kQ2: 'Q2 脉象（可跳）：你会摸脉吗？不会就选「不清楚」。',
+    kQ3: 'Q3 渴饮（必答）：你口渴吗？想喝什么水温？',
+    kQ4: 'Q4 汗出：你平时容易出汗吗？什么情况下出汗？',
+    kQ5: 'Q5 疼痛/不适：你哪里痛或不适？（选最贴切的一项）',
+    kQ6: 'Q6 大便：你的大便情况？',
+    kQ7: 'Q7 小便：小便情况？',
+    kQ8: 'Q8 胃口：你的胃口怎样？',
+    kQ9: 'Q9 睡眠：你的睡眠怎样？',
+    kQ10: 'Q10 精神：你的精神状态？',
+    kQ11: 'Q11 月经/性功能（可跳过）：选「没有此症状」即跳过。',
+    kQ12: 'Q12 呕吐类型：你呕吐/恶心的情况？',
   };
 
   @override
@@ -154,11 +154,13 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {
       _currentOptions = [
         _ChatOption(
-          label: '📝 选择舌诊脉诊',
+          label: '选择舌诊脉诊',
+          icon: Icons.edit_note,
           onTap: _showTonguePulseDialog,
         ),
         _ChatOption(
-          label: '⏭️ 跳过，直接问诊',
+          label: '跳过，直接问诊',
+          icon: Icons.skip_next,
           onTap: () {
             _addUserMessage('跳过舌诊脉诊');
             _engine.answerTonguePulse();
@@ -312,7 +314,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final result = _engine.diagnose();
     if (result != null) {
       _addBotMessage('好，十问已经完成了。让我根据你的情况来分析...\n\n'
-          '📋 你的情况：${_engine.selectedSymptoms.join("、")}\n\n'
+          '你的情况：${_engine.selectedSymptoms.join("、")}\n\n'
           '下面给出辨证结果：');
       _showResult();
     } else {
@@ -362,7 +364,7 @@ class _ChatScreenState extends State<ChatScreen> {
     // P0-2: 证据不足，建议面诊（不强行给方，避免误治）
     if (result.recommendConsult || result.formula.isEmpty) {
       _addBotMessage(
-        '⚠️ 辨证依据不足\n\n'
+        '辨证依据不足\n\n'
         '${result.explanation}\n\n'
         '（本结果仅供参考，请线下就诊由执业中医师四诊合参）',
         isWarning: true,
@@ -378,7 +380,7 @@ class _ChatScreenState extends State<ChatScreen> {
       }
       if (refNames.isNotEmpty) {
         _addBotMessage(
-          '🔎 相似症状参考方（非处方，仅供参考）\n\n'
+          '相似症状参考方（非处方，仅供参考）\n\n'
           '${refNames.take(3).join('、')}\n\n'
           '以上仅依据症状关键词匹配，未经正式辨证，切勿自行用药；'
           '请线下就诊由执业中医师四诊合参后处方。',
@@ -388,8 +390,8 @@ class _ChatScreenState extends State<ChatScreen> {
       _addBotMessage('想重新辨证吗？');
       setState(() {
         _currentOptions = [
-          _ChatOption(label: '🔄 重新辨证', onTap: _resetDiagnosis),
-          _ChatOption(label: '📤 分享', onTap: () => _shareResult(result)),
+          _ChatOption(label: '重新辨证', icon: Icons.refresh, onTap: _resetDiagnosis),
+          _ChatOption(label: '分享', icon: Icons.share, onTap: () => _shareResult(result)),
         ];
         _showOptions = true;
       });
@@ -399,11 +401,11 @@ class _ChatScreenState extends State<ChatScreen> {
     final formula = FormulaRepository.getByName(result.formula);
     final explanation = formula?.explanation ?? result.explanation;
 
-    String resultText = '${result.meridianEmoji} 辨证结果\n\n'
+    String resultText = '辨证结果\n\n'
         '【六经】${result.displayMeridian}病\n';
 
     if (result.isCombined) {
-      resultText += '⚡ 合病：${result.meridian}与${result.combinedMeridian}同病\n';
+      resultText += '合病：${result.meridian}与${result.combinedMeridian}同病\n';
     }
 
     resultText += '【证型】${result.pattern}\n'
@@ -423,7 +425,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     // 舌诊脉诊信息
     if (result.tongueCoating != null || result.tongueShape != null || result.pulseType != null) {
-      resultText += '\n🔬 舌脉：';
+      resultText += '\n舌脉：';
       if (result.tongueCoating != null) resultText += '苔${result.tongueCoating} ';
       if (result.tongueShape != null) resultText += '形${result.tongueShape} ';
       if (result.pulseType != null) resultText += '脉${result.pulseType}';
@@ -432,17 +434,17 @@ class _ChatScreenState extends State<ChatScreen> {
 
     // 未提供脉象（普通用户不会摸脉是常态）→ 标注参考性
     if (result.pulseType == null) {
-      resultText += 'ℹ️ 未提供脉象信息，本次结论仅供参考\n';
+      resultText += '未提供脉象信息，本次结论仅供参考\n';
     }
 
-    resultText += '\n${result.patternDetail}\n\n💡 ${explanation}';
+    resultText += '\n${result.patternDetail}\n\n${explanation}';
 
     // P1-3: 推理链（简单/详细模式均显示）
     final reasoning = result.matchedSymptoms.isNotEmpty
         ? result.matchedSymptoms
         : _engine.selectedSymptoms;
     if (reasoning.isNotEmpty) {
-      resultText += '\n\n📌 判定依据\n'
+      resultText += '\n\n判定依据\n'
           '关键输入：${reasoning.join('、')}\n'
           '→ 归入 ${result.displayMeridian}病 · ${result.pattern}';
     }
@@ -454,7 +456,7 @@ class _ChatScreenState extends State<ChatScreen> {
         formula?.contraindication ?? result.prescription?.contraindication ?? '';
     if (_isHighRiskContraindication(contraindicationText)) {
       _addBotMessage(
-        '⚠️ 用药安全警示\n\n'
+        '用药安全警示\n\n'
         '本方禁忌：$contraindicationText\n\n'
         '含高危人群/证型提示，使用前务必咨询执业中医师，切勿自行用药。',
         isWarning: true,
@@ -465,7 +467,7 @@ class _ChatScreenState extends State<ChatScreen> {
     if (result.prescription != null && SettingsRepository.instance.autoCopyPrescription) {
       final text = result.prescription!.toCopyText();
       Clipboard.setData(ClipboardData(text: text));
-      _addBotMessage('📋 处方已自动复制到剪贴板');
+      _addBotMessage('处方已自动复制到剪贴板');
     }
 
     // 保存诊断历史
@@ -483,13 +485,13 @@ class _ChatScreenState extends State<ChatScreen> {
     if (isDetailed) {
     // P0-2: 脉舌矛盾警告
     if (result.pulseTongueContradiction != null) {
-      _addBotMessage('⚠️ 脉舌矛盾\n${result.pulseTongueContradiction}', isResult: false);
+      _addBotMessage('脉舌矛盾\n${result.pulseTongueContradiction}', isResult: false);
     }
 
     // P0-1: 真寒假热/真热假寒
     if (result.trueFalseHeatCold != null) {
       final tfhc = result.trueFalseHeatCold!;
-      String tfhcText = '☯️ ${tfhc.type}八维鉴别\n\n${tfhc.description}\n';
+      String tfhcText = '${tfhc.type}八维鉴别\n\n${tfhc.description}\n';
       for (final entry in tfhc.dimensions.entries) {
         tfhcText += '\n• ${entry.key}：${entry.value}';
       }
@@ -499,25 +501,25 @@ class _ChatScreenState extends State<ChatScreen> {
     // P1-4: 组合脉象
     if (result.pulseCombination != null) {
       final pc = result.pulseCombination!;
-      _addBotMessage('🔬 组合脉象：${pc.pulse1}+${pc.pulse2}\n'
+      _addBotMessage('组合脉象：${pc.pulse1}+${pc.pulse2}\n'
           '指向${pc.meridian}经 → ${pc.formula}\n${pc.description}', isResult: false);
     }
 
     // 处方详情
     if (result.prescription != null) {
       final rx = result.prescription!;
-      String rxText = '📋 完整处方\n'
+      String rxText = '完整处方\n'
           '─────────────────\n'
           '${rx.components.map((c) => '${c.name} ${c.dosage}').join('  ')}';
 
       if (rx.preparation.isNotEmpty) {
-        rxText += '\n\n💊 煎服法:\n${rx.preparation}';
+        rxText += '\n\n煎服法:\n${rx.preparation}';
       }
       if (rx.contraindication.isNotEmpty) {
-        rxText += '\n\n⚠️ 禁忌:\n${rx.contraindication}';
+        rxText += '\n\n禁忌:\n${rx.contraindication}';
       }
       if (rx.modifications != null && rx.modifications!.isNotEmpty) {
-        rxText += '\n\n🔄 加减建议:';
+        rxText += '\n\n加减建议:';
         for (final m in rx.modifications!) {
           rxText += '\n• ${m.condition} → ${m.description}';
           if (m.resultFormula.isNotEmpty) {
@@ -531,7 +533,7 @@ class _ChatScreenState extends State<ChatScreen> {
     // 鉴别诊断
     if (result.differential != null) {
       final diff = result.differential!;
-      String diffText = '🔍 鉴别诊断\n\n'
+      String diffText = '鉴别诊断\n\n'
           '【关键区别】${diff.keyDifference}\n\n'
           '┌─ ${diff.name1}（${diff.formula1}）\n'
           '│  ${diff.details.entries.map((e) => '${e.key}：${e.value}').join('\n│  ')}\n'
@@ -543,7 +545,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     // P1-3: 瘀血五法
     if (result.bloodStasisSigns != null && result.bloodStasisSigns!.isNotEmpty) {
-      String bsText = '🩸 瘀血诊断（五法）\n';
+      String bsText = '瘀血诊断（五法）\n';
       for (final sign in result.bloodStasisSigns!) {
         bsText += '\n• ${sign.method}：${sign.description}';
       }
@@ -552,7 +554,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     // P0-4: 用药铁律
     if (result.medicationRules != null && result.medicationRules!.isNotEmpty) {
-      String mrText = '🚫 用药铁律\n';
+      String mrText = '用药铁律\n';
       for (final rule in result.medicationRules!) {
         mrText += '\n• ${rule.condition}：${rule.prohibition}';
         mrText += '\n  原因：${rule.reason}';
@@ -565,7 +567,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     // P0-5: 汗法禁忌
     if (result.sweatingContraindications != null && result.sweatingContraindications!.isNotEmpty) {
-      String scText = '⛔ 汗法禁忌\n';
+      String scText = '汗法禁忌\n';
       for (final sc in result.sweatingContraindications!) {
         scText += '\n• ${sc.condition}：${sc.reason}（后果：${sc.consequence}）';
       }
@@ -575,7 +577,7 @@ class _ChatScreenState extends State<ChatScreen> {
     // P1-7: 传经判断
     if (result.transmission != null) {
       final t = result.transmission!;
-      _addBotMessage('🔄 传经预警\n'
+      _addBotMessage('传经预警\n'
           '${t.from}→${t.to}传经信号：${t.sign}\n'
           '治疗原则：${t.treatment}', isResult: false);
     }
@@ -587,21 +589,21 @@ class _ChatScreenState extends State<ChatScreen> {
 
     // 太阴少阴交界预警
     if (result.answers['_taiyin_to_shaoyin'] == true) {
-      _addBotMessage('⚠️ 太阴→少阴传变预警\n'
+      _addBotMessage('太阴→少阴传变预警\n'
           '太阴日久及肾：脉由沉迟转沉微，精神由倦怠转萎靡\n'
           '当从少阴论治，急温回阳', isResult: false);
     }
 
     // 少阴兼表证提示
     if (result.answers['_shaoyin_with_table'] == true) {
-      _addBotMessage('📋 少阴兼表证\n'
+      _addBotMessage('少阴兼表证\n'
           '少阴病始得之，反发热脉沉者——麻黄附子细辛汤\n'
           '温经解表，表里双解', isResult: false);
     }
 
     // 调护建议
     if (result.careAdvice != null) {
-      String careText = '🛡️ 调护建议\n';
+      String careText = '调护建议\n';
       for (final entry in result.careAdvice!.entries) {
         careText += '\n【${entry.key}】';
         for (final item in entry.value) {
@@ -616,7 +618,7 @@ class _ChatScreenState extends State<ChatScreen> {
     if (!isDetailed && result.differential != null) {
       final diff = result.differential!;
       _addBotMessage(
-        '🔍 其他可能：${diff.name2}（${diff.formula2}）\n'
+        '其他可能：${diff.name2}（${diff.formula2}）\n'
         '与本案关键区别：${diff.keyDifference}',
         isResult: true,
         diagnosisResult: result,
@@ -624,37 +626,43 @@ class _ChatScreenState extends State<ChatScreen> {
     }
 
     _addBotMessage('以上是辨证建议，仅供参考。如需详细查看方剂或药物信息，请点击下方按钮。\n\n'
-        '🔄 想重新辨证吗？');
+        '想重新辨证吗？');
     setState(() {
       _currentOptions = [
         _ChatOption(
-          label: '🔄 重新辨证',
+          label: '重新辨证',
+          icon: Icons.refresh,
           onTap: _resetDiagnosis,
         ),
         _ChatOption(
-          label: '📖 查看${result.meridian}经详情',
+          label: '查看${result.meridian}经详情',
+          icon: Icons.menu_book,
           onTap: () => _openMeridianDetail(result.meridian),
         ),
         if (formula != null)
           _ChatOption(
-            label: '💊 查看${formula.name}详情',
+            label: '查看${formula.name}详情',
+            icon: Icons.medication,
             onTap: () => _openFormulaDetail(formula),
           ),
         if (!isDetailed && result.differential != null)
           _ChatOption(
-            label: '🔍 查看${result.differential!.formula2}详情',
+            label: '查看${result.differential!.formula2}详情',
+            icon: Icons.manage_search,
             onTap: () {
               final alt = FormulaRepository.getByName(result.differential!.formula2);
               if (alt != null) _openFormulaDetail(alt);
             },
           ),
         _ChatOption(
-          label: '📤 分享辨证结果',
+          label: '分享辨证结果',
+          icon: Icons.share,
           onTap: () => _shareResult(result),
         ),
         if (result.prescription != null)
           _ChatOption(
-            label: '📋 复制处方',
+            label: '复制处方',
+            icon: Icons.content_paste,
             onTap: () => _copyPrescription(result.prescription!),
           ),
       ];
@@ -765,9 +773,9 @@ class _ChatScreenState extends State<ChatScreen> {
       text += '\n';
     }
     text += '\n${result.patternDetail}\n\n';
-    text += '💡 ${result.explanation}\n\n';
+    text += '${result.explanation}\n\n';
     if (result.careAdvice != null) {
-      text += '🛡️ 调护建议：\n';
+      text += '调护建议：\n';
       for (final entry in result.careAdvice!.entries) {
         text += '【${entry.key}】${entry.value.join("、")}\n';
       }
@@ -780,7 +788,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void _copyPrescription(FormulaPrescription prescription) {
     final text = prescription.toCopyText();
     Clipboard.setData(ClipboardData(text: text));
-    _addBotMessage('✅ 处方已复制到剪贴板，可粘贴发送给药房。');
+    _addBotMessage('处方已复制到剪贴板，可粘贴发送给药房。');
   }
 
 
@@ -828,9 +836,9 @@ class _ChatScreenState extends State<ChatScreen> {
     String text = '【汉唐中医·收藏导出】\n\n';
     for (final b in bookmarks) {
       text += '━━━━━━━━━━━━━━\n';
-      text += '📌 ${b.title}\n';
-      text += '📁 ${b.category}\n';
-      text += '📅 ${b.createdAt}\n\n';
+      text += '${b.title}\n';
+      text += '${b.category}\n';
+      text += '${b.createdAt}\n\n';
       text += '${b.content}\n\n';
     }
     text += '—— 来自「汉唐中医」App';
@@ -1018,12 +1026,28 @@ class _ChatScreenState extends State<ChatScreen> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 10),
-                          child: Text(
-                            option.label,
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurface,
-                              fontSize: 15,
-                            ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (option.icon != null) ...[
+                                Icon(
+                                  option.icon,
+                                  size: 20,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                                const SizedBox(width: 8),
+                              ],
+                              Flexible(
+                                child: Text(
+                                  option.label,
+                                  style: TextStyle(
+                                    color:
+                                        Theme.of(context).colorScheme.onSurface,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -1142,11 +1166,13 @@ class _ChatBubble extends StatelessWidget {
 class _ChatOption {
   final String label;
   final String? description;
+  final IconData? icon;
   final VoidCallback onTap;
 
   _ChatOption({
     required this.label,
     this.description,
+    this.icon,
     required this.onTap,
   });
 }

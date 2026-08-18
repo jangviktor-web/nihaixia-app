@@ -4,6 +4,7 @@ import '../data/herb_repository.dart';
 import '../engine/diagnostic_rules.dart';
 import '../models/formula.dart';
 import '../models/herb.dart';
+import '../widgets/meridian_icons.dart';
 import 'acupuncture_screen.dart';
 import 'formula_detail_screen.dart';
 import 'herb_detail_screen.dart';
@@ -102,7 +103,7 @@ class _MeridianTab extends StatelessWidget {
                 border: Border(left: BorderSide(color: color, width: 4)),
               ),
               child: ExpansionTile(
-                leading: Text(details['emoji'], style: const TextStyle(fontSize: 28)),
+                leading: Icon(meridianIcon(name), size: 28, color: color),
                 title: Text(
                   '$name病',
                   style: TextStyle(

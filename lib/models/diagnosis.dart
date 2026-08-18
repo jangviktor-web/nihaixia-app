@@ -42,15 +42,15 @@ class FormulaPrescription {
 
   String toCopyText() {
     final buf = StringBuffer();
-    buf.writeln('📋 处方: $formulaName');
+    buf.writeln('处方: $formulaName');
     buf.writeln('─────────────────');
     buf.write('组成: ');
     buf.writeln(components.map((c) => '${c.name}${c.dosage}').join('  '));
-    if (dosage.isNotEmpty) buf.writeln('\n💊 剂量: $dosage');
-    if (preparation.isNotEmpty) buf.writeln('\n💊 煎服法:\n$preparation');
-    if (contraindication.isNotEmpty) buf.writeln('\n⚠️ 禁忌:\n$contraindication');
+    if (dosage.isNotEmpty) buf.writeln('\n剂量: $dosage');
+    if (preparation.isNotEmpty) buf.writeln('\n煎服法:\n$preparation');
+    if (contraindication.isNotEmpty) buf.writeln('\n禁忌:\n$contraindication');
     if (modifications != null && modifications!.isNotEmpty) {
-      buf.writeln('\n🔄 加减建议:');
+      buf.writeln('\n加减建议:');
       for (final m in modifications!) {
         buf.writeln('• ${m.condition} → ${m.description}');
       }
@@ -152,25 +152,6 @@ class DiagnosisResult {
   String get displayMeridian {
     if (isCombined) return '$meridian${combinedMeridian}合病';
     return meridian;
-  }
-
-  String get meridianEmoji {
-    switch (meridian) {
-      case '太阳':
-        return '☀️';
-      case '阳明':
-        return '🔥';
-      case '少阳':
-        return '🌅';
-      case '太阴':
-        return '🌙';
-      case '少阴':
-        return '🌑';
-      case '厥阴':
-        return '☯️';
-      default:
-        return '🏥';
-    }
   }
 
   String get meridianColor {

@@ -742,7 +742,7 @@ const List<FormulaRule> allFormulaRules = [
     required: {kQ1: [6, 7], kQ7: [5, 2], kQ5: [19]},
     reference: {kQ2: [10], kQ5: [6], kQ4: [2], kQ6: [3], kQ10: [2, 3]},
     extReference: {'body_twitch'},
-    differential: '少阴阳虚水泛。太阳变证以身瞤动为主，少阴本证以腹痛下利为辨；临证见★三项即主方，兼症随证加减。',
+    differential: '少阴阳虚水泛。太阳变证以身瞤动为主，少阴本证以腹痛下利为辨；临证见必选三项即主方，兼症随证加减。',
   ),
   FormulaRule(
     name: '麻黄附子细辛汤',
