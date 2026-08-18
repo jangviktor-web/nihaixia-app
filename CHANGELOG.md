@@ -12,6 +12,37 @@
 
 ---
 
+## [1.11.1+12] - 2026-08-19 — 交互体验修复 · 图标规范（P0-1）· 设计 Token 与深色模式
+
+**一句话**：基于三方专家（前端 / 设计师 / QA）UI 交互审计整改的修复版——底部导航保状态、App 内更新安装修复、命理日期校验、聊天返回栈修复、全站 emoji 图标根治为 Material Icons、39 个语义 Token 落地、深色模式全面修复。
+
+### Fixed — 交互缺陷（第一批 P0，对应审计阻断项）
+- **底部导航保状态**：`home_screen.dart:67` `body: _screens[_currentIndex]` → `IndexedStack`，问诊 / 搜索 / 工具页 State 常驻，切 Tab 不再丢进度。
+- **App 内更新安装修复**：`app_dialogs.dart:464` 移除幻觉平台方法 `SystemNavigator.open`，改用 `open_filex`（pubspec 新增 `open_filex ^4.7.0`）触发系统安装器；已核验 `REQUEST_INSTALL_PACKAGES` 权限 + FileProvider + `cache-path` 覆盖下载目录。原功能必然安装失败，本次修复。
+- **命理日期校验**：`ziwei_chart_screen.dart:56-68` 与 `minggua_calculator_screen.dart:121-134` 新增 `_daysInMonth`（含闰年 `(y%4==0&&y%100!=0)||y%400==0`）+ `_clampDay` 钳制；日下拉按年月动态生成（2 月不再出现 30/31 日），杜绝 AstroDateTime 静默平移错盘。
+- **聊天「返回上一步」修复**：`chat_screen.dart:31-42` `_StepSnapshot` 新增 `options` 字段，`_saveSnapshot` / `_goBack` 同步保存恢复选项；十问 / 追问选项 onTap 前均入快照（`:301/:346`），每一步可回退且选项不残留。
+- **六经详情死按钮**：`meridian_detail_screen.dart:35` 「六经辨证」IconButton `onPressed: () {}` → `Navigator.push(ChatScreen())`。
+- **剂量换算崩溃封堵**：`dosage_converter_screen.dart:79` `!input.isFinite` 守卫，粘贴 `NaN` / `1e309` 不再抛 `UnsupportedError`，统一显示 `—`。
+
+### Changed — 图标规范（P0-1 根治）
+- 全站 128 处功能 emoji → Material Icons：问诊按钮（📝→`Icons.edit_note`、⏭️→`Icons.skip_next`、🔄→`Icons.restart_alt`、📤→`Icons.share` 等）加 leading 图标；问诊 Q1-Q12 前缀 emoji 删除，改「1-12」数字徽标（`chat_screen.dart:1033-1047` 22px 圆底 primary + 白数字）。
+- 六经图标统一收敛到 `lib/widgets/meridian_icons.dart` 单文件：太阳 `wb_sunny` / 阳明 `local_fire_department` / 少阳 `wb_twilight` / 太阴 `bedtime` / 少阴 `nightlight` / 厥阴 `balance`，knowledge 列表 / 历史头像 / 经络详情共用。
+- 数据源清理：`diagnostic_rules.dart:1680-1750` 删除 6 处 `emoji` 数据字段；`models/diagnosis.dart` 删除 `meridianEmoji` getter；`diagnostic_engine.dart` 问诊题面 / 警告前缀 emoji 全删。
+- 豁免：`yijing_data.dart` 八卦符（☰☱☲☳☴☵☶☷）为《周易》语义符号非图标，保留并在 README 声明。
+
+### Changed — 设计 Token 与深色模式（P0-3 根治）
+- 新增 `lib/theme/app_colors.dart`：`ThemeExtension<AppColors>` **39 个语义 Token**（主色系 #8B4513 品牌棕 / 暖调中性系 / 状态系 danger-warning-success-info 各含 container / 六经 6 色各含 light+dark），`main.dart:41/:49` light/dark 双套挂载。
+- 硬编码颜色全量收敛：`withOpacity` 46 处 = 0、`Colors.*.shade(50/100/200)` = 0、`Color(0x` 在 screens/widgets = 0（字面量仅存于 token 文件）；组件统一经 `context.colors` 读取。
+- **深色模式修复**：六经 / 状态色深色档自动切换亮 shade，三屏抽查无死白块、无低对比。
+- 字号收敛 19 种 → 6 级：`{10,12,14,16,20,28,48}`（displaySymbol 48 仅卦象内容符号）；紫微盘分级（宫名 / 主星 caption12、吉煞杂曜 micro10 + 省略号 + 宫格详情兜底），8px 不可读小字消除。
+
+### 验证
+- `dart analyze lib`：**0 error**（41 条 info 全为既有 lint）。
+- QA 独立复核 `verdict: pass`，blocking 为空：P0-1 UI 层 emoji **0 命中**（仅豁免八卦符 + 注释 ★）、Token 六项机械门禁全过、第一批 6 项修复代码走查闭环、深色模式三屏抽查通过。
+- `versionName=1.11.1 / versionCode=12`。
+
+---
+
 ## [1.11.0+11] - 2026-08-18 — 黄帝内经模块 + 附子生炮拆分 + 命理三件套（含闭门课重症 / 医案库）
 
 **一句话**：人纪五部（伤寒 / 金匮 / 针灸 / 本草 / 内经）在 App 内**全部就位**；本草附子按倪师体系拆出生附子 / 炮附子两条独立条目；命理工具再补流年盘、六爻摇卦、八字详批三件；医案库 1257 例检索与方剂双向联动。

@@ -88,9 +88,9 @@
 
 
 # 方式一：直接下载 APK
-V1.11.0 版本（新增黄帝内经模块、附子生炮拆分、倪师医案库 1257 例，命理三件套：紫微流年盘 / 六爻铜钱摇卦 / 八字详批。）
+V1.11.1 版本（交互体验修复版：底部导航保状态、App 内更新安装修复、命理日期校验、聊天返回上一步；全站图标规范为 Material Icons、深色模式全面优化。基于 1.11.0 的全部功能：黄帝内经 / 附子生炮拆分 / 医案库 1257 例 / 命理三件套。）
 
-下载地址:https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.0/V1.11.0.apk
+下载地址:https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.1/V1.11.1.apk
 
 
 # 方式二：从源码构建
