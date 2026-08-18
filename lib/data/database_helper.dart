@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../models/bookmark.dart';
@@ -19,10 +20,16 @@ class DatabaseHelper {
     final path = join(dbPath, filePath);
     return await openDatabase(
       path,
-      version: 3,
+      version: 4,
       onCreate: _createDB,
       onUpgrade: _upgradeDB,
     );
+  }
+
+  /// 仅供测试：重置已打开的数据库连接（下次访问重新打开）。
+  @visibleForTesting
+  static void resetForTest() {
+    _database = null;
   }
 
   Future<void> _createDB(Database db, int version) async {
@@ -83,6 +90,20 @@ class DatabaseHelper {
         value TEXT NOT NULL
       )
     ''');
+
+    await db.execute('''
+      CREATE TABLE medical_case_bookmarks(
+        seq INTEGER PRIMARY KEY,
+        created_at TEXT NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE medical_case_recent(
+        seq INTEGER PRIMARY KEY,
+        viewed_at TEXT NOT NULL
+      )
+    ''');
   }
 
   Future<void> _upgradeDB(Database db, int oldVersion, int newVersion) async {
@@ -122,6 +143,20 @@ class DatabaseHelper {
         CREATE TABLE user_settings(
           key TEXT PRIMARY KEY,
           value TEXT NOT NULL
+        )
+      ''');
+    }
+    if (oldVersion < 4) {
+      await db.execute('''
+        CREATE TABLE medical_case_bookmarks(
+          seq INTEGER PRIMARY KEY,
+          created_at TEXT NOT NULL
+        )
+      ''');
+      await db.execute('''
+        CREATE TABLE medical_case_recent(
+          seq INTEGER PRIMARY KEY,
+          viewed_at TEXT NOT NULL
         )
       ''');
     }
@@ -267,5 +302,66 @@ class DatabaseHelper {
     return [
       {'folders': folders, 'bookmarks': bookmarks},
     ];
+  }
+
+  // === 医案收藏（按医案 seq 唯一） ===
+  Future<bool> isMedicalCaseBookmarked(int seq) async {
+    final db = await database;
+    final rows = await db.query(
+      'medical_case_bookmarks',
+      where: 'seq = ?',
+      whereArgs: [seq],
+      limit: 1,
+    );
+    return rows.isNotEmpty;
+  }
+
+  Future<void> setMedicalCaseBookmarked(int seq, bool bookmarked) async {
+    final db = await database;
+    if (bookmarked) {
+      await db.insert('medical_case_bookmarks', {
+        'seq': seq,
+        'created_at': DateTime.now().toIso8601String(),
+      }, conflictAlgorithm: ConflictAlgorithm.replace);
+    } else {
+      await db.delete(
+        'medical_case_bookmarks',
+        where: 'seq = ?',
+        whereArgs: [seq],
+      );
+    }
+  }
+
+  Future<List<int>> getBookmarkedMedicalCaseSeqs() async {
+    final db = await database;
+    final rows = await db.query(
+      'medical_case_bookmarks',
+      orderBy: 'created_at DESC',
+    );
+    return rows.map((r) => r['seq'] as int).toList();
+  }
+
+  // === 医案最近浏览（按医案 seq 唯一，时间倒序） ===
+  Future<void> upsertMedicalCaseRecent(int seq) async {
+    final db = await database;
+    await db.insert('medical_case_recent', {
+      'seq': seq,
+      'viewed_at': DateTime.now().toIso8601String(),
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<List<int>> getRecentMedicalCaseSeqs({int limit = 20}) async {
+    final db = await database;
+    final rows = await db.query(
+      'medical_case_recent',
+      orderBy: 'viewed_at DESC',
+      limit: limit,
+    );
+    return rows.map((r) => r['seq'] as int).toList();
+  }
+
+  Future<void> clearMedicalCaseRecent() async {
+    final db = await database;
+    await db.delete('medical_case_recent');
   }
 }

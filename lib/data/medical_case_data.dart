@@ -109,6 +109,37 @@ String _cleanFormulaSegment(String seg) {
   return s.trim();
 }
 
+/// 相关医案：同方剂（共享 formulaNames）优先，按共享方剂数降序取最多 [max] 条；
+/// 无方剂交集时回退同诊断（displayName 相同）。排除自身。
+List<MedicalCase> findRelatedCases(
+  MedicalCase c,
+  List<MedicalCase> all, {
+  int max = 6,
+}) {
+  if (all.isEmpty) return const [];
+  final mine = c.formulaNames.toSet();
+  if (mine.isNotEmpty) {
+    final scored = <(MedicalCase, int)>[];
+    for (final other in all) {
+      if (other.seq == c.seq) continue;
+      final shared = other.formulaNames.where(mine.contains).length;
+      if (shared > 0) scored.add((other, shared));
+    }
+    scored.sort((a, b) {
+      final byShared = b.$2.compareTo(a.$2);
+      return byShared != 0 ? byShared : a.$1.seq.compareTo(b.$1.seq);
+    });
+    return scored.take(max).map((e) => e.$1).toList();
+  }
+  final name = c.displayName;
+  if (name.isEmpty || name == '（未命名）') return const [];
+  final same = all
+      .where((o) => o.seq != c.seq && o.displayName == name)
+      .toList()
+    ..sort((a, b) => a.seq.compareTo(b.seq));
+  return same.take(max).toList();
+}
+
 class MedicalCase {
   final int seq;
   final String date;
@@ -162,6 +193,29 @@ class MedicalCase {
     if (diagnosis.isNotEmpty) return diagnosis;
     if (mechanism.isNotEmpty) return mechanism;
     return '（未命名）';
+  }
+
+  /// 复制/分享格式化文本（参照 diagnosis.toCopyText 风格；空字段跳过）。
+  String toShareText() {
+    final buf = StringBuffer();
+    final title = displayName == '（未命名）' ? '#$seq' : '#$seq  $displayName';
+    buf.writeln('倪师医案 $title');
+    buf.writeln('─────────────────');
+    void section(String label, String value) {
+      if (value.trim().isEmpty) return;
+      buf.writeln('\n$label:');
+      buf.write(value.trim());
+    }
+
+    section('诊断', diagnosis);
+    section('病机', mechanism);
+    section('方剂', formula);
+    section('治法', method);
+    section('结果', result);
+    section('观点', view);
+    buf.writeln('\n─────────────────');
+    buf.write('汉唐中医 · 倪海厦六经辨证（传统文化参考，非医疗建议）');
+    return buf.toString();
   }
 }
 

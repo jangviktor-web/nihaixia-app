@@ -3,18 +3,21 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../data/medical_case_data.dart';
 import '../data/formula_repository.dart';
 import '../data/herb_repository.dart';
 import '../data/chinese_convert.dart';
+import '../data/database_helper.dart';
 import 'formula_detail_screen.dart';
 import 'herb_detail_screen.dart';
+import 'medical_case_insights_screen.dart';
 
 /// 倪师医案库（1257 例）可搜索浏览。
 /// 运行时解析 assets/medical_cases/cases_table.md，按诊断/方剂/结果/观点全文检索
 /// （简繁归一：繁体原文可被简体关键词命中）。支持 300ms 防抖、关键词高亮、
-/// 年份/治法筛选、方剂数/药数徽标。
+/// 年份/治法/收藏/最近浏览筛选、方剂数/药数徽标、数据洞察入口。
 class MedicalCaseLibraryScreen extends StatefulWidget {
   const MedicalCaseLibraryScreen({super.key});
 
@@ -27,6 +30,7 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
   static const _debounceDelay = Duration(milliseconds: 300);
   static const _maxYearChips = 8;
   static const _maxMethodChips = 8;
+  static const _recentLimit = 20;
 
   late Future<List<MedicalCase>> _future;
   final TextEditingController _searchCtrl = TextEditingController();
@@ -37,6 +41,9 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
   List<String> _methods = [];
   String? _year; // null = 全部
   String? _method; // null = 全部
+  String? _view; // null=全部 | 'fav'=收藏 | 'recent'=最近浏览
+  Set<int> _favSeqs = {};
+  List<int> _recentSeqs = [];
 
   @override
   void initState() {
@@ -52,11 +59,25 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
   }
 
   Future<List<MedicalCase>> _load() async {
-    final md = await rootBundle.loadString('assets/medical_cases/cases_table.md');
+    final md =
+        await rootBundle.loadString('assets/medical_cases/cases_table.md');
     _all = parseMedicalCaseTable(md);
     _years = _computeYears(_all);
     _methods = _computeMethods(_all);
+    // 异步刷新收藏/最近浏览（不阻塞列表渲染）
+    _refreshFavRecent();
     return _all;
+  }
+
+  Future<void> _refreshFavRecent() async {
+    final db = DatabaseHelper.instance;
+    final favs = await db.getBookmarkedMedicalCaseSeqs();
+    final recents = await db.getRecentMedicalCaseSeqs(limit: _recentLimit);
+    if (!mounted) return;
+    setState(() {
+      _favSeqs = favs.toSet();
+      _recentSeqs = recents;
+    });
   }
 
   void _onQueryChanged(String v) {
@@ -105,23 +126,60 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
     return m?.group(0);
   }
 
-  /// 搜索与筛选 AND 组合。
+  /// 搜索 + 年份 + 治法 + 视图（收藏/最近浏览）AND 组合；最近浏览按时间倒序。
   List<MedicalCase> get _filtered {
     final q = _query;
     final year = _year;
     final method = _method;
-    return _all.where((c) {
+    final view = _view;
+    final list = _all.where((c) {
       if (q.isNotEmpty && !c.matches(q)) return false;
       if (year != null && _yearOf(c.date) != year) return false;
       if (method != null && c.method.trim() != method) return false;
+      if (view == 'fav' && !_favSeqs.contains(c.seq)) return false;
+      if (view == 'recent' && !_recentSeqs.contains(c.seq)) return false;
       return true;
     }).toList();
+    if (view == 'recent') {
+      final order = {
+        for (var i = 0; i < _recentSeqs.length; i++) _recentSeqs[i]: i,
+      };
+      list.sort(
+          (a, b) => (order[a.seq] ?? 0).compareTo(order[b.seq] ?? 0));
+    }
+    return list;
+  }
+
+  Future<void> _openInsights() async {
+    if (_all.isEmpty) return;
+    final diagnosis = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(builder: (_) => MedicalCaseInsightsScreen(all: _all)),
+    );
+    if (diagnosis == null || diagnosis.isEmpty || !mounted) return;
+    _debounce?.cancel();
+    _searchCtrl.text = diagnosis;
+    setState(() => _query = diagnosis);
+  }
+
+  Future<void> _clearRecent() async {
+    await DatabaseHelper.instance.clearMedicalCaseRecent();
+    await _refreshFavRecent();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('倪师医案库')),
+      appBar: AppBar(
+        title: const Text('倪师医案库'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.insights),
+            tooltip: '数据统计',
+            onPressed: _openInsights,
+          ),
+        ],
+      ),
       body: FutureBuilder<List<MedicalCase>>(
         future: _future,
         builder: (context, snapshot) {
@@ -172,108 +230,161 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
                         selected: _method,
                         onChanged: (v) => setState(() => _method = v),
                       ),
+                    _chipRow(
+                      label: '视图',
+                      options: const ['收藏', '最近浏览'],
+                      selected: _view,
+                      onChanged: (v) => setState(() => _view = v),
+                    ),
                   ],
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    '共 ${filtered.length} / ${_all.length} 例',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(12, 6, 12, 16),
-                  itemCount: filtered.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 8),
-                  itemBuilder: (context, index) {
-                    final c = filtered[index];
-                    return Card(
-                      margin: EdgeInsets.zero,
-                      child: ListTile(
-                        title: RichText(
-                          text: TextSpan(
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                            children: [
-                              TextSpan(text: '#${c.seq}  '),
-                              ..._highlighted(
-                                c.displayName,
-                                _query,
-                                const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (c.patient.isNotEmpty)
-                              RichText(
-                                text: TextSpan(
-                                  children: _highlighted(
-                                    c.patient,
-                                    _query,
-                                    const TextStyle(fontSize: 12),
-                                  ),
-                                ),
-                              ),
-                            if (c.formulaNames.isNotEmpty ||
-                                c.herbNames.isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 2),
-                                child: Text(
-                                  '${c.formulaNames.length} 方 · ${c.herbNames.length} 药',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
-                                    color: Theme.of(context).colorScheme.primary,
-                                  ),
-                                ),
-                              ),
-                            if (c.formula.isNotEmpty)
-                              RichText(
-                                text: TextSpan(
-                                  children: _highlighted(
-                                    '方：${_clip(c.formula, 36)}',
-                                    _query,
-                                    const TextStyle(fontSize: 12),
-                                  ),
-                                ),
-                              ),
-                            if (c.result.isNotEmpty)
-                              RichText(
-                                text: TextSpan(
-                                  children: _highlighted(
-                                    '效：${_clip(c.result, 36)}',
-                                    _query,
-                                    const TextStyle(fontSize: 12),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                        isThreeLine: true,
-                        trailing: const Icon(Icons.chevron_right),
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => MedicalCaseDetailScreen(c: c),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Text(
+                            '共 ${filtered.length} / ${_all.length} 例',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color:
+                                  Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
                           ),
                         ),
                       ),
-                    );
-                  },
+                    ),
+                    if (_view == 'recent')
+                      TextButton(
+                        onPressed: _clearRecent,
+                        style: TextButton.styleFrom(
+                          visualDensity: VisualDensity.compact,
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                        ),
+                        child: const Text('清空最近',
+                            style: TextStyle(fontSize: 12)),
+                      ),
+                  ],
                 ),
+              ),
+              Expanded(
+                child: filtered.isEmpty
+                    ? Center(
+                        child: Text(
+                          _view == 'fav'
+                              ? '暂无收藏医案\n在医案详情页点击书签收藏'
+                              : _view == 'recent'
+                                  ? '暂无最近浏览'
+                                  : '无匹配医案',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 13,
+                            height: 1.6,
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      )
+                    : ListView.separated(
+                        padding: const EdgeInsets.fromLTRB(12, 6, 12, 16),
+                        itemCount: filtered.length,
+                        separatorBuilder: (_, _) => const SizedBox(height: 8),
+                        itemBuilder: (context, index) {
+                          final c = filtered[index];
+                          return Card(
+                            margin: EdgeInsets.zero,
+                            child: ListTile(
+                              title: RichText(
+                                text: TextSpan(
+                                  style:
+                                      const TextStyle(fontWeight: FontWeight.bold),
+                                  children: [
+                                    TextSpan(text: '#${c.seq}  '),
+                                    ..._highlighted(
+                                      c.displayName,
+                                      _query,
+                                      const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (c.patient.isNotEmpty)
+                                    RichText(
+                                      text: TextSpan(
+                                        children: _highlighted(
+                                          c.patient,
+                                          _query,
+                                          const TextStyle(fontSize: 12),
+                                        ),
+                                      ),
+                                    ),
+                                  if (c.formulaNames.isNotEmpty ||
+                                      c.herbNames.isNotEmpty)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 2),
+                                      child: Text(
+                                        '${c.formulaNames.length} 方 · ${c.herbNames.length} 药',
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w600,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
+                                      ),
+                                    ),
+                                  if (c.formula.isNotEmpty)
+                                    RichText(
+                                      text: TextSpan(
+                                        children: _highlighted(
+                                          '方：${_clip(c.formula, 36)}',
+                                          _query,
+                                          const TextStyle(fontSize: 12),
+                                        ),
+                                      ),
+                                    ),
+                                  if (c.result.isNotEmpty)
+                                    RichText(
+                                      text: TextSpan(
+                                        children: _highlighted(
+                                          '效：${_clip(c.result, 36)}',
+                                          _query,
+                                          const TextStyle(fontSize: 12),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              isThreeLine: true,
+                              trailing: const Icon(Icons.chevron_right),
+                              onTap: () async {
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => MedicalCaseDetailScreen(
+                                      c: c,
+                                      allCases: _all,
+                                    ),
+                                  ),
+                                );
+                                // 返回后刷新收藏/最近浏览状态
+                                if (mounted) await _refreshFavRecent();
+                              },
+                            ),
+                          );
+                        },
+                      ),
               ),
             ],
           );
@@ -377,10 +488,73 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
   String _clip(String s, int n) => s.length > n ? '${s.substring(0, n)}…' : s;
 }
 
-/// 单例医案详情：12 字段逐条展示。
-class MedicalCaseDetailScreen extends StatelessWidget {
+/// 医案详情：12 字段逐条展示 + 收藏/复制/分享 + 相关医案。
+class MedicalCaseDetailScreen extends StatefulWidget {
   final MedicalCase c;
-  const MedicalCaseDetailScreen({super.key, required this.c});
+  final List<MedicalCase>? allCases;
+  const MedicalCaseDetailScreen({super.key, required this.c, this.allCases});
+
+  @override
+  State<MedicalCaseDetailScreen> createState() =>
+      _MedicalCaseDetailScreenState();
+}
+
+class _MedicalCaseDetailScreenState extends State<MedicalCaseDetailScreen> {
+  bool _isBookmarked = false;
+
+  MedicalCase get c => widget.c;
+
+  @override
+  void initState() {
+    super.initState();
+    _recordRecent();
+    _checkBookmark();
+  }
+
+  Future<void> _recordRecent() async {
+    try {
+      await DatabaseHelper.instance.upsertMedicalCaseRecent(c.seq);
+    } catch (_) {
+      // 记录失败不阻断阅读
+    }
+  }
+
+  Future<void> _checkBookmark() async {
+    final ok = await DatabaseHelper.instance.isMedicalCaseBookmarked(c.seq);
+    if (mounted) setState(() => _isBookmarked = ok);
+  }
+
+  Future<void> _toggleBookmark() async {
+    final next = !_isBookmarked;
+    await DatabaseHelper.instance.setMedicalCaseBookmarked(c.seq, next);
+    if (!mounted) return;
+    setState(() => _isBookmarked = next);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(next ? '已收藏医案 #${c.seq}' : '已取消收藏'),
+        duration: const Duration(seconds: 1),
+      ),
+    );
+  }
+
+  Future<void> _copyText() async {
+    await Clipboard.setData(ClipboardData(text: c.toShareText()));
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('医案文本已复制'),
+        duration: Duration(seconds: 1),
+      ),
+    );
+  }
+
+  Future<void> _shareText() async {
+    await Share.share(c.toShareText());
+  }
+
+  /// 相关医案：委托 medical_case_data.findRelatedCases（同方剂优先，回退同诊断）。
+  List<MedicalCase> get _related =>
+      findRelatedCases(widget.c, widget.allCases ?? const [], max: 6);
 
   @override
   Widget build(BuildContext context) {
@@ -399,39 +573,152 @@ class MedicalCaseDetailScreen extends StatelessWidget {
       ('倪师观点', c.view),
     ];
 
+    final children = <Widget>[];
+    for (final (label, value) in rows) {
+      if (value.isEmpty) continue;
+      children.add(
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: cs.primary,
+                ),
+              ),
+              const SizedBox(height: 4),
+              label == '方剂组成'
+                  ? _FormulaRichText(formula: value)
+                  : Text(
+                      value,
+                      style: const TextStyle(fontSize: 14, height: 1.6),
+                    ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final related = _related;
+    if (related.isNotEmpty) {
+      children.add(
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '相关医案',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: cs.primary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                height: 112,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: related.length,
+                  separatorBuilder: (_, _) => const SizedBox(width: 8),
+                  itemBuilder: (context, index) =>
+                      _relatedCard(context, related[index]),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
-      appBar: AppBar(title: Text('#${c.seq}  ${c.displayName}')),
+      appBar: AppBar(
+        title: Text('#${c.seq}  ${c.displayName}'),
+        actions: [
+          IconButton(
+            icon: Icon(_isBookmarked ? Icons.bookmark : Icons.bookmark_border),
+            tooltip: _isBookmarked ? '取消收藏' : '收藏医案',
+            onPressed: _toggleBookmark,
+          ),
+          IconButton(
+            icon: const Icon(Icons.copy),
+            tooltip: '复制医案文本',
+            onPressed: _copyText,
+          ),
+          IconButton(
+            icon: const Icon(Icons.share),
+            tooltip: '分享医案',
+            onPressed: _shareText,
+          ),
+        ],
+      ),
       body: ListView.separated(
         padding: const EdgeInsets.all(14),
-        itemCount: rows.length,
+        itemCount: children.length,
         separatorBuilder: (_, _) => const Divider(height: 1),
-        itemBuilder: (context, index) {
-          final (label, value) = rows[index];
-          if (value.isEmpty) return const SizedBox.shrink();
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
+        itemBuilder: (context, index) => children[index],
+      ),
+    );
+  }
+
+  Widget _relatedCard(BuildContext context, MedicalCase other) {
+    final cs = Theme.of(context).colorScheme;
+    final shared =
+        c.formulaNames.where((n) => other.formulaNames.contains(n)).toList();
+    return SizedBox(
+      width: 210,
+      child: Card(
+        margin: EdgeInsets.zero,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => MedicalCaseDetailScreen(
+                  c: other,
+                  allCases: widget.allCases,
+                ),
+              ),
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 12,
+                  '#${other.seq}  ${other.displayName}',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 13,
                     fontWeight: FontWeight.bold,
-                    color: cs.primary,
                   ),
                 ),
-                const SizedBox(height: 4),
-                label == '方剂组成'
-                    ? _FormulaRichText(formula: value)
-                    : Text(
-                        value,
-                        style: const TextStyle(fontSize: 14, height: 1.6),
-                      ),
+                const SizedBox(height: 6),
+                if (shared.isNotEmpty)
+                  Text(
+                    '共方：${shared.join('、')}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 11, color: cs.primary),
+                  )
+                else
+                  Text(
+                    '同诊断',
+                    style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
+                  ),
               ],
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
