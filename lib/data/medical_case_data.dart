@@ -3,6 +3,111 @@
 /// 原始表格为 markdown（assets/medical_cases/cases_table.md，12 列）。
 /// 不在编译期展开为常量（避免 685KB 膨胀），改为运行时按行解析。
 /// 内容属传统文化参考，非医疗建议。
+///
+/// 索引增强（批1）：
+/// - [toSimplified] 简繁归一：繁体原文可被简体搜索命中；
+/// - [MedicalCase.formulaNames] / [MedicalCase.herbNames]：方剂/药材索引，
+///   供详情页可点跳转与后续相关医案/数据洞察；
+/// - [extractKnownNames]：箭头分段 + 噪声清洗 + 长度降序非重叠匹配 + 去重。
+library;
+
+import 'chinese_convert.dart';
+import 'formula_repository.dart';
+import 'herb_repository.dart';
+
+/// 从方剂字段提取已知方剂名（简繁归一 + 箭头分段 + 噪声清洗 + 长度降序 + 去重）。
+/// 返回命中的方剂名（FormulaRepository 正名）。
+List<String> extractFormulaNames(String formula) {
+  final candidates = FormulaRepository.getAll().map((f) => f.name).toList();
+  return extractKnownNames(formula, candidates, resolve: (c) => c);
+}
+
+/// 从方剂字段提取已知药材正名（精确 + 别名归一，不做模糊兜底，避免柴胡错跳）。
+/// 返回命中的药材正名（HerbRepository 正名，别名经 canonicalOf 归一）。
+List<String> extractHerbNames(String formula) {
+  final candidates = <String>{
+    ...HerbRepository.getAll().map((h) => h.name),
+    ...HerbRepository.aliasNames,
+  }.toList();
+  return extractKnownNames(
+    formula,
+    candidates,
+    resolve: (c) => HerbRepository.getExactByName(c)?.name,
+  );
+}
+
+/// 已知名称提取引擎（供方剂/药材索引复用，亦便于断言脚本直接验证）：
+/// 1. 按箭头（→ / ->）切分多段；
+/// 2. 每段做噪声清洗（HT 成药号 /（科中）/ 步骤编号 / 剂付尾注）；
+/// 3. 候选名按长度降序非重叠扫描（避免短名误吞长名，如「四逆汤」吞「茯苓四逆汤」）；
+/// 4. [resolve] 返回 null 表示未收录（不记录）；返回非 null 为实际收录名（药材归一为正名）；
+/// 5. 跨段结果去重（保持出现顺序）。
+List<String> extractKnownNames(
+  String rawText,
+  List<String> candidates, {
+  required String? Function(String candidate) resolve,
+}) {
+  final sorted = candidates
+      .where((c) => c.length >= 2)
+      .toSet()
+      .toList()
+    ..sort((a, b) => b.length.compareTo(a.length));
+  if (sorted.isEmpty) return const [];
+
+  final result = <String>[];
+  final segments = rawText.split(RegExp(r'→|->'));
+  for (final segRaw in segments) {
+    final seg = _cleanFormulaSegment(toSimplified(segRaw));
+    if (seg.isEmpty) continue;
+    final used = List<bool>.filled(seg.length, false);
+    for (final cand in sorted) {
+      final norm = toSimplified(cand);
+      if (norm.length > seg.length) continue;
+      var idx = 0;
+      while (true) {
+        final start = seg.indexOf(norm, idx);
+        if (start < 0) break;
+        final end = start + norm.length;
+        var overlapped = false;
+        for (var k = start; k < end; k++) {
+          if (used[k]) {
+            overlapped = true;
+            break;
+          }
+        }
+        if (!overlapped) {
+          final resolved = resolve(cand);
+          if (resolved != null) {
+            result.add(resolved);
+            for (var k = start; k < end; k++) {
+              used[k] = true;
+            }
+          }
+        }
+        idx = end;
+      }
+    }
+  }
+
+  final seen = <String>{};
+  return result.where((r) => seen.add(r)).toList();
+}
+
+/// 方剂字段单段噪声清洗：HT 成药号、括号编号、（科中）尾注、步骤编号、剂付尾注。
+String _cleanFormulaSegment(String seg) {
+  var s = seg.trim();
+  // HT 成药编号：HT-48 / HT48
+  s = s.replaceAll(RegExp(r'HT[-－]?\d+'), '');
+  // 括号编号：（1）（2）…（步骤标记）
+  s = s.replaceAll(RegExp(r'[（(]\d+[）)]'), '');
+  // （科中）尾注
+  s = s.replaceAll(RegExp(r'[（(]\s*科中\s*[）)]'), '');
+  // 步骤编号：数字 + [.、．)）]（仅去除编号标记，不误删「3錢」等剂量）
+  s = s.replaceAll(RegExp(r'\d+[.、．)）]'), '');
+  // 剂数/付数尾注：二剂/三付/貳付/5劑…
+  s = s.replaceAll(RegExp(r'[一二三四五六七八九十百\d貳贰]+[剂劑付]'), '');
+  return s.trim();
+}
 
 class MedicalCase {
   final int seq;
@@ -18,7 +123,7 @@ class MedicalCase {
   final String advice; // 生活医嘱
   final String view; // 倪海厦核心观点/评论
 
-  const MedicalCase({
+  MedicalCase({
     required this.seq,
     this.date = '',
     this.patient = '',
@@ -33,16 +138,23 @@ class MedicalCase {
     this.view = '',
   });
 
-  /// 全文检索命中（诊断/方剂/结果/观点/病机）。
+  /// 归一后的全文检索索引（简繁归一 + 小写），懒计算一次，供 [matches] 复用。
+  late final String _searchNorm = toSimplified(
+    '$diagnosis\n$formula\n$result\n$view\n$mechanism\n$patient',
+  ).toLowerCase();
+
+  /// 方剂索引：命中 FormulaRepository 的方剂名（简繁归一、去重、保持出现顺序）。
+  late final List<String> formulaNames = extractFormulaNames(formula);
+
+  /// 药材索引：命中 HerbRepository 的药材正名（精确+别名归一、去重、保持出现顺序）。
+  late final List<String> herbNames = extractHerbNames(formula);
+
+  /// 全文检索命中（诊断/方剂/结果/观点/病机/患者）。
+  /// 查询与字段均先 [toSimplified] 归一，繁体原文可被简体搜索命中。
   bool matches(String q) {
     if (q.isEmpty) return true;
-    final lower = q.toLowerCase();
-    return diagnosis.toLowerCase().contains(lower) ||
-        formula.toLowerCase().contains(lower) ||
-        result.toLowerCase().contains(lower) ||
-        view.toLowerCase().contains(lower) ||
-        mechanism.toLowerCase().contains(lower) ||
-        patient.toLowerCase().contains(lower);
+    final qn = toSimplified(q).toLowerCase();
+    return qn.isEmpty || _searchNorm.contains(qn);
   }
 
   /// 医案展示名：优先「主要诊断」，缺失时回退「中医病机」，再缺失显「（未命名）」。
@@ -84,7 +196,9 @@ List<MedicalCase> parseMedicalCaseTable(String md) {
 
     // 补齐至 12 列，防止短行越界
     final padded = List<String>.from(cells);
-    while (padded.length < 12) padded.add('');
+    while (padded.length < 12) {
+      padded.add('');
+    }
     // 源表以「---」作为空值占位，归一为空串以便详情页隐藏
     for (var i = 0; i < padded.length; i++) {
       if (padded[i] == '---') padded[i] = '';

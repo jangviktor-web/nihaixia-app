@@ -110,6 +110,10 @@ class HerbRepository {
   /// 将方剂组成名/别名归一到药库正名；若无需归一则返回原名。
   static String canonicalOf(String name) => _canonicalOf[name] ?? name;
 
+  /// 药材别名/炮制品名（_canonicalOf 键集合），供医案药材索引候选使用。
+  /// 例：炙甘草、生甘草、炮姜、山药、丹皮……本身不是药库条目的写法。
+  static List<String> get aliasNames => _canonicalOf.keys.toList();
+
   static List<Herb> getAll() => List.unmodifiable(_herbs);
 
   static List<Herb> getByCategory(String category) {
