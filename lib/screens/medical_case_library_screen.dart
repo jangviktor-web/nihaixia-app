@@ -2,16 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/gestures.dart';
-import 'package:share_plus/share_plus.dart';
 
-import '../data/medical_case_data.dart';
-import '../data/formula_repository.dart';
-import '../data/herb_repository.dart';
-import '../data/chinese_convert.dart';
 import '../data/database_helper.dart';
-import 'formula_detail_screen.dart';
-import 'herb_detail_screen.dart';
+import '../data/medical_case_data.dart';
+import '../widgets/medical_case_filter_bar.dart';
+import '../widgets/medical_case_list_card.dart';
+import 'medical_case_detail_screen.dart';
 import 'medical_case_insights_screen.dart';
 
 /// 倪师医案库（1257 例）可搜索浏览。
@@ -42,8 +38,8 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
   String? _year; // null = 全部
   String? _method; // null = 全部
   String? _view; // null=全部 | 'fav'=收藏 | 'recent'=最近浏览
-  Set<int> _favSeqs = {};
-  List<int> _recentSeqs = [];
+  List<int> _favSeqs = []; // 收藏 seq，按收藏时间倒序
+  List<int> _recentSeqs = []; // 最近浏览 seq，按浏览时间倒序
 
   @override
   void initState() {
@@ -75,7 +71,7 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
     final recents = await db.getRecentMedicalCaseSeqs(limit: _recentLimit);
     if (!mounted) return;
     setState(() {
-      _favSeqs = favs.toSet();
+      _favSeqs = favs;
       _recentSeqs = recents;
     });
   }
@@ -126,29 +122,18 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
     return m?.group(0);
   }
 
-  /// 搜索 + 年份 + 治法 + 视图（收藏/最近浏览）AND 组合；最近浏览按时间倒序。
-  List<MedicalCase> get _filtered {
-    final q = _query;
-    final year = _year;
-    final method = _method;
-    final view = _view;
-    final list = _all.where((c) {
-      if (q.isNotEmpty && !c.matches(q)) return false;
-      if (year != null && _yearOf(c.date) != year) return false;
-      if (method != null && c.method.trim() != method) return false;
-      if (view == 'fav' && !_favSeqs.contains(c.seq)) return false;
-      if (view == 'recent' && !_recentSeqs.contains(c.seq)) return false;
-      return true;
-    }).toList();
-    if (view == 'recent') {
-      final order = {
-        for (var i = 0; i < _recentSeqs.length; i++) _recentSeqs[i]: i,
-      };
-      list.sort(
-          (a, b) => (order[a.seq] ?? 0).compareTo(order[b.seq] ?? 0));
-    }
-    return list;
-  }
+  /// 搜索 + 年份 + 治法 + 视图（收藏/最近浏览）AND 组合；
+  /// 收藏按收藏时间倒序、最近浏览按浏览时间倒序（委托 filterMedicalCases）。
+  List<MedicalCase> get _filtered => filterMedicalCases(
+        _all,
+        query: _query,
+        year: _year,
+        method: _method,
+        view: _view,
+        favSeqs: _favSeqs,
+        recentSeqs: _recentSeqs,
+        yearOf: _yearOf,
+      );
 
   Future<void> _openInsights() async {
     if (_all.isEmpty) return;
@@ -157,14 +142,31 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
       MaterialPageRoute(builder: (_) => MedicalCaseInsightsScreen(all: _all)),
     );
     if (diagnosis == null || diagnosis.isEmpty || !mounted) return;
+    // 回填搜索，并清空筛选避免回填后意外 0 结果
     _debounce?.cancel();
     _searchCtrl.text = diagnosis;
-    setState(() => _query = diagnosis);
+    setState(() {
+      _query = diagnosis;
+      _year = null;
+      _method = null;
+      _view = null;
+    });
   }
 
   Future<void> _clearRecent() async {
     await DatabaseHelper.instance.clearMedicalCaseRecent();
     await _refreshFavRecent();
+  }
+
+  Future<void> _openDetail(MedicalCase c) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => MedicalCaseDetailScreen(c: c, allCases: _all),
+      ),
+    );
+    // 返回后刷新收藏/最近浏览状态
+    if (mounted) await _refreshFavRecent();
   }
 
   @override
@@ -203,8 +205,8 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
                           )
                         : null,
                     isDense: true,
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 10),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -212,49 +214,29 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
                   onChanged: _onQueryChanged,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _chipRow(
-                      label: '年份',
-                      options: _years,
-                      selected: _year,
-                      onChanged: (v) => setState(() => _year = v),
-                    ),
-                    if (_methods.isNotEmpty)
-                      _chipRow(
-                        label: '治法',
-                        options: _methods,
-                        selected: _method,
-                        onChanged: (v) => setState(() => _method = v),
-                      ),
-                    _chipRow(
-                      label: '视图',
-                      options: const ['收藏', '最近浏览'],
-                      selected: _view,
-                      onChanged: (v) => setState(() => _view = v),
-                    ),
-                  ],
-                ),
+              MedicalCaseFilterBar(
+                years: _years,
+                methods: _methods,
+                year: _year,
+                method: _method,
+                view: _view,
+                onYearChanged: (v) => setState(() => _year = v),
+                onMethodChanged: (v) => setState(() => _method = v),
+                onViewChanged: (v) => setState(() => _view = v),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 child: Row(
                   children: [
                     Expanded(
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: Text(
-                            '共 ${filtered.length} / ${_all.length} 例',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color:
-                                  Theme.of(context).colorScheme.onSurfaceVariant,
-                            ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Text(
+                          '共 ${filtered.length} / ${_all.length} 例',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ),
@@ -296,92 +278,10 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
                         separatorBuilder: (_, _) => const SizedBox(height: 8),
                         itemBuilder: (context, index) {
                           final c = filtered[index];
-                          return Card(
-                            margin: EdgeInsets.zero,
-                            child: ListTile(
-                              title: RichText(
-                                text: TextSpan(
-                                  style:
-                                      const TextStyle(fontWeight: FontWeight.bold),
-                                  children: [
-                                    TextSpan(text: '#${c.seq}  '),
-                                    ..._highlighted(
-                                      c.displayName,
-                                      _query,
-                                      const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (c.patient.isNotEmpty)
-                                    RichText(
-                                      text: TextSpan(
-                                        children: _highlighted(
-                                          c.patient,
-                                          _query,
-                                          const TextStyle(fontSize: 12),
-                                        ),
-                                      ),
-                                    ),
-                                  if (c.formulaNames.isNotEmpty ||
-                                      c.herbNames.isNotEmpty)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 2),
-                                      child: Text(
-                                        '${c.formulaNames.length} 方 · ${c.herbNames.length} 药',
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w600,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
-                                        ),
-                                      ),
-                                    ),
-                                  if (c.formula.isNotEmpty)
-                                    RichText(
-                                      text: TextSpan(
-                                        children: _highlighted(
-                                          '方：${_clip(c.formula, 36)}',
-                                          _query,
-                                          const TextStyle(fontSize: 12),
-                                        ),
-                                      ),
-                                    ),
-                                  if (c.result.isNotEmpty)
-                                    RichText(
-                                      text: TextSpan(
-                                        children: _highlighted(
-                                          '效：${_clip(c.result, 36)}',
-                                          _query,
-                                          const TextStyle(fontSize: 12),
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                              isThreeLine: true,
-                              trailing: const Icon(Icons.chevron_right),
-                              onTap: () async {
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => MedicalCaseDetailScreen(
-                                      c: c,
-                                      allCases: _all,
-                                    ),
-                                  ),
-                                );
-                                // 返回后刷新收藏/最近浏览状态
-                                if (mounted) await _refreshFavRecent();
-                              },
-                            ),
+                          return MedicalCaseListCard(
+                            c: c,
+                            query: _query,
+                            onTap: () => _openDetail(c),
                           );
                         },
                       ),
@@ -391,467 +291,5 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
         },
       ),
     );
-  }
-
-  /// 横向 FilterChip 行（含「全部」）。
-  Widget _chipRow({
-    required String label,
-    required List<String> options,
-    required String? selected,
-    required ValueChanged<String?> onChanged,
-  }) {
-    final labelColor = Theme.of(context).colorScheme.onSurfaceVariant;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 38,
-            child: Text(
-              label,
-              style: TextStyle(fontSize: 11, color: labelColor),
-            ),
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _chip('全部', selected == null, () => onChanged(null)),
-                  for (final o in options) ...[
-                    const SizedBox(width: 6),
-                    _chip(o, selected == o, () => onChanged(o)),
-                  ],
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _chip(String label, bool selected, VoidCallback onTap) {
-    return FilterChip(
-      label: Text(label, style: const TextStyle(fontSize: 11)),
-      selected: selected,
-      showCheckmark: false,
-      onSelected: (_) => onTap(),
-      visualDensity: VisualDensity.compact,
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-    );
-  }
-
-  /// 关键词高亮：先 toSimplified 归一对齐，逐字符找命中区间，高亮落回原文位置。
-  List<InlineSpan> _highlighted(String text, String query, TextStyle base) {
-    final cs = Theme.of(context).colorScheme;
-    final hl = base.copyWith(color: cs.primary, fontWeight: FontWeight.bold);
-    if (query.isEmpty || text.isEmpty) {
-      return [TextSpan(text: text, style: base)];
-    }
-    final normText = toSimplified(text).toLowerCase();
-    final normQuery = toSimplified(query).toLowerCase();
-    if (normQuery.isEmpty) return [TextSpan(text: text, style: base)];
-    final mask = List<bool>.filled(text.length, false);
-    var idx = 0;
-    while (true) {
-      final start = normText.indexOf(normQuery, idx);
-      if (start < 0) break;
-      final end = start + normQuery.length;
-      for (var k = start; k < end && k < mask.length; k++) {
-        mask[k] = true;
-      }
-      idx = end;
-    }
-    final spans = <InlineSpan>[];
-    var i = 0;
-    while (i < text.length) {
-      if (!mask[i]) {
-        var j = i;
-        while (j < text.length && !mask[j]) {
-          j++;
-        }
-        spans.add(TextSpan(text: text.substring(i, j), style: base));
-        i = j;
-      } else {
-        var j = i;
-        while (j < text.length && mask[j]) {
-          j++;
-        }
-        spans.add(TextSpan(text: text.substring(i, j), style: hl));
-        i = j;
-      }
-    }
-    return spans;
-  }
-
-  String _clip(String s, int n) => s.length > n ? '${s.substring(0, n)}…' : s;
-}
-
-/// 医案详情：12 字段逐条展示 + 收藏/复制/分享 + 相关医案。
-class MedicalCaseDetailScreen extends StatefulWidget {
-  final MedicalCase c;
-  final List<MedicalCase>? allCases;
-  const MedicalCaseDetailScreen({super.key, required this.c, this.allCases});
-
-  @override
-  State<MedicalCaseDetailScreen> createState() =>
-      _MedicalCaseDetailScreenState();
-}
-
-class _MedicalCaseDetailScreenState extends State<MedicalCaseDetailScreen> {
-  bool _isBookmarked = false;
-
-  MedicalCase get c => widget.c;
-
-  @override
-  void initState() {
-    super.initState();
-    _recordRecent();
-    _checkBookmark();
-  }
-
-  Future<void> _recordRecent() async {
-    try {
-      await DatabaseHelper.instance.upsertMedicalCaseRecent(c.seq);
-    } catch (_) {
-      // 记录失败不阻断阅读
-    }
-  }
-
-  Future<void> _checkBookmark() async {
-    final ok = await DatabaseHelper.instance.isMedicalCaseBookmarked(c.seq);
-    if (mounted) setState(() => _isBookmarked = ok);
-  }
-
-  Future<void> _toggleBookmark() async {
-    final next = !_isBookmarked;
-    await DatabaseHelper.instance.setMedicalCaseBookmarked(c.seq, next);
-    if (!mounted) return;
-    setState(() => _isBookmarked = next);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(next ? '已收藏医案 #${c.seq}' : '已取消收藏'),
-        duration: const Duration(seconds: 1),
-      ),
-    );
-  }
-
-  Future<void> _copyText() async {
-    await Clipboard.setData(ClipboardData(text: c.toShareText()));
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('医案文本已复制'),
-        duration: Duration(seconds: 1),
-      ),
-    );
-  }
-
-  Future<void> _shareText() async {
-    await Share.share(c.toShareText());
-  }
-
-  /// 相关医案：委托 medical_case_data.findRelatedCases（同方剂优先，回退同诊断）。
-  List<MedicalCase> get _related =>
-      findRelatedCases(widget.c, widget.allCases ?? const [], max: 6);
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final rows = <(String, String)>[
-      ('日期', c.date),
-      ('患者', c.patient),
-      ('主要诊断', c.diagnosis),
-      ('中医病机', c.mechanism),
-      ('西医背景', c.western),
-      ('方剂组成', c.formula),
-      ('针灸方案', c.acupuncture),
-      ('治法原则', c.method),
-      ('疗程结果', c.result),
-      ('生活医嘱', c.advice),
-      ('倪师观点', c.view),
-    ];
-
-    final children = <Widget>[];
-    for (final (label, value) in rows) {
-      if (value.isEmpty) continue;
-      children.add(
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: cs.primary,
-                ),
-              ),
-              const SizedBox(height: 4),
-              label == '方剂组成'
-                  ? _FormulaRichText(formula: value)
-                  : Text(
-                      value,
-                      style: const TextStyle(fontSize: 14, height: 1.6),
-                    ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    final related = _related;
-    if (related.isNotEmpty) {
-      children.add(
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '相关医案',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: cs.primary,
-                ),
-              ),
-              const SizedBox(height: 8),
-              SizedBox(
-                height: 112,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: related.length,
-                  separatorBuilder: (_, _) => const SizedBox(width: 8),
-                  itemBuilder: (context, index) =>
-                      _relatedCard(context, related[index]),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('#${c.seq}  ${c.displayName}'),
-        actions: [
-          IconButton(
-            icon: Icon(_isBookmarked ? Icons.bookmark : Icons.bookmark_border),
-            tooltip: _isBookmarked ? '取消收藏' : '收藏医案',
-            onPressed: _toggleBookmark,
-          ),
-          IconButton(
-            icon: const Icon(Icons.copy),
-            tooltip: '复制医案文本',
-            onPressed: _copyText,
-          ),
-          IconButton(
-            icon: const Icon(Icons.share),
-            tooltip: '分享医案',
-            onPressed: _shareText,
-          ),
-        ],
-      ),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(14),
-        itemCount: children.length,
-        separatorBuilder: (_, _) => const Divider(height: 1),
-        itemBuilder: (context, index) => children[index],
-      ),
-    );
-  }
-
-  Widget _relatedCard(BuildContext context, MedicalCase other) {
-    final cs = Theme.of(context).colorScheme;
-    final shared =
-        c.formulaNames.where((n) => other.formulaNames.contains(n)).toList();
-    return SizedBox(
-      width: 210,
-      child: Card(
-        margin: EdgeInsets.zero,
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => MedicalCaseDetailScreen(
-                  c: other,
-                  allCases: widget.allCases,
-                ),
-              ),
-            );
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '#${other.seq}  ${other.displayName}',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                if (shared.isNotEmpty)
-                  Text(
-                    '共方：${shared.join('、')}',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 11, color: cs.primary),
-                  )
-                else
-                  Text(
-                    '同诊断',
-                    style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// 方剂组成字段富文本：把正文中的已知方剂名/药材名渲染为可点链接
-/// （方剂 → FormulaDetailScreen；药材 → HerbDetailScreen）。
-/// 先 toSimplified 归一匹配，点击目标用仓库正名解析，跳转不受繁体原文影响；
-/// 文本按原文渲染，实现医案↔方剂/药材交叉跳转。
-class _FormulaRichText extends StatelessWidget {
-  final String formula;
-  const _FormulaRichText({required this.formula});
-
-  @override
-  Widget build(BuildContext context) {
-    final base = DefaultTextStyle.of(context).style;
-    final cs = Theme.of(context).colorScheme;
-    final linkStyle = TextStyle(
-      color: cs.primary,
-      decoration: TextDecoration.underline,
-      fontSize: 14,
-      height: 1.6,
-    );
-    final spans = _buildSpans(context, formula, base, linkStyle);
-    return RichText(
-      text: TextSpan(
-        style: base.copyWith(fontSize: 14, height: 1.6),
-        children: spans,
-      ),
-    );
-  }
-
-  /// 合并候选（方剂 + 药材别名），长度降序、同长方剂优先，非重叠扫描原文。
-  List<InlineSpan> _buildSpans(
-    BuildContext context,
-    String text,
-    TextStyle base,
-    TextStyle link,
-  ) {
-    final candidates = <({String name, bool isFormula})>[
-      for (final f in FormulaRepository.getAll())
-        if (f.name.length >= 2) (name: f.name, isFormula: true),
-      for (final h in HerbRepository.getAll())
-        if (h.name.length >= 2) (name: h.name, isFormula: false),
-      for (final a in HerbRepository.aliasNames)
-        if (a.length >= 2) (name: a, isFormula: false),
-    ]..sort((a, b) {
-        final byLen = b.name.length.compareTo(a.name.length);
-        if (byLen != 0) return byLen;
-        return (a.isFormula ? 0 : 1).compareTo(b.isFormula ? 0 : 1);
-      });
-
-    final norm = toSimplified(text);
-    final used = List<bool>.filled(text.length, false);
-    final hits = <({int start, int end, String name, bool isFormula})>[];
-    for (final cand in candidates) {
-      final name = toSimplified(cand.name);
-      if (name.length > norm.length) continue;
-      var idx = 0;
-      while (true) {
-        final start = norm.indexOf(name, idx);
-        if (start < 0) break;
-        final end = start + name.length;
-        var overlapped = false;
-        for (var k = start; k < end; k++) {
-          if (used[k]) {
-            overlapped = true;
-            break;
-          }
-        }
-        if (!overlapped) {
-          // 药材须精确+别名命中（不做模糊兜底，避免柴胡错跳含柴胡的方剂）
-          final ok = cand.isFormula ||
-              HerbRepository.getExactByName(cand.name) != null;
-          if (ok) {
-            hits.add((
-              start: start,
-              end: end,
-              name: cand.name,
-              isFormula: cand.isFormula,
-            ));
-            for (var k = start; k < end; k++) {
-              used[k] = true;
-            }
-          }
-        }
-        idx = end;
-      }
-    }
-    hits.sort((a, b) => a.start.compareTo(b.start));
-
-    final spans = <InlineSpan>[];
-    var i = 0;
-    for (final hit in hits) {
-      if (hit.start > i) {
-        spans.add(TextSpan(text: text.substring(i, hit.start)));
-      }
-      final label = text.substring(hit.start, hit.end);
-      spans.add(
-        TextSpan(
-          text: label,
-          style: link,
-          recognizer: TapGestureRecognizer()
-            ..onTap = () {
-              if (hit.isFormula) {
-                final f = FormulaRepository.getByName(hit.name);
-                if (f != null && context.mounted) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => FormulaDetailScreen(formula: f),
-                    ),
-                  );
-                }
-              } else {
-                final h = HerbRepository.getExactByName(hit.name);
-                if (h != null && context.mounted) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => HerbDetailScreen(herb: h),
-                    ),
-                  );
-                }
-              }
-            },
-        ),
-      );
-      i = hit.end;
-    }
-    if (i < text.length) {
-      spans.add(TextSpan(text: text.substring(i)));
-    }
-    return spans;
   }
 }

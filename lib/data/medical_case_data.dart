@@ -15,25 +15,39 @@ import 'chinese_convert.dart';
 import 'formula_repository.dart';
 import 'herb_repository.dart';
 
+/// 全局提取缓存：按方剂字段原文 memo，同文本不重算（全量 1113 例提取约 3.4s，
+/// memo 后重复打开详情/洞察/相关医案命中缓存，避免反复卡顿）。
+final Map<String, List<String>> _formulaNameCache = {};
+final Map<String, List<String>> _herbNameCache = {};
+
 /// 从方剂字段提取已知方剂名（简繁归一 + 箭头分段 + 噪声清洗 + 长度降序 + 去重）。
-/// 返回命中的方剂名（FormulaRepository 正名）。
+/// 返回命中的方剂名（FormulaRepository 正名）。按原文 memo 缓存，返回不可变列表。
 List<String> extractFormulaNames(String formula) {
-  final candidates = FormulaRepository.getAll().map((f) => f.name).toList();
-  return extractKnownNames(formula, candidates, resolve: (c) => c);
+  return _formulaNameCache.putIfAbsent(formula, () {
+    final candidates = FormulaRepository.getAll().map((f) => f.name).toList();
+    return List.unmodifiable(
+      extractKnownNames(formula, candidates, resolve: (c) => c),
+    );
+  });
 }
 
 /// 从方剂字段提取已知药材正名（精确 + 别名归一，不做模糊兜底，避免柴胡错跳）。
 /// 返回命中的药材正名（HerbRepository 正名，别名经 canonicalOf 归一）。
+/// 按原文 memo 缓存，返回不可变列表。
 List<String> extractHerbNames(String formula) {
-  final candidates = <String>{
-    ...HerbRepository.getAll().map((h) => h.name),
-    ...HerbRepository.aliasNames,
-  }.toList();
-  return extractKnownNames(
-    formula,
-    candidates,
-    resolve: (c) => HerbRepository.getExactByName(c)?.name,
-  );
+  return _herbNameCache.putIfAbsent(formula, () {
+    final candidates = <String>{
+      ...HerbRepository.getAll().map((h) => h.name),
+      ...HerbRepository.aliasNames,
+    }.toList();
+    return List.unmodifiable(
+      extractKnownNames(
+        formula,
+        candidates,
+        resolve: (c) => HerbRepository.getExactByName(c)?.name,
+      ),
+    );
+  });
 }
 
 /// 已知名称提取引擎（供方剂/药材索引复用，亦便于断言脚本直接验证）：
@@ -102,8 +116,8 @@ String _cleanFormulaSegment(String seg) {
   s = s.replaceAll(RegExp(r'[（(]\d+[）)]'), '');
   // （科中）尾注
   s = s.replaceAll(RegExp(r'[（(]\s*科中\s*[）)]'), '');
-  // 步骤编号：数字 + [.、．)）]（仅去除编号标记，不误删「3錢」等剂量）
-  s = s.replaceAll(RegExp(r'\d+[.、．)）]'), '');
+  // 步骤编号：仅段首 数字 + [.、．)）]（避免误删「6.5錢」中的小数「6.」）
+  s = s.replaceAll(RegExp(r'^\d+[.、．)）]'), '');
   // 剂数/付数尾注：二剂/三付/貳付/5劑…
   s = s.replaceAll(RegExp(r'[一二三四五六七八九十百\d貳贰]+[剂劑付]'), '');
   return s.trim();
@@ -138,6 +152,42 @@ List<MedicalCase> findRelatedCases(
       .toList()
     ..sort((a, b) => a.seq.compareTo(b.seq));
   return same.take(max).toList();
+}
+
+/// 医案列表组合过滤（搜索 + 年份 + 治法 + 视图），供列表页与断言复用。
+/// [view]：null=全部 | 'fav'=收藏 | 'recent'=最近浏览；
+/// [favSeqs]/[recentSeqs] 需已按时间倒序传入，返回列表对 fav/recent 保持该顺序；
+/// [yearOf] 缺省用内置年份提取（date 字段首个 19xx/20xx）。
+List<MedicalCase> filterMedicalCases(
+  List<MedicalCase> all, {
+  String query = '',
+  String? year,
+  String? method,
+  String? view,
+  List<int> favSeqs = const [],
+  List<int> recentSeqs = const [],
+  String? Function(String date)? yearOf,
+}) {
+  final y = yearOf ?? _extractYear;
+  final list = all.where((c) {
+    if (query.isNotEmpty && !c.matches(query)) return false;
+    if (year != null && y(c.date) != year) return false;
+    if (method != null && c.method.trim() != method) return false;
+    if (view == 'fav' && !favSeqs.contains(c.seq)) return false;
+    if (view == 'recent' && !recentSeqs.contains(c.seq)) return false;
+    return true;
+  }).toList();
+  if (view == 'fav' || view == 'recent') {
+    final seqs = view == 'fav' ? favSeqs : recentSeqs;
+    final order = {for (var i = 0; i < seqs.length; i++) seqs[i]: i};
+    list.sort((a, b) => (order[a.seq] ?? 0).compareTo(order[b.seq] ?? 0));
+  }
+  return list;
+}
+
+String? _extractYear(String date) {
+  final m = RegExp(r'(19|20)\d{2}').firstMatch(date);
+  return m?.group(0);
 }
 
 class MedicalCase {
