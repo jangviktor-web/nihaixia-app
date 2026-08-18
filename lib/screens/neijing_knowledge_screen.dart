@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../data/neijing_data.dart';
 import 'neijing_library_screen.dart';
 import 'neijing_search_screen.dart';
+import '../theme/app_colors.dart';
 
 /// 《人纪·黄帝内经》知识速查：五脏六腑脏象 / 五色望诊 / 常见脉象。
 /// AppBar 右侧：阅读库（72 篇全文）+ 全文搜索入口。
@@ -84,7 +85,7 @@ class _ZangFuTab extends StatelessWidget {
         Text(
           '出处：《灵兰秘典论》《六节藏象论》《阴阳应象大论》· 倪师讲解 · 传统文化参考',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 11, color: cs.outline),
+          style: TextStyle(fontSize: 10, color: cs.outline),
         ),
       ],
     );
@@ -109,7 +110,7 @@ class _ZangFuCardTile extends StatelessWidget {
           child: Text(
             card.name,
             style: TextStyle(
-              fontSize: 15,
+              fontSize: 14,
               fontWeight: FontWeight.bold,
               color: cs.onPrimaryContainer,
             ),
@@ -117,7 +118,7 @@ class _ZangFuCardTile extends StatelessWidget {
         ),
         title: Text(
           card.zhiGuan,
-          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
         subtitle: Text(
           card.func,
@@ -143,12 +144,12 @@ class _ZangFuCardTile extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             card.niShi,
-            style: const TextStyle(fontSize: 13, height: 1.55),
+            style: const TextStyle(fontSize: 12, height: 1.55),
           ),
           const SizedBox(height: 6),
           Text(
             '出处：${card.source}',
-            style: TextStyle(fontSize: 11, color: cs.outline),
+            style: TextStyle(fontSize: 10, color: cs.outline),
           ),
         ],
       ),
@@ -165,7 +166,7 @@ class _ZangFuCardTile extends StatelessWidget {
       child: Text(
         text,
         style: TextStyle(
-          fontSize: 11,
+          fontSize: 10,
           fontWeight: FontWeight.w500,
           color: cs.onSurfaceVariant,
         ),
@@ -194,7 +195,7 @@ class _WangZhenTab extends StatelessWidget {
         Text(
           '五色 · 正常与病色',
           style: TextStyle(
-            fontSize: 15,
+            fontSize: 14,
             fontWeight: FontWeight.bold,
             color: cs.primary,
           ),
@@ -211,13 +212,13 @@ class _WangZhenTab extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 16,
-                    backgroundColor: _colorOf(e.color),
+                    backgroundColor: _colorContainerOf(context, e.color),
                     child: Text(
                       e.color,
-                      style: const TextStyle(
-                        fontSize: 13,
+                      style: TextStyle(
+                        fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: _colorOf(context, e.color),
                       ),
                     ),
                   ),
@@ -236,16 +237,16 @@ class _WangZhenTab extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           '正常：${e.normal}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
-                            color: Colors.teal,
+                            color: context.colors.success,
                           ),
                         ),
                         Text(
                           '病色：${e.abnormal}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
-                            color: Colors.redAccent,
+                            color: context.colors.danger,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -256,7 +257,7 @@ class _WangZhenTab extends StatelessWidget {
                         Text(
                           e.source,
                           style: TextStyle(
-                            fontSize: 11,
+                            fontSize: 10,
                             color: cs.outline,
                           ),
                         ),
@@ -271,7 +272,7 @@ class _WangZhenTab extends StatelessWidget {
         Text(
           '眼诊 · 观眼辨五脏（倪师）',
           style: TextStyle(
-            fontSize: 15,
+            fontSize: 14,
             fontWeight: FontWeight.bold,
             color: cs.primary,
           ),
@@ -287,7 +288,7 @@ class _WangZhenTab extends StatelessWidget {
               title: Text(
                 '${e.zone} → ${e.zangFu}',
                 style: const TextStyle(
-                  fontSize: 13.5,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -304,26 +305,43 @@ class _WangZhenTab extends StatelessWidget {
         Text(
           '出处：《脉要精微论》《五脏生成》· 倪师讲解 · 传统文化参考',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 11, color: cs.outline),
+          style: TextStyle(fontSize: 10, color: cs.outline),
         ),
       ],
     );
   }
 
-  Color _colorOf(String color) {
+  Color _colorOf(BuildContext context, String color) {
     switch (color) {
       case '赤':
-        return const Color(0xFFC62828);
+        return context.colors.danger;
       case '白':
-        return const Color(0xFF90A4AE);
+        return context.colors.onSurface;
       case '青':
-        return const Color(0xFF2E7D32);
+        return context.colors.success;
       case '黄':
-        return const Color(0xFFF9A825);
+        return context.colors.warning;
       case '黑':
-        return const Color(0xFF37474F);
+        return context.colors.onSurface;
       default:
-        return const Color(0xFF757575);
+        return context.colors.outline;
+    }
+  }
+
+  Color _colorContainerOf(BuildContext context, String color) {
+    switch (color) {
+      case '赤':
+        return context.colors.dangerContainer;
+      case '白':
+        return context.colors.surfaceContainerHighest;
+      case '青':
+        return context.colors.successContainer;
+      case '黄':
+        return context.colors.warningContainer;
+      case '黑':
+        return context.colors.surfaceContainerLow;
+      default:
+        return context.colors.surfaceContainerHighest;
     }
   }
 }
@@ -360,7 +378,7 @@ class _MaiZhenTab extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   kPingRenMai,
-                  style: const TextStyle(fontSize: 13, height: 1.6),
+                  style: const TextStyle(fontSize: 12, height: 1.6),
                 ),
               ],
             ),
@@ -385,7 +403,7 @@ class _MaiZhenTab extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   kMaiYinYang,
-                  style: const TextStyle(fontSize: 13, height: 1.6),
+                  style: const TextStyle(fontSize: 12, height: 1.6),
                 ),
               ],
             ),
@@ -395,7 +413,7 @@ class _MaiZhenTab extends StatelessWidget {
         Text(
           '常见脉象',
           style: TextStyle(
-            fontSize: 15,
+            fontSize: 14,
             fontWeight: FontWeight.bold,
             color: cs.primary,
           ),
@@ -409,7 +427,7 @@ class _MaiZhenTab extends StatelessWidget {
               title: Text(
                 e.name,
                 style: const TextStyle(
-                  fontSize: 13.5,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -420,9 +438,9 @@ class _MaiZhenTab extends StatelessWidget {
                   children: [
                     Text(
                       e.diagnosis,
-                      style: const TextStyle(
-                        fontSize: 12.5,
-                        color: Colors.teal,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: context.colors.success,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -433,7 +451,7 @@ class _MaiZhenTab extends StatelessWidget {
                     ),
                     Text(
                       e.source,
-                      style: TextStyle(fontSize: 11, color: cs.outline),
+                      style: TextStyle(fontSize: 10, color: cs.outline),
                     ),
                   ],
                 ),
@@ -444,7 +462,7 @@ class _MaiZhenTab extends StatelessWidget {
         Text(
           '死脉警示（临证当慎）',
           style: TextStyle(
-            fontSize: 15,
+            fontSize: 14,
             fontWeight: FontWeight.bold,
             color: cs.error,
           ),
@@ -461,7 +479,7 @@ class _MaiZhenTab extends StatelessWidget {
               title: Text(
                 e.name,
                 style: TextStyle(
-                  fontSize: 13.5,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: cs.error,
                 ),
@@ -480,7 +498,7 @@ class _MaiZhenTab extends StatelessWidget {
         Text(
           '出处：《脉要精微论》《平人气象论》《阴阳别论》· 倪师讲解 · 传统文化参考',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 11, color: cs.outline),
+          style: TextStyle(fontSize: 10, color: cs.outline),
         ),
       ],
     );

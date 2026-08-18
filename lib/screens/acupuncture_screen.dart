@@ -4,6 +4,7 @@ import '../data/acupoint_repository.dart';
 import '../models/acupuncture.dart';
 import '../models/acupoint_detail.dart';
 import 'acupoint_detail_screen.dart';
+import '../theme/app_colors.dart';
 
 class AcupunctureScreen extends StatefulWidget {
   const AcupunctureScreen({super.key});
@@ -163,8 +164,8 @@ class _AcupunctureScreenState extends State<AcupunctureScreen>
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
                 color: entry.source == 'nihaisha'
-                    ? Colors.orange.shade100
-                    : Colors.blue.shade100,
+                    ? context.colors.warningContainer
+                    : context.colors.infoContainer,
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
@@ -172,8 +173,8 @@ class _AcupunctureScreenState extends State<AcupunctureScreen>
                 style: TextStyle(
                   fontSize: 10,
                   color: entry.source == 'nihaisha'
-                      ? Colors.orange.shade800
-                      : Colors.blue.shade800,
+                      ? context.colors.warning
+                      : context.colors.info,
                 ),
               ),
             ),
@@ -183,7 +184,7 @@ class _AcupunctureScreenState extends State<AcupunctureScreen>
           entry.acupointsText,
           style: TextStyle(
             color: Theme.of(context).colorScheme.primary,
-            fontSize: 13,
+            fontSize: 12,
           ),
         ),
         trailing: entry.hasCase
@@ -195,7 +196,7 @@ class _AcupunctureScreenState extends State<AcupunctureScreen>
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: Row(
                 children: [
-                  Text('别名: ', style: TextStyle(color: Colors.grey[600])),
+                  Text('别名: ', style: TextStyle(color: context.colors.onSurfaceVariant)),
                   Text(entry.aliases.join('、')),
                 ],
               ),
@@ -228,8 +229,8 @@ class _AcupunctureScreenState extends State<AcupunctureScreen>
                   child: Chip(
                     label: Text(a.name),
                     backgroundColor: a.method != null
-                        ? Colors.orange.shade100
-                        : Colors.blue.shade50,
+                        ? context.colors.warningContainer
+                        : context.colors.infoContainer,
                     labelStyle: const TextStyle(fontSize: 12),
                     visualDensity: VisualDensity.compact,
                   ),
@@ -243,7 +244,7 @@ class _AcupunctureScreenState extends State<AcupunctureScreen>
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: Text(
                 '备注: ${entry.notes}',
-                style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                style: TextStyle(color: context.colors.onSurfaceVariant, fontSize: 12),
               ),
             ),
 
@@ -254,12 +255,12 @@ class _AcupunctureScreenState extends State<AcupunctureScreen>
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
+                  color: context.colors.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   entry.medicalCase,
-                  style: const TextStyle(fontSize: 13),
+                  style: const TextStyle(fontSize: 12),
                 ),
               ),
             ),
@@ -344,8 +345,8 @@ class _AcupunctureScreenState extends State<AcupunctureScreen>
                         }
                       },
                       child: Chip(
-                        label: Text(name, style: const TextStyle(fontSize: 11)),
-                        backgroundColor: Colors.blue.shade50,
+                        label: Text(name, style: const TextStyle(fontSize: 10)),
+                        backgroundColor: context.colors.infoContainer,
                         visualDensity: VisualDensity.compact,
                       ),
                     );
@@ -358,8 +359,8 @@ class _AcupunctureScreenState extends State<AcupunctureScreen>
               runSpacing: 4,
               children: entry.indications.map((ind) {
                 return Chip(
-                  label: Text(ind, style: const TextStyle(fontSize: 11)),
-                  backgroundColor: Colors.green.shade50,
+                  label: Text(ind, style: const TextStyle(fontSize: 10)),
+                  backgroundColor: context.colors.successContainer,
                   visualDensity: VisualDensity.compact,
                 );
               }).toList(),
@@ -399,7 +400,7 @@ class _AcupunctureScreenState extends State<AcupunctureScreen>
                     width: double.infinity,
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
+                      color: context.colors.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(entry.medicalCase),
@@ -499,7 +500,7 @@ class _AcupunctureScreenState extends State<AcupunctureScreen>
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Text(
             '共 ${acupoints.length} 个穴位',
-            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            style: TextStyle(fontSize: 12, color: context.colors.onSurfaceVariant),
           ),
         ),
 
@@ -532,7 +533,7 @@ class _AcupunctureScreenState extends State<AcupunctureScreen>
           children: [
             Text(
               acupoint.name,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             const SizedBox(width: 8),
             if (acupoint.meridian.isNotEmpty)

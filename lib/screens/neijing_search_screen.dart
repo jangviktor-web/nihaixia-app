@@ -129,7 +129,7 @@ class _NeijingSearchScreenState extends State<NeijingSearchScreen> {
                   Text(
                     '已收录《素问》72 篇 + 前言（倪师讲稿）\n输入关键词检索全文',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 13, color: cs.outline),
+                    style: TextStyle(fontSize: 12, color: cs.outline),
                   ),
                 ],
               ),
@@ -139,7 +139,7 @@ class _NeijingSearchScreenState extends State<NeijingSearchScreen> {
               padding: const EdgeInsets.all(24),
               child: Text(
                 '未找到「$_query」相关篇章',
-                style: TextStyle(fontSize: 13, color: cs.outline),
+                style: TextStyle(fontSize: 12, color: cs.outline),
               ),
             )
           else
@@ -176,7 +176,7 @@ class _NeijingSearchScreenState extends State<NeijingSearchScreen> {
                             child: Text(
                               '${r.hits} 处',
                               style: TextStyle(
-                                fontSize: 11,
+                                fontSize: 10,
                                 color: cs.onPrimaryContainer,
                               ),
                             ),

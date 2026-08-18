@@ -57,7 +57,7 @@ class CriticalIllnessListScreen extends StatelessWidget {
                           child: Text(
                             item.title,
                             style: const TextStyle(
-                              fontSize: 18,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -69,7 +69,7 @@ class CriticalIllnessListScreen extends StatelessWidget {
                     Text(
                       item.subtitle,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 12,
                         color: cs.onSurfaceVariant,
                       ),
                     ),

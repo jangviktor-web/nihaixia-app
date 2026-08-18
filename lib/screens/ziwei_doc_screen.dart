@@ -52,9 +52,9 @@ class _ZiweiDocScreenState extends State<ZiweiDocScreen> {
                   selectable: true,
                   styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
                       .copyWith(
-                        p: const TextStyle(fontSize: 15, height: 1.7),
+                        p: const TextStyle(fontSize: 14, height: 1.7),
                         h4: TextStyle(
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: cs.primary,
                         ),
@@ -67,7 +67,7 @@ class _ZiweiDocScreenState extends State<ZiweiDocScreen> {
                   child: Text(
                     '倪师《天纪·天机道》原文 · 民俗文化参考 · 非医疗建议',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 11, color: cs.outline),
+                    style: TextStyle(fontSize: 10, color: cs.outline),
                   ),
                 ),
               ),

@@ -95,9 +95,9 @@ class _MarkdownDocScreenState extends State<MarkdownDocScreen> {
                   onTapLink: (text, href, title) => _onTapLink(href),
                   styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
                       .copyWith(
-                        p: const TextStyle(fontSize: 15, height: 1.7),
+                        p: const TextStyle(fontSize: 14, height: 1.7),
                         h4: TextStyle(
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: cs.primary,
                         ),
@@ -114,7 +114,7 @@ class _MarkdownDocScreenState extends State<MarkdownDocScreen> {
                   child: Text(
                     widget.footer ?? '倪师《天纪》原文 · 传统文化参考 · 非医疗建议',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 11, color: cs.outline),
+                    style: TextStyle(fontSize: 10, color: cs.outline),
                   ),
                 ),
               ),

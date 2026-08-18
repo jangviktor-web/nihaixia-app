@@ -7,6 +7,7 @@ import 'package:nihaisha_app/data/minggua_data.dart';
 import 'package:nihaisha_app/engine/yijing_engine.dart';
 import 'yijing_detail_screen.dart';
 import 'markdown_doc_screen.dart';
+import '../theme/app_colors.dart';
 
 /// 四柱命卦计算器：生辰 → 八字 → 先天卦（前半生）/ 后天卦（后半生）。
 /// 算法依倪师《天纪·四柱命卦》讲义并经原文示例校准；值年卦需皇极经世查条表，暂不自动算。
@@ -304,7 +305,7 @@ class _MingGuaCalculatorScreenState extends State<MingGuaCalculatorScreen> {
                 Text(
                   '八字（${_isMale ? '男' : '女'}命）',
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
                     color: cs.primary,
                   ),
@@ -396,7 +397,7 @@ class _MingGuaCalculatorScreenState extends State<MingGuaCalculatorScreen> {
               Text(
                 '${hex.name} ${YiJingEngine.symbol(hex.seq)}',
                 style: const TextStyle(
-                  fontSize: 18,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -459,7 +460,7 @@ class _MingGuaCalculatorScreenState extends State<MingGuaCalculatorScreen> {
               Icon(Icons.insights_outlined, size: 16, color: cs.primary),
               const SizedBox(width: 6),
               const Text('八字详批',
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
               const Spacer(),
               Text('格局 · ${a.pattern}',
                   style: TextStyle(
@@ -484,7 +485,7 @@ class _MingGuaCalculatorScreenState extends State<MingGuaCalculatorScreen> {
             const SizedBox(height: 6),
             Text('神煞',
                 style: TextStyle(
-                    fontSize: 11,
+                    fontSize: 10,
                     fontWeight: FontWeight.w600,
                     color: cs.onSurfaceVariant)),
             const SizedBox(height: 4),
@@ -500,7 +501,7 @@ class _MingGuaCalculatorScreenState extends State<MingGuaCalculatorScreen> {
           const SizedBox(height: 6),
           Text('五行',
               style: TextStyle(
-                  fontSize: 11,
+                  fontSize: 10,
                   fontWeight: FontWeight.w600,
                   color: cs.onSurfaceVariant)),
           const SizedBox(height: 4),
@@ -540,14 +541,14 @@ class _MingGuaCalculatorScreenState extends State<MingGuaCalculatorScreen> {
             children: [
               Text('用神',
                   style: TextStyle(
-                      fontSize: 11,
+                      fontSize: 10,
                       fontWeight: FontWeight.w700,
                       color: cs.primary)),
               for (final x in a.favorable)
-                _chip(cs, x, Colors.teal.shade700),
+                _chip(cs, x, context.colors.success),
               Text('忌神',
                   style: TextStyle(
-                      fontSize: 11,
+                      fontSize: 10,
                       fontWeight: FontWeight.w700,
                       color: cs.error)),
               for (final x in a.unfavorable) _chip(cs, x, cs.error),
@@ -571,7 +572,7 @@ class _MingGuaCalculatorScreenState extends State<MingGuaCalculatorScreen> {
         border: Border.all(color: color.withValues(alpha: 0.4), width: 0.5),
       ),
       child: Text(text,
-          style: TextStyle(fontSize: 11, color: color)),
+          style: TextStyle(fontSize: 10, color: color)),
     );
   }
 
@@ -579,10 +580,10 @@ class _MingGuaCalculatorScreenState extends State<MingGuaCalculatorScreen> {
     switch (level) {
       case '极旺':
       case '身强':
-        return Colors.deepOrange.shade800;
+        return context.colors.warning;
       case '极弱':
       case '身弱':
-        return Colors.blue.shade700;
+        return context.colors.info;
       default:
         return cs.primary;
     }
@@ -609,7 +610,7 @@ class _HexCard extends StatelessWidget {
             children: [
               Text(
                 YiJingEngine.symbol(hex.seq),
-                style: const TextStyle(fontSize: 44),
+                style: const TextStyle(fontSize: 48),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -621,14 +622,14 @@ class _HexCard extends StatelessWidget {
                       style: TextStyle(
                         color: cs.primary,
                         fontWeight: FontWeight.bold,
-                        fontSize: 13,
+                        fontSize: 12,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       '第${hex.seq}卦 · ${hex.name}',
                       style: const TextStyle(
-                        fontSize: 18,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

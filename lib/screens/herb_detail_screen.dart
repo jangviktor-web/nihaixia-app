@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/herb.dart';
+import '../theme/app_colors.dart';
 import '../models/bookmark.dart';
 import '../data/formula_repository.dart';
 import '../data/herb_repository.dart';
@@ -113,7 +114,7 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
                   Text(
                     herb.name,
                     style: const TextStyle(
-                        fontSize: 24, fontWeight: FontWeight.bold),
+                        fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   Wrap(
@@ -204,7 +205,7 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
                     Text(
                       herb.contraindication!,
                       style: TextStyle(
-                          fontSize: 15,
+                          fontSize: 14,
                           height: 1.6,
                           color: cs.onErrorContainer),
                     ),
@@ -242,7 +243,7 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
                     Text(
                       herb.clinicalNotes!,
                       style: TextStyle(
-                          fontSize: 15,
+                          fontSize: 14,
                           height: 1.6,
                           color: cs.onTertiaryContainer),
                     ),
@@ -292,7 +293,7 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
           // 药物比较
           if (herb.herbComparisons.isNotEmpty)
             Card(
-              color: cs.primaryContainer.withOpacity(0.3),
+              color: context.colors.primaryContainer,
               margin: const EdgeInsets.only(bottom: 12),
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -406,7 +407,7 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
             const SizedBox(height: 8),
             Text(
               content,
-              style: const TextStyle(fontSize: 15, height: 1.6),
+              style: const TextStyle(fontSize: 14, height: 1.6),
             ),
           ],
         ),

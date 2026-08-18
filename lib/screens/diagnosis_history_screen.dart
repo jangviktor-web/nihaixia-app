@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../data/database_helper.dart';
 import '../widgets/meridian_icons.dart';
+import '../theme/app_colors.dart';
 
 class DiagnosisHistoryScreen extends StatefulWidget {
   const DiagnosisHistoryScreen({super.key});
@@ -92,7 +93,7 @@ class _DiagnosisHistoryScreenState extends State<DiagnosisHistoryScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: _trendColor(trend).withOpacity(0.15),
+                color: context.colors.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -133,7 +134,7 @@ class _DiagnosisHistoryScreenState extends State<DiagnosisHistoryScreen> {
                 height: 25,
                 child: Text(m,
                     style: TextStyle(
-                        fontSize: 11,
+                        fontSize: 10,
                         color: _meridianColor(m),
                         fontWeight: FontWeight.w600)),
               );
@@ -164,7 +165,7 @@ class _DiagnosisHistoryScreenState extends State<DiagnosisHistoryScreen> {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(dayStr, style: const TextStyle(fontSize: 9)),
+                    Text(dayStr, style: const TextStyle(fontSize: 10)),
                   ],
                 );
               }).toList(),
@@ -204,10 +205,10 @@ class _DiagnosisHistoryScreenState extends State<DiagnosisHistoryScreen> {
   }
 
   Color _trendColor(String trend) {
-    if (trend.contains('好转') || trend.contains('向好')) return Colors.green;
-    if (trend.contains('加深') || trend.contains('入里')) return Colors.red;
-    if (trend.contains('入里倾向')) return Colors.orange;
-    return Colors.blue;
+    if (trend.contains('好转') || trend.contains('向好')) return context.colors.success;
+    if (trend.contains('加深') || trend.contains('入里')) return context.colors.danger;
+    if (trend.contains('入里倾向')) return context.colors.warning;
+    return context.colors.info;
   }
 
   IconData _trendIcon(String trend) {
@@ -232,9 +233,9 @@ class _DiagnosisHistoryScreenState extends State<DiagnosisHistoryScreen> {
 
         return ListTile(
           leading: CircleAvatar(
-            backgroundColor: _meridianColor(meridian),
+            backgroundColor: context.colors.meridianContainer(meridian),
             child: Icon(meridianIcon(meridian),
-                size: 16, color: Colors.white),
+                size: 16, color: context.colors.meridianColor(meridian)),
           ),
           title: Text('$meridian · $pattern',
               style: const TextStyle(fontWeight: FontWeight.w600)),
@@ -251,22 +252,7 @@ class _DiagnosisHistoryScreenState extends State<DiagnosisHistoryScreen> {
   // ==================== 工具方法 ====================
 
   Color _meridianColor(String meridian) {
-    switch (meridian) {
-      case '太阳':
-        return const Color(0xFFFF9800);
-      case '阳明':
-        return const Color(0xFFF44336);
-      case '少阳':
-        return const Color(0xFFFF5722);
-      case '太阴':
-        return const Color(0xFF2196F3);
-      case '少阴':
-        return const Color(0xFF9C27B0);
-      case '厥阴':
-        return const Color(0xFF607D8B);
-      default:
-        return const Color(0xFF795548);
-    }
+    return context.colors.meridianColor(meridian);
   }
 
   void _confirmClear() {
@@ -286,7 +272,7 @@ class _DiagnosisHistoryScreenState extends State<DiagnosisHistoryScreen> {
               Navigator.pop(ctx);
               _loadHistory();
             },
-            child: const Text('清空', style: TextStyle(color: Colors.red)),
+            child: Text('清空', style: TextStyle(color: context.colors.danger)),
           ),
         ],
       ),

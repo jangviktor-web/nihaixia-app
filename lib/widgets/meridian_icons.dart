@@ -13,9 +13,9 @@ IconData meridianIcon(String meridian) {
     case '太阴':
       return Icons.bedtime;
     case '少阴':
-      return Icons.nights_stay;
+      return Icons.nightlight;
     case '厥阴':
-      return Icons.bolt;
+      return Icons.balance;
     default:
       return Icons.local_hospital;
   }

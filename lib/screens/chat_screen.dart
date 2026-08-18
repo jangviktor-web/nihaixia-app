@@ -296,6 +296,7 @@ class _ChatScreenState extends State<ChatScreen> {
       _currentOptions = q.options
           .map((o) => _ChatOption(
                 label: o,
+                number: index + 1,
                 onTap: () {
                   _saveSnapshot();
                   _addUserMessage(o);
@@ -1029,6 +1030,28 @@ class _ChatScreenState extends State<ChatScreen> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
+                              if (option.number != null) ...[
+                                Container(
+                                  width: 22,
+                                  height: 22,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).colorScheme.primary,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Text(
+                                    '${option.number}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                              ],
                               if (option.icon != null) ...[
                                 Icon(
                                   option.icon,
@@ -1043,7 +1066,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                   style: TextStyle(
                                     color:
                                         Theme.of(context).colorScheme.onSurface,
-                                    fontSize: 15,
+                                    fontSize: 14,
                                   ),
                                 ),
                               ),
@@ -1116,8 +1139,7 @@ class _ChatBubble extends StatelessWidget {
                         : isResult
                             ? Theme.of(context)
                                 .colorScheme
-                                .secondaryContainer
-                                .withOpacity(0.5)
+                                .surfaceContainerHighest
                             : Theme.of(context)
                                 .colorScheme
                                 .surfaceContainerHighest,
@@ -1130,7 +1152,7 @@ class _ChatBubble extends StatelessWidget {
               child: Text(
                 text,
                 style: TextStyle(
-                  fontSize: 15,
+                  fontSize: 14,
                   height: 1.5,
                   color: isWarning
                       ? Theme.of(context).colorScheme.onErrorContainer
@@ -1167,12 +1189,14 @@ class _ChatOption {
   final String label;
   final String? description;
   final IconData? icon;
+  final int? number;
   final VoidCallback onTap;
 
   _ChatOption({
     required this.label,
     this.description,
     this.icon,
+    this.number,
     required this.onTap,
   });
 }

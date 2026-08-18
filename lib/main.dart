@@ -6,6 +6,7 @@ import 'data/formula_repository.dart';
 import 'data/herb_repository.dart';
 import 'data/settings_repository.dart';
 import 'screens/home_screen.dart';
+import 'theme/app_colors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,6 +38,7 @@ class NiHaishaApp extends StatelessWidget {
               brightness: Brightness.light,
             ),
             useMaterial3: true,
+            extensions: [AppColors.light],
           ),
           darkTheme: ThemeData(
             colorScheme: ColorScheme.fromSeed(
@@ -44,6 +46,7 @@ class NiHaishaApp extends StatelessWidget {
               brightness: Brightness.dark,
             ),
             useMaterial3: true,
+            extensions: [AppColors.dark],
           ),
           home: MediaQuery(
             data: MediaQuery.of(context).copyWith(

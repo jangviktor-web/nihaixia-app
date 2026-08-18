@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/formula.dart';
+import '../theme/app_colors.dart';
 import '../models/bookmark.dart';
 import '../data/database_helper.dart';
 import '../data/herb_repository.dart';
@@ -102,7 +103,7 @@ class _FormulaDetailScreenState extends State<FormulaDetailScreen> {
                   Text(
                     f.name,
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: cs.onPrimaryContainer,
                     ),
@@ -113,7 +114,7 @@ class _FormulaDetailScreenState extends State<FormulaDetailScreen> {
                       f.alias,
                       style: TextStyle(
                         fontSize: 14,
-                        color: cs.onPrimaryContainer.withOpacity(0.7),
+                        color: context.colors.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -166,7 +167,7 @@ class _FormulaDetailScreenState extends State<FormulaDetailScreen> {
                           child: RichText(
                             text: TextSpan(
                               style: TextStyle(
-                                fontSize: 15,
+                                fontSize: 14,
                                 color: cs.onSurface,
                               ),
                               children: [
@@ -189,8 +190,8 @@ class _FormulaDetailScreenState extends State<FormulaDetailScreen> {
                             child: Text(
                               c.role,
                               style: TextStyle(
-                                fontSize: 13,
-                                color: cs.onSurface.withOpacity(0.6),
+                                fontSize: 12,
+                                color: context.colors.onSurfaceVariant,
                               ),
                             ),
                           ),
@@ -207,7 +208,7 @@ class _FormulaDetailScreenState extends State<FormulaDetailScreen> {
             const SizedBox(height: 8),
             Text(
               f.indication,
-              style: const TextStyle(fontSize: 15, height: 1.6),
+              style: const TextStyle(fontSize: 14, height: 1.6),
             ),
             const SizedBox(height: 20),
 
@@ -219,7 +220,7 @@ class _FormulaDetailScreenState extends State<FormulaDetailScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: cs.errorContainer.withOpacity(0.3),
+                  color: context.colors.dangerContainer,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -240,7 +241,7 @@ class _FormulaDetailScreenState extends State<FormulaDetailScreen> {
               const SizedBox(height: 8),
               Text(
                 f.dosage,
-                style: const TextStyle(fontSize: 15, height: 1.6),
+                style: const TextStyle(fontSize: 14, height: 1.6),
               ),
               const SizedBox(height: 20),
             ],
@@ -253,7 +254,7 @@ class _FormulaDetailScreenState extends State<FormulaDetailScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: cs.tertiaryContainer.withOpacity(0.3),
+                  color: context.colors.primaryContainer,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -282,7 +283,7 @@ class _SectionTitle extends StatelessWidget {
     return Text(
       title,
       style: TextStyle(
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: FontWeight.bold,
         color: Theme.of(context).colorScheme.primary,
       ),
@@ -300,13 +301,13 @@ class _Tag extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
         label,
         style: TextStyle(
-          fontSize: 13,
+          fontSize: 12,
           color: color,
           fontWeight: FontWeight.w500,
         ),

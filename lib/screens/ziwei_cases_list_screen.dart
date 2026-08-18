@@ -42,7 +42,7 @@ class ZiweiCasesListScreen extends StatelessWidget {
             '内容逐字摘自倪海厦《天纪》紫微斗数案例/十二宫详解原文，'
             '作为排盘结果补充；属民俗文化参考，非医疗建议。',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 11, color: cs.outline, height: 1.6),
+            style: TextStyle(fontSize: 10, color: cs.outline, height: 1.6),
           ),
         ],
       ),
@@ -77,7 +77,7 @@ class ZiweiCasesListScreen extends StatelessWidget {
         subtitle: Text(
           e.asset.split('/').last,
           style: TextStyle(
-            fontSize: 11,
+            fontSize: 10,
             color: Theme.of(context).colorScheme.outline,
           ),
         ),
@@ -103,7 +103,7 @@ class _SectionHeader extends StatelessWidget {
       child: Text(
         title,
         style: TextStyle(
-          fontSize: 15,
+          fontSize: 14,
           fontWeight: FontWeight.bold,
           color: cs.onSurface,
         ),

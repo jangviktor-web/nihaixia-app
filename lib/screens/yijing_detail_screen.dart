@@ -34,13 +34,14 @@ class YiJingHexagramDetailScreen extends StatelessWidget {
               children: [
                 Text(
                   YiJingEngine.symbol(hex.seq),
-                  style: const TextStyle(fontSize: 96),
+                  style: const TextStyle(fontSize: 48),
+                  maxLines: 1,
                 ),
                 const SizedBox(height: 8),
                 Text(
                   hex.name,
                   style: const TextStyle(
-                    fontSize: 24,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -48,7 +49,7 @@ class YiJingHexagramDetailScreen extends StatelessWidget {
                 Text(
                   '上${upper.name}${upper.symbol}（${upper.nature}）· 下${lower.name}${lower.symbol}（${lower.nature}）',
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 12,
                     color: colorScheme.onSurfaceVariant,
                   ),
                 ),
@@ -99,7 +100,7 @@ class YiJingHexagramDetailScreen extends StatelessWidget {
                   Text(
                     hex.renjian,
                     style: TextStyle(
-                      fontSize: 15,
+                      fontSize: 14,
                       height: 1.6,
                       color: colorScheme.onTertiaryContainer,
                     ),
@@ -198,7 +199,7 @@ class YiJingHexagramDetailScreen extends StatelessWidget {
           Text(
             '卦辞/爻辞：通行本《周易》原文 · 人事应用：倪海厦《天纪·人间道》',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 11, color: colorScheme.outline),
+            style: TextStyle(fontSize: 10, color: colorScheme.outline),
           ),
         ],
       ),

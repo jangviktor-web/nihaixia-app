@@ -97,7 +97,7 @@ class _YiJingScreenState extends State<YiJingScreen> {
                   child: Text(
                     '${_coinPosNames[row]}爻',
                     style: const TextStyle(
-                        fontSize: 13, fontWeight: FontWeight.w600),
+                        fontSize: 12, fontWeight: FontWeight.w600),
                   ),
                 ),
                 // 三枚铜钱（字=实心圆，背=空心圆）
@@ -410,7 +410,7 @@ class _YiJingScreenState extends State<YiJingScreen> {
               children: [
                 Text(
                   YiJingEngine.symbol(h.seq),
-                  style: const TextStyle(fontSize: 34),
+                  style: const TextStyle(fontSize: 28),
                 ),
                 const SizedBox(height: 4),
                 Text(

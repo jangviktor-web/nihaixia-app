@@ -162,7 +162,7 @@ class _ZiWuLiuZhuScreenState extends State<ZiWuLiuZhuScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('选择时间', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                  const Text('选择时间', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 12),
                   Row(
                     children: [
@@ -215,7 +215,7 @@ class _ZiWuLiuZhuScreenState extends State<ZiWuLiuZhuScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('时辰：$zhi时', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: colorScheme.onPrimaryContainer)),
+                        Text('时辰：$zhi时', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.onPrimaryContainer)),
                         const SizedBox(height: 4),
                         Text('时间：$timeRange', style: TextStyle(fontSize: 14, color: colorScheme.onPrimaryContainer)),
                       ],
@@ -260,7 +260,7 @@ class _ZiWuLiuZhuScreenState extends State<ZiWuLiuZhuScreen> {
                       Icon(Icons.location_on, color: colorScheme.onTertiaryContainer),
                       const SizedBox(width: 8),
                       Text('本穴推荐（纳子法）',
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: colorScheme.onTertiaryContainer)),
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: colorScheme.onTertiaryContainer)),
                     ],
                   ),
                   const SizedBox(height: 10),
@@ -271,7 +271,7 @@ class _ZiWuLiuZhuScreenState extends State<ZiWuLiuZhuScreen> {
                       style: TextStyle(fontSize: 14, color: colorScheme.onTertiaryContainer)),
                   const SizedBox(height: 6),
                   Text('当$zhi时，$meridian经气最旺，取其本穴 $benXuePoint',
-                      style: TextStyle(fontSize: 13, color: colorScheme.onTertiaryContainer.withValues(alpha: 0.8))),
+                      style: TextStyle(fontSize: 12, color: colorScheme.onTertiaryContainer.withValues(alpha: 0.8))),
                 ],
               ),
             ),
@@ -305,7 +305,7 @@ class _ZiWuLiuZhuScreenState extends State<ZiWuLiuZhuScreen> {
                       return Chip(
                         label: Text('$g→$organ',
                             style: TextStyle(
-                                fontSize: 13,
+                                fontSize: 12,
                                 fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal)),
                         backgroundColor: isCurrent ? colorScheme.primaryContainer : null,
                       );
@@ -333,8 +333,8 @@ class _ZiWuLiuZhuScreenState extends State<ZiWuLiuZhuScreen> {
                         child: Row(
                           children: [
                             SizedBox(width: 30, child: Text(z, style: TextStyle(fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal))),
-                            SizedBox(width: 100, child: Text(t, style: const TextStyle(fontSize: 13))),
-                            Expanded(child: Text(m, style: TextStyle(fontSize: 13, fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal))),
+                            SizedBox(width: 100, child: Text(t, style: const TextStyle(fontSize: 12))),
+                            Expanded(child: Text(m, style: TextStyle(fontSize: 12, fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal))),
                           ],
                         ),
                       );
@@ -361,14 +361,14 @@ class _ZiWuLiuZhuScreenState extends State<ZiWuLiuZhuScreen> {
                         return Chip(
                           label: Text('${e.key}→${e.value}',
                               style: TextStyle(
-                                  fontSize: 13,
+                                  fontSize: 12,
                                   fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal)),
                           backgroundColor: isCurrent ? colorScheme.tertiaryContainer : null,
                         );
                       }),
-                      Chip(label: Text('心包经→阴谷（归癸·肾）', style: TextStyle(fontSize: 13, fontWeight: meridian == '心包经' ? FontWeight.bold : FontWeight.normal)),
+                      Chip(label: Text('心包经→阴谷（归癸·肾）', style: TextStyle(fontSize: 12, fontWeight: meridian == '心包经' ? FontWeight.bold : FontWeight.normal)),
                           backgroundColor: meridian == '心包经' ? colorScheme.tertiaryContainer : null),
-                      Chip(label: Text('三焦经→通谷（寄壬·膀胱）', style: TextStyle(fontSize: 13, fontWeight: meridian == '三焦经' ? FontWeight.bold : FontWeight.normal)),
+                      Chip(label: Text('三焦经→通谷（寄壬·膀胱）', style: TextStyle(fontSize: 12, fontWeight: meridian == '三焦经' ? FontWeight.bold : FontWeight.normal)),
                           backgroundColor: meridian == '三焦经' ? colorScheme.tertiaryContainer : null),
                     ],
                   ),

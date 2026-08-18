@@ -34,7 +34,7 @@ class MingGuaLibraryScreen extends StatelessWidget {
           Text(
             '内容逐字摘自倪海厦《天纪·四柱命卦》讲义；属传统文化参考，非医疗建议。',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 11, color: cs.outline, height: 1.6),
+            style: TextStyle(fontSize: 10, color: cs.outline, height: 1.6),
           ),
         ],
       ),
@@ -86,7 +86,7 @@ class _SectionHeader extends StatelessWidget {
       child: Text(
         title,
         style: TextStyle(
-          fontSize: 15,
+          fontSize: 14,
           fontWeight: FontWeight.bold,
           color: cs.onSurface,
         ),

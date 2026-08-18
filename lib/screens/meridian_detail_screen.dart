@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../engine/diagnostic_rules.dart';
 import '../data/formula_repository.dart';
 import '../widgets/meridian_icons.dart';
+import '../theme/app_colors.dart';
 import 'formula_detail_screen.dart';
 import 'chat_screen.dart';
 
@@ -21,7 +22,7 @@ class MeridianDetailScreen extends StatelessWidget {
     }
 
     final cs = Theme.of(context).colorScheme;
-    final color = Color(int.parse(details['color'].replaceFirst('#', '0xFF')));
+    final color = context.colors.meridianColor(meridian);
     final formulas = FormulaRepository.getByMeridian(meridian);
     final healingTime = DiagnosticRules.meridianHealingTime[meridian] ?? '';
 
@@ -51,9 +52,9 @@ class MeridianDetailScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: context.colors.meridianContainer(meridian),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: color.withOpacity(0.3)),
+                border: Border.all(color: context.colors.outlineVariant),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,7 +70,7 @@ class MeridianDetailScreen extends StatelessWidget {
                             Text(
                               '${meridian}病',
                               style: TextStyle(
-                                fontSize: 24,
+                                fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: color,
                               ),
@@ -78,7 +79,7 @@ class MeridianDetailScreen extends StatelessWidget {
                               '${details['nature']} · ${details['organ']}',
                               style: TextStyle(
                                 fontSize: 14,
-                                color: color.withOpacity(0.7),
+                                color: context.colors.onSurfaceVariant,
                               ),
                             ),
                           ],
@@ -97,7 +98,7 @@ class MeridianDetailScreen extends StatelessWidget {
                     child: Text(
                       '核心脉证：${details['keyPulse']}',
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: 14,
                         fontWeight: FontWeight.w500,
                         color: cs.onSurface,
                       ),
@@ -116,9 +117,9 @@ class MeridianDetailScreen extends StatelessWidget {
               runSpacing: 6,
               children: (details['coreSymptoms'] as List<String>)
                   .map((s) => Chip(
-                        label: Text(s, style: const TextStyle(fontSize: 13)),
-                        backgroundColor: color.withOpacity(0.1),
-                        side: BorderSide(color: color.withOpacity(0.3)),
+                        label: Text(s, style: const TextStyle(fontSize: 12)),
+                        backgroundColor: context.colors.meridianContainer(meridian),
+                        side: BorderSide(color: context.colors.outlineVariant),
                       ))
                   .toList(),
             ),
@@ -131,7 +132,7 @@ class MeridianDetailScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.05),
+                color: context.colors.meridianContainer(meridian),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -141,7 +142,7 @@ class MeridianDetailScreen extends StatelessWidget {
                   Expanded(
                     child: Text(
                       healingTime,
-                      style: const TextStyle(fontSize: 15),
+                      style: const TextStyle(fontSize: 14),
                     ),
                   ),
                 ],
@@ -162,13 +163,13 @@ class MeridianDetailScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: cs.tertiaryContainer.withOpacity(0.3),
+                color: context.colors.infoContainer,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
                 details['classicText'],
                 style: TextStyle(
-                  fontSize: 15,
+                  fontSize: 14,
                   height: 1.6,
                   color: cs.onTertiaryContainer,
                 ),
@@ -183,7 +184,7 @@ class MeridianDetailScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: cs.primaryContainer.withOpacity(0.3),
+                color: context.colors.primaryContainer,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -212,7 +213,7 @@ class MeridianDetailScreen extends StatelessWidget {
                         f.indication.length > 50
                             ? '${f.indication.substring(0, 50)}...'
                             : f.indication,
-                        style: const TextStyle(fontSize: 13),
+                        style: const TextStyle(fontSize: 12),
                       ),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () {
@@ -242,7 +243,7 @@ class _SectionTitle extends StatelessWidget {
     return Text(
       title,
       style: TextStyle(
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: FontWeight.bold,
         color: color,
       ),
@@ -300,18 +301,18 @@ class _TransmissionCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: color,
+                  color: context.colors.meridianContainer(meridian),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(meridianIcon(meridian), size: 12, color: Colors.white),
+                    Icon(meridianIcon(meridian), size: 12, color: color),
                     const SizedBox(width: 4),
                     Text(
                       meridian,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: color,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -351,19 +352,19 @@ class _TransmissionRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: color.withOpacity(0.6)),
+        Icon(icon, size: 16, color: context.colors.onSurfaceVariant),
         const SizedBox(width: 4),
         Text(
           '$label：',
           style: TextStyle(
-            fontSize: 13,
+            fontSize: 12,
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(fontSize: 13),
+            style: const TextStyle(fontSize: 12),
           ),
         ),
       ],

@@ -3,6 +3,7 @@ import '../models/acupoint_detail.dart';
 import '../data/acupoint_repository.dart';
 import '../data/acupuncture_repository.dart';
 import '../models/acupuncture.dart';
+import '../theme/app_colors.dart';
 
 /// 临床心悟中解析出的处方公式（如「暖宫方：三毛 + 关元 + 气海 + 三阴交」）。
 class _Formula {
@@ -108,34 +109,34 @@ class AcupointDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 12),
               child: Chip(
                 label: Text(acupoint.attribute),
-                backgroundColor: Colors.orange.shade100,
+                backgroundColor: context.colors.infoContainer,
               ),
             ),
 
           // 简介
           if (acupoint.description.isNotEmpty)
-            _buildSection('简介', acupoint.description, colorScheme),
+            _buildSection('简介', acupoint.description, colorScheme, context.colors),
 
           // 位置
           if (acupoint.location.isNotEmpty)
-            _buildSection('位置', acupoint.location, colorScheme),
+            _buildSection('位置', acupoint.location, colorScheme, context.colors),
 
           // 针刺
           if (acupoint.needling.isNotEmpty)
-            _buildSection('针刺', acupoint.needling, colorScheme),
+            _buildSection('针刺', acupoint.needling, colorScheme, context.colors),
 
           // 灸法
           if (acupoint.moxibustion.isNotEmpty)
-            _buildSection('灸法', acupoint.moxibustion, colorScheme),
+            _buildSection('灸法', acupoint.moxibustion, colorScheme, context.colors),
 
           // 禁忌
           if (acupoint.contraindication.isNotEmpty)
-            _buildSection('禁忌', acupoint.contraindication, colorScheme,
+            _buildSection('禁忌', acupoint.contraindication, colorScheme, context.colors,
                 isWarning: true),
 
           // 倪海厦临床心悟
           if (acupoint.clinicalNotes.isNotEmpty)
-            _buildSection('倪海厦临床心悟', acupoint.clinicalNotes, colorScheme,
+            _buildSection('倪海厦临床心悟', acupoint.clinicalNotes, colorScheme, context.colors,
                 isHighlight: true),
 
           // 倪师处方公式（来自临床心悟）
@@ -155,17 +156,18 @@ class AcupointDetailScreen extends StatelessWidget {
   }
 
   Widget _buildSection(String title, String content, ColorScheme colorScheme,
+      AppColors colors,
       {bool isWarning = false, bool isHighlight = false}) {
     final bgColor = isWarning
-        ? Colors.red.shade50
+        ? colors.dangerContainer
         : isHighlight
-            ? Colors.blue.shade50
-            : Colors.grey.shade50;
+            ? colors.infoContainer
+            : colors.surfaceContainerHighest;
     final borderColor = isWarning
-        ? Colors.red.shade200
+        ? colors.danger
         : isHighlight
-            ? Colors.blue.shade200
-            : Colors.grey.shade200;
+            ? colors.info
+            : colors.outlineVariant;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
@@ -178,7 +180,7 @@ class AcupointDetailScreen extends StatelessWidget {
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: isWarning
-                  ? Colors.red.shade700
+                  ? colors.danger
                   : isHighlight
                       ? colorScheme.primary
                       : colorScheme.onSurface,
@@ -223,9 +225,9 @@ class AcupointDetailScreen extends StatelessWidget {
                 margin: const EdgeInsets.only(bottom: 10),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
+                  color: context.colors.infoContainer,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.blue.shade200),
+                  border: Border.all(color: context.colors.info),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -240,9 +242,9 @@ class AcupointDetailScreen extends StatelessWidget {
                       ),
                       child: Text(
                         f.title,
-                        style: const TextStyle(
-                            fontSize: 13,
-                            color: Colors.white,
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: colorScheme.onPrimary,
                             fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -279,7 +281,7 @@ class AcupointDetailScreen extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             '以下穴位处方包含本穴',
-            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            style: TextStyle(fontSize: 12, color: context.colors.onSurfaceVariant),
           ),
           const SizedBox(height: 8),
           ...entries.map((e) => Card(
@@ -303,8 +305,8 @@ class AcupointDetailScreen extends StatelessWidget {
                                 horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
                               color: e.source == 'nihaisha'
-                                  ? Colors.orange.shade100
-                                  : Colors.blue.shade100,
+                                  ? context.colors.warningContainer
+                                  : context.colors.infoContainer,
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
@@ -312,8 +314,8 @@ class AcupointDetailScreen extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 10,
                                 color: e.source == 'nihaisha'
-                                    ? Colors.orange.shade800
-                                    : Colors.blue.shade800,
+                                    ? context.colors.warning
+                                    : context.colors.info,
                               ),
                             ),
                           ),
@@ -374,8 +376,8 @@ class AcupointDetailScreen extends StatelessWidget {
                           children: p.indications
                               .map((ind) => Chip(
                                     label: Text(ind,
-                                        style: const TextStyle(fontSize: 11)),
-                                    backgroundColor: Colors.green.shade50,
+                                        style: const TextStyle(fontSize: 10)),
+                                    backgroundColor: context.colors.successContainer,
                                     visualDensity: VisualDensity.compact,
                                   ))
                               .toList(),
@@ -408,8 +410,8 @@ class AcupointDetailScreen extends StatelessWidget {
     if (detail == null) {
       return Chip(
         label: Text(name,
-            style: const TextStyle(fontSize: 12, color: Colors.grey)),
-        backgroundColor: Colors.grey.shade100,
+            style: TextStyle(fontSize: 12, color: context.colors.outline)),
+        backgroundColor: context.colors.surfaceContainerHighest,
         visualDensity: VisualDensity.compact,
       );
     }
@@ -427,8 +429,8 @@ class AcupointDetailScreen extends StatelessWidget {
       child: Chip(
         label: Text(name, style: const TextStyle(fontSize: 12)),
         backgroundColor: isSelf
-            ? Colors.orange.shade100
-            : Colors.blue.shade50,
+            ? context.colors.warningContainer
+            : context.colors.infoContainer,
         visualDensity: VisualDensity.compact,
       ),
     );

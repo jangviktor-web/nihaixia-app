@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 
 class DosageConverterScreen extends StatefulWidget {
   const DosageConverterScreen({super.key});
@@ -111,7 +112,7 @@ class _DosageConverterScreenState extends State<DosageConverterScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           // 度量标准选择
-          Text('度量标准', style: TextStyle(fontSize: 13, color: colorScheme.onSurfaceVariant)),
+          Text('度量标准', style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant)),
           const SizedBox(height: 8),
           SegmentedButton<int>(
             segments: _standards.asMap().entries.map((e) {
@@ -150,11 +151,11 @@ class _DosageConverterScreenState extends State<DosageConverterScreen> {
                     isDense: true,
                   ),
                   items: [
-                    const DropdownMenuItem(enabled: false, child: Text('── 重量 ──', style: TextStyle(fontSize: 12, color: Colors.grey))),
+                    DropdownMenuItem(enabled: false, child: Text('── 重量 ──', style: TextStyle(fontSize: 12, color: context.colors.onSurfaceVariant))),
                     ..._weightUnits.map((u) => DropdownMenuItem(value: u, child: Text(u))),
-                    const DropdownMenuItem(enabled: false, child: Text('── 容量 ──', style: TextStyle(fontSize: 12, color: Colors.grey))),
+                    DropdownMenuItem(enabled: false, child: Text('── 容量 ──', style: TextStyle(fontSize: 12, color: context.colors.onSurfaceVariant))),
                     ..._volumeUnits.map((u) => DropdownMenuItem(value: u, child: Text(u))),
-                    const DropdownMenuItem(enabled: false, child: Text('── 长度 ──', style: TextStyle(fontSize: 12, color: Colors.grey))),
+                    DropdownMenuItem(enabled: false, child: Text('── 长度 ──', style: TextStyle(fontSize: 12, color: context.colors.onSurfaceVariant))),
                     ..._lengthUnits.map((u) => DropdownMenuItem(value: u, child: Text(u))),
                   ],
                   onChanged: (v) {
@@ -216,14 +217,14 @@ class _DosageConverterScreenState extends State<DosageConverterScreen> {
                     },
                     children: [
                       const TableRow(children: [
-                        Padding(padding: EdgeInsets.symmetric(vertical: 6), child: Text('药物', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13))),
-                        Padding(padding: EdgeInsets.symmetric(vertical: 6), child: Text('容积', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13))),
-                        Padding(padding: EdgeInsets.symmetric(vertical: 6), child: Text('重量', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13))),
+                        Padding(padding: EdgeInsets.symmetric(vertical: 6), child: Text('药物', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                        Padding(padding: EdgeInsets.symmetric(vertical: 6), child: Text('容积', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                        Padding(padding: EdgeInsets.symmetric(vertical: 6), child: Text('重量', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
                       ]),
                       ..._specialVolumeToWeight.map((row) => TableRow(
                         children: row.map((cell) => Padding(
                           padding: const EdgeInsets.symmetric(vertical: 5),
-                          child: Text(cell, style: const TextStyle(fontSize: 13)),
+                          child: Text(cell, style: const TextStyle(fontSize: 12)),
                         )).toList(),
                       )),
                     ],
@@ -251,14 +252,14 @@ class _DosageConverterScreenState extends State<DosageConverterScreen> {
                     },
                     children: [
                       const TableRow(children: [
-                        Padding(padding: EdgeInsets.symmetric(vertical: 6), child: Text('药物', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13))),
-                        Padding(padding: EdgeInsets.symmetric(vertical: 6), child: Text('数量', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13))),
-                        Padding(padding: EdgeInsets.symmetric(vertical: 6), child: Text('重量', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13))),
+                        Padding(padding: EdgeInsets.symmetric(vertical: 6), child: Text('药物', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                        Padding(padding: EdgeInsets.symmetric(vertical: 6), child: Text('数量', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                        Padding(padding: EdgeInsets.symmetric(vertical: 6), child: Text('重量', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
                       ]),
                       ..._specialCountToWeight.map((row) => TableRow(
                         children: row.map((cell) => Padding(
                           padding: const EdgeInsets.symmetric(vertical: 5),
-                          child: Text(cell, style: const TextStyle(fontSize: 13)),
+                          child: Text(cell, style: const TextStyle(fontSize: 12)),
                         )).toList(),
                       )),
                     ],
@@ -316,7 +317,7 @@ class _DosageConverterScreenState extends State<DosageConverterScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+        Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
         const SizedBox(height: 4),
         ...lines.map((l) => Padding(
           padding: const EdgeInsets.only(left: 8, bottom: 2),

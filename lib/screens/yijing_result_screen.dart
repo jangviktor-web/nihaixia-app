@@ -61,7 +61,7 @@ class YiJingResultScreen extends StatelessWidget {
                   if (cast.movingLines.isEmpty)
                     Text('「${cast.movingText}」',
                         style: TextStyle(
-                            fontSize: 15,
+                            fontSize: 14,
                             height: 1.6,
                             color: colorScheme.onPrimaryContainer))
                   else
@@ -70,7 +70,7 @@ class YiJingResultScreen extends StatelessWidget {
                       Text(
                         '${cast.movingTitles[i]}：「${cast.movingTexts[i]}」',
                         style: TextStyle(
-                            fontSize: 15,
+                            fontSize: 14,
                             height: 1.6,
                             color: colorScheme.onPrimaryContainer),
                       ),
@@ -159,11 +159,11 @@ class _ResultCard extends StatelessWidget {
                         style: TextStyle(
                             color: colorScheme.primary,
                             fontWeight: FontWeight.bold,
-                            fontSize: 13)),
+                            fontSize: 12)),
                     const SizedBox(height: 4),
                     Text(name,
                         style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
+                            fontSize: 16, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 6),
                     Text(body, style: const TextStyle(height: 1.5)),
                   ],

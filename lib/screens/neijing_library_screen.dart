@@ -53,7 +53,7 @@ class NeijingLibraryScreen extends StatelessWidget {
                   child: Text(
                     l.seq == 0 ? '序' : '${l.seq}',
                     style: TextStyle(
-                      fontSize: 11,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: cs.onPrimaryContainer,
                     ),
@@ -68,7 +68,7 @@ class NeijingLibraryScreen extends StatelessWidget {
                 ),
                 subtitle: Text(
                   l.seq == 0 ? '全书导读' : '第${l.seq}篇',
-                  style: TextStyle(fontSize: 11, color: cs.outline),
+                  style: TextStyle(fontSize: 10, color: cs.outline),
                 ),
                 trailing: const Icon(Icons.chevron_right, size: 18),
                 onTap: () {

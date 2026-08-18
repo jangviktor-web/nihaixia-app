@@ -7,6 +7,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import '../data/settings_repository.dart';
 import '../data/changelog_repository.dart';
 import '../services/update_service.dart';
+import '../theme/app_colors.dart';
 
 // ==================== 设置对话框 ====================
 // 从 chat_screen.dart 抽离（P2-4）：外观/诊断/数据管理/关于/更新 设置弹窗。
@@ -58,7 +59,7 @@ void showSettingsDialog(
                       onChanged: (v) => settings.setTextScaleFactor(v),
                     ),
                   ),
-                  const Text('大', style: TextStyle(fontSize: 18)),
+                  const Text('大', style: TextStyle(fontSize: 16)),
                 ],
               ),
 
@@ -113,7 +114,7 @@ void showSettingsDialog(
               const Text('数据管理', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               const SizedBox(height: 8),
               ListTile(
-                leading: const Icon(Icons.history, color: Colors.orange),
+                leading: Icon(Icons.history, color: context.colors.warning),
                 title: const Text('清除诊断历史'),
                 subtitle: const Text('删除所有诊断记录'),
                 contentPadding: EdgeInsets.zero,
@@ -123,7 +124,7 @@ void showSettingsDialog(
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.bookmark, color: Colors.green),
+                leading: Icon(Icons.bookmark, color: context.colors.success),
                 title: const Text('导出收藏'),
                 subtitle: const Text('将收藏导出为文本'),
                 contentPadding: EdgeInsets.zero,
@@ -133,7 +134,7 @@ void showSettingsDialog(
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.cleaning_services, color: Colors.blue),
+                leading: Icon(Icons.cleaning_services, color: context.colors.info),
                 title: const Text('清理缓存'),
                 subtitle: const Text('清理临时文件释放空间'),
                 contentPadding: EdgeInsets.zero,
@@ -243,7 +244,7 @@ Future<void> showAboutPage(BuildContext context) async {
                   const SizedBox(height: 8),
                   const Text('汉唐中医', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 4),
-                  Text('v${info.version}', style: TextStyle(color: Colors.grey[600])),
+                  Text('v${info.version}', style: TextStyle(color: context.colors.onSurfaceVariant)),
                 ],
               ),
             ),
@@ -253,7 +254,7 @@ Future<void> showAboutPage(BuildContext context) async {
             const Text('六经辨证诊断助手', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Text('基于倪海厦老师《伤寒论》六经辨证体系，'
-                '通过七步问诊提供中医辨证建议。', style: TextStyle(color: Colors.grey[600])),
+                '通过七步问诊提供中医辨证建议。', style: TextStyle(color: context.colors.onSurfaceVariant)),
             const SizedBox(height: 16),
             const Text('功能特色', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
@@ -266,21 +267,21 @@ Future<void> showAboutPage(BuildContext context) async {
             const Text('更新日志', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             if (entries.isEmpty)
-              Text('暂无更新记录', style: TextStyle(color: Colors.grey[600], fontSize: 13))
+              Text('暂无更新记录', style: TextStyle(color: context.colors.onSurfaceVariant, fontSize: 12))
             else
-              ...entries.map((e) => _buildChangelogEntry(e)).toList(),
+              ...entries.map((e) => _buildChangelogEntry(context, e)).toList(),
             const SizedBox(height: 16),
             const Text('致谢', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Text('倪海厦老师 · 经方医学传承\n'
                 '仲景先师 · 伤寒论原典',
-                style: TextStyle(color: Colors.grey[600])),
+                style: TextStyle(color: context.colors.onSurfaceVariant)),
             const SizedBox(height: 16),
             const Divider(),
             const SizedBox(height: 8),
             Center(
               child: Text('© 2024-2026 汉唐中医',
-                  style: TextStyle(color: Colors.grey[500], fontSize: 12)),
+                  style: TextStyle(color: context.colors.onSurfaceVariant, fontSize: 12)),
             ),
           ],
         ),
@@ -296,16 +297,16 @@ Future<void> showAboutPage(BuildContext context) async {
 }
 
 /// 关于页中的单条更新日志卡片（最新版本高亮）。
-Widget _buildChangelogEntry(ChangelogEntry e) {
+Widget _buildChangelogEntry(BuildContext context, ChangelogEntry e) {
   final isLatest = ChangelogRepository.latest == e;
   return Container(
     margin: const EdgeInsets.only(bottom: 12),
     padding: const EdgeInsets.all(10),
     decoration: BoxDecoration(
-      color: isLatest ? Colors.blue.shade50 : Colors.grey.shade50,
+      color: isLatest ? context.colors.infoContainer : context.colors.surfaceContainerHighest,
       borderRadius: BorderRadius.circular(8),
       border: Border.all(
-        color: isLatest ? Colors.blue.shade200 : Colors.grey.shade200,
+        color: isLatest ? context.colors.info : context.colors.outlineVariant,
       ),
     ),
     child: Column(
@@ -317,17 +318,17 @@ Widget _buildChangelogEntry(ChangelogEntry e) {
                 style: const TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(width: 8),
             Text(e.date,
-                style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+                style: TextStyle(color: context.colors.onSurfaceVariant, fontSize: 12)),
             if (isLatest) ...[
               const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                 decoration: BoxDecoration(
-                  color: Colors.green,
+                  color: context.colors.successContainer,
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: const Text('最新',
-                    style: TextStyle(color: Colors.white, fontSize: 10)),
+                child: Text('最新',
+                    style: TextStyle(color: context.colors.success, fontSize: 10)),
               ),
             ],
           ],
@@ -335,13 +336,13 @@ Widget _buildChangelogEntry(ChangelogEntry e) {
         if (e.title.isNotEmpty) ...[
           const SizedBox(height: 2),
           Text(e.title,
-              style: TextStyle(color: Colors.grey[700], fontSize: 12)),
+              style: TextStyle(color: context.colors.onSurfaceVariant, fontSize: 12)),
         ],
         const SizedBox(height: 6),
         ...e.changes.map((c) => Padding(
               padding: const EdgeInsets.only(bottom: 2),
               child: Text('• $c',
-                  style: const TextStyle(fontSize: 13, height: 1.4)),
+                  style: const TextStyle(fontSize: 12, height: 1.4)),
             )),
       ],
     ),
@@ -396,7 +397,7 @@ void showUpdateDialog(BuildContext context, UpdateInfo info) {
             const SizedBox(height: 12),
             Text(
               '大小：${(info.apkSize / 1024 / 1024).toStringAsFixed(1)} MB',
-              style: TextStyle(color: Colors.grey[600]),
+              style: TextStyle(color: context.colors.onSurfaceVariant),
             ),
           ],
         ),

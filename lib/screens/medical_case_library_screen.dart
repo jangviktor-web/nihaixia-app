@@ -178,7 +178,7 @@ class MedicalCaseDetailScreen extends StatelessWidget {
                 Text(
                   label,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color: cs.primary,
                   ),
@@ -188,7 +188,7 @@ class MedicalCaseDetailScreen extends StatelessWidget {
                     ? _FormulaRichText(formula: value)
                     : Text(
                         value,
-                        style: const TextStyle(fontSize: 15, height: 1.6),
+                        style: const TextStyle(fontSize: 14, height: 1.6),
                       ),
               ],
             ),
@@ -215,7 +215,7 @@ class _FormulaRichText extends StatelessWidget {
         .toList()
       ..sort((a, b) => b.length.compareTo(a.length));
     if (names.isEmpty) {
-      return Text(formula, style: base.copyWith(fontSize: 15, height: 1.6));
+      return Text(formula, style: base.copyWith(fontSize: 14, height: 1.6));
     }
     final pattern = RegExp(names.map(RegExp.escape).join('|'));
     final spans = <InlineSpan>[];
@@ -231,7 +231,7 @@ class _FormulaRichText extends StatelessWidget {
           style: TextStyle(
             color: cs.primary,
             decoration: TextDecoration.underline,
-            fontSize: 15,
+            fontSize: 14,
             height: 1.6,
           ),
           recognizer: TapGestureRecognizer()
@@ -252,7 +252,7 @@ class _FormulaRichText extends StatelessWidget {
     }
     if (i < formula.length) spans.add(TextSpan(text: formula.substring(i)));
     return RichText(
-      text: TextSpan(style: base.copyWith(fontSize: 15, height: 1.6), children: spans),
+      text: TextSpan(style: base.copyWith(fontSize: 14, height: 1.6), children: spans),
     );
   }
 }

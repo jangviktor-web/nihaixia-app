@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'ziwei_cases_list_screen.dart';
+import '../theme/app_colors.dart';
 
 /// 紫微斗数参考：倪师《天纪·天机道》十四主星 / 十二宫位 / 论命理。
 /// 内容逐字摘自 nihaixia skill 知识库 modules/09_zhenjiu_bencao.md「天纪·天机道」，
@@ -139,7 +140,7 @@ class ZiweiReferenceScreen extends StatelessWidget {
                     '以天文、地理及人间道为辅；发前人之所未发，言前人之所未言。'
                     '复道尽天、人、地三才之关系。」',
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 12,
                       height: 1.7,
                       fontStyle: FontStyle.italic,
                       color: cs.onTertiaryContainer,
@@ -171,11 +172,11 @@ class ZiweiReferenceScreen extends StatelessWidget {
                       leading: Text(
                         name,
                         style: const TextStyle(
-                          fontSize: 15,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      tag: _wuxingTag(wuxing, cs),
+                      tag: _wuxingTag(context, wuxing, cs),
                       text: trait,
                     ),
                     if (name != _majors.last.$1) const Divider(height: 12),
@@ -206,7 +207,7 @@ class ZiweiReferenceScreen extends StatelessWidget {
                       leading: Text(
                         name,
                         style: const TextStyle(
-                          fontSize: 15,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -223,26 +224,26 @@ class ZiweiReferenceScreen extends StatelessWidget {
           Text(
             '内容摘自倪海厦《天纪》天机道（75页教材）· 民俗文化参考',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 11, color: cs.outline),
+            style: TextStyle(fontSize: 10, color: cs.outline),
           ),
         ],
       ),
     );
   }
 
-  Widget? _wuxingTag(String wuxing, ColorScheme cs) {
+  Widget? _wuxingTag(BuildContext context, String wuxing, ColorScheme cs) {
     Color? color;
     switch (wuxing) {
       case '木':
-        color = Colors.green.shade700;
+        color = context.colors.success;
       case '火':
-        color = Colors.red.shade700;
+        color = context.colors.danger;
       case '土':
-        color = Colors.brown.shade600;
+        color = context.colors.warning;
       case '金':
-        color = Colors.amber.shade800;
+        color = context.colors.warning;
       case '水':
-        color = Colors.blue.shade700;
+        color = context.colors.info;
     }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
@@ -281,7 +282,7 @@ class _RowTile extends StatelessWidget {
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(fontSize: 13, height: 1.5),
+              style: const TextStyle(fontSize: 12, height: 1.5),
             ),
           ),
         ],

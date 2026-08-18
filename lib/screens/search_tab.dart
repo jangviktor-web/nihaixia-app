@@ -10,6 +10,7 @@ import '../models/acupoint_detail.dart';
 import '../models/formula.dart';
 import '../models/herb.dart';
 import '../widgets/highlighted_text.dart';
+import '../theme/app_colors.dart';
 import 'acupoint_detail_screen.dart';
 import 'formula_detail_screen.dart';
 import 'herb_detail_screen.dart';
@@ -295,7 +296,7 @@ class _SearchTabState extends State<SearchTab> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: cs.surfaceContainerHighest.withOpacity(0.3),
+        color: cs.surfaceContainerHighest,
         border: Border(bottom: BorderSide(color: cs.outlineVariant)),
       ),
       child: Column(
@@ -386,7 +387,7 @@ class _SearchTabState extends State<SearchTab> {
       height: 36,
       child: Row(
         children: [
-          Text('$label:', style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+          Text('$label:', style: TextStyle(fontSize: 12, color: context.colors.onSurfaceVariant)),
           const SizedBox(width: 4),
           Expanded(
             child: ListView.builder(
@@ -397,7 +398,7 @@ class _SearchTabState extends State<SearchTab> {
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 2),
                   child: ChoiceChip(
-                    label: Text(opt, style: const TextStyle(fontSize: 11)),
+                    label: Text(opt, style: const TextStyle(fontSize: 10)),
                     selected: selected == opt,
                     onSelected: (_) => onSelected(opt),
                     visualDensity: VisualDensity.compact,
@@ -663,20 +664,20 @@ class _SearchTabState extends State<SearchTab> {
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: e.source == 'nihaisha'
-                        ? Colors.orange.shade100
-                        : Colors.blue.shade100,
+                        ? context.colors.warningContainer
+                        : context.colors.infoContainer,
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(e.sourceLabel,
                     style: TextStyle(fontSize: 10,
                       color: e.source == 'nihaisha'
-                          ? Colors.orange.shade800
-                          : Colors.blue.shade800)),
+                          ? context.colors.warning
+                          : context.colors.info)),
                 ),
               ],
             ),
             subtitle: Text(e.acupointsText,
-              style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 13)),
+              style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 12)),
             trailing: e.hasCase
                 ? Icon(Icons.article, color: Theme.of(context).colorScheme.tertiary)
                 : null,
@@ -685,7 +686,7 @@ class _SearchTabState extends State<SearchTab> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   child: Row(children: [
-                    Text('别名: ', style: TextStyle(color: Colors.grey[600])),
+                    Text('别名: ', style: TextStyle(color: context.colors.onSurfaceVariant)),
                     Text(e.aliases.join('、')),
                   ]),
                 ),
@@ -709,8 +710,8 @@ class _SearchTabState extends State<SearchTab> {
                       child: Chip(
                         label: Text(a.name),
                         backgroundColor: a.method != null
-                            ? Colors.orange.shade100
-                            : Colors.blue.shade50,
+                            ? context.colors.warningContainer
+                            : context.colors.infoContainer,
                         labelStyle: const TextStyle(fontSize: 12),
                         visualDensity: VisualDensity.compact,
                       ),
@@ -722,7 +723,7 @@ class _SearchTabState extends State<SearchTab> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   child: Text('备注: ${e.notes}',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+                    style: TextStyle(color: context.colors.onSurfaceVariant, fontSize: 12)),
                 ),
               if (e.hasCase)
                 Padding(
@@ -731,10 +732,10 @@ class _SearchTabState extends State<SearchTab> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
+                      color: context.colors.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Text(e.medicalCase, style: const TextStyle(fontSize: 13)),
+                    child: Text(e.medicalCase, style: const TextStyle(fontSize: 12)),
                   ),
                 ),
             ],
@@ -768,8 +769,8 @@ class _SearchTabState extends State<SearchTab> {
               spacing: 4,
               runSpacing: 4,
               children: p.indications.map((ind) => Chip(
-                label: Text(ind, style: const TextStyle(fontSize: 11)),
-                backgroundColor: Colors.green.shade50,
+                label: Text(ind, style: const TextStyle(fontSize: 10)),
+                backgroundColor: context.colors.successContainer,
                 visualDensity: VisualDensity.compact,
               )).toList(),
             ),
@@ -798,7 +799,7 @@ class _SearchTabState extends State<SearchTab> {
                         width: double.infinity,
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
+                          color: context.colors.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(p.medicalCase),

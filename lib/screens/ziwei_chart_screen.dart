@@ -5,6 +5,7 @@ import 'ziwei_reference_screen.dart';
 import 'ziwei_doc_screen.dart';
 import 'ziwei_cases_list_screen.dart';
 import '../data/ziwei_case_data.dart';
+import '../theme/app_colors.dart';
 
 /// 紫微斗数排盘界面。
 ///
@@ -299,11 +300,11 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
               contentPadding: EdgeInsets.zero,
               title: const Text(
                 '真太阳时校准',
-                style: TextStyle(fontSize: 13),
+                style: TextStyle(fontSize: 12),
               ),
               subtitle: Text(
                 '按出生地经度校正平太阳时时差，专业排盘默认开启',
-                style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
+                style: TextStyle(fontSize: 10, color: cs.onSurfaceVariant),
               ),
               value: _useTrueSolarTime,
               onChanged: (v) => setState(() => _useTrueSolarTime = v),
@@ -349,12 +350,12 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
               children: [
                 const Text(
                   '八字 ',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
                 Text(
                   chart.baziFull,
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -363,7 +364,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
             const SizedBox(height: 4),
             Text(
               chart.lunarText,
-              style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant),
+              style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
             ),
             const SizedBox(height: 8),
             Wrap(
@@ -379,7 +380,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
             const SizedBox(height: 10),
             const Text(
               '生年四化',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
             Wrap(
@@ -397,7 +398,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                   child: Text(
                     '${s.typeLabel}→${s.starLabelName}',
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: _sihuaColor(s.typeLabel),
                     ),
@@ -428,7 +429,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                 const SizedBox(width: 8),
                 const Text(
                   '倪师案例参考',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -437,7 +438,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
               '命宫在「$ming」· ${chart.genderLabel}。'
               '${matched.isEmpty ? '暂未收录完全匹配案例' : '倪师《天纪》讲过 ${matched.length} 例相关案例：'}',
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 12,
                 color: cs.onSurfaceVariant,
                 height: 1.5,
               ),
@@ -498,7 +499,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
             Icon(Icons.event_outlined, size: 18, color: cs.primary),
             const SizedBox(width: 8),
             const Text('流年',
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
             const SizedBox(width: 8),
             Expanded(
               child: DropdownButton<int>(
@@ -512,7 +513,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                     DropdownMenuItem(
                       value: y,
                       child: Text('$y 年',
-                          style: const TextStyle(fontSize: 13)),
+                          style: const TextStyle(fontSize: 12)),
                     ),
                 ],
                 onChanged: (v) {
@@ -528,7 +529,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
               if (_flowMark != null)
                 Text(_flowMark!.ganzhi,
                     style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 12,
                         fontWeight: FontWeight.bold,
                         color: cs.primary)),
               const SizedBox(width: 4),
@@ -612,7 +613,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
             info,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 11,
+              fontSize: 10,
               fontWeight: FontWeight.bold,
               color: cs.onPrimaryContainer,
             ),
@@ -669,7 +670,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                   child: Text(
                     p.roleLabel,
                     style: TextStyle(
-                      fontSize: 11,
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                       color: cs.onSurface,
                     ),
@@ -686,7 +687,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
             ),
             Text(
               p.ganzhiLabel,
-              style: TextStyle(fontSize: 9, color: cs.onSurfaceVariant),
+              style: TextStyle(fontSize: 10, color: cs.onSurfaceVariant),
             ),
             const SizedBox(height: 2),
             // 主星（含四化）
@@ -694,7 +695,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
               (s) => Text(
                 s.sihua != null ? '${s.label}(${s.sihuaText})' : s.label,
                 style: TextStyle(
-                  fontSize: 10.5,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: s.sihua != null
                       ? _sihuaColor(s.sihuaText)
@@ -707,14 +708,14 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
             if (p.luckies.isNotEmpty)
               Text(
                 p.luckies.map((s) => s.label).join(' '),
-                style: TextStyle(fontSize: 9, color: Colors.teal.shade700),
+                style: TextStyle(fontSize: 10, color: context.colors.success),
                 overflow: TextOverflow.ellipsis,
               ),
             // 煞星
             if (p.bads.isNotEmpty)
               Text(
                 p.bads.map((s) => s.label).join(' '),
-                style: TextStyle(fontSize: 9, color: Colors.red.shade700),
+                style: TextStyle(fontSize: 10, color: context.colors.danger),
                 overflow: TextOverflow.ellipsis,
               ),
             // 杂曜（乙级星：红鸾/天喜/天刑/天姚/三台/八座等；
@@ -722,7 +723,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
             if (p.minors.isNotEmpty)
               Text(
                 p.minors.map((s) => s.label).join(' '),
-                style: TextStyle(fontSize: 8, color: cs.onSurfaceVariant),
+                style: TextStyle(fontSize: 10, color: cs.onSurfaceVariant),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -731,7 +732,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
               Text(
                 flowLabel,
                 style: TextStyle(
-                  fontSize: 8,
+                  fontSize: 10,
                   fontWeight: FontWeight.w600,
                   color: cs.primary,
                 ),
@@ -790,7 +791,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
               if (p.stars.isEmpty)
                 Text(
                   '本宫无星曜',
-                  style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant),
+                  style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
                 ),
               ...p.stars.map(
                 (s) => Padding(
@@ -825,7 +826,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                       const SizedBox(width: 6),
                       Text(
                         _starKindLabel(s),
-                        style: TextStyle(fontSize: 11, color: cs.outline),
+                        style: TextStyle(fontSize: 10, color: cs.outline),
                       ),
                     ],
                   ),
@@ -842,7 +843,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                       Text(
                         '流曜：${flowStarsHere.join('、')}',
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: cs.primary,
                         ),
@@ -852,7 +853,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                 ),
               Text(
                 '宫位主管出自倪师《天纪·天机道》· 民俗文化参考',
-                style: TextStyle(fontSize: 11, color: cs.outline),
+                style: TextStyle(fontSize: 10, color: cs.outline),
               ),
             ],
           ),
@@ -889,7 +890,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
           children: [
             const Text(
               '十二大限（十年运）',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             ...chart.decades.map(
@@ -938,14 +939,14 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
       decoration: BoxDecoration(
-        color: color,
+        color: color.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
         text,
-        style: const TextStyle(
-          fontSize: 9,
-          color: Colors.white,
+        style: TextStyle(
+          fontSize: 10,
+          color: color,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -965,7 +966,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
           children: [
             TextSpan(
               text: '$label ',
-              style: TextStyle(color: Colors.grey.shade600),
+              style: TextStyle(color: context.colors.onSurfaceVariant),
             ),
             TextSpan(
               text: value,
@@ -980,15 +981,15 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
   Color _sihuaColor(String t) {
     switch (t) {
       case '禄':
-        return Colors.redAccent;
+        return context.colors.danger;
       case '权':
-        return Colors.orange.shade700;
+        return context.colors.warning;
       case '科':
-        return Colors.blue.shade700;
+        return context.colors.info;
       case '忌':
-        return Colors.green.shade700;
+        return context.colors.success;
       default:
-        return Colors.black87;
+        return context.colors.onSurface;
     }
   }
 }

@@ -5,6 +5,7 @@ import '../engine/diagnostic_rules.dart';
 import '../models/formula.dart';
 import '../models/herb.dart';
 import '../widgets/meridian_icons.dart';
+import '../theme/app_colors.dart';
 import 'acupuncture_screen.dart';
 import 'formula_detail_screen.dart';
 import 'herb_detail_screen.dart';
@@ -82,7 +83,7 @@ class _MeridianTab extends StatelessWidget {
         final details = DiagnosticRules.meridianDetails[name];
         if (details == null) return const SizedBox.shrink();
 
-        final color = Color(int.parse(details['color'].replaceFirst('#', '0xFF')));
+        final color = context.colors.meridianColor(name);
         final healingTime = DiagnosticRules.meridianHealingTime[name] ?? '';
         final formulas = details['formulas'] as List<String>;
 
@@ -107,7 +108,7 @@ class _MeridianTab extends StatelessWidget {
                 title: Text(
                   '$name病',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: color,
                   ),
@@ -118,7 +119,7 @@ class _MeridianTab extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       '${details['nature']} · ${details['organ']}',
-                      style: TextStyle(fontSize: 13, color: color.withValues(alpha: 0.7)),
+                      style: TextStyle(fontSize: 12, color: context.colors.onSurfaceVariant),
                     ),
                     const SizedBox(height: 2),
                     Text(
@@ -129,12 +130,12 @@ class _MeridianTab extends StatelessWidget {
                     ),
                     Row(
                       children: [
-                        Icon(Icons.access_time, size: 12, color: color.withValues(alpha: 0.6)),
+                        Icon(Icons.access_time, size: 12, color: context.colors.onSurfaceVariant),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
                             '欲解时：$healingTime',
-                            style: TextStyle(fontSize: 11, color: color.withValues(alpha: 0.6)),
+                            style: TextStyle(fontSize: 10, color: context.colors.onSurfaceVariant),
                           ),
                         ),
                       ],
@@ -154,8 +155,8 @@ class _MeridianTab extends StatelessWidget {
                           children: (details['coreSymptoms'] as List<String>)
                               .map((s) => Chip(
                                     label: Text(s, style: const TextStyle(fontSize: 12)),
-                                    backgroundColor: color.withValues(alpha: 0.08),
-                                    side: BorderSide(color: color.withValues(alpha: 0.2)),
+                                    backgroundColor: context.colors.meridianContainer(name),
+                                    side: BorderSide(color: context.colors.outlineVariant),
                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                     visualDensity: VisualDensity.compact,
                                   ))
@@ -201,7 +202,7 @@ class _MeridianTab extends StatelessWidget {
                               );
                             },
                             icon: const Icon(Icons.arrow_forward, size: 16),
-                            label: const Text('查看详情', style: TextStyle(fontSize: 13)),
+                            label: const Text('查看详情', style: TextStyle(fontSize: 12)),
                           ),
                         ),
                       ],
@@ -305,7 +306,7 @@ class _FormulaTabState extends State<_FormulaTab> {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: FilterChip(
-                  label: Text(m, style: const TextStyle(fontSize: 13)),
+                  label: Text(m, style: const TextStyle(fontSize: 12)),
                   selected: selected,
                   onSelected: (_) => setState(() => _selectedMeridian = m),
                   visualDensity: VisualDensity.compact,
@@ -364,7 +365,7 @@ class _FormulaTabState extends State<_FormulaTab> {
                   ),
                   subtitle: Text(
                     '${f.meridian} · ${f.category}\n${f.indication.length > 40 ? '${f.indication.substring(0, 40)}...' : f.indication}',
-                    style: const TextStyle(fontSize: 13),
+                    style: const TextStyle(fontSize: 12),
                   ),
                   isThreeLine: true,
                   trailing: const Icon(Icons.chevron_right),
@@ -472,7 +473,7 @@ class _HerbTabState extends State<_HerbTab> {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: FilterChip(
-                  label: Text(cat, style: const TextStyle(fontSize: 13)),
+                  label: Text(cat, style: const TextStyle(fontSize: 12)),
                   selected: selected,
                   onSelected: (_) => setState(() => _selectedCategory = cat),
                   visualDensity: VisualDensity.compact,

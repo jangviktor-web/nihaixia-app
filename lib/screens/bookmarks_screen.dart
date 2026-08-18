@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/bookmark.dart';
+import '../theme/app_colors.dart';
 import '../data/database_helper.dart';
 
 class BookmarksScreen extends StatefulWidget {
@@ -284,10 +285,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
                         Icon(
                           Icons.bookmark_border,
                           size: 64,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurfaceVariant
-                              .withOpacity(0.3),
+                          color: context.colors.onSurfaceVariant,
                         ),
                         const SizedBox(height: 16),
                         Text(
@@ -303,11 +301,8 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
                         Text(
                           '在辨证结果或方剂详情中点击收藏',
                           style: TextStyle(
-                            fontSize: 13,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurfaceVariant
-                                .withOpacity(0.6),
+                            fontSize: 12,
+                            color: context.colors.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -337,13 +332,13 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
                           title: Text(
                             b.title,
                             style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 15),
+                                fontWeight: FontWeight.bold, fontSize: 14),
                           ),
                           subtitle: Text(
                             b.content.length > 80
                                 ? b.content.substring(0, 80) + '...'
                                 : b.content,
-                            style: const TextStyle(fontSize: 13),
+                            style: const TextStyle(fontSize: 12),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),

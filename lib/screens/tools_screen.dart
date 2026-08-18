@@ -6,6 +6,7 @@ import 'ziwei_chart_screen.dart';
 import 'yijing_screen.dart';
 import 'critical_illness_list_screen.dart';
 import 'medical_case_library_screen.dart';
+import '../theme/app_colors.dart';
 
 class ToolsScreen extends StatelessWidget {
   const ToolsScreen({super.key});
@@ -67,7 +68,7 @@ class ToolsScreen extends StatelessWidget {
             icon: Icons.change_history,
             title: '易经六十四卦',
             subtitle: '时间/数字/手动起卦 · 卦辞爻辞 · 倪师人间道',
-            color: const Color(0xFF6D4C41),
+            color: context.colors.meridianJueyin,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const YiJingScreen()),
@@ -78,7 +79,7 @@ class ToolsScreen extends StatelessWidget {
             icon: Icons.medical_information,
             title: '闭门课 · 重症临床',
             subtitle: '血癌/红斑狼疮/脑瘤/肾衰竭/乳癌/肝癌 · 倪师重症思路',
-            color: const Color(0xFFB71C1C),
+            color: context.colors.danger,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
@@ -91,7 +92,7 @@ class ToolsScreen extends StatelessWidget {
             icon: Icons.history_edu,
             title: '倪师医案库（1113 例）',
             subtitle: '全量结构化医案 · 按诊断/方剂/结果检索',
-            color: const Color(0xFF00838F),
+            color: context.colors.info,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
@@ -147,11 +148,11 @@ class _ToolCard extends StatelessWidget {
                   children: [
                     Text(title,
                         style: const TextStyle(
-                            fontSize: 17, fontWeight: FontWeight.bold)),
+                            fontSize: 16, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4),
                     Text(subtitle,
                         style: TextStyle(
-                            fontSize: 13,
+                            fontSize: 12,
                             color: Theme.of(context)
                                 .colorScheme
                                 .onSurfaceVariant)),
