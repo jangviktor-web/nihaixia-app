@@ -85,18 +85,10 @@
 
 
 # 方式一：直接下载 APK
-V1.11.7 版本（修复 V1.11.6 治法栏点击后 0 结果的真机 bug：三件套修复——FormulaRepository.load 幂等 + screen _load 显式 await repo 加载[双保险，不依赖 main 启动顺序] + filterMedicalCases formula/disease 用繁简归一 contains；含 1.11.6 病名徽标、1.11.5 治法/疾病两栏同步计算、1.11.4 筛选增强、1.11.3 列表白字热修、1.11.2 医案详情卡顿根治。）
+V1.11.7 版本（修复 V1.11.6 治法栏点击后 0 结果的真机 bug：三件套修复——FormulaRepository.load 幂等 + screen _load 显式 await repo 加载[双保险，不依赖 main 启动顺序] + filterMedicalCases formula/disease 用繁简归一 contains；含 1.11.6 病名徽标、1.11.5 治法/疾病两栏同步计算、1.11.4 筛选增强、1.11.3 列表白字热修、1.11.2 医案详情卡顿根治。） 
 
-**双版本下载（GitHub Release）**：https://github.com/jangviktor-web/nihaixia-app/releases/tag/V1.11.7
-- `app-arm64-v8a-release.apk`（23.7MB，推荐·arm64 新手机）
-- `app-release.apk`（63.4MB，通用版·兼容所有机型/模拟器）
-
-国内加速（ghproxy）：https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.7/app-release.apk
-
-备用下载（CloudStudio）：https://33758dbd90f24dbaa53a55b1f5700c61.app.workbuddy.link
-
-> 历史版本：V1.11.6（CloudStudio）https://fc53a4e475be487195919b310ce53bf6.app.workbuddy.link ；V1.11.5（CloudStudio）https://99dc5ecef9e043dc8a1d308a3b142cfb.app.workbuddy.link ；V1.11.4（CloudStudio）https://74a5302283b743c68e6c176ac839e51f.app.workbuddy.link ；V1.11.3（GitHub Releases）https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.3/V1.11.3.apk
-
+V1.11.7通用版安卓APK安装包下载：https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.7/app-release.apk
+V1.11.7arm64安卓APK安装包下载：https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.7/app-arm64-v8a-release.apk
 
 # 方式二：从源码构建
 
