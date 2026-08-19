@@ -88,11 +88,11 @@
 
 
 # 方式一：直接下载 APK
-V1.11.5 版本（修复 V1.11.4 医案库「治法/疾病」筛选栏不显示：分类改同步计算，进入页面首帧即显示；医案筛选增强：治法栏按经方方剂名分类[四逆汤/桂枝汤/当归四逆汤…取高频前12]，未出现方剂的归入「其他治法」；新增「疾病」栏按西医病名[合并抽取诊断+西医背景字段]分类[乳癌/肺癌/肝癌…取高频前12]，未明确病名的归入「其他疾病」；含 1.11.3 列表白字热修与 1.11.2 医案详情卡顿根治。）
+V1.11.6 版本（医案列表卡片新增**西医病名徽标**[最多 3 个，超出 +N 折叠]，让「疾病栏」筛出的医案在卡片上即可看到病名命中关系——之前卡片只显示中医诊断，病名藏在 western 长句中容易误以为没关联；含 1.11.5 治法/疾病两栏同步计算修复、1.11.4 筛选增强、1.11.3 列表白字热修、1.11.2 医案详情卡顿根治。）
 
-下载地址（CloudStudio）：https://99dc5ecef9e043dc8a1d308a3b142cfb.app.workbuddy.link
+下载地址（CloudStudio）：https://fc53a4e475be487195919b310ce53bf6.app.workbuddy.link
 
-> 历史版本：V1.11.4（CloudStudio）https://74a5302283b743c68e6c176ac839e51f.app.workbuddy.link ；V1.11.3（GitHub Releases）https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.3/V1.11.3.apk
+> 历史版本：V1.11.5（CloudStudio）https://99dc5ecef9e043dc8a1d308a3b142cfb.app.workbuddy.link ；V1.11.4（CloudStudio）https://74a5302283b743c68e6c176ac839e51f.app.workbuddy.link ；V1.11.3（GitHub Releases）https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.3/V1.11.3.apk
 
 
 # 方式二：从源码构建
