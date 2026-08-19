@@ -105,8 +105,8 @@
 |---|---|---|
 | 通用版 `app-release.apk` | 62MB | 全CPU架构，绝大多数安卓设备直接选这个 |
 | arm64‑v8a `app‑arm64‑v8a‑release.apk` | 24MB | 新款64位安卓手机，体积更小 |
-| armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | — | 老旧32位安卓设备 |
-| x86_64 `app‑x86_64‑release.apk` | — | 安卓虚拟机、模拟器使用 |
+| armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | 21MB | 老旧32位安卓设备 |
+| x86_64 `app‑x86_64‑release.apk` | 25MB | 安卓虚拟机、模拟器使用 |
 
 <br>
 
