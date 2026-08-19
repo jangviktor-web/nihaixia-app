@@ -62,63 +62,52 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
         await rootBundle.loadString('assets/medical_cases/cases_table.md');
     _all = parseMedicalCaseTable(md);
     _years = _computeYears(_all);
+    // 同步累计治法(方剂名)/疾病(西医病名)分类频次：访问 c.formulaNames /
+    // c.diseaseNames 同时填充全局 memo 缓存（保证详情秒开），并让
+    // FutureBuilder 首帧即有完整筛选行数据，避免异步预热导致的两栏不显示。
+    _computeCategories();
     // 异步刷新收藏/最近浏览（不阻塞列表渲染）
     _refreshFavRecent();
-    // 后台预热方剂/药材/病名索引缓存，并累计治法/疾病分类频次（分块让出帧，
-    // 不阻塞列表渲染与详情首屏；分类就绪后 setState 显示筛选行）
-    _warmCaches();
     return _all;
   }
 
-  /// 后台分块预热 [MedicalCase.formulaNames]/[herbNames]/[diseaseNames] 记忆缓存，
-  /// 并同步累计治法(方剂名)/疾病(西医病名)频次，分块（60 例）让出事件循环一帧，
-  /// 消除首次打开详情因全量索引扫描产生的 ~1s 卡顿；分类就绪后 setState 显示筛选行。
-  void _warmCaches() {
+  /// 同步累计治法(经方方剂名)/疾病(西医病名)分类频次，按频次降序取前若干，
+  /// 末位追加「其他治法」「其他疾病」哨兵（对应无方剂名/无西医病名的医案）。
+  /// 访问 c.formulaNames / c.diseaseNames 会同时填充全局 memo 缓存，保证详情秒开。
+  void _computeCategories() {
     if (_all.isEmpty) return;
     final freqF = <String, int>{};
     final freqD = <String, int>{};
     var hasEmptyF = false;
     var hasEmptyD = false;
-    var i = 0;
-    void step() {
-      if (i >= _all.length) {
-        _formulas = _topChips(
-          freqF,
-          _maxFormulaChips,
-          hasEmptyF ? const [kOtherMethod] : const [],
-        );
-        _diseases = _topChips(
-          freqD,
-          _maxDiseaseChips,
-          hasEmptyD ? const [kOtherDisease] : const [],
-        );
-        if (mounted) setState(() {});
-        return;
-      }
-      final end = (i + 60 < _all.length) ? i + 60 : _all.length;
-      for (; i < end; i++) {
-        final c = _all[i];
-        final fn = c.formulaNames; // 预热 + 累计
-        if (fn.isEmpty) {
-          hasEmptyF = true;
-        } else {
-          for (final f in fn) {
-            freqF[f] = (freqF[f] ?? 0) + 1;
-          }
-        }
-        final dn = c.diseaseNames; // 预热 + 累计
-        if (dn.isEmpty) {
-          hasEmptyD = true;
-        } else {
-          for (final d in dn) {
-            freqD[d] = (freqD[d] ?? 0) + 1;
-          }
+    for (final c in _all) {
+      final fn = c.formulaNames; // 累计 + 预热 memo
+      if (fn.isEmpty) {
+        hasEmptyF = true;
+      } else {
+        for (final f in fn) {
+          freqF[f] = (freqF[f] ?? 0) + 1;
         }
       }
-      if (i < _all.length) Future(step);
+      final dn = c.diseaseNames; // 累计 + 预热 memo
+      if (dn.isEmpty) {
+        hasEmptyD = true;
+      } else {
+        for (final d in dn) {
+          freqD[d] = (freqD[d] ?? 0) + 1;
+        }
+      }
     }
-
-    step();
+    _formulas = _topChips(
+      freqF,
+      _maxFormulaChips,
+      hasEmptyF ? const [kOtherMethod] : const [],
+    );
+    _diseases = _topChips(
+      freqD,
+      _maxDiseaseChips,
+      hasEmptyD ? const [kOtherDisease] : const [],
+    );
   }
 
   /// 频次降序取前 [max] 个分类，末位追加哨兵（[extra]，如有对应空桶）。

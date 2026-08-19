@@ -12,6 +12,23 @@
 
 ---
 
+## [1.11.5+16] - 2026-08-19 — 修复医案库「治法/疾病」筛选栏不显示
+
+**一句话**：V1.11.4 新增的「治法」「疾病」两栏由后台异步预热链计算，部分时机下未完成即刷新，导致页面只显示「年份」「视图」。改为 **`_load()` 内同步计算分类**，确保首帧即有完整筛选行。
+
+**修复内容**
+- 分类频次由异步 `_warmCaches()`（分块 `Future(step)` 递归 + 完成后 `setState`）改为 **`_load()` 内同步 `_computeCategories()`**，遍历 1113 例累计方剂名/病名频次后立即写入 `_formulas`/`_diseases`，`FutureBuilder` 首帧即渲染四行筛选。
+- 访问 `c.formulaNames` / `c.diseaseNames` 同时填充全局 memo 缓存，**详情秒开不受影响**（V1.11.2 优化保留）。
+- 代价：首次进医案库的加载圈多转约 1–3 秒（一次性的索引建立），换取筛选栏 100% 显示。
+
+**回归保障**
+- 新增 `test/medical_case_filter_bar_test.dart`：断言「年份/治法/疾病/视图」四行 + 方剂 chips（四逆汤/桂枝汤/其他治法）+ 疾病 chips（乳癌/肺癌/其他疾病）全部渲染。
+- 测试环境注记：需在 `runAsync` 内预激活 `rootBundle`（cases_table + FormulaRepository）+ 初始化 `sqflite_common_ffi` 的 `databaseFactoryFfi`，否则测试绑定不驱动 IO。
+
+**验证**：`dart analyze` 0 error；`flutter test test/medical_case_filter_bar_test.dart` 全过。
+
+---
+
 ## [1.11.4+15] - 2026-08-19 — 医案库筛选增强：治法栏按经方方剂名、新增疾病栏按西医病名
 
 **一句话**：医案库筛选栏重构——「治法栏」不再按生硬的「中医治疗方法」字段分类，改为按医案内实际出现的**经方方剂名**分类（频次取前 12 + 「其他治法」占位）；并**新增「疾病栏」**，按西医病名（合并抽取 diagnosis + western 字段）分类，未明确西医病名者归入「其他疾病」。

@@ -1,6 +1,17 @@
 {
   "changelog": [
     {
+      "version": "1.11.5",
+      "date": "2026-08-19",
+      "title": "修复医案库「治法/疾病」筛选栏不显示（分类改为同步计算）",
+      "changes": [
+        "修复：医案库「治法」「疾病」两栏此前由后台异步预热链计算，在部分设备/时机下未完成即 setState，导致两栏不显示（页面仅剩「年份」「视图」）",
+        "修复：分类频次改为 _load() 内同步计算（访问 c.formulaNames / c.diseaseNames 同时填充全局 memo 缓存，详情秒开不受影响），确保 FutureBuilder 首帧即有完整筛选行",
+        "新增回归测试：test/medical_case_filter_bar_test.dart 断言「年份/治法/疾病/视图」四行 + 方剂/疾病 chips（含 sqflite ffi + FormulaRepository 测试环境初始化）",
+        "验证：dart analyze 0 error；filter bar 回归测试通过"
+      ]
+    },
+    {
       "version": "1.11.4",
       "date": "2026-08-19",
       "title": "医案库筛选增强：治法栏按经方方剂名、新增疾病栏按西医病名",

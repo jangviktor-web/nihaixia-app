@@ -58,5 +58,5 @@ _writetest.txt
 android/build/
 
 # CloudStudio deploy output (index.html + apk) and build log
-deploy_v1114/
-build_apk.log
+deploy_v*/
+build_apk*.log
