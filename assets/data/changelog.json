@@ -1,6 +1,18 @@
 {
   "changelog": [
     {
+      "version": "1.11.7",
+      "date": "2026-08-19",
+      "title": "修复医案库「治法」chip 筛选 0 结果（FormulaRepository race + 字体归一）",
+      "changes": [
+        "修复：V1.11.6 治法栏点击后 0 结果。根因是 FormulaRepository 与 screen _load 的潜在 race——若 FormulaRepository 仍在加载时 formulaNames 被首次访问并永久缓存为 []，filter 完全失效",
+        "修复：FormulaRepository.load() 改为幂等（已加载则跳过），消除重复解析 + 防止与 late final 缓存竞争",
+        "修复：MedicalCaseLibraryScreen._load() 显式 await FormulaRepository.load() + HerbRepository.load()（不依赖 main 启动时的 await 顺序，双保险）",
+        "修复：filterMedicalCases 的 formula/disease 分支用 toSimplified 双侧归一 contains，彻底消除 chip 简/繁 vs formulaNames 繁/简 之间的字面不一致",
+        "新增回归：test/medical_case_filter_bar_test.dart 端到端 tap 桂枝汤→28、糖尿病→38 断言通过"
+      ]
+    },
+    {
       "version": "1.11.6",
       "date": "2026-08-19",
       "title": "医案列表卡片新增西医病名徽标（疾病栏筛选命中关系可见）",

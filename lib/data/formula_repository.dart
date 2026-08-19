@@ -7,6 +7,7 @@ class FormulaRepository {
   static List<Formula>? _formulas;
 
   static Future<void> load() async {
+    if (_formulas != null) return; // 幂等：重复调用跳过，避免重解析 + 防止与首次 late final 缓存竞争
     final jsonStr =
         await rootBundle.loadString('assets/data/formulas.json');
     final data = json.decode(jsonStr) as Map<String, dynamic>;

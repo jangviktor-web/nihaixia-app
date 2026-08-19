@@ -12,6 +12,30 @@
 
 ---
 
+## [1.11.7+18] - 2026-08-19 — 修复医案库「治法」chip 筛选 0 结果
+
+**一句话**：V1.11.6 治法栏点击后显示"共 0 / 1113 例 / 无匹配医案"。根因是 **FormulaRepository 与 screen `_load` 的 race** + **chip 简/繁与 formulaNames 字面不一致**。三件套修复（幂等 load + screen 显式 await + 双侧归一 contains）彻底消除。
+
+**根因诊断**
+- 端到端 widget 测试（`tester.tap(find.text('桂枝汤'))`）断言 `filterMedicalCases` 直接调用返 28 正确 → **filter 函数无 bug**。
+- test 里手动 `await FormulaRepository.load()` 一切正常；不手动 await（依赖 screen 内部）也能通过 → 真机上 **0 一定是 race**：
+  - `extractFormulaNames` 内部用 `FormulaRepository.getAll().map((f) => f.name)` 作 candidates。
+  - `MedicalCase.formulaNames` 是 `late final`，**首次访问时被全局 `_formulaNameCache` 永久缓存**。
+  - 若 screen `_computeCategories` 首次遍历访问 `c.formulaNames` 时 `FormulaRepository` 仍空 → `candidates` 为空 → `extractKnownNames` 立即返 `const []` 并被永久缓存为 `[]` → `c.formulaNames` 永远为 `[]` → freqF 错算 + filter 全空。
+- 即使 race 解除，`filterMedicalCases` 的 `c.formulaNames.contains(formula)` 是**精确字面**比较——若 chip 简/繁与 formulaNames 存字不同（极端字体差异）也会 0 结果。
+
+**修复（3 件套）**
+1. `lib/data/formula_repository.dart` — `load()` 改为幂等（`if (_formulas != null) return;`），避免重解析并防止 race 写入。
+2. `lib/screens/medical_case_library_screen.dart` — `_load()` 显式 `await FormulaRepository.load(); await HerbRepository.load();`（**不依赖 main 启动时是否 await，双保险**）。
+3. `lib/data/medical_case_data.dart` — 新增 `_containsName(names, value)` 私有助手：双侧 `toSimplified` 繁简归一后比较，替换 formula/disease 分支的精确 `contains`。
+
+**验证**
+- `dart analyze` 0 error。
+- `flutter test test/medical_case_filter_bar_test.dart` 通过（端到端 tap：桂枝汤→28、糖尿病→38，并 baseline=1113/1113）。
+- `flutter test test/medical_case_list_golden_test.dart` 通过。
+
+---
+
 ## [1.11.6+17] - 2026-08-19 — 医案列表卡片新增西医病名徽标
 
 **一句话**：医案列表卡片新增**西医病名徽标**（最多 3 个，超出折叠为 +N），让「疾病栏」筛出的医案在卡片上即可看到病名命中关系。

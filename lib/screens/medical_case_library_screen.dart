@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../data/database_helper.dart';
+import '../data/formula_repository.dart';
+import '../data/herb_repository.dart';
 import '../data/medical_case_data.dart';
 import '../widgets/medical_case_filter_bar.dart';
 import '../widgets/medical_case_list_card.dart';
@@ -58,6 +60,11 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
   }
 
   Future<List<MedicalCase>> _load() async {
+    // 先保证方剂/药材库已加载（不依赖 main 启动时的 await 顺序，消除与
+    // late final 缓存的 race——若 FormulaRepository 仍空时 formulaNames
+    // 被首次访问并永久缓存为 []，将导致治法栏 freqF 错算、filter 0 结果）。
+    await FormulaRepository.load();
+    await HerbRepository.load();
     final md =
         await rootBundle.loadString('assets/medical_cases/cases_table.md');
     _all = parseMedicalCaseTable(md);

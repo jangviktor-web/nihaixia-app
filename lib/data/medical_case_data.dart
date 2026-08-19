@@ -199,14 +199,14 @@ List<MedicalCase> filterMedicalCases(
     if (formula != null) {
       if (formula == kOtherMethod) {
         if (c.formulaNames.isNotEmpty) return false;
-      } else if (!c.formulaNames.contains(formula)) {
+      } else if (!_containsName(c.formulaNames, formula)) {
         return false;
       }
     }
     if (disease != null) {
       if (disease == kOtherDisease) {
         if (c.diseaseNames.isNotEmpty) return false;
-      } else if (!c.diseaseNames.contains(disease)) {
+      } else if (!_containsName(c.diseaseNames, disease)) {
         return false;
       }
     }
@@ -225,6 +225,17 @@ List<MedicalCase> filterMedicalCases(
 String? _extractYear(String date) {
   final m = RegExp(r'(19|20)\d{2}').firstMatch(date);
   return m?.group(0);
+}
+
+/// 字体归一 contains：双侧经 [toSimplified] 繁简归一后比较，
+/// 彻底消除 chip 简/繁 vs formulaNames 繁/简 之间的字面不一致（如真机上
+/// 偶发的全角/半角/零宽字符导致 0 结果）。
+bool _containsName(List<String> names, String value) {
+  final v = toSimplified(value);
+  for (final n in names) {
+    if (toSimplified(n) == v) return true;
+  }
+  return false;
 }
 
 class MedicalCase {
