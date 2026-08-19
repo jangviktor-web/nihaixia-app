@@ -596,6 +596,32 @@ class DiagnosticEngine {
     }
   }
 
+  // ==================== v1.11.8：寒热真假八维法（显式选填） ====================
+
+  /// 记录「寒热真假鉴别」选填线索（键见 chat_screen 的 zhenJiaClues）。
+  /// 线索写入 _answers['zhenjia_*']，由 _detectTrueFalseHeatCold 汇总判定
+  /// 真寒假热 / 真热假寒；不参与定经，仅作鉴别强化。
+  void answerZhenJia(String key, String label) {
+    _answers['zhenjia_$key'] = true;
+    _answers['zhenjia_last'] = label;
+  }
+
+  // ==================== v1.11.8：健康人基线判定 ====================
+
+  /// 倪师「正常人」六条基线是否全部达标：
+  /// 一觉到天亮 / 晨起排便 / 小便淡黄 / 手脚温 / 有胃口 / 精神好。
+  /// 全部达标 → 问诊可直接给出正面反馈，不进入异常辨证。
+  bool get healthyBaselineOk {
+    bool ok(String k) => _answers[k] != true;
+    return ok('insomnia') && // 睡眠：一觉到天亮
+        ok('constipated') && ok('diarrhea') && // 大便：每日成形
+        ok('urine_clear') && ok('urine_difficult') && ok('urine_nocturia') && // 小便：淡黄 5-7 次
+        ok('poor_appetite') && ok('nausea') && // 胃口：有食欲
+        ok('drowsy') && ok('fatigue') && ok('irritable') && // 精神：早起床精神好
+        ok('alternating_chills') && ok('hot_palms_soles') && // 寒热：手脚温
+        _answers['no_chills'] == true;
+  }
+
   void _decideMeridianDirection() {
     // ==================== 七步走第一步：定表里 ====================
     // 快速诊断流程图（来自倪海厦六经辨证公式）
@@ -1263,13 +1289,26 @@ class DiagnosticEngine {
     final meridian = _meridianDirection;
     if (meridian == null) return null;
 
+    // v1.11.8：显式「寒热真假八维法」选填线索（用户逐条勾选，优于隐式推断）
+    final zjTrueCold = _answers['zhenjia_face_flush'] == true || // 面红如妆
+        _answers['zhenjia_thirst_no_drink'] == true || // 渴不欲饮/喜热饮
+        _answers['zhenjia_urine_clear'] == true || // 小便清长
+        _answers['zhenjia_abdomen_cool'] == true || // 胸腹久按不蒸手
+        _answers['zhenjia_stool_loose'] == true; // 大便稀溏无灼热
+    final zjTrueHeat = _answers['zhenjia_drink_immediate'] == true || // 渴饮即消
+        _answers['zhenjia_urine_short'] == true || // 小便短赤
+        _answers['zhenjia_abdomen_hot'] == true || // 胸腹久按蒸热
+        _answers['zhenjia_stool_burning'] == true; // 大便硬结/肛门灼热
+
     // 真寒假热检测
     if (meridian == '少阴' || meridian == '太阴') {
       final hasUpperHeat = _answers['upper_heat_lower_cold'] == true ||
-          _answers['thirst_strong'] == true;
+          _answers['thirst_strong'] == true ||
+          zjTrueCold == true;
       final hasLowerCold = _answers['cold_limbs'] == true ||
           _answers['drowsy'] == true ||
-          _answers['urine_clear'] == true;
+          _answers['urine_clear'] == true ||
+          zjTrueCold == true;
       if (hasUpperHeat && hasLowerCold) {
         return DiagnosticRules.trueFalseHeatColdData['真寒假热'];
       }
@@ -1277,10 +1316,13 @@ class DiagnosticEngine {
 
     // 真热假寒检测
     if (meridian == '阳明' || meridian == '少阳') {
-      final hasColdSigns = _answers['cold_limbs'] == true;
+      final hasColdSigns = _answers['cold_limbs'] == true ||
+          zjTrueHeat == true;
       final hasHeatSigns = _answers['thirst_strong'] == true ||
           _answers['constipated'] == true ||
-          _pulseType == '洪' || _pulseType == '数';
+          _pulseType == '洪' ||
+          _pulseType == '数' ||
+          zjTrueHeat == true;
       if (hasColdSigns && hasHeatSigns) {
         return DiagnosticRules.trueFalseHeatColdData['真热假寒'];
       }

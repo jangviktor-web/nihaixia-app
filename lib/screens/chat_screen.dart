@@ -6,6 +6,7 @@ import '../engine/diagnostic_engine.dart';
 import '../engine/formula_rules.dart';
 import '../engine/rule_engine.dart';
 import '../engine/diagnostic_rules.dart';
+import '../engine/meridian_formula_types.dart';
 import '../data/formula_repository.dart';
 import '../data/settings_repository.dart';
 import '../models/diagnosis.dart';
@@ -312,6 +313,84 @@ class _ChatScreenState extends State<ChatScreen> {
   // ==================== 九问后处理 ====================
 
   void _afterTenQuestions() {
+    // v1.11.8 ① 健康人基线：六条全过 → 正面反馈，不进入异常辨证
+    if (_engine.healthyBaselineOk) {
+      _showHealthyBaselineResult();
+      return;
+    }
+    // v1.11.8 ③ 寒热真假八维法（选填，可多选/跳过）
+    _showZhenJiaOptions();
+  }
+
+  /// v1.11.8 ① 倪师六条健康基线全部达标 → 正面反馈。
+  void _showHealthyBaselineResult() {
+    const baselineText = '恭喜，你是个正常人\n\n'
+        '倪师六条健康基线全部达标：\n'
+        '• 一觉到天亮，中间不醒\n'
+        '• 晨起正常排便，成形\n'
+        '• 小便淡黄，一天 5-7 次\n'
+        '• 手脚温热\n'
+        '• 有胃口，食之有味\n'
+        '• 早起床精神好\n\n'
+        '继续保持：不熬夜、忌生冷、七分饱、顺应时辰。';
+    _addBotMessage(baselineText, isResult: true);
+    setState(() {
+      _currentOptions = [
+        _ChatOption(label: '重新辨证', icon: Icons.refresh, onTap: _resetDiagnosis),
+      ];
+      _showOptions = true;
+    });
+  }
+
+  // ==================== v1.11.8 ③ 寒热真假八维法（选填） ====================
+
+  static const Map<String, String> _zhenJiaClueKeys = {
+    '面红如妆（两颧鲜红界限分明）': 'face_flush',
+    '口渴欲冷饮，饮入即消': 'drink_immediate',
+    '渴不欲饮或喜热饮': 'thirst_no_drink',
+    '小便清长、尿色淡白': 'urine_clear',
+    '小便短赤、尿色深黄': 'urine_short',
+    '胸腹久按不蒸手（初按似热久按不热）': 'abdomen_cool',
+    '胸腹久按蒸蒸有热气（四肢虽寒）': 'abdomen_hot',
+    '大便稀溏无灼热': 'stool_loose',
+    '大便硬结/肛门灼热': 'stool_burning',
+  };
+  final List<String> _zhenJiaSelected = [];
+
+  void _showZhenJiaOptions() {
+    _addBotMessage('进阶鉴别（选填）：请逐条勾选符合你的「寒热真假」线索（可多选），'
+        '选完点「完成」；没有特殊线索直接点「跳过」。');
+    setState(() {
+      _currentOptions = [
+        for (final e in _zhenJiaClueKeys.entries)
+          if (!_zhenJiaSelected.contains(e.key))
+            _ChatOption(label: e.key, onTap: () => _selectZhenJia(e.key, e.value)),
+        _ChatOption(
+          label: _zhenJiaSelected.isEmpty ? '没有/跳过' : '完成鉴别（已选 ${_zhenJiaSelected.length} 条）',
+          icon: Icons.check,
+          onTap: _finishZhenJia,
+        ),
+      ];
+      _showOptions = true;
+    });
+  }
+
+  void _selectZhenJia(String label, String key) {
+    _saveSnapshot();
+    _addUserMessage(label);
+    _zhenJiaSelected.add(label);
+    _engine.answerZhenJia(key, label);
+    _showZhenJiaOptions();
+  }
+
+  void _finishZhenJia() {
+    _addUserMessage(
+        _zhenJiaSelected.isEmpty ? '跳过寒热真假鉴别' : '寒热真假鉴别完成（${_zhenJiaSelected.length} 条）');
+    _proceedAfterZhenJia();
+  }
+
+  /// 寒热真假选填结束后，进入正式诊断（原 _afterTenQuestions 的 diagnose 逻辑）。
+  void _proceedAfterZhenJia() {
     final result = _engine.diagnose();
     if (result != null) {
       _addBotMessage('好，十问已经完成了。让我根据你的情况来分析...\n\n'
@@ -483,6 +562,28 @@ class _ChatScreenState extends State<ChatScreen> {
     // 详细模式：显示完整诊断信息；简单模式：只显示基本结果
     final isDetailed = SettingsRepository.instance.diagnosticLevel == 'detailed';
 
+    // ==================== v1.11.8 ② 用药铁律（安全信息，不分简单/详细模式） ====================
+
+    // P0-4: 用药铁律
+    if (result.medicationRules != null && result.medicationRules!.isNotEmpty) {
+      String mrText = '用药铁律\n';
+      for (final rule in result.medicationRules!) {
+        mrText += '\n• ${rule.condition}：${rule.prohibition}';
+        mrText += '\n  原因：${rule.reason}';
+        mrText += '\n  误治急救：${rule.emergencyTreatment}';
+      }
+      _addBotMessage(mrText, isResult: false);
+    }
+
+    // P0-5: 汗法禁忌
+    if (result.sweatingContraindications != null && result.sweatingContraindications!.isNotEmpty) {
+      String scText = '汗法禁忌\n';
+      for (final sc in result.sweatingContraindications!) {
+        scText += '\n• ${sc.condition}：${sc.reason}（后果：${sc.consequence}）';
+      }
+      _addBotMessage(scText, isResult: false);
+    }
+
     if (isDetailed) {
     // P0-2: 脉舌矛盾警告
     if (result.pulseTongueContradiction != null) {
@@ -553,27 +654,8 @@ class _ChatScreenState extends State<ChatScreen> {
       _addBotMessage(bsText, isResult: false);
     }
 
-    // P0-4: 用药铁律
-    if (result.medicationRules != null && result.medicationRules!.isNotEmpty) {
-      String mrText = '用药铁律\n';
-      for (final rule in result.medicationRules!) {
-        mrText += '\n• ${rule.condition}：${rule.prohibition}';
-        mrText += '\n  原因：${rule.reason}';
-        if (rule.emergencyTreatment != null) {
-          mrText += '\n  误治急救：${rule.emergencyTreatment}';
-        }
-      }
-      _addBotMessage(mrText, isResult: false);
-    }
-
-    // P0-5: 汗法禁忌
-    if (result.sweatingContraindications != null && result.sweatingContraindications!.isNotEmpty) {
-      String scText = '汗法禁忌\n';
-      for (final sc in result.sweatingContraindications!) {
-        scText += '\n• ${sc.condition}：${sc.reason}（后果：${sc.consequence}）';
-      }
-      _addBotMessage(scText, isResult: false);
-    }
+    // P0-4: 用药铁律（已上移至详细/简单模式均展示）
+    // P0-5: 汗法禁忌（已上移至详细/简单模式均展示）
 
     // P1-7: 传经判断
     if (result.transmission != null) {
@@ -600,6 +682,21 @@ class _ChatScreenState extends State<ChatScreen> {
       _addBotMessage('少阴兼表证\n'
           '少阴病始得之，反发热脉沉者——麻黄附子细辛汤\n'
           '温经解表，表里双解', isResult: false);
+    }
+
+    // v1.11.8 ④ 六经公式分型速查（主证经 → 分型/脉象/治法/代表方）
+    final fam = meridianFormulaFamilyOf(result.meridian);
+    if (fam != null) {
+      final sb = StringBuffer('六经公式分型（${fam.meridian}）\n'
+          '提纲：${fam.tag}\n');
+      for (final t in fam.types) {
+        sb.writeln('\n• ${t.name}');
+        sb.writeln('  症状：${t.sym}');
+        sb.writeln('  脉象：${t.pulse} · 治法：${t.treat}');
+        sb.writeln('  代表方：${t.rx}');
+      }
+      sb.writeln('\n辨证要点：${fam.keys}');
+      _addBotMessage(sb.toString(), isResult: false);
     }
 
     // 调护建议
