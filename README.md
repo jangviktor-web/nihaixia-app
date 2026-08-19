@@ -91,6 +91,8 @@ V1.11.7 版本（修复 V1.11.6 治法栏点击后 0 结果的真机 bug：三�
 - `app-arm64-v8a-release.apk`（23.7MB，推荐·arm64 新手机）
 - `app-release.apk`（63.4MB，通用版·兼容所有机型/模拟器）
 
+国内加速（ghproxy）：https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.7/app-release.apk
+
 备用下载（CloudStudio）：https://33758dbd90f24dbaa53a55b1f5700c61.app.workbuddy.link
 
 > 历史版本：V1.11.6（CloudStudio）https://fc53a4e475be487195919b310ce53bf6.app.workbuddy.link ；V1.11.5（CloudStudio）https://99dc5ecef9e043dc8a1d308a3b142cfb.app.workbuddy.link ；V1.11.4（CloudStudio）https://74a5302283b743c68e6c176ac839e51f.app.workbuddy.link ；V1.11.3（GitHub Releases）https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.3/V1.11.3.apk
