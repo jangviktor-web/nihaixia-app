@@ -12,6 +12,7 @@
 library;
 
 import 'chinese_convert.dart';
+import 'disease_repository.dart';
 import 'formula_repository.dart';
 import 'herb_repository.dart';
 
@@ -19,6 +20,7 @@ import 'herb_repository.dart';
 /// memo 后重复打开详情/洞察/相关医案命中缓存，避免反复卡顿）。
 final Map<String, List<String>> _formulaNameCache = {};
 final Map<String, List<String>> _herbNameCache = {};
+final Map<String, List<String>> _diseaseNameCache = {};
 
 /// 从方剂字段提取已知方剂名（简繁归一 + 箭头分段 + 噪声清洗 + 长度降序 + 去重）。
 /// 返回命中的方剂名（FormulaRepository 正名）。按原文 memo 缓存，返回不可变列表。
@@ -46,6 +48,19 @@ List<String> extractHerbNames(String formula) {
         candidates,
         resolve: (c) => HerbRepository.getExactByName(c)?.name,
       ),
+    );
+  });
+}
+
+/// 从文本抽取西医病名（简繁归一 + 箭头分段 + 噪声清洗 + 长度降序 + 去重）。
+/// 候选来自 [DiseaseRepository]（正名 + 别名），命中经 [DiseaseRepository.resolveDisease]
+/// 归一为正名。供医案「疾病栏」分类（diagnosis / western 合并抽取）。
+/// 按原文 memo 缓存，返回不可变列表。
+List<String> extractDiseaseNames(String text) {
+  return _diseaseNameCache.putIfAbsent(text, () {
+    final candidates = DiseaseRepository.candidates;
+    return List.unmodifiable(
+      extractKnownNames(text, candidates, resolve: DiseaseRepository.resolveDisease),
     );
   });
 }
@@ -154,15 +169,24 @@ List<MedicalCase> findRelatedCases(
   return same.take(max).toList();
 }
 
-/// 医案列表组合过滤（搜索 + 年份 + 治法 + 视图），供列表页与断言复用。
+/// 医案「其他」哨兵：筛选栏中代表「无对应分类」的占位值（公开供筛选栏/列表页引用）。
+/// - [kOtherMethod]：医案未出现任何经方方剂名（formulaNames 为空）→ 其他治法；
+/// - [kOtherDisease]：医案未抽出任何西医病名（diagnosis/western 均未命中）→ 其他疾病。
+const String kOtherMethod = '其他治法';
+const String kOtherDisease = '其他疾病';
+
+/// 医案列表组合过滤（搜索 + 年份 + 治法(方剂名) + 疾病(西医病名) + 视图），供列表页与断言复用。
 /// [view]：null=全部 | 'fav'=收藏 | 'recent'=最近浏览；
+/// [formula]：null=全部 | 具体经方方剂名 | [_kOtherMethod]=未出现方剂名；
+/// [disease]：null=全部 | 具体西医病名 | [_kOtherDisease]=未抽出病名；
 /// [favSeqs]/[recentSeqs] 需已按时间倒序传入，返回列表对 fav/recent 保持该顺序；
 /// [yearOf] 缺省用内置年份提取（date 字段首个 19xx/20xx）。
 List<MedicalCase> filterMedicalCases(
   List<MedicalCase> all, {
   String query = '',
   String? year,
-  String? method,
+  String? formula,
+  String? disease,
   String? view,
   List<int> favSeqs = const [],
   List<int> recentSeqs = const [],
@@ -172,7 +196,20 @@ List<MedicalCase> filterMedicalCases(
   final list = all.where((c) {
     if (query.isNotEmpty && !c.matches(query)) return false;
     if (year != null && y(c.date) != year) return false;
-    if (method != null && c.method.trim() != method) return false;
+    if (formula != null) {
+      if (formula == kOtherMethod) {
+        if (c.formulaNames.isNotEmpty) return false;
+      } else if (!c.formulaNames.contains(formula)) {
+        return false;
+      }
+    }
+    if (disease != null) {
+      if (disease == kOtherDisease) {
+        if (c.diseaseNames.isNotEmpty) return false;
+      } else if (!c.diseaseNames.contains(disease)) {
+        return false;
+      }
+    }
     if (view == 'fav' && !favSeqs.contains(c.seq)) return false;
     if (view == 'recent' && !recentSeqs.contains(c.seq)) return false;
     return true;
@@ -229,6 +266,25 @@ class MedicalCase {
 
   /// 药材索引：命中 HerbRepository 的药材正名（精确+别名归一、去重、保持出现顺序）。
   late final List<String> herbNames = extractHerbNames(formula);
+
+  /// 西医病名索引：合并抽取 [diagnosis] / [western] 中命中的西医病名
+  /// （简繁归一、别名归一、去重、保持出现顺序）。空列表表示该医案未明确西医病名。
+  late final List<String> diseaseNames = _mergeDiseaseNames(
+    extractDiseaseNames(diagnosis),
+    extractDiseaseNames(western),
+  );
+
+  /// 合并两组病名（union，去重，保持出现顺序），返回不可变列表。
+  static List<String> _mergeDiseaseNames(List<String> a, List<String> b) {
+    if (a.isEmpty) return b;
+    if (b.isEmpty) return a;
+    final seen = <String>{};
+    final out = <String>[];
+    for (final n in a.followedBy(b)) {
+      if (seen.add(n)) out.add(n);
+    }
+    return List.unmodifiable(out);
+  }
 
   /// 全文检索命中（诊断/方剂/结果/观点/病机/患者）。
   /// 查询与字段均先 [toSimplified] 归一，繁体原文可被简体搜索命中。

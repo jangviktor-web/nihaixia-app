@@ -12,6 +12,54 @@
 
 ---
 
+## [1.11.4+15] - 2026-08-19 — 医案库筛选增强：治法栏按经方方剂名、新增疾病栏按西医病名
+
+**一句话**：医案库筛选栏重构——「治法栏」不再按生硬的「中医治疗方法」字段分类，改为按医案内实际出现的**经方方剂名**分类（频次取前 12 + 「其他治法」占位）；并**新增「疾病栏」**，按西医病名（合并抽取 diagnosis + western 字段）分类，未明确西医病名者归入「其他疾病」。
+
+### Added — 医案库筛选
+- **治法栏改按方剂名**：`medical_case_library_screen.dart` 后台预热阶段累计 `MedicalCase.formulaNames` 频次，取出现频次最高的前 12 个经方方剂名作为 chip（如四逆汤/桂枝汤/当归四逆汤…）；无方剂名医案归入「其他治法」占位 chip。替代原按 `method`（中医治疗方法）字段的分类（原分类过于稀疏、不可读）。
+- **新增疾病栏**：`medical_case_library_screen.dart` 同时累计 `MedicalCase.diseaseNames` 频次，取前 12 个西医病名作为 chip（如乳癌/肺癌/肝癌/糖尿病/心臟病…）；未抽出任何西医病名医案归入「其他疾病」占位 chip。
+- **西医病名词典**：新增 `lib/data/disease_repository.dart`（约 150 个正名 + 简体别名归一，如乳腺癌→乳癌、前列腺癌→攝護腺癌），复用 `extractKnownNames` 抽取引擎，从 `diagnosis` 与 `western` 两字段合并抽取西医病名。
+- **筛选维度扩展**：`filterMedicalCases` 新增 `formula` / `disease` 两个筛选维度（含 `其他治法` / `其他疾病` 哨兵值），列表筛选与断言复用同一函数；`MedicalCaseFilterBar` 相应增加「疾病」行并改造「治法」行为。
+
+### 验证
+- `dart analyze lib`：**0 error**。
+- 分布经临时断言验证：治法栏 top12 方剂（四逆汤35/桂枝汤28/当归四逆汤27/射干麻黄汤22/小建中汤22…），疾病栏 top12 病名（乳癌112/肺癌82/肝癌63/失眠40/糖尿病38/心臟病37/血癌34/便秘34/胰臟癌29/腦瘤25/高血壓22/水腫20）；其他治法=776、其他疾病=608（符合「未出现/未明确者归入其他」的预期）。
+- `versionName=1.11.4 / versionCode=15`。
+
+---
+
+## [1.11.3+14] - 2026-08-19 — 医案列表白字热修（浅色模式下文字不可读）
+
+**一句话**：修复医案库列表卡片在浅色模式下文字变成白色的致命可读性问题——根因是 `RichText` 未显式设置颜色、不继承 `DefaultTextStyle`，回退为白色；现全部文字显式绑定 `onSurface` / `onSurfaceVariant`，并新增 golden 回归测试防止复发。
+
+### Fixed — 医案库文字颜色
+- **列表卡片白字**：`lib/widgets/medical_case_list_card.dart` 标题/诊断/患者/方剂/疗效全部改用显式颜色：标题用 `colorScheme.onSurface`，次要信息用 `onSurfaceVariant`，方药徽标保持 `primary`；不再依赖 `RichText` 的 `DefaultTextStyle` 继承。
+- **详情页方剂组成白字**：`lib/widgets/formula_rich_text.dart` 非链接正文同样显式设置 `onSurface`，避免同一根因导致详情页方剂字段在浅色模式下不可读。
+- **回归测试**：新增 `test/medical_case_list_golden_test.dart`，渲染 3 条列表卡片并 golden 截图比对；修复前 golden 为白字，修复后 golden 为深色可读文字。
+
+### 验证
+- `dart analyze lib`：**0 error**（37 条既有 lint 无新增）。
+- Golden 回归：`test/medical_case_list_golden_test.dart` **PASS**（修复前后对比明确）。
+- `versionName=1.11.3 / versionCode=14`。
+
+---
+
+## [1.11.2+13] - 2026-08-19 — 医案详情首屏卡顿根治（后台预热 + 异步相关医案）
+
+**一句话**：针对「打开倪师医案详情偶发 ~1s 卡顿」的残留优化——列表加载后后台分块预热方剂/药材索引缓存，详情「相关医案」改为首帧后异步计算，首屏立即可见、不再因全量扫描索引而冻结主线程。
+
+### Changed — 性能（医案模块残留优化）
+- **后台预热索引缓存**：`medical_case_library_screen.dart` 新增 `_warmCaches()`，列表解析完成后逐块（60 例/块）触发 `MedicalCase.formulaNames` / `herbNames` 的全局记忆缓存填充，每块间让出事件循环一帧；用户滚动浏览期间静默完成，打开任意详情时相关医案计算命中缓存为近零耗时。
+- **详情相关医案异步化**：`medical_case_detail_screen.dart` 移除 `build` 内同步的 `late final _relatedCache = findRelatedCases(...)`，改为 `initState` 后 `_loadRelated()` 异步计算并 `setState` 填充；首屏先渲染正文，`_relatedReady` 就绪后插入相关医案区，彻底消除首屏卡顿。
+- 全局记忆缓存（`_formulaNameCache` / `_herbNameCache`）复用机制不变，洞察页 `compute()` 隔离计算路径保留。
+
+### 验证
+- `dart analyze lib`：**0 error**（既有 lint info 未新增）。
+- `versionName=1.11.2 / versionCode=13`。
+
+---
+
 ## [1.11.1+12] - 2026-08-19 — 交互体验修复 · 图标规范（P0-1）· 设计 Token 与深色模式
 
 **一句话**：基于三方专家（前端 / 设计师 / QA）UI 交互审计整改的修复版——底部导航保状态、App 内更新安装修复、命理日期校验、聊天返回栈修复、全站 emoji 图标根治为 Material Icons、39 个语义 Token 落地、深色模式全面修复。

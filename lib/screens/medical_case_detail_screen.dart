@@ -23,9 +23,10 @@ class MedicalCaseDetailScreen extends StatefulWidget {
 class _MedicalCaseDetailScreenState extends State<MedicalCaseDetailScreen> {
   bool _isBookmarked = false;
 
-  /// 相关医案结果缓存：首次 build 计算一次，避免每次 build 重算（全量扫描较慢）。
-  late final List<MedicalCase> _relatedCache =
-      findRelatedCases(widget.c, widget.allCases ?? const [], max: 6);
+  /// 相关医案：首帧后异步计算，避免详情首屏因全量扫描方剂索引而卡顿；
+  /// 列表页已后台预热缓存，此处通常在微任务内即完成，无可见延迟。
+  List<MedicalCase> _related = const [];
+  bool _relatedReady = false;
 
   MedicalCase get c => widget.c;
 
@@ -34,6 +35,16 @@ class _MedicalCaseDetailScreenState extends State<MedicalCaseDetailScreen> {
     super.initState();
     _recordRecent();
     _checkBookmark();
+    _loadRelated();
+  }
+
+  Future<void> _loadRelated() async {
+    final list = findRelatedCases(c, widget.allCases ?? const [], max: 6);
+    if (!mounted) return;
+    setState(() {
+      _related = list;
+      _relatedReady = true;
+    });
   }
 
   Future<void> _recordRecent() async {
@@ -146,7 +157,7 @@ class _MedicalCaseDetailScreenState extends State<MedicalCaseDetailScreen> {
       );
     }
 
-    final related = _relatedCache;
+    final related = _relatedReady ? _related : const <MedicalCase>[];
     if (related.isNotEmpty) {
       children.add(
         Padding(

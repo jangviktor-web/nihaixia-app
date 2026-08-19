@@ -88,9 +88,11 @@
 
 
 # 方式一：直接下载 APK
-V1.11.1 版本（交互体验修复版：底部导航保状态、App 内更新安装修复、命理日期校验、聊天返回上一步；全站图标规范为 Material Icons、深色模式全面优化。基于 1.11.0 的全部功能：黄帝内经 / 附子生炮拆分 / 医案库 1257 例 / 命理三件套。）
+V1.11.4 版本（医案筛选增强：治法栏改按医案内出现的经方方剂名分类，取高频前 12，未出现方剂的归入「其他治法」；新增「疾病」栏按西医病名[合并抽取诊断+西医背景字段]分类，取高频前 12，未明确病名的归入「其他疾病」；含 1.11.3 列表白字热修与 1.11.2 医案详情卡顿根治。）
 
-下载地址:https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.1/V1.11.1.apk
+下载地址（CloudStudio）：https://74a5302283b743c68e6c176ac839e51f.app.workbuddy.link
+
+> 历史版本：V1.11.3（GitHub Releases）https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.3/V1.11.3.apk
 
 
 # 方式二：从源码构建

@@ -1,26 +1,32 @@
 import 'package:flutter/material.dart';
 
-/// 医案库筛选行：年份 / 治法 / 视图（全部·收藏·最近浏览）三组横向 FilterChip。
+/// 医案库筛选行：年份 / 治法(经方方剂名) / 疾病(西医病名) / 视图 四组横向 FilterChip。
 /// 值与显示文案分离（[labels]），供收藏/最近浏览使用机器值 'fav'/'recent'。
 class MedicalCaseFilterBar extends StatelessWidget {
   final List<String> years;
-  final List<String> methods;
+  final List<String> formulas; // 治法栏：经方方剂名分类（含「其他治法」哨兵）
+  final List<String> diseases; // 疾病栏：西医病名分类（含「其他疾病」哨兵）
   final String? year; // null = 全部
-  final String? method; // null = 全部
+  final String? formula; // null = 全部
+  final String? disease; // null = 全部
   final String? view; // null=全部 | 'fav'=收藏 | 'recent'=最近浏览
   final ValueChanged<String?> onYearChanged;
-  final ValueChanged<String?> onMethodChanged;
+  final ValueChanged<String?> onFormulaChanged;
+  final ValueChanged<String?> onDiseaseChanged;
   final ValueChanged<String?> onViewChanged;
 
   const MedicalCaseFilterBar({
     super.key,
     required this.years,
-    required this.methods,
+    required this.formulas,
+    required this.diseases,
     required this.year,
-    required this.method,
+    required this.formula,
+    required this.disease,
     required this.view,
     required this.onYearChanged,
-    required this.onMethodChanged,
+    required this.onFormulaChanged,
+    required this.onDiseaseChanged,
     required this.onViewChanged,
   });
 
@@ -38,13 +44,21 @@ class MedicalCaseFilterBar extends StatelessWidget {
             selected: year,
             onChanged: onYearChanged,
           ),
-          if (methods.isNotEmpty)
+          if (formulas.isNotEmpty)
             _chipRow(
               context,
               label: '治法',
-              options: methods,
-              selected: method,
-              onChanged: onMethodChanged,
+              options: formulas,
+              selected: formula,
+              onChanged: onFormulaChanged,
+            ),
+          if (diseases.isNotEmpty)
+            _chipRow(
+              context,
+              label: '疾病',
+              options: diseases,
+              selected: disease,
+              onChanged: onDiseaseChanged,
             ),
           _chipRow(
             context,

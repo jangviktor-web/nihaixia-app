@@ -4,6 +4,8 @@ import '../data/medical_case_data.dart';
 import 'highlight_spans.dart';
 
 /// 医案列表卡片：标题（#序号+诊断，关键词高亮）+ 患者 / 方药徽标 / 方剂 / 结果。
+/// 所有文字均显式指定 [ColorScheme] 颜色，避免 [RichText] 因不继承
+/// [DefaultTextStyle] 而回退为不可读颜色（如浅色模式下变成白色）。
 class MedicalCaseListCard extends StatelessWidget {
   final MedicalCase c;
   final String query;
@@ -23,14 +25,21 @@ class MedicalCaseListCard extends StatelessWidget {
       child: ListTile(
         title: RichText(
           text: TextSpan(
-            style: const TextStyle(fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: cs.onSurface,
+            ),
             children: [
               TextSpan(text: '#${c.seq}  '),
               ...highlightSpans(
                 context,
                 c.displayName,
                 query,
-                const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: cs.onSurface,
+                ),
               ),
             ],
           ),
@@ -45,7 +54,7 @@ class MedicalCaseListCard extends StatelessWidget {
                     context,
                     c.patient,
                     query,
-                    const TextStyle(fontSize: 12),
+                    TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
                   ),
                 ),
               ),
@@ -68,7 +77,7 @@ class MedicalCaseListCard extends StatelessWidget {
                     context,
                     '方：${_clip(c.formula, 36)}',
                     query,
-                    const TextStyle(fontSize: 12),
+                    TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
                   ),
                 ),
               ),
@@ -79,7 +88,7 @@ class MedicalCaseListCard extends StatelessWidget {
                     context,
                     '效：${_clip(c.result, 36)}',
                     query,
-                    const TextStyle(fontSize: 12),
+                    TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
                   ),
                 ),
               ),

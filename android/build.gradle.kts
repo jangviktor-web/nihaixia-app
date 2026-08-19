@@ -1,10 +1,4 @@
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-
+// 仓库统一在 settings.gradle.kts 的 dependencyResolutionManagement 管理（Gradle 7+ 标准，阿里镜像优先）
 val newBuildDir: Directory =
     rootProject.layout.buildDirectory
         .dir("../../build")

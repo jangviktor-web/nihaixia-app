@@ -25,7 +25,8 @@ class MedicalCaseLibraryScreen extends StatefulWidget {
 class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
   static const _debounceDelay = Duration(milliseconds: 300);
   static const _maxYearChips = 8;
-  static const _maxMethodChips = 8;
+  static const _maxFormulaChips = 12;
+  static const _maxDiseaseChips = 12;
   static const _recentLimit = 20;
 
   late Future<List<MedicalCase>> _future;
@@ -34,9 +35,11 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
   String _query = '';
   List<MedicalCase> _all = [];
   List<String> _years = [];
-  List<String> _methods = [];
+  List<String> _formulas = []; // 治法栏：经方方剂名分类（含「其他治法」哨兵）
+  List<String> _diseases = []; // 疾病栏：西医病名分类（含「其他疾病」哨兵）
   String? _year; // null = 全部
-  String? _method; // null = 全部
+  String? _formula; // null = 全部（具体经方方剂名 / 其他治法）
+  String? _disease; // null = 全部（具体西医病名 / 其他疾病）
   String? _view; // null=全部 | 'fav'=收藏 | 'recent'=最近浏览
   List<int> _favSeqs = []; // 收藏 seq，按收藏时间倒序
   List<int> _recentSeqs = []; // 最近浏览 seq，按浏览时间倒序
@@ -59,10 +62,77 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
         await rootBundle.loadString('assets/medical_cases/cases_table.md');
     _all = parseMedicalCaseTable(md);
     _years = _computeYears(_all);
-    _methods = _computeMethods(_all);
     // 异步刷新收藏/最近浏览（不阻塞列表渲染）
     _refreshFavRecent();
+    // 后台预热方剂/药材/病名索引缓存，并累计治法/疾病分类频次（分块让出帧，
+    // 不阻塞列表渲染与详情首屏；分类就绪后 setState 显示筛选行）
+    _warmCaches();
     return _all;
+  }
+
+  /// 后台分块预热 [MedicalCase.formulaNames]/[herbNames]/[diseaseNames] 记忆缓存，
+  /// 并同步累计治法(方剂名)/疾病(西医病名)频次，分块（60 例）让出事件循环一帧，
+  /// 消除首次打开详情因全量索引扫描产生的 ~1s 卡顿；分类就绪后 setState 显示筛选行。
+  void _warmCaches() {
+    if (_all.isEmpty) return;
+    final freqF = <String, int>{};
+    final freqD = <String, int>{};
+    var hasEmptyF = false;
+    var hasEmptyD = false;
+    var i = 0;
+    void step() {
+      if (i >= _all.length) {
+        _formulas = _topChips(
+          freqF,
+          _maxFormulaChips,
+          hasEmptyF ? const [kOtherMethod] : const [],
+        );
+        _diseases = _topChips(
+          freqD,
+          _maxDiseaseChips,
+          hasEmptyD ? const [kOtherDisease] : const [],
+        );
+        if (mounted) setState(() {});
+        return;
+      }
+      final end = (i + 60 < _all.length) ? i + 60 : _all.length;
+      for (; i < end; i++) {
+        final c = _all[i];
+        final fn = c.formulaNames; // 预热 + 累计
+        if (fn.isEmpty) {
+          hasEmptyF = true;
+        } else {
+          for (final f in fn) {
+            freqF[f] = (freqF[f] ?? 0) + 1;
+          }
+        }
+        final dn = c.diseaseNames; // 预热 + 累计
+        if (dn.isEmpty) {
+          hasEmptyD = true;
+        } else {
+          for (final d in dn) {
+            freqD[d] = (freqD[d] ?? 0) + 1;
+          }
+        }
+      }
+      if (i < _all.length) Future(step);
+    }
+
+    step();
+  }
+
+  /// 频次降序取前 [max] 个分类，末位追加哨兵（[extra]，如有对应空桶）。
+  List<String> _topChips(
+    Map<String, int> freq,
+    int max,
+    List<String> extra,
+  ) {
+    final entries = freq.entries.toList()
+      ..sort((a, b) {
+        final byFreq = b.value.compareTo(a.value);
+        return byFreq != 0 ? byFreq : a.key.compareTo(b.key);
+      });
+    return [...entries.take(max).map((e) => e.key), ...extra];
   }
 
   Future<void> _refreshFavRecent() async {
@@ -101,34 +171,19 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
     return years.take(_maxYearChips).toList();
   }
 
-  /// 治法候选：治法字段去重，按出现频次降序取前若干标签。
-  List<String> _computeMethods(List<MedicalCase> all) {
-    final freq = <String, int>{};
-    for (final c in all) {
-      final m = c.method.trim();
-      if (m.isEmpty) continue;
-      freq[m] = (freq[m] ?? 0) + 1;
-    }
-    final entries = freq.entries.toList()
-      ..sort((a, b) {
-        final byFreq = b.value.compareTo(a.value);
-        return byFreq != 0 ? byFreq : a.key.compareTo(b.key);
-      });
-    return entries.take(_maxMethodChips).map((e) => e.key).toList();
-  }
-
   String? _yearOf(String date) {
     final m = RegExp(r'(19|20)\d{2}').firstMatch(date);
     return m?.group(0);
   }
 
-  /// 搜索 + 年份 + 治法 + 视图（收藏/最近浏览）AND 组合；
+  /// 搜索 + 年份 + 治法(方剂名) + 疾病(西医病名) + 视图（收藏/最近浏览）AND 组合；
   /// 收藏按收藏时间倒序、最近浏览按浏览时间倒序（委托 filterMedicalCases）。
   List<MedicalCase> get _filtered => filterMedicalCases(
         _all,
         query: _query,
         year: _year,
-        method: _method,
+        formula: _formula,
+        disease: _disease,
         view: _view,
         favSeqs: _favSeqs,
         recentSeqs: _recentSeqs,
@@ -148,7 +203,8 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
     setState(() {
       _query = diagnosis;
       _year = null;
-      _method = null;
+      _formula = null;
+      _disease = null;
       _view = null;
     });
   }
@@ -216,12 +272,15 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
               ),
               MedicalCaseFilterBar(
                 years: _years,
-                methods: _methods,
+                formulas: _formulas,
+                diseases: _diseases,
                 year: _year,
-                method: _method,
+                formula: _formula,
+                disease: _disease,
                 view: _view,
                 onYearChanged: (v) => setState(() => _year = v),
-                onMethodChanged: (v) => setState(() => _method = v),
+                onFormulaChanged: (v) => setState(() => _formula = v),
+                onDiseaseChanged: (v) => setState(() => _disease = v),
                 onViewChanged: (v) => setState(() => _view = v),
               ),
               Padding(

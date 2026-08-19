@@ -59,7 +59,13 @@ class _FormulaRichTextState extends State<FormulaRichText> {
     final spans = _buildSpans(widget.formula, base, linkStyle);
     return RichText(
       text: TextSpan(
-        style: base.copyWith(fontSize: 14, height: 1.6),
+        // 显式设置 onSurface，避免 [RichText] 不继承 [DefaultTextStyle] 颜色时
+        // 在某些环境回退为白色（浅色模式下不可读）。
+        style: base.copyWith(
+          fontSize: 14,
+          height: 1.6,
+          color: cs.onSurface,
+        ),
         children: spans,
       ),
     );
