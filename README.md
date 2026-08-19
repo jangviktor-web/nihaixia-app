@@ -108,23 +108,6 @@
 | armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | — | 老旧32位安卓设备 |
 | x86_64 `app‑x86_64‑release.apk` | — | 安卓虚拟机、模拟器使用 |
 
-<details>
-<summary><b>🔖 V1.11.7 更新详情（点击展开）</b></summary>
-
-**🐛 Bug修复（解决 V1.11.6 治法栏点击返回0结果真机问题）**
-- `FormulaRepository.load` 添加幂等保护
-- 页面加载显式 await 仓库初始化，双保险，不依赖 main 启动时序
-- 医案筛选 `formula/disease` 字段启用繁简归一 contains 匹配
-
-**📌 历史迭代汇总**
-- ✅ V1.11.6：新增病名徽标展示
-- ✅ V1.11.5：治法 / 疾病两栏同步计算
-- ✅ V1.11.4：筛选逻辑增强优化
-- ✅ V1.11.3：列表白字热修复
-- ✅ V1.11.2：根治医案详情页卡顿
-
-</details>
-
 <br>
 
 ### 🔨 方式二：本地从源码构建
