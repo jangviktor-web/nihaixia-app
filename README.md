@@ -83,28 +83,68 @@
 
 ## 📱 下载安装
 
+> **汉唐中医 nihaixia‑app**
+> 完全离线｜无需联网｜无需注册｜Android 6.0+
+> 通用版 APK 约 62MB，arm64‑v8a APK 约 24MB
 
-# 方式一：直接下载 APK
-V1.11.7 版本（修复 V1.11.6 治法栏点击后 0 结果的真机 bug：三件套修复——FormulaRepository.load 幂等 + screen _load 显式 await repo 加载[双保险，不依赖 main 启动顺序] + filterMedicalCases formula/disease 用繁简归一 contains；含 1.11.6 病名徽标、1.11.5 治法/疾病两栏同步计算、1.11.4 筛选增强、1.11.3 列表白字热修、1.11.2 医案详情卡顿根治。） 
+### 📥 方式一：下载预编译 APK
 
-#### V1.11.7通用版安卓APK安装包下载: https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.7/app-release.apk
+<div align="left">
 
-#### V1.11.7arm64安卓APK安装包下载:https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.7/app-arm64-v8a-release.apk
+[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安装包‑3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.7/app-release.apk)
+&nbsp;&nbsp;
+[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安装包‑0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.7/app-arm64-v8a-release.apk)
+&nbsp;&nbsp;
+[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安装包‑9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.7/app-armeabi-v7a-release.apk)
+&nbsp;&nbsp;
+[![📦 x86_64(虚拟机)](https://img.shields.io/badge/📦%20x86_64(虚拟机)-安卓安装包‑1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.7/app-x86_64-release.apk)
 
-# 方式二：从源码构建
+</div>
+
+| 安装包 | 大小 | 适用说明 |
+|---|---|---|
+| 通用版 `app-release.apk` | 62MB | 全CPU架构，绝大多数安卓设备直接选这个 |
+| arm64‑v8a `app‑arm64‑v8a‑release.apk` | 24MB | 新款64位安卓手机，体积更小 |
+| armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | — | 老旧32位安卓设备 |
+| x86_64 `app‑x86_64‑release.apk` | — | 安卓虚拟机、模拟器使用 |
+
+<details>
+<summary><b>🔖 V1.11.7 更新详情（点击展开）</b></summary>
+
+**🐛 Bug修复（解决 V1.11.6 治法栏点击返回0结果真机问题）**
+- `FormulaRepository.load` 添加幂等保护
+- 页面加载显式 await 仓库初始化，双保险，不依赖 main 启动时序
+- 医案筛选 `formula/disease` 字段启用繁简归一 contains 匹配
+
+**📌 历史迭代汇总**
+- ✅ V1.11.6：新增病名徽标展示
+- ✅ V1.11.5：治法 / 疾病两栏同步计算
+- ✅ V1.11.4：筛选逻辑增强优化
+- ✅ V1.11.3：列表白字热修复
+- ✅ V1.11.2：根治医案详情页卡顿
+
+</details>
+
+<br>
+
+### 🔨 方式二：本地从源码构建
+
+> 需预先配置好 Flutter 开发环境
 
 ```bash
 git clone https://github.com/jangviktor-web/nihaixia-app.git
 cd nihaixia-app
 flutter pub get
 flutter build apk --release
+
 ```
 
-> 支持 Android 6.0+，APK 约 62MB（universal），无需联网，无需注册。
 
 ---
 
 ## 🏗️ 技术架构
+<details>
+<summary><b> 详情（点击展开）</b></summary>
 
 ```
 lib/
@@ -166,6 +206,7 @@ lib/
     ├── ziwei/                       #   天纪紫微案例+十二宫详解（42篇）
     └── neijing/                     #   黄帝内经阅读库（73 篇）
 ```
+</details>
 
 <details>
 <summary><b>🔧 核心技术栈</b></summary>
