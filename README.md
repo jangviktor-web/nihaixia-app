@@ -112,8 +112,7 @@
 | x86_64 `app‑x86_64‑release.apk` | 25MB | 安卓虚拟机、模拟器使用 |
 
 > V1.11.8 六经辨证问诊四项增强：健康人基线判定、寒热真假八维法、六经公式分型速查、用药铁律展示时机修复（含 1.11.7 治法筛选 0 结果修复、1.11.6 病名徽标、1.11.4 筛选增强等全部历史修复）。
-> 备用下载（CloudStudio）：https://030894c6f05d4105804f76b5a8e6efb1.app.workbuddy.link
-> 历史版本：V1.11.7（CloudStudio）https://33758dbd90f24dbaa53a55b1f5700c61.app.workbuddy.link
+> 历史版本：V1.11.7（GitHub Release）https://github.com/jangviktor-web/nihaixia-app/releases/tag/V1.11.7
 
 <br>
 

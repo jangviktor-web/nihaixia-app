@@ -325,7 +325,7 @@
 ### 验证 / 发布
 - 验证：`flutter test` 174/174 全过；`formula_repository_test` 30/30；analyze 0 error。
 - 打包：`flutter build apk --release` 成功（54.2MB，Gradle assembleRelease 681.8s）；aapt2 校验 versionCode=7 / versionName=1.10.0。
-- 部署：新建 `release/` + `release/download-page/`（index.html 下载页 + app-release.apk）；CloudStudio 部署 → `https://8e56c8c253164bdd871493bcde8bee00.app.workbuddy.link`（旧 `6c1f4d…` 已 unpublish）。
+- 部署：新建 `release/` + `release/download-page/`（index.html 下载页 + app-release.apk）；CloudStudio 部署下载页（分享链接私下提供，不进 GitHub）。
 - 邮件：已发 taobaoshop@139.com。交付：`汉唐中医_v1.10.0+7.apk` + `汉唐中医_v1.10.0+7_发布说明.md` + `release/download-page/index.html`。
 
 ---
