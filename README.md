@@ -41,8 +41,38 @@
 | 🔒 **离线优先** | 所有知识库打包进 App，无网络也能用，隐私数据不出本机 |
 | 📚 **经典还原** | 严格遵循倪师"生附子、炮附子不可取代"等口径，附子按体系拆分，方剂组成零死链 |
 | 🧠 **引擎驱动** | 自研六经辨证状态机 + 双轨鉴别树，257 首方剂可达，诊断逻辑可验证 |
-| 🆓 **完全免费** | MIT/Apache 双友好协议，无广告、无内购、无追踪 |
+| 🆓 **完全免费** | Apache 2.0 开源协议，无广告、无内购、无追踪 |
 | 🧪 **测试守护** | 关键辨证路径与筛选逻辑均有回归测试，修复即写测试，防止复发 |
+
+---
+
+## 📷 截图
+
+<div align="center">
+
+**问诊引导 · 六经速查 · 方剂速查**
+
+![问诊引导](docs/images/screenshot1.jpg)
+
+**本草速查 · 针灸穴位 · 实用工具**
+
+![本草针灸工具](docs/images/screenshot2.jpg)
+
+**四柱命卦 · 紫微斗数排盘 · 易经六十四卦**
+
+![四柱命卦](docs/images/screenshot_minggua.webp)
+![紫微斗数排盘](docs/images/screenshot_ziwei.webp)
+![易经六十四卦](docs/images/screenshot_yijing.webp)
+
+**倪师医案库 · 闭门课重症临床 · 六爻铜钱摇卦 · 实用工具**
+
+![v1.11.0 医案与临床工具](docs/images/screenshot_v1110_clinical_tools.jpg)
+
+**黄帝内经：脏象 · 望诊 · 脉诊 · 73 篇阅读库**
+
+![v1.11.0 黄帝内经模块](docs/images/screenshot_v1110_neijing.jpg)
+
+</div>
 
 ---
 
