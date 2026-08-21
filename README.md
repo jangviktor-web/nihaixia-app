@@ -106,22 +106,33 @@
 
 ## 📱 下载安装
 
-> **汉唐中医 nihaixia-app**
+> **汉唐中医 nihaixia‑app**
 > 完全离线｜无需联网｜无需注册｜Android 6.0+
-> 通用版 APK 约 63MB，arm64-v8a APK 约 24MB
+> 通用版 APK 约 62MB，arm64‑v8a APK 约 24MB
 
 ### 📥 方式一：下载预编译 APK（V1.11.8）
 
+<div align="left">
+
+[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安装包‑3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.8/app-release.apk)
+&nbsp;&nbsp;
+[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安装包‑0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.8/app-arm64-v8a-release.apk)
+&nbsp;&nbsp;
+[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安装包‑9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.8/app-armeabi-v7a-release.apk)
+&nbsp;&nbsp;
+[![📦 x86_64(虚拟机)](https://img.shields.io/badge/📦%20x86_64(虚拟机)-安卓安装包‑1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.8/app-x86_64-release.apk)
+
+</div>
+
 | 安装包 | 大小 | 适用说明 |
 |---|---|---|
-| 通用版 `app-release.apk` | 63MB | 全 CPU 架构，绝大多数安卓设备直接选这个 |
-| arm64-v8a `app-arm64-v8a-release.apk` | 24MB | 新款 64 位安卓手机，体积更小 |
-| armeabi-v7a `app-armeabi-v7a-release.apk` | 21MB | 老旧 32 位安卓设备 |
-| x86_64 `app-x86_64-release.apk` | 25MB | 安卓虚拟机、模拟器使用 |
+| 通用版 `app-release.apk` | 63MB | 全CPU架构，绝大多数安卓设备直接选这个 |
+| arm64‑v8a `app‑arm64‑v8a‑release.apk` | 24MB | 新款64位安卓手机，体积更小 |
+| armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | 21MB | 老旧32位安卓设备 |
+| x86_64 `app‑x86_64‑release.apk` | 25MB | 安卓虚拟机、模拟器使用 |
 
-👉 前往 [GitHub Releases](https://github.com/jangviktor-web/nihaixia-app/releases/latest) 下载对应架构的安装包。
-
-> **V1.11.8 更新要点**：六经辨证问诊四项增强——健康人基线判定、寒热真假八维法、六经公式分型速查、用药铁律展示时机修复（含历史版本的全部筛选与渲染修复）。完整更新记录见 [CHANGELOG.md](CHANGELOG.md)。
+> V1.11.8 六经辨证问诊四项增强：健康人基线判定、寒热真假八维法、六经公式分型速查、用药铁律展示时机修复（含 1.11.7 治法筛选 0 结果修复、1.11.6 病名徽标、1.11.4 筛选增强等全部历史修复）。
+> 历史版本：V1.11.7（GitHub Release）https://github.com/jangviktor-web/nihaixia-app/releases/tag/V1.11.7
 
 ### 🔨 方式二：本地从源码构建
 
