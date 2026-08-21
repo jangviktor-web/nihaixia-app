@@ -72,6 +72,10 @@
 
 ![v1.11.0 黄帝内经模块](docs/images/screenshot_v1110_neijing.jpg)
 
+**倪师闭门课内容 · 倪师精选医案**
+
+<img width="2400"  alt="20260819232328_35_182_compressed" src="https://github.com/user-attachments/assets/79d35c8f-519b-47bf-a4ac-84f61c38566b" />
+
 </div>
 
 ---
