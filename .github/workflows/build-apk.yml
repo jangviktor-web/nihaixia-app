@@ -70,12 +70,19 @@ jobs:
         run: |
           if [ -n "$KEYSTORE_BASE64" ]; then
             echo "$KEYSTORE_BASE64" | base64 -d > android/keystore.jks
+            # 注意：build.gradle.kts 中 storeFile 以 android/app/ 为基准解析，
+            # 故此处必须写 ../keystore.jks（与本地 ../release-key.jks 同构）。
             cat > android/key.properties <<EOF
-          storeFile=keystore.jks
+          storeFile=../keystore.jks
           storePassword=$KEYSTORE_PASSWORD
           keyAlias=$KEY_ALIAS
           keyPassword=$KEY_PASSWORD
           EOF
+            echo "已写入签名配置（密钥内容不回显）"
+            ls -l android/keystore.jks
+            echo "key.properties 字段数：$(grep -c '=' android/key.properties)"
+          else
+            echo "未配置签名 Secrets，本次回退 debug 签名"
           fi
 
       - name: Cache Gradle dependencies
