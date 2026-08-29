@@ -8,7 +8,7 @@
 >
 > **验证基线**：全量 `flutter test` 182/182 通过；`flutter analyze` 0 新增 error；APK 经 `aapt2`（D:/sdk/build-tools/36.0.0/aapt2.exe）校验 `versionCode`/`versionName`。
 >
-> **发布方式**：APK ≥ 20MB 超邮件附件上限，统一 CloudStudio 部署下载页（index.html + APK）后邮件发送分享链接。
+> **发布方式**：推送 `v*` tag 即由 **GitHub Actions** 自动编译并发布四个 APK 到同名 Release（配置见 `.github/workflows/build-apk.yml`，全程约 6 分钟），无需手动打包上传。如需国内加速分发，可另用 CloudStudio 部署下载页（`deploy_vXXXX/index.html` + APK）。
 
 ---
 

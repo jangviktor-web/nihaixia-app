@@ -85,6 +85,7 @@
 | 功能 | 说明 | 数据规模 |
 |:---|:---|:---:|
 | 🩺 **六经辨证诊断** | 智能问诊引导，自动判断太阳/阳明/少阳/太阴/少阴/厥阴，并支持合病并病 | 6 经 |
+| 💬 **患者口语画像** | 辨证结果页展示「患者会怎么说」——大白话主诉 + 辨证指针 + 治法 + 原文条文，可逐句自核；并让"怕冷/怕风"等现代症状词召回古文方剂（增强分上限 < 1，保证不打乱原有正确排序） | 170 首 |
 | 📋 **完整处方生成** | 自动显示组成、剂量、煎服法、禁忌，推荐经方加减 | 23 条规则 |
 | 🔍 **鉴别诊断** | 自动对比相似证型的关键区别，辅助精准辨证 | 26 对 |
 | 📚 **方剂速查** | 搜索 + 六经筛选 + 分类筛选，离线查阅 | 322 首 |
@@ -112,31 +113,33 @@
 
 > **汉唐中医 nihaixia‑app**
 > 完全离线｜无需联网｜无需注册｜Android 6.0+
-> 通用版 APK 约 62MB，arm64‑v8a APK 约 24MB
+> 通用版 APK 约 60.6MB，arm64‑v8a APK 约 22.7MB
+> 自 V1.11.9 起由 GitHub Actions 自动构建发布，推送 `v*` tag 即出包
 
-### 📥 方式一：下载预编译 APK（V1.11.8）
+### 📥 方式一：下载预编译 APK（V1.11.9）
 
 <div align="left">
 
-[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安装包‑3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.8/app-release.apk)
+[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安装包‑3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.9/app-release.apk)
 &nbsp;&nbsp;
-[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安装包‑0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.8/app-arm64-v8a-release.apk)
+[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安装包‑0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.9/app-arm64-v8a-release.apk)
 &nbsp;&nbsp;
-[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安装包‑9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.8/app-armeabi-v7a-release.apk)
+[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安装包‑9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.9/app-armeabi-v7a-release.apk)
 &nbsp;&nbsp;
-[![📦 x86_64(虚拟机)](https://img.shields.io/badge/📦%20x86_64(虚拟机)-安卓安装包‑1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/V1.11.8/app-x86_64-release.apk)
+[![📦 x86_64(虚拟机)](https://img.shields.io/badge/📦%20x86_64(虚拟机)-安卓安装包‑1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.9/app-x86_64-release.apk)
 
 </div>
 
 | 安装包 | 大小 | 适用说明 |
 |---|---|---|
-| 通用版 `app-release.apk` | 63MB | 全CPU架构，绝大多数安卓设备直接选这个 |
-| arm64‑v8a `app‑arm64‑v8a‑release.apk` | 24MB | 新款64位安卓手机，体积更小 |
-| armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | 21MB | 老旧32位安卓设备 |
-| x86_64 `app‑x86_64‑release.apk` | 25MB | 安卓虚拟机、模拟器使用 |
+| 通用版 `app-release.apk` | 60.6MB | 全CPU架构，绝大多数安卓设备直接选这个 |
+| arm64‑v8a `app‑arm64‑v8a‑release.apk` | 22.7MB | 新款64位安卓手机，体积更小 |
+| armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | 20.6MB | 老旧32位安卓设备 |
+| x86_64 `app‑x86_64‑release.apk` | 24.1MB | 安卓虚拟机、模拟器使用 |
 
-> V1.11.8 六经辨证问诊四项增强：健康人基线判定、寒热真假八维法、六经公式分型速查、用药铁律展示时机修复（含 1.11.7 治法筛选 0 结果修复、1.11.6 病名徽标、1.11.4 筛选增强等全部历史修复）。
-> 历史版本：V1.11.7（GitHub Release）https://github.com/jangviktor-web/nihaixia-app/releases/tag/V1.11.7
+> **V1.11.9 让条文说人话**：为 170 首经方补齐「患者会怎么说」口语画像（大白话 + 辨证指针 + 治法 + 原文条文），辨证结果页新增口语卡片可逐句自核；同时让引擎听懂"怕冷""怕风"等现代症状词——原先这些词字面打不中古文条文、关联不到方剂的老毛病，已由口语语料兜底召回，并以「增强分上限 < 1」的非劣化不变式确保原有正确排序不被打乱。
+> 含 V1.11.8 健康人基线判定、寒热真假八维法、六经公式分型速查等全部历史修复。
+> 历史版本：V1.11.8（GitHub Release）https://github.com/jangviktor-web/nihaixia-app/releases/tag/V1.11.8
 
 ### 🔨 方式二：本地从源码构建
 
@@ -219,12 +222,17 @@ flutter analyze
 | 文件 | 作用 |
 |:---|:---|
 | `pubspec.yaml` | 依赖与资源清单，版本号 `X.Y.Z+N` 的单一来源（`+N` 即 Android `versionCode`） |
-| `android/gradle.properties` | Gradle 堆内存等构建参数（Windows 上已设为 `-Xmx1024M` + `org.gradle.daemon=false` 以规避 OOM） |
+| `android/gradle.properties` | Gradle 堆内存等构建参数（Windows 上已设为 `-Xmx1024M` + `org.gradle.daemon=false` 以规避本机 OOM；CI 内由 workflow 临时覆盖为 `-Xmx4g` + G1GC，不影响本地） |
+| `android/settings.gradle.kts` | 仓库源配置，已做 CI 感知：CI 直连 `google()`/`mavenCentral()`，本地保持阿里云镜像优先 |
+| `.github/workflows/build-apk.yml` | 自动构建发布：推送 `v*` tag 即编译并发布四个 APK 到 Release（约 6 分钟） |
 | `android/key.properties` | 发布签名配置（不入库，参考 template） |
 | `assets/data/changelog.json` | 结构化更新日志，驱动「关于」页与更新弹窗 |
+| `assets/data/formula_oral_hints.json` | 患者口语语料库（170 首方：口语 / 辨证指针 / 治法 / 原文条文） |
 | `lib/theme/app_colors.dart` | 39 个语义色 Token（品牌棕/暖调中性/状态色/六经六色），全站硬编码颜色清零 |
 
-**版本号规则**：对外展示采用 `1.11.8` 格式，每次发布自增第三位（patch）；内部 `build` 号 `+N` 单调递增作为 `versionCode`。
+**版本号规则**：对外展示采用 `1.11.9` 格式，每次发布自增第三位（patch）；内部 `build` 号 `+N` 单调递增作为 `versionCode`。
+
+**发版方式**：推送 tag 即自动出包——`git tag v1.11.9 && git push origin v1.11.9`，GitHub Actions 约 6 分钟产出四个 APK 并发布到同名 Release。
 
 ---
 
@@ -237,6 +245,7 @@ lib/
 │   ├── diagnostic_rules.dart        #   诊断规则（合病·鉴别·加减）
 │   ├── rule_engine.dart             #   规则引擎（双轨鉴别树）
 │   ├── formula_rules.dart           #   方剂规则（113 方鉴别）
+│   ├── formula_matcher.dart         #   方剂匹配器（基线 + 口语/指针加权，增强分上限 0.9 非劣化）
 │   ├── meridian_formula_types.dart  #   六经公式分型（6 经 × 分型）
 │   ├── yijing_engine.dart           #   易经六十四卦起卦引擎
 │   ├── minggua_engine.dart          #   四柱命卦（先天/后天卦）引擎
@@ -244,9 +253,11 @@ lib/
 ├── models/                          # 数据模型
 │   ├── diagnosis.dart               #   诊断结果 + 处方 + 加减
 │   ├── formula.dart                 #   方剂模型
+│   ├── formula_oral_hint.dart       #   患者口语语料模型（oral / indicators / treatment / sourceText）
 │   └── herb.dart                    #   药物模型
 ├── data/                            # 数据层（仓库 + 离线数据源）
 │   ├── formula_repository.dart      #   方剂仓库（4 级匹配策略，幂等加载）
+│   ├── formula_oral_hint_repository.dart # 口语语料仓库（幂等加载，按方剂 id 索引）
 │   ├── herb_repository.dart         #   药物仓库（别名归一）
 │   ├── acupoint_repository.dart     #   穴位仓库
 │   ├── acupuncture_repository.dart  #   针灸处方仓库
@@ -266,6 +277,7 @@ lib/
 │   └── app_colors.dart              #   39 个语义色 Token
 ├── widgets/                         # 可复用组件
 │   ├── medical_case_list_card.dart  #   医案卡片（含西医病名徽标）
+│   ├── oral_hint_card.dart          #   「患者会怎么说」卡片（Token 化配色 + Material Icons）
 │   └── meridian_icons.dart          #   六经图标统一收敛
 ├── screens/                         # UI 界面
 │   ├── chat_screen.dart             #   对话式诊断
@@ -277,7 +289,7 @@ lib/
 │   ├── ziwei_*_screen.dart          #   紫微斗数排盘/案例
 │   └── ...                          #   本草/针灸/子午流注/剂量换算等
 └── assets/
-    ├── data/                        #   离线 JSON（方剂/药物/穴位/针灸/医案/更新日志）
+    ├── data/                        #   离线 JSON（方剂/药物/穴位/针灸/医案/口语语料/更新日志）
     ├── yijing/                      #   人间道 64 卦讲课文稿
     ├── yijing_minggua/              #   四柱命卦讲义
     ├── ziwei/                       #   天纪紫微案例 + 十二宫详解
@@ -298,7 +310,9 @@ lib/
 | 存储 | SQLite (sqflite) | 本地数据持久化 |
 | 数据 | 离线 JSON 资源 | 方剂/药物/穴位/医案/经典著作 |
 | 引擎 | 自研 DiagnosticEngine | 六经辨证状态机 + 双轨鉴别树 |
+| 方剂匹配 | 自研 FormulaMatcher | 基线字面匹配 + 口语/指针加权（非劣化） |
 | 命理 | ziwei_core (Dart) | 紫微斗数排盘（纯离线，MIT） |
+| 构建发布 | GitHub Actions | 推送 `v*` tag 自动编译并发布四个 APK 到 Release |
 
 ### 诊断引擎设计
 
@@ -307,6 +321,8 @@ lib/
 2. 别名匹配 `alias`
 3. 斜杠分割匹配（如"小柴胡汤/大柴胡汤"取第一个）
 4. 子串匹配（如"桂枝加厚朴杏仁汤"匹配"桂枝汤"）
+
+**口语增强匹配（V1.11.9 新增）：** 在上述基线字面匹配之上，叠加 `FormulaMatcher` 的口语语料加权命中——辨证指针 `indicators` 权重 0.4、患者口语 `oral` 权重 0.15，语料按「、」与句读切分成片段后逐片段比对，并**过滤否定词**（"无便秘"不计为"便秘"命中）。增强分上限 `enhancementCap = 0.9`，严格小于 1，从数学上保证**基线分更高者永远排前**：新语料只负责捞回原本 0 命中的方剂、或在同分层内重排，绝不打乱原有正确排序。
 
 **合病检测：** 6 经评分 → 精确条件匹配 → 方剂覆盖
 **鉴别诊断：** 经 + 证型关键词 + 问诊答案 → 26 对鉴别
@@ -348,6 +364,8 @@ lib/
 - [x] 倪师医案库 1257 例检索 + 闭门课重症临床模块
 - [x] 七步问诊十问模块 v3.1（脉象/疼痛/呕吐类型追问）
 - [x] 健康人基线判定 + 寒热真假八维法 + 六经公式分型（V1.11.8）
+- [x] 患者口语语料接入：170 首方「患者会怎么说」+ 现代症状词召回（V1.11.9）
+- [x] APK 交由 GitHub Actions 自动构建发布（V1.11.9）
 - [ ] 舌诊 AI 辅助（TFLite 本地模型）
 - [ ] 脉诊辅助（脉象分类）
 - [ ] 方剂对比功能
@@ -364,7 +382,7 @@ lib/
 诊断历史、收藏等数据全部存储于本机 SQLite，不上传任何服务器，隐私不出设备。
 
 **Q3：应该下载哪个 APK？**
-绝大多数现代手机选 **arm64-v8a**（24MB，体积最小）；拿不准就选 **通用版**（63MB，兼容所有架构）；老旧 32 位设备选 armeabi-v7a；模拟器选 x86_64。
+绝大多数现代手机选 **arm64-v8a**（22.7MB，体积最小）；拿不准就选 **通用版**（60.6MB，兼容所有架构）；老旧 32 位设备选 armeabi-v7a（20.6MB）；模拟器选 x86_64（24.1MB）。
 
 **Q4：紫微/易经/四柱模块是医疗功能吗？**
 不是。这些模块为**中国传统民俗文化参考**，与经方医疗模块在界面与文案上明确分隔，不构成任何医疗诊断或建议。
@@ -375,7 +393,10 @@ lib/
 **Q6：医案库"治法/疾病"筛选是怎么分类的？**
 治法栏按医案内实际出现的**经方方剂名**分类（取高频前 12）；疾病栏按**西医病名**分类（经约 150 个正名词典简繁归一抽取）。筛选逻辑均经回归测试守护。
 
-**Q7：如何参与贡献？**
+**Q7：辨证结果里的「患者会怎么说」是什么？**
+它是本 App 为 170 首经方补上的"口语画像"——把《伤寒论》《金匮要略》的文言条文译回病榻边真实会说的大白话（如桂枝汤：「身上有点发烧，虽然一直微微出汗，但风一吹过来就觉得冷，特别怕风」），并一并给出辨证指针、核心治法与可回溯的原文条文。你可以逐句对照自核"这话像不像我说的"；对引擎而言，它同时充当兜底语料，让"怕冷""怕风"这类现代症状词也能召回对应的古文方剂。
+
+**Q8：如何参与贡献？**
 欢迎提交 Issue 与 Pull Request。详见[贡献指南](#️-贡献指南)。
 
 ---
