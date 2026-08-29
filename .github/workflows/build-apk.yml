@@ -62,20 +62,21 @@ jobs:
           echo "y" | "$SDKMGR" "ndk;${{ env.NDK_VERSION }}"
 
       - name: Decode signing key (optional)
-        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          echo "$KEYSTORE_BASE64" | base64 -d > android/keystore.jks
-          cat > android/key.properties <<EOF
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > android/keystore.jks
+            cat > android/key.properties <<EOF
           storeFile=keystore.jks
           storePassword=$KEYSTORE_PASSWORD
           keyAlias=$KEY_ALIAS
           keyPassword=$KEY_PASSWORD
           EOF
+          fi
 
       - name: Flutter pub get
         run: flutter pub get
