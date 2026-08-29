@@ -4,8 +4,8 @@
 #   1. 推送以 "v" 开头的 tag（如 v1.11.9）→ 自动构建并发布
 #   2. 在 Actions 页面手动触发（workflow_dispatch）
 #
-# 产物：按 ABI 拆分的三份 release APK（arm64-v8a / armeabi-v7a / x86_64），
-#       发布到与 tag 同名的 GitHub Release。
+# 产物：单包 universal release APK（app-release.apk），发布到与 tag 同名的 GitHub Release。
+#       （若需按 ABI 拆分可加 --split-per-abi，但 CI 构建时间约为 3 倍，已权衡后采用单包。）
 #
 # 可选：配置仓库 Secrets 后可产出正式签名 APK（否则回退 debug 签名）：
 #   KEYSTORE_BASE64      : base64 后的 .jks 签名文件
@@ -37,7 +37,7 @@ jobs:
   build:
     name: Build release APK
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 90
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -78,11 +78,21 @@ jobs:
           EOF
           fi
 
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
       - name: Flutter pub get
         run: flutter pub get
 
-      - name: Build APK (split per ABI)
-        run: flutter build apk --release --split-per-abi
+      - name: Build APK (universal)
+        run: flutter build apk --release
 
       - name: Publish to GitHub Release
         uses: softprops/action-gh-release@v2
