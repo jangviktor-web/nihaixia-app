@@ -8,6 +8,7 @@ import '../engine/rule_engine.dart';
 import '../engine/diagnostic_rules.dart';
 import '../engine/meridian_formula_types.dart';
 import '../data/formula_repository.dart';
+import '../data/formula_oral_hint_repository.dart';
 import '../data/settings_repository.dart';
 import '../models/diagnosis.dart';
 import '../models/bookmark.dart';
@@ -15,6 +16,7 @@ import '../data/database_helper.dart';
 import 'formula_detail_screen.dart';
 import 'meridian_detail_screen.dart';
 import '../models/formula.dart';
+import '../widgets/oral_hint_card.dart';
 import 'app_dialogs.dart';
 
 /// 高危禁忌关键词（用于结果卡红色强提示）
@@ -481,6 +483,16 @@ class _ChatScreenState extends State<ChatScreen> {
     final formula = FormulaRepository.getByName(result.formula);
     final explanation = formula?.explanation ?? result.explanation;
 
+    // L1：若主方剂有「患者口语」语料，则在结果气泡下方附「患者会怎么说」卡片，
+    // 让用户对照大白话、提升辨证结果的可解释性。语料未覆盖时为 null（不渲染）。
+    Widget? oralHintCard;
+    if (formula != null) {
+      final hint = FormulaOralHintRepository.getById(formula.id);
+      if (hint != null && hint.oral.isNotEmpty) {
+        oralHintCard = OralHintCard(hint: hint);
+      }
+    }
+
     String resultText = '辨证结果\n\n'
         '【六经】${result.displayMeridian}病\n';
 
@@ -529,7 +541,8 @@ class _ChatScreenState extends State<ChatScreen> {
           '→ 归入 ${result.displayMeridian}病 · ${result.pattern}';
     }
 
-    _addBotMessage(resultText, isResult: true, diagnosisResult: result);
+    _addBotMessage(resultText,
+        isResult: true, diagnosisResult: result, extra: oralHintCard);
 
     // P1-4: 高危方红色强提示（简单/详细模式均显示）
     final contraindicationText =
@@ -804,7 +817,8 @@ class _ChatScreenState extends State<ChatScreen> {
   void _addBotMessage(String text,
       {bool isResult = false,
       bool isWarning = false,
-      DiagnosisResult? diagnosisResult}) {
+      DiagnosisResult? diagnosisResult,
+      Widget? extra}) {
     setState(() {
       _messages.add(_ChatBubble(
         text: text,
@@ -812,6 +826,7 @@ class _ChatScreenState extends State<ChatScreen> {
         isResult: isResult,
         isWarning: isWarning,
         diagnosisResult: diagnosisResult,
+        extra: extra,
         onBookmark: isResult && diagnosisResult != null
             ? () => _bookmarkResult(diagnosisResult)
             : null,
@@ -1191,6 +1206,7 @@ class _ChatBubble extends StatelessWidget {
   final bool isWarning;
   final DiagnosisResult? diagnosisResult;
   final VoidCallback? onBookmark;
+  final Widget? extra;
 
   const _ChatBubble({
     required this.text,
@@ -1199,6 +1215,7 @@ class _ChatBubble extends StatelessWidget {
     this.isWarning = false,
     this.diagnosisResult,
     this.onBookmark,
+    this.extra,
   });
 
   @override
@@ -1259,6 +1276,10 @@ class _ChatBubble extends StatelessWidget {
                 ),
               ),
             ),
+            if (extra != null) ...[
+              const SizedBox(height: 8),
+              extra!,
+            ],
             if (isResult && onBookmark != null)
               Padding(
                 padding: const EdgeInsets.only(top: 4, left: 4),

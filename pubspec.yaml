@@ -32,6 +32,7 @@ flutter:
   assets:
     - assets/SKILL.md
     - assets/data/formulas.json
+    - assets/data/formula_oral_hints.json
     - assets/data/herbs.json
     - assets/data/acupuncture.json
     - assets/data/acupoints.json

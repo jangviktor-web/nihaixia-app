@@ -1,6 +1,7 @@
 import '../models/diagnosis.dart';
 import '../data/formula_repository.dart';
 import 'diagnostic_rules.dart';
+import 'formula_matcher.dart';
 import 'formula_rules.dart';
 import 'formula_rules.dart' as fr;
 import 'rule_engine.dart';
@@ -1007,26 +1008,16 @@ class DiagnosticEngine {
   // ==================== P2: 相似度兜底 + 数据表提示 ====================
 
   /// P2-2: 按用户关键症状与方剂 keywords/indication 重叠度打分，返回 Top-K
-  List<(String, int)> getSimilarityRanking({int topK = 5}) {
+  ///
+  /// 打分已外移到 [FormulaMatcher]，并叠加患者口语语料（oral/indicators）的
+  /// 加权命中——用户勾选的现代症状词常与古文条文字面打不中，却能命中口语描述。
+  /// 非劣化保证见 [FormulaMatcher.rank]：基线分更低的一方不会被语料命中反超。
+  List<(String, double)> getSimilarityRanking({int topK = 5}) {
     final formulas = FormulaRepository.getAll();
     final queryTerms = _selectedSymptoms
         .where((s) => s.isNotEmpty && s != '没有此症状')
         .toList();
-    if (queryTerms.isEmpty) return <(String, int)>[];
-
-    final scored = <(String, int)>[];
-    for (final f in formulas) {
-      int score = 0;
-      final haystack = <String>[...f.keywords, f.indication, f.name, f.alias];
-      for (final term in queryTerms) {
-        for (final k in haystack) {
-          if (k.contains(term) || term.contains(k)) score++;
-        }
-      }
-      if (score > 0) scored.add((f.name, score));
-    }
-    scored.sort((a, b) => b.$2.compareTo(a.$2));
-    return scored.take(topK).toList();
+    return FormulaMatcher.rank(formulas, queryTerms, topK: topK);
   }
 
   /// P2-1: 数据表直接提示（症状短语 → 方剂）
