@@ -1,0 +1,94 @@
+# 自动构建并发布 APK 到 GitHub Release
+#
+# 触发方式：
+#   1. 推送以 "v" 开头的 tag（如 v1.11.9）→ 自动构建并发布
+#   2. 在 Actions 页面手动触发（workflow_dispatch）
+#
+# 产物：按 ABI 拆分的三份 release APK（arm64-v8a / armeabi-v7a / x86_64），
+#       发布到与 tag 同名的 GitHub Release。
+#
+# 可选：配置仓库 Secrets 后可产出正式签名 APK（否则回退 debug 签名）：
+#   KEYSTORE_BASE64      : base64 后的 .jks 签名文件
+#   KEYSTORE_PASSWORD    : keystore 密码
+#   KEY_ALIAS            : 别名
+#   KEY_PASSWORD         : 密钥密码
+#   生成示例：base64 -w0 your.keystore.jks
+
+name: Build APK & Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write   # 供 softprops/action-gh-release 创建 Release
+
+concurrency:
+  group: build-apk-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  FLUTTER_VERSION: '3.47.0'
+  NDK_VERSION: '28.2.13676358'
+
+jobs:
+  build:
+    name: Build release APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter ${{ env.FLUTTER_VERSION }}
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Install NDK ${{ env.NDK_VERSION }}
+        run: |
+          SDKMGR="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMGR" --licenses >/dev/null 2>&1 || true
+          echo "y" | "$SDKMGR" "ndk;${{ env.NDK_VERSION }}"
+
+      - name: Decode signing key (optional)
+        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 -d > android/keystore.jks
+          cat > android/key.properties <<EOF
+          storeFile=keystore.jks
+          storePassword=$KEYSTORE_PASSWORD
+          keyAlias=$KEY_ALIAS
+          keyPassword=$KEY_PASSWORD
+          EOF
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Build APK (split per ABI)
+        run: flutter build apk --release --split-per-abi
+
+      - name: Publish to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
+          fail_on_unmatched_files: false
+          files: |
+            build/app/outputs/flutter-apk/*.apk
