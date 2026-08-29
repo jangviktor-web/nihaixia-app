@@ -11,14 +11,21 @@ pluginManagement {
     includeBuild("$flutterSdkPath/packages/flutter_tools/gradle")
 
     repositories {
-        // ✅阿里云镜像放到最最前面
-        maven("https://maven.aliyun.com/repository/google")
-        maven("https://maven.aliyun.com/repository/public")
-        maven("https://maven.aliyun.com/repository/gradle-plugin")
-        // 原有源往后挪，做兜底
-        google()
-        mavenCentral()
-        gradlePluginPortal()
+        if (System.getenv("CI") == "true") {
+            // CI（GitHub Actions 自动设置 CI=true）：直连官方源，避免阿里云镜像在海外 runner 返回 502 导致全量解析失败
+            google()
+            mavenCentral()
+            gradlePluginPortal()
+        } else {
+            // ✅阿里云镜像放到最最前面（本地中国构建加速）
+            maven("https://maven.aliyun.com/repository/google")
+            maven("https://maven.aliyun.com/repository/public")
+            maven("https://maven.aliyun.com/repository/gradle-plugin")
+            // 原有源往后挪，做兜底
+            google()
+            mavenCentral()
+            gradlePluginPortal()
+        }
     }
 }
 
@@ -29,15 +36,22 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
     repositories {
-        // 阿里云镜像优先（AGP/androidx 等）
-        maven("https://maven.aliyun.com/repository/google")
-        maven("https://maven.aliyun.com/repository/public")
-        maven("https://maven.aliyun.com/repository/jcenter")
-        // Flutter 引擎 artifact 仓库（必加，与 Flutter 插件同源）
-        maven("https://storage.googleapis.com/download.flutter.io")
-        // 兜底
-        google()
-        mavenCentral()
+        if (System.getenv("CI") == "true") {
+            // CI：直连官方源 + Flutter 引擎仓库（海外 runner 可稳定访问）
+            google()
+            mavenCentral()
+            maven("https://storage.googleapis.com/download.flutter.io")
+        } else {
+            // 阿里云镜像优先（AGP/androidx 等）
+            maven("https://maven.aliyun.com/repository/google")
+            maven("https://maven.aliyun.com/repository/public")
+            maven("https://maven.aliyun.com/repository/jcenter")
+            // Flutter 引擎 artifact 仓库（必加，与 Flutter 插件同源）
+            maven("https://storage.googleapis.com/download.flutter.io")
+            // 兜底
+            google()
+            mavenCentral()
+        }
     }
 }
 
