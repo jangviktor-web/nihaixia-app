@@ -88,6 +88,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Tune Gradle heap for CI
+        run: |
+          # 仓库的 android/gradle.properties 是为本机 OOM 环境（pagefile ~800MB）调的：
+          # 1GB 堆 + 串行 GC + 关守护进程。在 CI（~7GB 内存）上会让 R8 混淆慢 10~30 倍。
+          # 此处只覆盖 CI 检出的副本，不影响你本地构建。
+          sed -i 's|^org.gradle.jvmargs=.*|org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g -XX:+UseG1GC -XX:+HeapDumpOnOutOfMemoryError|' android/gradle.properties
+          sed -i 's|^org.gradle.daemon=.*|org.gradle.daemon=true|' android/gradle.properties
+          echo "--- android/gradle.properties (CI override) ---"
+          grep -E "org.gradle.jvmargs|org.gradle.daemon" android/gradle.properties
+
       - name: Flutter pub get
         run: flutter pub get
 
