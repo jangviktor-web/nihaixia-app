@@ -57,7 +57,10 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
   int _year = 2000;
   int _month = 8;
   int _day = 16;
-  int _shiChenIndex = 5; // 巳时（默认 2000-08-16 06:00 约卯时，这里取常用值）
+  int _birthHour = 10; // 实际出生钟表小时 0-23（默认 10 时 ≈ 巳时）
+  int _birthMinute = 0; // 实际出生分钟 0-59
+  /// 由实际小时推导的时辰索引（晚子时 23:00–23:59 归子时当日→滚动见 resolveBirthSolar）。
+  int get _shiChenIndex => _shiChenIndexForHour(_birthHour);
   bool _isMale = true;
 
   // ---- 流年盘状态 ----
@@ -83,7 +86,8 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
       _year = s.year;
       _month = s.month;
       _day = s.day;
-      _shiChenIndex = _shiChenIndexForHour(s.hour);
+      _birthHour = s.hour;
+      _birthMinute = s.minute;
       if (widget.initialGender != null) _isMale = widget.initialGender!;
       if (widget.initialLng != null) {
         _longitudeCtrl.text = widget.initialLng!.toStringAsFixed(2);
@@ -109,12 +113,14 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
     }
   }
 
-  /// 由生辰小时反查时辰索引（子时跨 23:00–01:00，兜底归子时）。
+  /// 由实际出生小时（0-23）推导时辰索引。
+  /// 时辰时段（标准晚子时口径）：子(23,0) 丑(1,2) 寅(3,4) 卯(5,6) 辰(7,8)
+  /// 巳(9,10) 午(11,12) 未(13,14) 申(15,16) 酉(17,18) 戌(19,20) 亥(21,22)。
+  /// 注：23 点（晚子时）归「子时」，但公历日期是否滚动到次日由
+  /// [resolveBirthSolar] 决定，这里只负责时辰归类。
   int _shiChenIndexForHour(int hour) {
-    for (int i = 0; i < _shiChen.length; i++) {
-      if (_shiChen[i].$2 == hour) return i;
-    }
-    return 0;
+    final h = hour.clamp(0, 23);
+    return ((h + 1) ~/ 2) % 12;
   }
 
   @override
@@ -242,12 +248,13 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
     // 用 microtask 让 loading 先渲染
     Future.microtask(() {
       try {
-        final solar = DateTime(
-          _year,
-          _month,
-          _day,
-          _shiChen[_shiChenIndex].$2,
-          0,
+        // 晚子时归次日：由实际出生时:分解析出传给引擎的公历 DateTime。
+        final solar = resolveBirthSolar(
+          year: _year,
+          month: _month,
+          day: _day,
+          hour: _birthHour,
+          minute: _birthMinute,
         );
         final chart = calculateZiweiChart(
           solar: solar,
@@ -279,8 +286,15 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
   /// 收集生辰/性别/地点后写入 [SavedChartRepository]，并提示已存入。
   Future<void> _saveToLibrary() async {
     if (_chart == null) return;
-    final hour = _shiChen[_shiChenIndex].$2;
-    final solar = DateTime(_year, _month, _day, hour, 0);
+    // 存入命盘库的生辰须为「解析后」的公历时间（含晚子时次日滚动），
+    // 以便日后回看能原样重排出同一命盘。
+    final solar = resolveBirthSolar(
+      year: _year,
+      month: _month,
+      day: _day,
+      hour: _birthHour,
+      minute: _birthMinute,
+    );
     final genderLabel = _isMale ? '男' : '女';
     final defaultName =
         '命盘 $_year-${_month.toString().padLeft(2, '0')}-${_day.toString().padLeft(2, '0')} $genderLabel';
@@ -322,7 +336,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
       isMale: _isMale,
       solarIso: solar.toIso8601String(),
       lng: _selectedCity != null ? _selectedCity!.lng : double.tryParse(lngText),
-      lat: _selectedCity != null ? _selectedCity!.lat : null,
+      lat: _selectedCity?.lat,
       cityName: _selectedCity?.displayName,
       createdAt: DateTime.now().millisecondsSinceEpoch,
     );
@@ -500,17 +514,57 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
               children: [
                 Expanded(
                   flex: 2,
-                  child: _Dropdown(
-                    label: '时辰',
-                    value: _shiChenIndex,
-                    items: [
-                      for (int i = 0; i < _shiChen.length; i++)
-                        DropdownMenuItem(
-                          value: i,
-                          child: Text('${_shiChen[i].$1} (${_shiChen[i].$3})'),
-                        ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _Dropdown(
+                              label: '时',
+                              value: _birthHour,
+                              items: [
+                                for (int h = 0; h <= 23; h++)
+                                  DropdownMenuItem(
+                                    value: h,
+                                    child: Text(h == 23 ? '23(晚子时)' : '$h'),
+                                  ),
+                              ],
+                              onChanged: (v) =>
+                                  setState(() => _birthHour = v!),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: _Dropdown(
+                              label: '分',
+                              value: _birthMinute,
+                              items: [
+                                for (int m = 0; m <= 59; m++)
+                                  DropdownMenuItem(
+                                    value: m,
+                                    child: Text(m.toString().padLeft(2, '0')),
+                                  ),
+                              ],
+                              onChanged: (v) =>
+                                  setState(() => _birthMinute = v!),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Wrap(
+                        spacing: 6,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          _chip(
+                            '时辰',
+                            '${_shiChen[_shiChenIndex].$1} (${_shiChen[_shiChenIndex].$3})',
+                            cs.primary,
+                          ),
+                        ],
+                      ),
                     ],
-                    onChanged: (v) => setState(() => _shiChenIndex = v!),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -526,6 +580,13 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 4),
+            // 晚子时口径提示（真实中文说明，无 emoji）
+            Text(
+              '23:00–23:59 为晚子时，归入次日子时（日柱顺延一日）；'
+              '00:00–00:59 为当日早子时。',
+              style: TextStyle(fontSize: 10, color: cs.onSurfaceVariant),
             ),
             const SizedBox(height: 4),
             SwitchListTile(
@@ -640,6 +701,11 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
             const SizedBox(height: 4),
             Text(
               chart.lunarText,
+              style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              '出生农历月：${chart.lunarMonthDisplay}',
               style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
             ),
             const SizedBox(height: 8),
