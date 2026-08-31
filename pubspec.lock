@@ -534,7 +534,7 @@ packages:
     source: hosted
     version: "1.4.1"
   sxwnl_spa_dart:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: sxwnl_spa_dart
       sha256: "41f222eca2e7fa8dade4fe9ee2928913e4f57822abc7c9d2acf31512c176c2f3"

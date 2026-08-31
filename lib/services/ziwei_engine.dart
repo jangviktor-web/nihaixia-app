@@ -293,6 +293,7 @@ class ZiweiChart {
   final List<ZiweiPalace> palaces; // 12 宫，按物理地支索引 0-11 排序
   final List<ZiweiSihua> sihua; // 生年四化（禄/权/科/忌 各一）
   final List<ZiweiDecade> decades; // 十二大限
+  final ZiWeiPlate basePlate; // 底层命盘（供流月/流日推演复用，零额外依赖）
 
   ZiweiChart({
     required this.baziYear,
@@ -309,6 +310,7 @@ class ZiweiChart {
     required this.palaces,
     required this.sihua,
     required this.decades,
+    required this.basePlate,
   });
 
   String get baziFull =>
@@ -441,6 +443,7 @@ ZiweiChart calculateZiweiChart({
     palaces: palaces,
     sihua: sihuaList,
     decades: decades,
+    basePlate: plate,
   );
 }
 
@@ -546,5 +549,99 @@ FlowYearMark calculateFlowYearMark({required int year}) {
     mingIndex: mingIndex,
     taiSuiIndex: taiSuiIndex,
     flowStars: flowStars,
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 流月 / 流日盘（基于 ziwei_core 0.13.0 ZiweiLimitManager，零新增依赖）
+//
+// 引擎 0.13.0 的 [ZiweiLimitManager] 已原生支持 流月/流日/流时：
+// `setPhysicalDate(DateTime)` 会按原盘历法配置（节气/农历边界、真太阳时、
+// 经纬度）自动重建 year→month→day→hour 完整流运上下文；[dynamicPlate] /
+// [limitContext] 给出当前流层的命宫索引与混合干支。
+//
+// 这里只取「命宫地支索引 + 混合干支 + 宫位职能」，再由 ziwei_interpretation
+// 层做纯文案解读，引擎逻辑不在此层重复实现。
+// ---------------------------------------------------------------------------
+
+/// 流月盘标记（叠加在原局盘上展示）。
+class FlowMonthMark {
+  final DateTime date; // 触发该流月的公历日期（取所在农历月）
+  final int year; // 流年公历年份
+  final int month; // 农历逻辑月（1-12）
+  final bool isLeap; // 是否闰月
+  final String ganzhi; // 流月混合干支，如「丙申」
+  final int mingIndex; // 流月命宫地支索引 0-11
+  final int illnessIndex; // 流月疾厄宫 = (mingIndex + 5) % 12
+  final String roleLabel; // 流月命宫宫位名
+
+  const FlowMonthMark({
+    required this.date,
+    required this.year,
+    required this.month,
+    required this.isLeap,
+    required this.ganzhi,
+    required this.mingIndex,
+    required this.illnessIndex,
+    required this.roleLabel,
+  });
+}
+
+/// 流日盘标记（叠加在原局盘上展示）。
+class FlowDayMark {
+  final DateTime date; // 触发该流日的公历日期
+  final String ganzhi; // 流日混合干支，如「甲子」
+  final int mingIndex; // 流日命宫地支索引 0-11
+  final int illnessIndex; // 流日疾厄宫 = (mingIndex + 5) % 12
+  final String roleLabel; // 流日命宫宫位名
+
+  const FlowDayMark({
+    required this.date,
+    required this.ganzhi,
+    required this.mingIndex,
+    required this.illnessIndex,
+    required this.roleLabel,
+  });
+}
+
+/// 计算指定公历日期所处「流月」的盘标记。
+///
+/// [chart] 须由 [calculateZiweiChart] 生成（内部持有底层命盘）。
+/// 返回：流月农历月、混合干支、流月命宫/疾厄宫索引、宫位名。
+FlowMonthMark calculateFlowMonthMark(ZiweiChart chart, DateTime date) {
+  final mgr = ZiweiLimitManager(chart.basePlate);
+  mgr.setPhysicalDate(date);
+  final fm = mgr.limitContext.month!;
+  final mingIndex = fm.index; // 宫位地支 = 流月命宫
+  final illnessIndex = (mingIndex + 5) % 12;
+  final ganzhi = '${fm.ganzhi.gan.label}${fm.ganzhi.zhi.label}';
+  return FlowMonthMark(
+    date: date,
+    year: date.year,
+    month: fm.month,
+    isLeap: fm.isLeap,
+    ganzhi: ganzhi,
+    mingIndex: mingIndex,
+    illnessIndex: illnessIndex,
+    roleLabel: fm.role.debugLabel,
+  );
+}
+
+/// 计算指定公历日期「流日」的盘标记。
+///
+/// 返回：流日混合干支、流日命宫/疾厄宫索引、宫位名。
+FlowDayMark calculateFlowDayMark(ZiweiChart chart, DateTime date) {
+  final mgr = ZiweiLimitManager(chart.basePlate);
+  mgr.setPhysicalDate(date);
+  final fd = mgr.limitContext.day!;
+  final mingIndex = fd.index; // 宫位地支 = 流日命宫
+  final illnessIndex = (mingIndex + 5) % 12;
+  final ganzhi = '${fd.ganzhi.gan.label}${fd.ganzhi.zhi.label}';
+  return FlowDayMark(
+    date: date,
+    ganzhi: ganzhi,
+    mingIndex: mingIndex,
+    illnessIndex: illnessIndex,
+    roleLabel: fd.role.debugLabel,
   );
 }
