@@ -34,6 +34,16 @@ const Map<String, String> _palaceMeanings = {
   '父母宫': '父母长辈',
 };
 
+/// 星曜显示文本：带亮度，如「武曲(庙)」。
+///
+/// 向后兼容底线：亮度为 null（非 StaticStar，或该宫亮度为「无」）时只显示星名，
+/// 绝不输出「武曲()」这类空括号。即最坏情况下文案与改动前逐字相同，
+/// 因此本增强不会造成负优化。
+String _starText(ZiweiStar s) {
+  final b = s.brightness;
+  return (b != null && b.isNotEmpty) ? '${s.label}($b)' : s.label;
+}
+
 String _areaOf(ZiweiChart chart, int palaceIndex) {
   final role = chart.palaces[palaceIndex].roleLabel;
   return _palaceMeanings[role] ?? role;
@@ -143,7 +153,7 @@ String summarizeOverall(ZiweiChart chart) {
   if (ming.majors.isEmpty) {
     sb.write('命宫无主星，借对宫星情参看，格局平实，行事宜多方参考。');
   } else {
-    final names = ming.majors.map((s) => s.label).join('、');
+    final names = ming.majors.map(_starText).join('、');
     sb.write('命宫$names坐守，格局清朗，先天心性已具主见。');
   }
 
@@ -188,10 +198,10 @@ List<String> summarizeDecades(ZiweiChart chart) {
     if (majors.isEmpty) {
       b.write('本宫无主星，借对宫星情参看');
     } else {
-      b.write('宫内${majors.map((s) => s.label).join('、')}坐守');
+      b.write('宫内${majors.map(_starText).join('、')}坐守');
     }
     if (bads.isNotEmpty) {
-      b.write('，需注意${bads.map((s) => s.label).join('、')}扰动');
+      b.write('，需注意${bads.map(_starText).join('、')}扰动');
     } else if (majors.isNotEmpty) {
       b.write('，整体平顺');
     }
@@ -209,7 +219,7 @@ String summarizeFlowYear(ZiweiChart chart, FlowYearMark flow) {
   final illPalace = chart.palaces[illnessIndex];
   final sb = StringBuffer();
 
-  final mingMajors = mingPalace.majors.map((s) => s.label).join('、');
+  final mingMajors = mingPalace.majors.map(_starText).join('、');
   sb.write('${flow.year}年（${flow.ganzhi}）流年命宫');
   sb.write(mingMajors.isNotEmpty ? '$mingMajors坐守' : '无主星、借对宫');
 
@@ -218,7 +228,7 @@ String summarizeFlowYear(ZiweiChart chart, FlowYearMark flow) {
     sb.write('，见${flowNames.join('、')}');
   }
 
-  final illMajors = illPalace.majors.map((s) => s.label).join('、');
+  final illMajors = illPalace.majors.map(_starText).join('、');
   final bodyPart = palaceBodyMap[illnessIndex] ?? '相关身体部位';
   sb.write('；流年疾厄宫${illMajors.isNotEmpty ? '$illMajors坐守' : '空宫'}，身体留意$bodyPart。');
 
@@ -247,7 +257,7 @@ List<HealthWatchItem> analyzeHealthWatch(
 
     // 1) 本局煞星落流年疾厄宫
     if (palace.bads.isNotEmpty) {
-      final names = palace.bads.map((s) => s.label).join('、');
+      final names = palace.bads.map(_starText).join('、');
       out.add(HealthWatchItem(
         year: year,
         age: year - birthYear + 1,
