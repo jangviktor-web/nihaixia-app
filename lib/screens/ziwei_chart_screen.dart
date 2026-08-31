@@ -1131,10 +1131,10 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
               style: TextStyle(fontSize: 10, color: cs.onSurfaceVariant),
             ),
             const SizedBox(height: 2),
-            // 主星（含四化）
+            // 主星（含庙旺利陷 + 四化，统一走 starDisplayText）
             ...p.majors.map(
               (s) => Text(
-                s.sihua != null ? '${s.label}(${s.sihuaText})' : s.label,
+                starDisplayText(s),
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -1148,14 +1148,14 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
             // 吉星
             if (p.luckies.isNotEmpty)
               Text(
-                p.luckies.map((s) => s.label).join(' '),
+                p.luckies.map(starDisplayText).join(' '),
                 style: TextStyle(fontSize: 10, color: context.colors.success),
                 overflow: TextOverflow.ellipsis,
               ),
             // 煞星
             if (p.bads.isNotEmpty)
               Text(
-                p.bads.map((s) => s.label).join(' '),
+                p.bads.map(starDisplayText).join(' '),
                 style: TextStyle(fontSize: 10, color: context.colors.danger),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -1163,7 +1163,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
             // 博士/岁建/将前/长生十二神在点按宫格的详情中全量展示）
             if (p.minors.isNotEmpty)
               Text(
-                p.minors.map((s) => s.label).join(' '),
+                p.minors.map(starDisplayText).join(' '),
                 style: TextStyle(fontSize: 10, color: cs.onSurfaceVariant),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
