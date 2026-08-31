@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ziwei_core/ziwei_core.dart';
 import 'package:nihaisha_app/services/ziwei_engine.dart';
+import 'package:nihaisha_app/services/ziwei_interpretation.dart';
 import 'ziwei_reference_screen.dart';
 import 'ziwei_doc_screen.dart';
 import 'ziwei_cases_list_screen.dart';
@@ -45,6 +46,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
   FlowYearMark? _flowMark; // 当前选中的流年（null = 不显示流年叠加）
   int? _flowYear; // 选中的流年年份
   bool _useTrueSolarTime = true; // 真太阳时校准（专业排盘默认开启）
+  bool _showAllHealth = false; // 健康提醒：展开终身（出生→百岁）vs 默认未来30年
   final _longitudeCtrl = TextEditingController(); // 出生地经度（东经，留空用默认 120°）
 
   @override
@@ -197,6 +199,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
             _buildPlate(cs, _chart!, _flowMark),
             const SizedBox(height: 12),
             _buildDecadeList(cs, _chart!),
+            _buildInterpretationSection(cs, _chart!),
           ],
         ],
       ),
@@ -929,6 +932,172 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                 ),
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// 「运势总结」区块：整体运势 / 十年大运 / 流年运势 / 健康提醒。
+  /// 仅在既有排盘内容之下追加，不改动 _calculate / _buildPalaceGrid / _showPalaceDetail。
+  Widget _buildInterpretationSection(ColorScheme cs, ZiweiChart chart) {
+    final anchor = DateTime.now().year;
+    final birthYear = _year; // 出生年 state（屏内无独立 _birth 字段）
+    final healthItems = analyzeHealthWatch(
+      chart,
+      fromYear: _showAllHealth ? birthYear : anchor,
+      toYear: _showAllHealth ? birthYear + 100 : anchor + 30,
+      birthYear: birthYear,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 12),
+        _interpretationCard(
+          title: '整体运势',
+          cs: cs,
+          child: Text(
+            summarizeOverall(chart),
+            style: const TextStyle(fontSize: 13, height: 1.7),
+          ),
+        ),
+        const SizedBox(height: 12),
+        _interpretationCard(
+          title: '十年大运',
+          cs: cs,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: summarizeDecades(chart)
+                .map(
+                  (s) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 3),
+                    child: Text(
+                      '• $s',
+                      style: const TextStyle(fontSize: 12, height: 1.6),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+        ),
+        const SizedBox(height: 12),
+        if (_flowMark != null) ...[
+          _interpretationCard(
+            title: '流年运势（${_flowMark!.ganzhi}）',
+            cs: cs,
+            child: Text(
+              summarizeFlowYear(chart, _flowMark!),
+              style: const TextStyle(fontSize: 13, height: 1.7),
+            ),
+          ),
+          const SizedBox(height: 12),
+        ],
+        _interpretationCard(
+          title: '健康提醒',
+          cs: cs,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.warning, size: 14, color: context.colors.warning),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      '民俗文化参考·非医疗诊断·如有不适请就医',
+                      style: TextStyle(fontSize: 10, color: context.colors.warning),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              if (healthItems.isEmpty)
+                Text(
+                  '所选区间内流年疾厄宫未见明显煞忌信号。',
+                  style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
+                )
+              else
+                ...healthItems.map((it) => _healthWatchRow(item: it, cs: cs)),
+              if (healthItems.isNotEmpty)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () => setState(
+                      () => _showAllHealth = !_showAllHealth,
+                    ),
+                    child: Text(
+                      _showAllHealth ? '收起（仅看未来 30 年）' : '展开全部（终身）',
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// 健康提醒单条：年份/虚岁 + 醒目标签 + 信号原因 + 身体部位 + 来源。
+  Widget _healthWatchRow({
+    required HealthWatchItem item,
+    required ColorScheme cs,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.warning, size: 14, color: context.colors.warning),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${item.year}年 · ${item.age}虚岁',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: cs.primary,
+                  ),
+                ),
+                Text(item.reason, style: const TextStyle(fontSize: 12, height: 1.5)),
+                Text(
+                  '留意：${item.bodyPart}',
+                  style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
+                ),
+                Text(
+                  '来源：${item.source}',
+                  style: TextStyle(fontSize: 10, color: cs.outline),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 解读卡片外壳（统一 Card + 标题，沿用屏内配色约定）。
+  Widget _interpretationCard({
+    required String title,
+    required ColorScheme cs,
+    required Widget child,
+  }) {
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: cs.primary),
+            ),
+            const SizedBox(height: 8),
+            child,
           ],
         ),
       ),
