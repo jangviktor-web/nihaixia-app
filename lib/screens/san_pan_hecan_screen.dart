@@ -50,12 +50,21 @@ class SanPanHeCanScreen extends StatelessWidget {
           ),
           _row(
             cs,
+            Icons.account_tree_outlined,
+            '八字 · 十神',
+            '年 ${hecan.tenGods[0]} · 月 ${hecan.tenGods[1]} · '
+            '日 ${hecan.tenGods[2]} · 时 ${hecan.tenGods[3]}',
+          ),
+          _row(
+            cs,
             Icons.auto_awesome_outlined,
             '易经 · 先天 / 后天卦',
             '${hecan.xianTianName} / ${hecan.houTianName}',
           ),
           _row(cs, Icons.calendar_today_outlined, '八字四柱',
               hecan.baziFull),
+          _row(cs, Icons.filter_alt_outlined, '八字 · 旬空（空亡）',
+              hecan.kongWang),
           if (!hecan.mingGuaAvailable)
             Padding(
               padding: const EdgeInsets.only(top: 8, left: 4),

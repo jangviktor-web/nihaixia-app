@@ -31,6 +31,16 @@ void main() {
       // 八字日主非空
       expect(hecan.dayMaster, isNotEmpty);
 
+      // 八字十神：四柱各一，日柱位为『日主』
+      expect(hecan.tenGods.length, 4);
+      expect(hecan.tenGods[2], '日主');
+      for (var i = 0; i < 4; i++) {
+        if (i != 2) expect(hecan.tenGods[i], isNotEmpty);
+      }
+
+      // 八字旬空非空（经典口诀情境下应为两字地支）
+      expect(hecan.kongWang, isNotEmpty);
+
       // 命卦降级一致性：可用则两卦名非空非占位，不可用则均为"—"
       if (hecan.mingGuaAvailable) {
         expect(hecan.xianTianName, isNot('—'));

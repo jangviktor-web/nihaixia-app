@@ -2,6 +2,7 @@ import 'package:ziwei_core/ziwei_core.dart';
 import 'package:nihaisha_app/services/ziwei_engine.dart';
 import 'package:nihaisha_app/engine/minggua_engine.dart';
 import 'package:nihaisha_app/engine/bazi_analysis.dart';
+import 'package:nihaisha_app/engine/bazi_ten_gods.dart';
 
 /// 三盘合参输入：统一锚定到同一出生时空，确保紫微 / 八字 / 命卦同源合参。
 ///
@@ -39,15 +40,19 @@ class SanPanHeCan {
   final String mingGongStars; // 紫微命宫主星
   final String dayMaster; // 八字日主
   final String favorable; // 八字用神
+  final List<String> tenGods; // 八字四柱十神（顺序 年/月/日/时，日柱位为『日主』）
+  final String kongWang; // 八字旬空（空亡）地支，如『戌、亥』
   final String xianTianName; // 易经先天卦名
   final String houTianName; // 易经后天卦名
   final bool mingGuaAvailable; // 命卦是否成功推算
 
-  const SanPanHeCan({
+  SanPanHeCan({
     required this.baziFull,
     required this.mingGongStars,
     required this.dayMaster,
     required this.favorable,
+    required this.tenGods,
+    required this.kongWang,
     required this.xianTianName,
     required this.houTianName,
     required this.mingGuaAvailable,
@@ -92,6 +97,10 @@ SanPanHeCan computeSanPanHeCan(HeCanInput input) {
 
   final baZi = analyzeBaZi(gans: gans, zhis: zhis);
 
+  // 八字十神（逐柱相对日主）与旬空（空亡）
+  final tenGods = tenGodsPerPillar(gans[2], gans);
+  final kw = kongWang(gans[2], zhis[2]);
+
   // 紫微命宫主星
   final ming = chart.palaces.firstWhere(
     (p) => p.isLife,
@@ -120,6 +129,8 @@ SanPanHeCan computeSanPanHeCan(HeCanInput input) {
     mingGongStars: mingGongStars,
     dayMaster: baZi.dayMaster,
     favorable: baZi.favorable.isEmpty ? '—' : baZi.favorable.join('、'),
+    tenGods: tenGods,
+    kongWang: kw.isEmpty ? '—' : '${kw[0]}、${kw[1]}',
     xianTianName: mg?.xianTian.name ?? '—',
     houTianName: mg?.houTian.name ?? '—',
     mingGuaAvailable: mg != null,
