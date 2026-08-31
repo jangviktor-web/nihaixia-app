@@ -38,6 +38,7 @@ flutter:
     - assets/data/acupoints.json
     - assets/data/changelog.json
     - assets/data/prescriptions.json
+    - assets/data/ziwei_rules.json
     - assets/ziwei/
     - assets/yijing/
     - assets/yijing_minggua/

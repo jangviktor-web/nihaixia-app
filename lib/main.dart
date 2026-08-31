@@ -6,6 +6,7 @@ import 'data/formula_oral_hint_repository.dart';
 import 'data/formula_repository.dart';
 import 'data/herb_repository.dart';
 import 'data/settings_repository.dart';
+import 'data/ziwei_rules_repository.dart';
 import 'screens/home_screen.dart';
 import 'theme/app_colors.dart';
 
@@ -18,6 +19,8 @@ void main() async {
   await AcupointRepository.load();
   await ChangelogRepository.load();
   await SettingsRepository.instance.load();
+  // 紫微解读层外置规则；加载失败会在仓库内部静默降级为内建默认值，不影响启动。
+  await ZiweiRulesRepository.load();
   runApp(const NiHaishaApp());
 }
 

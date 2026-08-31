@@ -1,5 +1,7 @@
 import 'package:nihaisha_app/services/ziwei_engine.dart';
 
+import '../data/ziwei_rules_repository.dart';
+
 /// 紫微斗数解读层（纯逻辑、UI 无关、可测）。
 ///
 /// 综合命盘 [ZiweiChart] 与生年四化、十二大限、流年盘，产出：
@@ -81,26 +83,18 @@ const Map<String, String> _niHaiXiaStarNote = {
 
 // ---------------------------------------------------------------------------
 // 流年化忌四化表：天干索引 0-9 = 甲乙丙丁戊己庚辛壬癸 → 化忌星名。
-// 与 ziwei_engine.dart 中 calculateFlowYearMark 的天干算法 (year+6)%10 一致，
-// 星名与 _starLabelMap 中文 label 完全对齐（十四主星 / 文昌文曲均为引擎真实名）。
+// 与 ziwei_engine.dart 中 calculateFlowYearMark 的天干算法 (year+6)%10 一致。
+//
+// 规则已外置到 assets/data/ziwei_rules.json，经 [ZiweiRulesRepository] 读取；
+// JSON 缺失或字段异常时自动回退内建默认值（见该仓库类注释）。
 // ---------------------------------------------------------------------------
-const List<String> _huaJiByStem = [
-  '太阳', // 甲
-  '太阴', // 乙
-  '廉贞', // 丙
-  '巨门', // 丁
-  '天机', // 戊
-  '文曲', // 己
-  '天同', // 庚
-  '文昌', // 辛
-  '武曲', // 壬
-  '贪狼', // 癸
-];
 
 /// 公开化忌星查表（供测试 / 外部校验锁定）。[stemIndex] 0-9 = 甲乙丙丁戊己庚辛壬癸。
 /// 与《紫微斗数全书》十干四化表一致：甲太阳、乙太阴、丙廉贞、丁巨门、戊天机、
 /// 己文曲、庚天同、辛文昌、壬武曲、癸贪狼。
-String huaJiStarByStem(int stemIndex) => _huaJiByStem[stemIndex];
+/// 已用 iztro-py 引擎独立校验 10/10 匹配（tools/ziwei_oracle/oracle.py）。
+String huaJiStarByStem(int stemIndex) =>
+    ZiweiRulesRepository.huajiByStem[stemIndex];
 
 // ---------------------------------------------------------------------------
 // 身体映射口径说明（重要）：
@@ -109,22 +103,11 @@ String huaJiStarByStem(int stemIndex) => _huaJiByStem[stemIndex];
 // 这样设计让「健康提醒」能随流年疾厄宫位置逐年变化部位（紫微原生疾厄宫固定
 // 对应大肠/心，不会逐年变部位）。此口径属「民俗文化参考」，非医疗诊断；
 // 与倪师《天纪》内容不构成引用关系（仅十四主星性质表取自《天纪》）。
-// 若日后切换为严格紫微口径，把本表换成「疾厄宫→大肠/心」固定映射即可。
+//
+// 规则已外置到 assets/data/ziwei_rules.json（键为 "0".."11" 字符串），
+// 经 [ZiweiRulesRepository.bodyPartFor] 读取；缺失时回退内建默认值。
+// 若日后切换为严格紫微口径，只需改 JSON 的 palace_body_map，无需改代码。
 // ---------------------------------------------------------------------------
-const Map<int, String> palaceBodyMap = {
-  0: '膀胱、耳、生殖泌尿系统',
-  1: '脾胃、腹部',
-  2: '胆、手、肺',
-  3: '肝、十指、神经系统',
-  4: '胃、胸、消化系统',
-  5: '心、咽喉',
-  6: '心、眼、小肠',
-  7: '脾胃、腹部',
-  8: '肺、大肠、呼吸道',
-  9: '肺、皮肤、呼吸道',
-  10: '命门、腿足',
-  11: '肾、头、膀胱',
-};
 
 /// 单条健康提醒条目。
 class HealthWatchItem {
@@ -229,7 +212,7 @@ String summarizeFlowYear(ZiweiChart chart, FlowYearMark flow) {
   }
 
   final illMajors = illPalace.majors.map(_starText).join('、');
-  final bodyPart = palaceBodyMap[illnessIndex] ?? '相关身体部位';
+  final bodyPart = ZiweiRulesRepository.bodyPartFor(illnessIndex);
   sb.write('；流年疾厄宫${illMajors.isNotEmpty ? '$illMajors坐守' : '空宫'}，身体留意$bodyPart。');
 
   return sb.toString();
@@ -250,7 +233,7 @@ List<HealthWatchItem> analyzeHealthWatch(
     final illnessIndex = (flow.mingIndex + 5) % 12;
     final palace = chart.palaces[illnessIndex];
 
-    final bodyBase = palaceBodyMap[illnessIndex] ?? '相关身体部位';
+    final bodyBase = ZiweiRulesRepository.bodyPartFor(illnessIndex);
     final bodyPart = palace.roleLabel == '疾厄宫'
         ? '$bodyBase；后天体质、病邪易侵处'
         : bodyBase;
@@ -285,7 +268,7 @@ List<HealthWatchItem> analyzeHealthWatch(
 
     // 3) 流年化忌星原生落入流年疾厄宫
     final stemIdx = ((year + 6) % 10 + 10) % 10;
-    final huaJi = _huaJiByStem[stemIdx];
+    final huaJi = huaJiStarByStem(stemIdx);
     int? nativeIndex;
     for (final p in chart.palaces) {
       if (p.stars.any((s) => s.label == huaJi)) {
