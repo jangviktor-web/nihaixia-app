@@ -76,6 +76,11 @@
 
 <img width="2400"  alt="20260819232328_35_182_compressed" src="https://github.com/user-attachments/assets/79d35c8f-519b-47bf-a4ac-84f61c38566b" />
 
+**添加每日黄历模块 ·  优化紫微斗数星盘大运、流年月详解功能及“真太阳时”选择地名自动匹配功能**
+<img width="3000"  src="https://github.com/user-attachments/assets/9d4f9320-c7c3-438a-8c96-a2cfe92add92" />
+
+<img width="6000"  src="https://github.com/user-attachments/assets/cb1f78e8-3864-4290-bc30-14095812e94b" />
+
 </div>
 
 ---
