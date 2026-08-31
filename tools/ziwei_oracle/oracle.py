@@ -174,7 +174,9 @@ def main():
     print(f"已生成: {OUT}  ({len(data['charts'])} 张盘)\n")
 
     for c in data["charts"]:
-        ming = next((p for p in c["palaces"] if p["is_original_palace"]), None)
+        # 注意：is_original_palace 并非命宫（实测它指向的是「来因宫」性质，
+        # 1990-06-15 那张盘它命中的是夫妻宫）。命宫必须按宫位名定位。
+        ming = next((p for p in c["palaces"] if p["name_zh"] == "命宫"), None)
         print(f"{c['solar_date']} 时辰idx={c['time_index']} {c['gender']}"
               f"  五行局={c['five_elements_class']}")
         print(f"  八字: {c['chinese_date']}")
