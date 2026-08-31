@@ -101,6 +101,10 @@
 | ☯️ **四柱命卦** | 先天/后天卦推算（天地数法），附倪师四柱命卦讲义库 | 64 卦 |
 | 🔮 **紫微斗数排盘** | 十二宫/主星/四化/大限/流年盘可视化，杂星全中文，支持真太阳时+经度；排盘后自动生成整体运势/十年大运/流年总结，并给流年疾厄宫健康提醒（民俗文化参考） | 115 星 |
 | 📊 **八字详批** | 神煞/格局/日主强弱/五行分布/用神忌神，一键详批 | 民俗参考 |
+| 💾 **我的命盘库** | 紫微排盘结果可命名收藏，列表管理、左滑删除、点击回看（回填生辰与城市重排），省去反复输入 | — |
+| 🍂 **节气养生板块** | 独立 24 节气板块，每条附健康养生要点 + 倪师节气解析（非原文标注【推断】），与本草库解耦 | 24 节气 |
+| 👆 **每日黄历手势** | 黄历支持上/下滑切日、左/右滑切月，单手翻看更顺手，保留日期选择器兜底 | — |
+| 🔁 **大运对宫解析** | 大限空宫时自动附对宫主星/煞星提示，紫微「借星安宫」惯例可视化 | — |
 | 🔔 **应用内更新** | 设置中一键检测 GitHub 新版本，支持下载安装 | — |
 | ⚙️ **诊断设置** | 默认性别/诊断详细度/自动复制处方，个性化问诊体验 | 3 项 |
 | 💾 **数据管理** | 清除历史/导出收藏/清理缓存，本地数据完全掌控 | — |
@@ -113,10 +117,11 @@
 
 > **汉唐中医 nihaixia‑app**
 > 完全离线｜无需联网｜无需注册｜Android 6.0+
-> 通用版 APK 约 60.6MB，arm64‑v8a APK 约 22.7MB
+> 通用版 APK 约 64MB，分架构版 22–26MB
 > 自 V1.11.9 起由 GitHub Actions 自动构建发布，推送 `v*` tag 即出包
+> **最后更新：2026-08-31（v1.11.10）**
 
-### 📥 方式一：下载预编译 APK（V1.11.9）
+### 📥 方式一：下载预编译 APK（V1.11.10）
 
 > ### ⚠️ 升级须知：签名密钥已统一，通常可直接覆盖安装
 >
@@ -133,23 +138,24 @@
 
 <div align="left">
 
-[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安装包‑3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.9/app-release.apk)
+[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安装包‑3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.10/app-release.apk)
 &nbsp;&nbsp;
-[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安装包‑0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.9/app-arm64-v8a-release.apk)
+[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安装包‑0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.10/app-arm64-v8a-release.apk)
 &nbsp;&nbsp;
-[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安装包‑9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.9/app-armeabi-v7a-release.apk)
+[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安装包‑9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.10/app-armeabi-v7a-release.apk)
 &nbsp;&nbsp;
-[![📦 x86_64(虚拟机)](https://img.shields.io/badge/📦%20x86_64(虚拟机)-安卓安装包‑1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.9/app-x86_64-release.apk)
+[![📦 x86_64(虚拟机)](https://img.shields.io/badge/📦%20x86_64(虚拟机)-安卓安装包‑1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.10/app-x86_64-release.apk)
 
 </div>
 
 | 安装包 | 大小 | 适用说明 |
 |---|---|---|
-| 通用版 `app-release.apk` | 60.6MB | 全CPU架构，绝大多数安卓设备直接选这个 |
-| arm64‑v8a `app‑arm64‑v8a‑release.apk` | 22.7MB | 新款64位安卓手机，体积更小 |
-| armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | 20.6MB | 老旧32位安卓设备 |
-| x86_64 `app‑x86_64‑release.apk` | 24.1MB | 安卓虚拟机、模拟器使用 |
+| 通用版 `app-release.apk` | 64.0MB | 全CPU架构，绝大多数安卓设备直接选这个 |
+| arm64‑v8a `app‑arm64‑v8a‑release.apk` | 23.9MB | 新款64位安卓手机，体积更小 |
+| armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | 21.8MB | 老旧32位安卓设备 |
+| x86_64 `app‑x86_64‑release.apk` | 25.5MB | 安卓虚拟机、模拟器使用 |
 
+> **V1.11.10 命盘随身 · 节气养生**：新增「我的命盘库」（生辰存一次、随时回看）、独立「节气养生」板块（24 节气健康要点 + 倪师节气解析）、每日黄历滑动手势（上/下滑切日、左/右滑切月），以及大运空宫自动附对宫星情解析。四项民俗文化参考增强，全部离线、可测、不引入医疗诊断断言。详见 [Release Notes](release_notes/v1.11.10.md)。
 > **V1.11.9 让条文说人话**：为 170 首经方补齐「患者会怎么说」口语画像（大白话 + 辨证指针 + 治法 + 原文条文），辨证结果页新增口语卡片可逐句自核；同时让引擎听懂"怕冷""怕风"等现代症状词——原先这些词字面打不中古文条文、关联不到方剂的老毛病，已由口语语料兜底召回，并以「增强分上限 < 1」的非劣化不变式确保原有正确排序不被打乱。
 > 含 V1.11.8 健康人基线判定、寒热真假八维法、六经公式分型速查等全部历史修复。
 > 历史版本：V1.11.8（GitHub Release）https://github.com/jangviktor-web/nihaixia-app/releases/tag/V1.11.8
@@ -245,7 +251,7 @@ flutter analyze
 
 **版本号规则**：对外展示采用 `1.11.9` 格式，每次发布自增第三位（patch）；内部 `build` 号 `+N` 单调递增作为 `versionCode`。
 
-**发版方式**：推送 tag 即自动出包——`git tag v1.11.9 && git push origin v1.11.9`，GitHub Actions 约 6 分钟产出四个 APK 并发布到同名 Release。
+**发版方式**：推送 tag 即自动出包——`git tag v1.11.10 && git push origin v1.11.10`，GitHub Actions 约 6–12 分钟产出通用版 + 三个分架构 APK 并发布到同名 Release。
 
 ---
 
@@ -395,7 +401,7 @@ lib/
 诊断历史、收藏等数据全部存储于本机 SQLite，不上传任何服务器，隐私不出设备。
 
 **Q3：应该下载哪个 APK？**
-绝大多数现代手机选 **arm64-v8a**（22.7MB，体积最小）；拿不准就选 **通用版**（60.6MB，兼容所有架构）；老旧 32 位设备选 armeabi-v7a（20.6MB）；模拟器选 x86_64（24.1MB）。
+绝大多数现代手机选 **arm64-v8a**（23.9MB，体积最小）；拿不准就选 **通用版**（64.0MB，兼容所有架构）；老旧 32 位设备选 armeabi-v7a（21.8MB）；模拟器选 x86_64（25.5MB）。
 
 **Q4：安装时提示「应用未安装」/「安装失败」怎么办？**
 多半是**签名不一致**导致的覆盖安装被拒。V1.11.9 的云端构建已与本地 V1.11.8 共用同一套签名（已配置为 GitHub Secrets），正常情况下可直接覆盖安装。若仍被拒绝，通常是您手上的是签名密钥配置完成**之前**下载的早期 V1.11.9 调试签名版——解决办法：**先卸载旧版本，再安装新版本**（卸载前记得在「设置」中导出收藏与诊断历史）。详见上方「⚠️ 升级须知」。
@@ -474,6 +480,11 @@ lib/
 | 张仲景《伤寒论》 | 六经辨证体系 |
 | 张仲景《金匮要略》 | 杂病辨证 |
 | 《神农本草经》 | 药物性味归经（448 种） |
+| Wsy-prog/tcm-diagnosis-system（MIT） | 核心中医辨证模块结构借鉴（v3.4），为六经辨证问诊增强提供对照参考 |
+| ziwei_core（Dart, MIT） | 紫微斗数 / 八字 / 命卦排盘引擎（纯离线） |
+| sxwnl_spa_dart（Dart） | 历法 / 真太阳时 / 节气计算（农历 · 干支 · 节气） |
+
+> 本 App 借鉴并使用了上述开源项目，已按许可证要求标注出处，感谢原作者与社区。
 
 ---
 
