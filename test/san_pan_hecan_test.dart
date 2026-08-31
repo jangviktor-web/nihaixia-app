@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nihaisha_app/services/san_pan_hecan_service.dart';
+import 'package:nihaisha_app/engine/bazi_twelve_stages.dart';
 
 void main() {
   group('computeSanPanHeCan 三盘同源合参', () {
@@ -47,6 +48,12 @@ void main() {
         expect(r, isNotEmpty);
       }
 
+      // 八字长生十二神：四柱各一标签（默认火土同宫口径）
+      expect(hecan.twelveStages.length, 4);
+      for (final s in hecan.twelveStages) {
+        expect(s, isNotEmpty);
+      }
+
       // 命卦降级一致性：可用则两卦名非空非占位，不可用则均为"—"
       if (hecan.mingGuaAvailable) {
         expect(hecan.xianTianName, isNot('—'));
@@ -72,11 +79,42 @@ void main() {
       // 两开关下锚点不同，故八字四柱应不同（晚子时归次日 00:00）
       expect(earlyZi.baziFull, isNot(equals(lateZi.baziFull)));
     });
+
+    test('长生十二神口径切换改变结果（火土同宫 vs 水土同宫）', () {
+      const base = HeCanInput(
+        year: 1995,
+        month: 8,
+        day: 16,
+        hour: 12,
+        minute: 0,
+        isMale: true,
+      );
+      final fireEarth = computeSanPanHeCan(base); // twelveStageMode 默认 fireEarthSame
+      final waterEarth =
+          computeSanPanHeCan(base.copyWith(mode: TwelveStageMode.waterEarthSame));
+
+      expect(fireEarth.twelveStages.length, 4);
+      expect(waterEarth.twelveStages.length, 4);
+      // 两口径仅戊/己土柱结果不同：日主或任一柱为戊/己则结果应不同，否则相同
+      final gans = fireEarth.baziFull.split(' ').map((p) => p[0]).toList();
+      final hasEarth = gans.contains('戊') || gans.contains('己');
+      if (hasEarth) {
+        expect(fireEarth.twelveStages.join(','),
+            isNot(equals(waterEarth.twelveStages.join(','))));
+      } else {
+        expect(fireEarth.twelveStages.join(','),
+            equals(waterEarth.twelveStages.join(',')));
+      }
+    });
   });
 }
 
 extension _HeCanCopy on HeCanInput {
-  HeCanInput copyWith({bool? lateZiEnabled}) => HeCanInput(
+  HeCanInput copyWith({
+    bool? lateZiEnabled,
+    TwelveStageMode? mode,
+  }) =>
+      HeCanInput(
         year: year,
         month: month,
         day: day,
@@ -85,6 +123,7 @@ extension _HeCanCopy on HeCanInput {
         isMale: isMale,
         lateZiEnabled: lateZiEnabled ?? this.lateZiEnabled,
         useTrueSolarTime: useTrueSolarTime,
+        twelveStageMode: mode ?? twelveStageMode,
         location: location,
       );
 }

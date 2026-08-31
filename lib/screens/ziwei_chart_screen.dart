@@ -11,6 +11,7 @@ import '../data/ziwei_case_data.dart';
 import '../data/saved_chart_repository.dart';
 import '../theme/app_colors.dart';
 import '../services/san_pan_hecan_service.dart';
+import '../engine/bazi_twelve_stages.dart';
 
 /// 紫微斗数排盘界面。
 ///
@@ -75,6 +76,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
   FlowDayMark? _flowDayMark;
   bool _useTrueSolarTime = true; // 真太阳时校准（专业排盘默认开启）
   bool _lateZiShiEnabled = false; // 晚子时归次日：默认关闭（按当日早子时处理）
+  bool _fireEarthSame = true; // 长生十二神起长生口径：默认火土同宫（现代子平主流）
   bool _showAllHealth = false; // 健康提醒：展开终身（出生→百岁）vs 默认未来30年
   final _longitudeCtrl = TextEditingController(); // 出生地经度（东经，留空用默认 120°）
   CityLocation? _selectedCity; // 选中的出生城市（真太阳时定位，优先于手动经度）
@@ -387,6 +389,9 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                     isMale: _isMale,
                     lateZiEnabled: _lateZiShiEnabled,
                     useTrueSolarTime: _useTrueSolarTime,
+                    twelveStageMode: _fireEarthSame
+                        ? TwelveStageMode.fireEarthSame
+                        : TwelveStageMode.waterEarthSame,
                     location: _selectedCity != null
                         ? Location(_selectedCity!.lng, _selectedCity!.lat)
                         : null,
@@ -647,6 +652,33 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
               ),
               value: _useTrueSolarTime,
               onChanged: (v) => setState(() => _useTrueSolarTime = v),
+            ),
+            const SizedBox(height: 4),
+            // 长生十二神起长生口径（火土同宫 / 水土同宫）：小白用户生成八字前自选
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  '长生十二神 · 起长生口径',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
+                SegmentedButton<bool>(
+                  segments: const [
+                    ButtonSegment(value: true, label: Text('火土同宫')),
+                    ButtonSegment(value: false, label: Text('水土同宫')),
+                  ],
+                  selected: {_fireEarthSame},
+                  onSelectionChanged: (s) =>
+                      setState(() => _fireEarthSame = s.first),
+                ),
+                Text(
+                  _fireEarthSame
+                      ? '现代子平主流：戊己土寄生于火（戊长生在寅、己长生在酉）'
+                      : '部分古籍 / 纳音派：戊己土寄生于水（戊长生在申、己长生在卯）',
+                  style: TextStyle(fontSize: 10, color: cs.onSurfaceVariant),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
             Row(

@@ -73,6 +73,13 @@ class SanPanHeCanScreen extends StatelessWidget {
                 ? '—'
                 : hecan.relations.join(' · '),
           ),
+          _row(
+            cs,
+            Icons.timeline_outlined,
+            '八字 · 长生十二神',
+            '年 ${hecan.twelveStages[0]} · 月 ${hecan.twelveStages[1]} · '
+            '日 ${hecan.twelveStages[2]} · 时 ${hecan.twelveStages[3]}',
+          ),
           if (!hecan.mingGuaAvailable)
             Padding(
               padding: const EdgeInsets.only(top: 8, left: 4),

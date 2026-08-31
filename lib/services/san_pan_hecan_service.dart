@@ -4,6 +4,7 @@ import 'package:nihaisha_app/engine/minggua_engine.dart';
 import 'package:nihaisha_app/engine/bazi_analysis.dart';
 import 'package:nihaisha_app/engine/bazi_ten_gods.dart';
 import 'package:nihaisha_app/engine/bazi_relations.dart';
+import 'package:nihaisha_app/engine/bazi_twelve_stages.dart';
 
 /// 三盘合参输入：统一锚定到同一出生时空，确保紫微 / 八字 / 命卦同源合参。
 ///
@@ -21,6 +22,7 @@ class HeCanInput {
   final bool lateZiEnabled;
   final bool useTrueSolarTime;
   final Location? location;
+  final TwelveStageMode twelveStageMode; // 长生十二神起长生口径（默认火土同宫·现代子平主流）
 
   const HeCanInput({
     required this.year,
@@ -32,6 +34,7 @@ class HeCanInput {
     this.lateZiEnabled = false,
     this.useTrueSolarTime = true,
     this.location,
+    this.twelveStageMode = TwelveStageMode.fireEarthSame,
   });
 }
 
@@ -44,6 +47,7 @@ class SanPanHeCan {
   final List<String> tenGods; // 八字四柱十神（顺序 年/月/日/时，日柱位为『日主』）
   final String kongWang; // 八字旬空（空亡）地支，如『戌、亥』
   final List<String> relations; // 八字地支刑冲合害/合会关系标签，如 ['子午冲','申子辰三合水']
+  final List<String> twelveStages; // 八字四柱长生十二神（顺序 年/月/日/时）
   final String xianTianName; // 易经先天卦名
   final String houTianName; // 易经后天卦名
   final bool mingGuaAvailable; // 命卦是否成功推算
@@ -56,6 +60,7 @@ class SanPanHeCan {
     required this.tenGods,
     required this.kongWang,
     required this.relations,
+    required this.twelveStages,
     required this.xianTianName,
     required this.houTianName,
     required this.mingGuaAvailable,
@@ -107,6 +112,10 @@ SanPanHeCan computeSanPanHeCan(HeCanInput input) {
   // 八字地支刑冲合害 / 合会（取四柱地支）
   final relations = detectBaziRelations(zhis);
 
+  // 八字四柱长生十二神（依日主 + 用户选定起长生口径）
+  final stages = twelveStagesForPillars(gans[2], zhis,
+      mode: input.twelveStageMode);
+
   // 紫微命宫主星
   final ming = chart.palaces.firstWhere(
     (p) => p.isLife,
@@ -138,6 +147,7 @@ SanPanHeCan computeSanPanHeCan(HeCanInput input) {
     tenGods: tenGods,
     kongWang: kw.isEmpty ? '—' : '${kw[0]}、${kw[1]}',
     relations: relations,
+    twelveStages: stages,
     xianTianName: mg?.xianTian.name ?? '—',
     houTianName: mg?.houTian.name ?? '—',
     mingGuaAvailable: mg != null,
