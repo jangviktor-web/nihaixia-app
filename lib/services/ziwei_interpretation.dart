@@ -176,8 +176,37 @@ class HealthWatchItem {
     required this.bodyPart,
     required this.reason,
     required this.source,
+    this.tcmContext,
   });
+
+  /// 中医民俗视角补充：依地支→脏腑/经络映射给出的非诊断性提示
+  /// （子午流注 + 十二正经循行要点）。仅作文化参考，不构成医疗诊断。
+  final String? tcmContext;
 }
+
+// ---------------------------------------------------------------------------
+// 地支 → 中医经络 / 证型倾向（民俗文化参考，非医疗诊断）
+// 依据通用「子午流注」与「十二正经」藏象知识，链接上方 bodyPartFor 的地支脏腑映射。
+// 属公开中医常识，非倪师原话，故不标【推断】；与倪师《天纪》无引用关系。
+// ---------------------------------------------------------------------------
+const Map<int, String> _tcmMeridianByBranch = {
+  0: '足少阴肾经、足太阳膀胱经所过；子时(23-01)阳气潜藏，肾主封藏',
+  1: '足厥阴肝经所过；丑时(01-03)肝藏血，肝主疏泄',
+  2: '手太阴肺经、手阳明大肠经所过；寅时(03-05)气血注肺，肺主皮毛',
+  3: '手阳明大肠经当令；卯时(05-07)大肠传导，宜排便',
+  4: '足阳明胃经当令；辰时(07-09)胃受纳，胃主腐熟',
+  5: '足太阴脾经当令；巳时(09-11)脾运化，脾主统血',
+  6: '手少阴心经、手太阳小肠经所过；午时(11-13)心主血脉',
+  7: '手太阳小肠经当令；未时(13-15)分清泌浊',
+  8: '足太阳膀胱经当令；申时(15-17)膀胱气化，太阳经行身之表',
+  9: '足少阴肾经当令；酉时(17-19)肾藏精',
+  10: '手厥阴心包经当令；戌时(19-21)心包护心',
+  11: '手少阳三焦经当令；亥时(21-23)三焦通调水道',
+};
+
+/// 由流年疾厄宫所在物理地支(0-11)给出中医民俗视角补充句（非诊断）。
+String tcmContextFor(int branchIndex) =>
+    _tcmMeridianByBranch[branchIndex] ?? '相关经络脏腑，民俗文化参考';
 
 // ---------------------------------------------------------------------------
 // a) 整体运势叙述（2–4 句，口语化、不浮夸）
@@ -352,6 +381,8 @@ List<HealthWatchItem> analyzeHealthWatch(
     final bodyPart = palace.roleLabel == '疾厄宫'
         ? '$bodyBase；后天体质、病邪易侵处'
         : bodyBase;
+    // 中医民俗视角补充：依流年疾厄宫所在物理地支给出经络/证型倾向（非诊断）
+    final tcm = tcmContextFor(illnessIndex);
 
     // 1) 本局煞星落流年疾厄宫
     if (palace.bads.isNotEmpty) {
@@ -362,6 +393,7 @@ List<HealthWatchItem> analyzeHealthWatch(
         bodyPart: bodyPart,
         reason: '流年疾厄宫见$names（本局煞星）',
         source: '通用紫微',
+        tcmContext: tcm,
       ));
     }
 
@@ -376,6 +408,7 @@ List<HealthWatchItem> analyzeHealthWatch(
             bodyPart: bodyPart,
             reason: '流年疾厄宫见$sig（流年煞曜）',
             source: '通用紫微',
+            tcmContext: tcm,
           ));
         }
       }
@@ -408,6 +441,7 @@ List<HealthWatchItem> analyzeHealthWatch(
         bodyPart: bodyPart,
         reason: reason,
         source: note != null ? '倪师《天纪》' : '通用紫微',
+        tcmContext: tcm,
       ));
     }
   }

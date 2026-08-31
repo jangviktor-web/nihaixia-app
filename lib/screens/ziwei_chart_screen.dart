@@ -1528,6 +1528,11 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                   '留意：${item.bodyPart}',
                   style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
                 ),
+                if (item.tcmContext != null)
+                  Text(
+                    '中医民俗视角：${item.tcmContext}',
+                    style: TextStyle(fontSize: 10, color: cs.outline),
+                  ),
                 Text(
                   '来源：${item.source}',
                   style: TextStyle(fontSize: 10, color: cs.outline),
