@@ -1004,8 +1004,8 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                   Icon(Icons.warning, size: 14, color: context.colors.warning),
                   const SizedBox(width: 4),
                   Expanded(
-                    child: Text(
-                      '民俗文化参考·非医疗诊断·如有不适请就医',
+                    child:                   Text(
+                      '民俗文化参考·非医疗诊断·身体部位按地支脏腑对应·如有不适请就医',
                       style: TextStyle(fontSize: 10, color: context.colors.warning),
                     ),
                   ),

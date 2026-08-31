@@ -78,5 +78,24 @@ void main() {
       print('[生年化忌星] $jiStar');
       expect(jiStar, isNotEmpty);
     });
+
+    test('e) 化忌天干表锁定（甲太阳…癸贪狼）', () {
+      const expected = [
+        '太阳', // 甲
+        '太阴', // 乙
+        '廉贞', // 丙
+        '巨门', // 丁
+        '天机', // 戊
+        '文曲', // 己
+        '天同', // 庚
+        '文昌', // 辛
+        '武曲', // 壬
+        '贪狼', // 癸
+      ];
+      for (int i = 0; i < expected.length; i++) {
+        expect(huaJiStarByStem(i), expected[i],
+            reason: '天干索引 $i 的化忌星应为 ${expected[i]}');
+      }
+    });
   });
 }
