@@ -175,12 +175,18 @@ String? brightnessLabel(int index) {
 /// 晚子时规则：将「用户录入的实际出生时辰（年/月/日/时/分）」解析为
 /// 传给 [calculateZiweiChart] 的公历 [DateTime]。
 ///
-/// 采用标准晚子时 convention：
-/// - 实际钟表时间落在 23:00–23:59（晚子时）：时辰为「子」，且公历日期滚动到
-///   次日（排盘以次日子时论命，日柱归入次日）。为兼容引擎 noSplit 模式
+/// 紫微斗数对 23:00–23:59 的「晚子时」归属存在流派分歧：
+/// - 一派主张「晚子时归次日子时」（日柱顺延一日）；
+/// - 一派主张「当日早子时」（日柱不顺延）。
+/// 为尊重用户选择，本函数增加 [enabled] 开关：
+/// - [enabled] = true：晚子时（23:00–23:59）滚动到次日 00:00 子时
+///   （排盘以次日子时论命，日柱归入次日）。为兼容引擎 noSplit 模式
 ///   （hour>=23 时会再 +1 天导致跨两日），此处把时辰固化为次日 00:00–00:59
 ///   的早子时，等价得到「次日日柱 + 子时」，与晚子时论法一致。
-/// - 实际时间 00:00–00:59（早子时）：子时，保持当日。
+/// - [enabled] = false（默认）：晚子时按「当日早子时」处理——固化到
+///   当日 00:00–00:59 子时，日柱不顺延。永不向引擎传入 hour==23，
+///   避免引擎 noSplit 模式二次滚动造成跨两日。
+/// - 实际时间 00:00–00:59（早子时）：子时，保持当日（两种口径一致）。
 /// - 其余时刻：按录入原样。
 ///
 /// 真太阳时仍由 [calculateZiweiChart] 在传入 DateTime 之上叠加，不受影响。
@@ -190,10 +196,15 @@ DateTime resolveBirthSolar({
   required int day,
   required int hour,
   required int minute,
+  bool enabled = false,
 }) {
   if (hour == 23) {
-    final next = DateTime(year, month, day).add(const Duration(days: 1));
-    return DateTime(next.year, next.month, next.day, 0, minute);
+    if (enabled) {
+      final next = DateTime(year, month, day).add(const Duration(days: 1));
+      return DateTime(next.year, next.month, next.day, 0, minute);
+    }
+    // 默认关闭：当晚子时按「当日早子时」处理，日柱不顺延。
+    return DateTime(year, month, day, 0, minute);
   }
   return DateTime(year, month, day, hour, minute);
 }

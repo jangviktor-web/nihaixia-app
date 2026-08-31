@@ -59,7 +59,8 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
   int _day = 16;
   int _birthHour = 10; // 实际出生钟表小时 0-23（默认 10 时 ≈ 巳时）
   int _birthMinute = 0; // 实际出生分钟 0-59
-  /// 由实际小时推导的时辰索引（晚子时 23:00–23:59 归子时当日→滚动见 resolveBirthSolar）。
+  /// 由实际小时推导的时辰索引（23:00–23:59 归「子时」；是否将公历日期滚动到次日
+  /// 由 resolveBirthSolar 的 enabled 开关决定，这里只负责时辰归类）。
   int get _shiChenIndex => _shiChenIndexForHour(_birthHour);
   bool _isMale = true;
 
@@ -71,6 +72,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
   FlowMonthMark? _flowMonthMark;
   FlowDayMark? _flowDayMark;
   bool _useTrueSolarTime = true; // 真太阳时校准（专业排盘默认开启）
+  bool _lateZiShiEnabled = false; // 晚子时归次日：默认关闭（按当日早子时处理）
   bool _showAllHealth = false; // 健康提醒：展开终身（出生→百岁）vs 默认未来30年
   final _longitudeCtrl = TextEditingController(); // 出生地经度（东经，留空用默认 120°）
   CityLocation? _selectedCity; // 选中的出生城市（真太阳时定位，优先于手动经度）
@@ -249,12 +251,14 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
     Future.microtask(() {
       try {
         // 晚子时归次日：由实际出生时:分解析出传给引擎的公历 DateTime。
+        // enabled 由用户开关控制（默认 false = 按当日早子时处理）。
         final solar = resolveBirthSolar(
           year: _year,
           month: _month,
           day: _day,
           hour: _birthHour,
           minute: _birthMinute,
+          enabled: _lateZiShiEnabled,
         );
         final chart = calculateZiweiChart(
           solar: solar,
@@ -286,7 +290,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
   /// 收集生辰/性别/地点后写入 [SavedChartRepository]，并提示已存入。
   Future<void> _saveToLibrary() async {
     if (_chart == null) return;
-    // 存入命盘库的生辰须为「解析后」的公历时间（含晚子时次日滚动），
+    // 存入命盘库的生辰须为「解析后」的公历时间（晚子时是否滚动由开关决定），
     // 以便日后回看能原样重排出同一命盘。
     final solar = resolveBirthSolar(
       year: _year,
@@ -294,6 +298,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
       day: _day,
       hour: _birthHour,
       minute: _birthMinute,
+      enabled: _lateZiShiEnabled,
     );
     final genderLabel = _isMale ? '男' : '女';
     final defaultName =
@@ -582,10 +587,24 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
               ],
             ),
             const SizedBox(height: 4),
-            // 晚子时口径提示（真实中文说明，无 emoji）
+            // 晚子时口径开关（默认关闭，按当日早子时处理；真实中文说明，无 emoji）
+            SwitchListTile(
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+              title: const Text(
+                '晚子时归次日子时',
+                style: TextStyle(fontSize: 12),
+              ),
+              subtitle: Text(
+                '默认关闭：23:00–23:59 按当日早子时论命；开启则日柱顺延一日',
+                style: TextStyle(fontSize: 10, color: cs.onSurfaceVariant),
+              ),
+              value: _lateZiShiEnabled,
+              onChanged: (v) => setState(() => _lateZiShiEnabled = v),
+            ),
             Text(
-              '23:00–23:59 为晚子时，归入次日子时（日柱顺延一日）；'
-              '00:00–00:59 为当日早子时。',
+              '23:00–23:59 为晚子时，紫微流派对其归属有分歧：开启上方开关则归次日子时'
+              '（日柱顺延一日），默认按当日早子时处理。00:00–00:59 恒为当日早子时。',
               style: TextStyle(fontSize: 10, color: cs.onSurfaceVariant),
             ),
             const SizedBox(height: 4),
