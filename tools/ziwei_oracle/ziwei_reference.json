@@ -1,0 +1,1998 @@
+{
+  "engine": "iztro-py 0.5.0",
+  "language": "zh-CN",
+  "charts": [
+    {
+      "solar_date": "1990-06-15",
+      "time_index": 0,
+      "gender": "男",
+      "chinese_date": "庚午 壬午 辛亥 戊子",
+      "lunar_date": "一九九〇年五月廿三",
+      "five_elements_class": "木三局",
+      "soul": "pojunMaj",
+      "body": "huoxingMin",
+      "sihua": [
+        {
+          "star": "天同",
+          "mutagen": "忌"
+        },
+        {
+          "star": "武曲",
+          "mutagen": "权"
+        },
+        {
+          "star": "太阳",
+          "mutagen": "禄"
+        },
+        {
+          "star": "太阴",
+          "mutagen": "科"
+        }
+      ],
+      "palaces": [
+        {
+          "index": 0,
+          "name_zh": "财帛宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "七杀",
+              "brightness": "庙",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            83,
+            92
+          ]
+        },
+        {
+          "index": 1,
+          "name_zh": "子女宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "天同",
+              "brightness": "平",
+              "mutagen": "忌"
+            }
+          ],
+          "decadal_range": [
+            93,
+            102
+          ]
+        },
+        {
+          "index": 2,
+          "name_zh": "夫妻宫",
+          "is_original_palace": true,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "武曲",
+              "brightness": "庙",
+              "mutagen": "权"
+            }
+          ],
+          "decadal_range": [
+            103,
+            112
+          ]
+        },
+        {
+          "index": 3,
+          "name_zh": "兄弟宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "太阳",
+              "brightness": "旺",
+              "mutagen": "禄"
+            }
+          ],
+          "decadal_range": [
+            113,
+            122
+          ]
+        },
+        {
+          "index": 4,
+          "name_zh": "命宫",
+          "is_original_palace": false,
+          "is_body_palace": true,
+          "major_stars": [
+            {
+              "name": "破军",
+              "brightness": "庙",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            3,
+            12
+          ]
+        },
+        {
+          "index": 5,
+          "name_zh": "父母宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "天机",
+              "brightness": "陷",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            13,
+            22
+          ]
+        },
+        {
+          "index": 6,
+          "name_zh": "福德宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "紫微",
+              "brightness": "旺",
+              "mutagen": null
+            },
+            {
+              "name": "天府",
+              "brightness": "得",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            23,
+            32
+          ]
+        },
+        {
+          "index": 7,
+          "name_zh": "田宅宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "太阴",
+              "brightness": "不",
+              "mutagen": "科"
+            }
+          ],
+          "decadal_range": [
+            33,
+            42
+          ]
+        },
+        {
+          "index": 8,
+          "name_zh": "官禄宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "贪狼",
+              "brightness": "庙",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            43,
+            52
+          ]
+        },
+        {
+          "index": 9,
+          "name_zh": "交友宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "巨门",
+              "brightness": "旺",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            53,
+            62
+          ]
+        },
+        {
+          "index": 10,
+          "name_zh": "迁移宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "廉贞",
+              "brightness": "平",
+              "mutagen": null
+            },
+            {
+              "name": "天相",
+              "brightness": "庙",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            63,
+            72
+          ]
+        },
+        {
+          "index": 11,
+          "name_zh": "疾厄宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "天梁",
+              "brightness": "旺",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            73,
+            82
+          ]
+        }
+      ],
+      "flow_years": {
+        "2025": {
+          "heavenly_stem": "yiHeavenly",
+          "earthly_branch": "siEarthly",
+          "palace_index": 3,
+          "mutagen_en": [
+            "tianjiMaj",
+            "tianliangMaj",
+            "ziweiMaj",
+            "taiyinMaj"
+          ]
+        },
+        "2026": {
+          "heavenly_stem": "bingHeavenly",
+          "earthly_branch": "wuEarthly",
+          "palace_index": 4,
+          "mutagen_en": [
+            "tiantongMaj",
+            "tianjiMaj",
+            "wenchangMin",
+            "lianzhenMaj"
+          ]
+        },
+        "2027": {
+          "heavenly_stem": "dingHeavenly",
+          "earthly_branch": "weiEarthly",
+          "palace_index": 5,
+          "mutagen_en": [
+            "taiyinMaj",
+            "tiantongMaj",
+            "tianjiMaj",
+            "jumenMaj"
+          ]
+        },
+        "2028": {
+          "heavenly_stem": "wuHeavenly",
+          "earthly_branch": "shenEarthly",
+          "palace_index": 6,
+          "mutagen_en": [
+            "tanlangMaj",
+            "taiyinMaj",
+            "youbiMin",
+            "tianjiMaj"
+          ]
+        },
+        "2029": {
+          "heavenly_stem": "jiHeavenly",
+          "earthly_branch": "youEarthly",
+          "palace_index": 7,
+          "mutagen_en": [
+            "wuquMaj",
+            "tanlangMaj",
+            "tianliangMaj",
+            "wenquMin"
+          ]
+        },
+        "2030": {
+          "heavenly_stem": "gengHeavenly",
+          "earthly_branch": "xuEarthly",
+          "palace_index": 8,
+          "mutagen_en": [
+            "taiyangMaj",
+            "wuquMaj",
+            "taiyinMaj",
+            "tiantongMaj"
+          ]
+        },
+        "2031": {
+          "heavenly_stem": "xinHeavenly",
+          "earthly_branch": "haiEarthly",
+          "palace_index": 9,
+          "mutagen_en": [
+            "jumenMaj",
+            "taiyangMaj",
+            "wenquMin",
+            "wenchangMin"
+          ]
+        },
+        "2032": {
+          "heavenly_stem": "renHeavenly",
+          "earthly_branch": "ziEarthly",
+          "palace_index": 10,
+          "mutagen_en": [
+            "tianliangMaj",
+            "ziweiMaj",
+            "zuofuMin",
+            "wuquMaj"
+          ]
+        },
+        "2033": {
+          "heavenly_stem": "guiHeavenly",
+          "earthly_branch": "chouEarthly",
+          "palace_index": 11,
+          "mutagen_en": [
+            "pojunMaj",
+            "jumenMaj",
+            "taiyinMaj",
+            "tanlangMaj"
+          ]
+        },
+        "2034": {
+          "heavenly_stem": "jiaHeavenly",
+          "earthly_branch": "yinEarthly",
+          "palace_index": 0,
+          "mutagen_en": [
+            "lianzhenMaj",
+            "pojunMaj",
+            "wuquMaj",
+            "taiyangMaj"
+          ]
+        }
+      },
+      "huaji_checks": [
+        {
+          "year": 2025,
+          "stem": "乙",
+          "iztro_ji_star": "太阴",
+          "app_ji_star": "太阴",
+          "match": true
+        },
+        {
+          "year": 2026,
+          "stem": "丙",
+          "iztro_ji_star": "廉贞",
+          "app_ji_star": "廉贞",
+          "match": true
+        },
+        {
+          "year": 2027,
+          "stem": "丁",
+          "iztro_ji_star": "巨门",
+          "app_ji_star": "巨门",
+          "match": true
+        },
+        {
+          "year": 2028,
+          "stem": "戊",
+          "iztro_ji_star": "天机",
+          "app_ji_star": "天机",
+          "match": true
+        },
+        {
+          "year": 2029,
+          "stem": "己",
+          "iztro_ji_star": "文曲",
+          "app_ji_star": "文曲",
+          "match": true
+        },
+        {
+          "year": 2030,
+          "stem": "庚",
+          "iztro_ji_star": "天同",
+          "app_ji_star": "天同",
+          "match": true
+        },
+        {
+          "year": 2031,
+          "stem": "辛",
+          "iztro_ji_star": "文昌",
+          "app_ji_star": "文昌",
+          "match": true
+        },
+        {
+          "year": 2032,
+          "stem": "壬",
+          "iztro_ji_star": "武曲",
+          "app_ji_star": "武曲",
+          "match": true
+        },
+        {
+          "year": 2033,
+          "stem": "癸",
+          "iztro_ji_star": "贪狼",
+          "app_ji_star": "贪狼",
+          "match": true
+        },
+        {
+          "year": 2034,
+          "stem": "甲",
+          "iztro_ji_star": "太阳",
+          "app_ji_star": "太阳",
+          "match": true
+        }
+      ],
+      "flow_checks": [
+        {
+          "year": 2025,
+          "iztro_branch": "巳",
+          "iztro_branch_index": 5,
+          "app_branch_index": 5,
+          "match": true
+        },
+        {
+          "year": 2026,
+          "iztro_branch": "午",
+          "iztro_branch_index": 6,
+          "app_branch_index": 6,
+          "match": true
+        },
+        {
+          "year": 2027,
+          "iztro_branch": "未",
+          "iztro_branch_index": 7,
+          "app_branch_index": 7,
+          "match": true
+        },
+        {
+          "year": 2028,
+          "iztro_branch": "申",
+          "iztro_branch_index": 8,
+          "app_branch_index": 8,
+          "match": true
+        },
+        {
+          "year": 2029,
+          "iztro_branch": "酉",
+          "iztro_branch_index": 9,
+          "app_branch_index": 9,
+          "match": true
+        },
+        {
+          "year": 2030,
+          "iztro_branch": "戌",
+          "iztro_branch_index": 10,
+          "app_branch_index": 10,
+          "match": true
+        },
+        {
+          "year": 2031,
+          "iztro_branch": "亥",
+          "iztro_branch_index": 11,
+          "app_branch_index": 11,
+          "match": true
+        },
+        {
+          "year": 2032,
+          "iztro_branch": "子",
+          "iztro_branch_index": 0,
+          "app_branch_index": 0,
+          "match": true
+        },
+        {
+          "year": 2033,
+          "iztro_branch": "丑",
+          "iztro_branch_index": 1,
+          "app_branch_index": 1,
+          "match": true
+        },
+        {
+          "year": 2034,
+          "iztro_branch": "寅",
+          "iztro_branch_index": 2,
+          "app_branch_index": 2,
+          "match": true
+        }
+      ]
+    },
+    {
+      "solar_date": "1985-03-10",
+      "time_index": 6,
+      "gender": "女",
+      "chinese_date": "乙丑 戊寅 戊申 戊午",
+      "lunar_date": "一九八五年正月十九",
+      "five_elements_class": "水二局",
+      "soul": "lianzhenMaj",
+      "body": "tianxiangMaj",
+      "sihua": [
+        {
+          "star": "太阴",
+          "mutagen": "忌"
+        },
+        {
+          "star": "天机",
+          "mutagen": "禄"
+        },
+        {
+          "star": "紫微",
+          "mutagen": "科"
+        },
+        {
+          "star": "天梁",
+          "mutagen": "权"
+        }
+      ],
+      "palaces": [
+        {
+          "index": 0,
+          "name_zh": "迁移宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "廉贞",
+              "brightness": "庙",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            62,
+            71
+          ]
+        },
+        {
+          "index": 1,
+          "name_zh": "疾厄宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [],
+          "decadal_range": [
+            72,
+            81
+          ]
+        },
+        {
+          "index": 2,
+          "name_zh": "财帛宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "破军",
+              "brightness": "旺",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            82,
+            91
+          ]
+        },
+        {
+          "index": 3,
+          "name_zh": "子女宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "天同",
+              "brightness": "庙",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            92,
+            101
+          ]
+        },
+        {
+          "index": 4,
+          "name_zh": "夫妻宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "武曲",
+              "brightness": "旺",
+              "mutagen": null
+            },
+            {
+              "name": "天府",
+              "brightness": "旺",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            102,
+            111
+          ]
+        },
+        {
+          "index": 5,
+          "name_zh": "兄弟宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "太阳",
+              "brightness": "得",
+              "mutagen": null
+            },
+            {
+              "name": "太阴",
+              "brightness": "不",
+              "mutagen": "忌"
+            }
+          ],
+          "decadal_range": [
+            112,
+            121
+          ]
+        },
+        {
+          "index": 6,
+          "name_zh": "命宫",
+          "is_original_palace": false,
+          "is_body_palace": true,
+          "major_stars": [
+            {
+              "name": "贪狼",
+              "brightness": "平",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            2,
+            11
+          ]
+        },
+        {
+          "index": 7,
+          "name_zh": "父母宫",
+          "is_original_palace": true,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "天机",
+              "brightness": "旺",
+              "mutagen": "禄"
+            },
+            {
+              "name": "巨门",
+              "brightness": "庙",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            12,
+            21
+          ]
+        },
+        {
+          "index": 8,
+          "name_zh": "福德宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "紫微",
+              "brightness": "得",
+              "mutagen": "科"
+            },
+            {
+              "name": "天相",
+              "brightness": "得",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            22,
+            31
+          ]
+        },
+        {
+          "index": 9,
+          "name_zh": "田宅宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "天梁",
+              "brightness": "陷",
+              "mutagen": "权"
+            }
+          ],
+          "decadal_range": [
+            32,
+            41
+          ]
+        },
+        {
+          "index": 10,
+          "name_zh": "官禄宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "七杀",
+              "brightness": "旺",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            42,
+            51
+          ]
+        },
+        {
+          "index": 11,
+          "name_zh": "交友宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [],
+          "decadal_range": [
+            52,
+            61
+          ]
+        }
+      ],
+      "flow_years": {
+        "2025": {
+          "heavenly_stem": "yiHeavenly",
+          "earthly_branch": "siEarthly",
+          "palace_index": 3,
+          "mutagen_en": [
+            "tianjiMaj",
+            "tianliangMaj",
+            "ziweiMaj",
+            "taiyinMaj"
+          ]
+        },
+        "2026": {
+          "heavenly_stem": "bingHeavenly",
+          "earthly_branch": "wuEarthly",
+          "palace_index": 4,
+          "mutagen_en": [
+            "tiantongMaj",
+            "tianjiMaj",
+            "wenchangMin",
+            "lianzhenMaj"
+          ]
+        },
+        "2027": {
+          "heavenly_stem": "dingHeavenly",
+          "earthly_branch": "weiEarthly",
+          "palace_index": 5,
+          "mutagen_en": [
+            "taiyinMaj",
+            "tiantongMaj",
+            "tianjiMaj",
+            "jumenMaj"
+          ]
+        },
+        "2028": {
+          "heavenly_stem": "wuHeavenly",
+          "earthly_branch": "shenEarthly",
+          "palace_index": 6,
+          "mutagen_en": [
+            "tanlangMaj",
+            "taiyinMaj",
+            "youbiMin",
+            "tianjiMaj"
+          ]
+        },
+        "2029": {
+          "heavenly_stem": "jiHeavenly",
+          "earthly_branch": "youEarthly",
+          "palace_index": 7,
+          "mutagen_en": [
+            "wuquMaj",
+            "tanlangMaj",
+            "tianliangMaj",
+            "wenquMin"
+          ]
+        },
+        "2030": {
+          "heavenly_stem": "gengHeavenly",
+          "earthly_branch": "xuEarthly",
+          "palace_index": 8,
+          "mutagen_en": [
+            "taiyangMaj",
+            "wuquMaj",
+            "taiyinMaj",
+            "tiantongMaj"
+          ]
+        },
+        "2031": {
+          "heavenly_stem": "xinHeavenly",
+          "earthly_branch": "haiEarthly",
+          "palace_index": 9,
+          "mutagen_en": [
+            "jumenMaj",
+            "taiyangMaj",
+            "wenquMin",
+            "wenchangMin"
+          ]
+        },
+        "2032": {
+          "heavenly_stem": "renHeavenly",
+          "earthly_branch": "ziEarthly",
+          "palace_index": 10,
+          "mutagen_en": [
+            "tianliangMaj",
+            "ziweiMaj",
+            "zuofuMin",
+            "wuquMaj"
+          ]
+        },
+        "2033": {
+          "heavenly_stem": "guiHeavenly",
+          "earthly_branch": "chouEarthly",
+          "palace_index": 11,
+          "mutagen_en": [
+            "pojunMaj",
+            "jumenMaj",
+            "taiyinMaj",
+            "tanlangMaj"
+          ]
+        },
+        "2034": {
+          "heavenly_stem": "jiaHeavenly",
+          "earthly_branch": "yinEarthly",
+          "palace_index": 0,
+          "mutagen_en": [
+            "lianzhenMaj",
+            "pojunMaj",
+            "wuquMaj",
+            "taiyangMaj"
+          ]
+        }
+      },
+      "huaji_checks": [
+        {
+          "year": 2025,
+          "stem": "乙",
+          "iztro_ji_star": "太阴",
+          "app_ji_star": "太阴",
+          "match": true
+        },
+        {
+          "year": 2026,
+          "stem": "丙",
+          "iztro_ji_star": "廉贞",
+          "app_ji_star": "廉贞",
+          "match": true
+        },
+        {
+          "year": 2027,
+          "stem": "丁",
+          "iztro_ji_star": "巨门",
+          "app_ji_star": "巨门",
+          "match": true
+        },
+        {
+          "year": 2028,
+          "stem": "戊",
+          "iztro_ji_star": "天机",
+          "app_ji_star": "天机",
+          "match": true
+        },
+        {
+          "year": 2029,
+          "stem": "己",
+          "iztro_ji_star": "文曲",
+          "app_ji_star": "文曲",
+          "match": true
+        },
+        {
+          "year": 2030,
+          "stem": "庚",
+          "iztro_ji_star": "天同",
+          "app_ji_star": "天同",
+          "match": true
+        },
+        {
+          "year": 2031,
+          "stem": "辛",
+          "iztro_ji_star": "文昌",
+          "app_ji_star": "文昌",
+          "match": true
+        },
+        {
+          "year": 2032,
+          "stem": "壬",
+          "iztro_ji_star": "武曲",
+          "app_ji_star": "武曲",
+          "match": true
+        },
+        {
+          "year": 2033,
+          "stem": "癸",
+          "iztro_ji_star": "贪狼",
+          "app_ji_star": "贪狼",
+          "match": true
+        },
+        {
+          "year": 2034,
+          "stem": "甲",
+          "iztro_ji_star": "太阳",
+          "app_ji_star": "太阳",
+          "match": true
+        }
+      ],
+      "flow_checks": [
+        {
+          "year": 2025,
+          "iztro_branch": "巳",
+          "iztro_branch_index": 5,
+          "app_branch_index": 5,
+          "match": true
+        },
+        {
+          "year": 2026,
+          "iztro_branch": "午",
+          "iztro_branch_index": 6,
+          "app_branch_index": 6,
+          "match": true
+        },
+        {
+          "year": 2027,
+          "iztro_branch": "未",
+          "iztro_branch_index": 7,
+          "app_branch_index": 7,
+          "match": true
+        },
+        {
+          "year": 2028,
+          "iztro_branch": "申",
+          "iztro_branch_index": 8,
+          "app_branch_index": 8,
+          "match": true
+        },
+        {
+          "year": 2029,
+          "iztro_branch": "酉",
+          "iztro_branch_index": 9,
+          "app_branch_index": 9,
+          "match": true
+        },
+        {
+          "year": 2030,
+          "iztro_branch": "戌",
+          "iztro_branch_index": 10,
+          "app_branch_index": 10,
+          "match": true
+        },
+        {
+          "year": 2031,
+          "iztro_branch": "亥",
+          "iztro_branch_index": 11,
+          "app_branch_index": 11,
+          "match": true
+        },
+        {
+          "year": 2032,
+          "iztro_branch": "子",
+          "iztro_branch_index": 0,
+          "app_branch_index": 0,
+          "match": true
+        },
+        {
+          "year": 2033,
+          "iztro_branch": "丑",
+          "iztro_branch_index": 1,
+          "app_branch_index": 1,
+          "match": true
+        },
+        {
+          "year": 2034,
+          "iztro_branch": "寅",
+          "iztro_branch_index": 2,
+          "app_branch_index": 2,
+          "match": true
+        }
+      ]
+    },
+    {
+      "solar_date": "2000-11-25",
+      "time_index": 4,
+      "gender": "男",
+      "chinese_date": "庚辰 丁亥 丁亥 甲辰",
+      "lunar_date": "二〇〇〇年十月三十",
+      "five_elements_class": "木三局",
+      "soul": "wuquMaj",
+      "body": "wenchangMin",
+      "sihua": [
+        {
+          "star": "天同",
+          "mutagen": "忌"
+        },
+        {
+          "star": "太阴",
+          "mutagen": "科"
+        },
+        {
+          "star": "武曲",
+          "mutagen": "权"
+        },
+        {
+          "star": "太阳",
+          "mutagen": "禄"
+        }
+      ],
+      "palaces": [
+        {
+          "index": 0,
+          "name_zh": "疾厄宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [],
+          "decadal_range": [
+            73,
+            82
+          ]
+        },
+        {
+          "index": 1,
+          "name_zh": "财帛宫",
+          "is_original_palace": false,
+          "is_body_palace": true,
+          "major_stars": [
+            {
+              "name": "廉贞",
+              "brightness": "平",
+              "mutagen": null
+            },
+            {
+              "name": "破军",
+              "brightness": "陷",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            83,
+            92
+          ]
+        },
+        {
+          "index": 2,
+          "name_zh": "子女宫",
+          "is_original_palace": true,
+          "is_body_palace": false,
+          "major_stars": [],
+          "decadal_range": [
+            93,
+            102
+          ]
+        },
+        {
+          "index": 3,
+          "name_zh": "夫妻宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "天府",
+              "brightness": "得",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            103,
+            112
+          ]
+        },
+        {
+          "index": 4,
+          "name_zh": "兄弟宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "天同",
+              "brightness": "陷",
+              "mutagen": "忌"
+            },
+            {
+              "name": "太阴",
+              "brightness": "不",
+              "mutagen": "科"
+            }
+          ],
+          "decadal_range": [
+            113,
+            122
+          ]
+        },
+        {
+          "index": 5,
+          "name_zh": "命宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "武曲",
+              "brightness": "庙",
+              "mutagen": "权"
+            },
+            {
+              "name": "贪狼",
+              "brightness": "庙",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            3,
+            12
+          ]
+        },
+        {
+          "index": 6,
+          "name_zh": "父母宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "太阳",
+              "brightness": "得",
+              "mutagen": "禄"
+            },
+            {
+              "name": "巨门",
+              "brightness": "庙",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            13,
+            22
+          ]
+        },
+        {
+          "index": 7,
+          "name_zh": "福德宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "天相",
+              "brightness": "陷",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            23,
+            32
+          ]
+        },
+        {
+          "index": 8,
+          "name_zh": "田宅宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "天机",
+              "brightness": "利",
+              "mutagen": null
+            },
+            {
+              "name": "天梁",
+              "brightness": "庙",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            33,
+            42
+          ]
+        },
+        {
+          "index": 9,
+          "name_zh": "官禄宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "紫微",
+              "brightness": "旺",
+              "mutagen": null
+            },
+            {
+              "name": "七杀",
+              "brightness": "平",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            43,
+            52
+          ]
+        },
+        {
+          "index": 10,
+          "name_zh": "交友宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [],
+          "decadal_range": [
+            53,
+            62
+          ]
+        },
+        {
+          "index": 11,
+          "name_zh": "迁移宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [],
+          "decadal_range": [
+            63,
+            72
+          ]
+        }
+      ],
+      "flow_years": {
+        "2025": {
+          "heavenly_stem": "yiHeavenly",
+          "earthly_branch": "siEarthly",
+          "palace_index": 3,
+          "mutagen_en": [
+            "tianjiMaj",
+            "tianliangMaj",
+            "ziweiMaj",
+            "taiyinMaj"
+          ]
+        },
+        "2026": {
+          "heavenly_stem": "bingHeavenly",
+          "earthly_branch": "wuEarthly",
+          "palace_index": 4,
+          "mutagen_en": [
+            "tiantongMaj",
+            "tianjiMaj",
+            "wenchangMin",
+            "lianzhenMaj"
+          ]
+        },
+        "2027": {
+          "heavenly_stem": "dingHeavenly",
+          "earthly_branch": "weiEarthly",
+          "palace_index": 5,
+          "mutagen_en": [
+            "taiyinMaj",
+            "tiantongMaj",
+            "tianjiMaj",
+            "jumenMaj"
+          ]
+        },
+        "2028": {
+          "heavenly_stem": "wuHeavenly",
+          "earthly_branch": "shenEarthly",
+          "palace_index": 6,
+          "mutagen_en": [
+            "tanlangMaj",
+            "taiyinMaj",
+            "youbiMin",
+            "tianjiMaj"
+          ]
+        },
+        "2029": {
+          "heavenly_stem": "jiHeavenly",
+          "earthly_branch": "youEarthly",
+          "palace_index": 7,
+          "mutagen_en": [
+            "wuquMaj",
+            "tanlangMaj",
+            "tianliangMaj",
+            "wenquMin"
+          ]
+        },
+        "2030": {
+          "heavenly_stem": "gengHeavenly",
+          "earthly_branch": "xuEarthly",
+          "palace_index": 8,
+          "mutagen_en": [
+            "taiyangMaj",
+            "wuquMaj",
+            "taiyinMaj",
+            "tiantongMaj"
+          ]
+        },
+        "2031": {
+          "heavenly_stem": "xinHeavenly",
+          "earthly_branch": "haiEarthly",
+          "palace_index": 9,
+          "mutagen_en": [
+            "jumenMaj",
+            "taiyangMaj",
+            "wenquMin",
+            "wenchangMin"
+          ]
+        },
+        "2032": {
+          "heavenly_stem": "renHeavenly",
+          "earthly_branch": "ziEarthly",
+          "palace_index": 10,
+          "mutagen_en": [
+            "tianliangMaj",
+            "ziweiMaj",
+            "zuofuMin",
+            "wuquMaj"
+          ]
+        },
+        "2033": {
+          "heavenly_stem": "guiHeavenly",
+          "earthly_branch": "chouEarthly",
+          "palace_index": 11,
+          "mutagen_en": [
+            "pojunMaj",
+            "jumenMaj",
+            "taiyinMaj",
+            "tanlangMaj"
+          ]
+        },
+        "2034": {
+          "heavenly_stem": "jiaHeavenly",
+          "earthly_branch": "yinEarthly",
+          "palace_index": 0,
+          "mutagen_en": [
+            "lianzhenMaj",
+            "pojunMaj",
+            "wuquMaj",
+            "taiyangMaj"
+          ]
+        }
+      },
+      "huaji_checks": [
+        {
+          "year": 2025,
+          "stem": "乙",
+          "iztro_ji_star": "太阴",
+          "app_ji_star": "太阴",
+          "match": true
+        },
+        {
+          "year": 2026,
+          "stem": "丙",
+          "iztro_ji_star": "廉贞",
+          "app_ji_star": "廉贞",
+          "match": true
+        },
+        {
+          "year": 2027,
+          "stem": "丁",
+          "iztro_ji_star": "巨门",
+          "app_ji_star": "巨门",
+          "match": true
+        },
+        {
+          "year": 2028,
+          "stem": "戊",
+          "iztro_ji_star": "天机",
+          "app_ji_star": "天机",
+          "match": true
+        },
+        {
+          "year": 2029,
+          "stem": "己",
+          "iztro_ji_star": "文曲",
+          "app_ji_star": "文曲",
+          "match": true
+        },
+        {
+          "year": 2030,
+          "stem": "庚",
+          "iztro_ji_star": "天同",
+          "app_ji_star": "天同",
+          "match": true
+        },
+        {
+          "year": 2031,
+          "stem": "辛",
+          "iztro_ji_star": "文昌",
+          "app_ji_star": "文昌",
+          "match": true
+        },
+        {
+          "year": 2032,
+          "stem": "壬",
+          "iztro_ji_star": "武曲",
+          "app_ji_star": "武曲",
+          "match": true
+        },
+        {
+          "year": 2033,
+          "stem": "癸",
+          "iztro_ji_star": "贪狼",
+          "app_ji_star": "贪狼",
+          "match": true
+        },
+        {
+          "year": 2034,
+          "stem": "甲",
+          "iztro_ji_star": "太阳",
+          "app_ji_star": "太阳",
+          "match": true
+        }
+      ],
+      "flow_checks": [
+        {
+          "year": 2025,
+          "iztro_branch": "巳",
+          "iztro_branch_index": 5,
+          "app_branch_index": 5,
+          "match": true
+        },
+        {
+          "year": 2026,
+          "iztro_branch": "午",
+          "iztro_branch_index": 6,
+          "app_branch_index": 6,
+          "match": true
+        },
+        {
+          "year": 2027,
+          "iztro_branch": "未",
+          "iztro_branch_index": 7,
+          "app_branch_index": 7,
+          "match": true
+        },
+        {
+          "year": 2028,
+          "iztro_branch": "申",
+          "iztro_branch_index": 8,
+          "app_branch_index": 8,
+          "match": true
+        },
+        {
+          "year": 2029,
+          "iztro_branch": "酉",
+          "iztro_branch_index": 9,
+          "app_branch_index": 9,
+          "match": true
+        },
+        {
+          "year": 2030,
+          "iztro_branch": "戌",
+          "iztro_branch_index": 10,
+          "app_branch_index": 10,
+          "match": true
+        },
+        {
+          "year": 2031,
+          "iztro_branch": "亥",
+          "iztro_branch_index": 11,
+          "app_branch_index": 11,
+          "match": true
+        },
+        {
+          "year": 2032,
+          "iztro_branch": "子",
+          "iztro_branch_index": 0,
+          "app_branch_index": 0,
+          "match": true
+        },
+        {
+          "year": 2033,
+          "iztro_branch": "丑",
+          "iztro_branch_index": 1,
+          "app_branch_index": 1,
+          "match": true
+        },
+        {
+          "year": 2034,
+          "iztro_branch": "寅",
+          "iztro_branch_index": 2,
+          "app_branch_index": 2,
+          "match": true
+        }
+      ]
+    },
+    {
+      "solar_date": "1976-08-08",
+      "time_index": 8,
+      "gender": "女",
+      "chinese_date": "丙辰 丙申 壬辰 戊申",
+      "lunar_date": "一九七六年七月十三",
+      "five_elements_class": "土五局",
+      "soul": "tanlangMaj",
+      "body": "wenchangMin",
+      "sihua": [
+        {
+          "star": "文昌",
+          "mutagen": "科"
+        },
+        {
+          "star": "天机",
+          "mutagen": "权"
+        },
+        {
+          "star": "廉贞",
+          "mutagen": "忌"
+        },
+        {
+          "star": "天同",
+          "mutagen": "禄"
+        }
+      ],
+      "palaces": [
+        {
+          "index": 0,
+          "name_zh": "福德宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "武曲",
+              "brightness": "得",
+              "mutagen": null
+            },
+            {
+              "name": "天相",
+              "brightness": "庙",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            105,
+            114
+          ]
+        },
+        {
+          "index": 1,
+          "name_zh": "田宅宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "太阳",
+              "brightness": "庙",
+              "mutagen": null
+            },
+            {
+              "name": "天梁",
+              "brightness": "庙",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            95,
+            104
+          ]
+        },
+        {
+          "index": 2,
+          "name_zh": "官禄宫",
+          "is_original_palace": false,
+          "is_body_palace": true,
+          "major_stars": [
+            {
+              "name": "七杀",
+              "brightness": "庙",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            85,
+            94
+          ]
+        },
+        {
+          "index": 3,
+          "name_zh": "交友宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "天机",
+              "brightness": "平",
+              "mutagen": "权"
+            }
+          ],
+          "decadal_range": [
+            75,
+            84
+          ]
+        },
+        {
+          "index": 4,
+          "name_zh": "迁移宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "紫微",
+              "brightness": "庙",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            65,
+            74
+          ]
+        },
+        {
+          "index": 5,
+          "name_zh": "疾厄宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [],
+          "decadal_range": [
+            55,
+            64
+          ]
+        },
+        {
+          "index": 6,
+          "name_zh": "财帛宫",
+          "is_original_palace": true,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "破军",
+              "brightness": "得",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            45,
+            54
+          ]
+        },
+        {
+          "index": 7,
+          "name_zh": "子女宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [],
+          "decadal_range": [
+            35,
+            44
+          ]
+        },
+        {
+          "index": 8,
+          "name_zh": "夫妻宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "廉贞",
+              "brightness": "利",
+              "mutagen": "忌"
+            },
+            {
+              "name": "天府",
+              "brightness": "庙",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            25,
+            34
+          ]
+        },
+        {
+          "index": 9,
+          "name_zh": "兄弟宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "太阴",
+              "brightness": "庙",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            15,
+            24
+          ]
+        },
+        {
+          "index": 10,
+          "name_zh": "命宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "贪狼",
+              "brightness": "旺",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            5,
+            14
+          ]
+        },
+        {
+          "index": 11,
+          "name_zh": "父母宫",
+          "is_original_palace": false,
+          "is_body_palace": false,
+          "major_stars": [
+            {
+              "name": "天同",
+              "brightness": "不",
+              "mutagen": "禄"
+            },
+            {
+              "name": "巨门",
+              "brightness": "不",
+              "mutagen": null
+            }
+          ],
+          "decadal_range": [
+            115,
+            124
+          ]
+        }
+      ],
+      "flow_years": {
+        "2025": {
+          "heavenly_stem": "yiHeavenly",
+          "earthly_branch": "siEarthly",
+          "palace_index": 3,
+          "mutagen_en": [
+            "tianjiMaj",
+            "tianliangMaj",
+            "ziweiMaj",
+            "taiyinMaj"
+          ]
+        },
+        "2026": {
+          "heavenly_stem": "bingHeavenly",
+          "earthly_branch": "wuEarthly",
+          "palace_index": 4,
+          "mutagen_en": [
+            "tiantongMaj",
+            "tianjiMaj",
+            "wenchangMin",
+            "lianzhenMaj"
+          ]
+        },
+        "2027": {
+          "heavenly_stem": "dingHeavenly",
+          "earthly_branch": "weiEarthly",
+          "palace_index": 5,
+          "mutagen_en": [
+            "taiyinMaj",
+            "tiantongMaj",
+            "tianjiMaj",
+            "jumenMaj"
+          ]
+        },
+        "2028": {
+          "heavenly_stem": "wuHeavenly",
+          "earthly_branch": "shenEarthly",
+          "palace_index": 6,
+          "mutagen_en": [
+            "tanlangMaj",
+            "taiyinMaj",
+            "youbiMin",
+            "tianjiMaj"
+          ]
+        },
+        "2029": {
+          "heavenly_stem": "jiHeavenly",
+          "earthly_branch": "youEarthly",
+          "palace_index": 7,
+          "mutagen_en": [
+            "wuquMaj",
+            "tanlangMaj",
+            "tianliangMaj",
+            "wenquMin"
+          ]
+        },
+        "2030": {
+          "heavenly_stem": "gengHeavenly",
+          "earthly_branch": "xuEarthly",
+          "palace_index": 8,
+          "mutagen_en": [
+            "taiyangMaj",
+            "wuquMaj",
+            "taiyinMaj",
+            "tiantongMaj"
+          ]
+        },
+        "2031": {
+          "heavenly_stem": "xinHeavenly",
+          "earthly_branch": "haiEarthly",
+          "palace_index": 9,
+          "mutagen_en": [
+            "jumenMaj",
+            "taiyangMaj",
+            "wenquMin",
+            "wenchangMin"
+          ]
+        },
+        "2032": {
+          "heavenly_stem": "renHeavenly",
+          "earthly_branch": "ziEarthly",
+          "palace_index": 10,
+          "mutagen_en": [
+            "tianliangMaj",
+            "ziweiMaj",
+            "zuofuMin",
+            "wuquMaj"
+          ]
+        },
+        "2033": {
+          "heavenly_stem": "guiHeavenly",
+          "earthly_branch": "chouEarthly",
+          "palace_index": 11,
+          "mutagen_en": [
+            "pojunMaj",
+            "jumenMaj",
+            "taiyinMaj",
+            "tanlangMaj"
+          ]
+        },
+        "2034": {
+          "heavenly_stem": "jiaHeavenly",
+          "earthly_branch": "yinEarthly",
+          "palace_index": 0,
+          "mutagen_en": [
+            "lianzhenMaj",
+            "pojunMaj",
+            "wuquMaj",
+            "taiyangMaj"
+          ]
+        }
+      },
+      "huaji_checks": [
+        {
+          "year": 2025,
+          "stem": "乙",
+          "iztro_ji_star": "太阴",
+          "app_ji_star": "太阴",
+          "match": true
+        },
+        {
+          "year": 2026,
+          "stem": "丙",
+          "iztro_ji_star": "廉贞",
+          "app_ji_star": "廉贞",
+          "match": true
+        },
+        {
+          "year": 2027,
+          "stem": "丁",
+          "iztro_ji_star": "巨门",
+          "app_ji_star": "巨门",
+          "match": true
+        },
+        {
+          "year": 2028,
+          "stem": "戊",
+          "iztro_ji_star": "天机",
+          "app_ji_star": "天机",
+          "match": true
+        },
+        {
+          "year": 2029,
+          "stem": "己",
+          "iztro_ji_star": "文曲",
+          "app_ji_star": "文曲",
+          "match": true
+        },
+        {
+          "year": 2030,
+          "stem": "庚",
+          "iztro_ji_star": "天同",
+          "app_ji_star": "天同",
+          "match": true
+        },
+        {
+          "year": 2031,
+          "stem": "辛",
+          "iztro_ji_star": "文昌",
+          "app_ji_star": "文昌",
+          "match": true
+        },
+        {
+          "year": 2032,
+          "stem": "壬",
+          "iztro_ji_star": "武曲",
+          "app_ji_star": "武曲",
+          "match": true
+        },
+        {
+          "year": 2033,
+          "stem": "癸",
+          "iztro_ji_star": "贪狼",
+          "app_ji_star": "贪狼",
+          "match": true
+        },
+        {
+          "year": 2034,
+          "stem": "甲",
+          "iztro_ji_star": "太阳",
+          "app_ji_star": "太阳",
+          "match": true
+        }
+      ],
+      "flow_checks": [
+        {
+          "year": 2025,
+          "iztro_branch": "巳",
+          "iztro_branch_index": 5,
+          "app_branch_index": 5,
+          "match": true
+        },
+        {
+          "year": 2026,
+          "iztro_branch": "午",
+          "iztro_branch_index": 6,
+          "app_branch_index": 6,
+          "match": true
+        },
+        {
+          "year": 2027,
+          "iztro_branch": "未",
+          "iztro_branch_index": 7,
+          "app_branch_index": 7,
+          "match": true
+        },
+        {
+          "year": 2028,
+          "iztro_branch": "申",
+          "iztro_branch_index": 8,
+          "app_branch_index": 8,
+          "match": true
+        },
+        {
+          "year": 2029,
+          "iztro_branch": "酉",
+          "iztro_branch_index": 9,
+          "app_branch_index": 9,
+          "match": true
+        },
+        {
+          "year": 2030,
+          "iztro_branch": "戌",
+          "iztro_branch_index": 10,
+          "app_branch_index": 10,
+          "match": true
+        },
+        {
+          "year": 2031,
+          "iztro_branch": "亥",
+          "iztro_branch_index": 11,
+          "app_branch_index": 11,
+          "match": true
+        },
+        {
+          "year": 2032,
+          "iztro_branch": "子",
+          "iztro_branch_index": 0,
+          "app_branch_index": 0,
+          "match": true
+        },
+        {
+          "year": 2033,
+          "iztro_branch": "丑",
+          "iztro_branch_index": 1,
+          "app_branch_index": 1,
+          "match": true
+        },
+        {
+          "year": 2034,
+          "iztro_branch": "寅",
+          "iztro_branch_index": 2,
+          "app_branch_index": 2,
+          "match": true
+        }
+      ]
+    }
+  ]
+}
