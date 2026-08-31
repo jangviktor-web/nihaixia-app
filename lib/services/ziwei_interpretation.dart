@@ -36,14 +36,47 @@ const Map<String, String> _palaceMeanings = {
   '父母宫': '父母长辈',
 };
 
-/// 星曜显示文本：带亮度，如「武曲(庙)」。
+/// 星曜显示文本（UI 与解读层统一入口）：带亮度与四化，如「武曲(庙·禄)」。
 ///
-/// 向后兼容底线：亮度为 null（非 StaticStar，或该宫亮度为「无」）时只显示星名，
-/// 绝不输出「武曲()」这类空括号。即最坏情况下文案与改动前逐字相同，
-/// 因此本增强不会造成负优化。
-String _starText(ZiweiStar s) {
-  final b = s.brightness;
-  return (b != null && b.isNotEmpty) ? '${s.label}($b)' : s.label;
+/// 亮度/四化任一为空则省略对应括号内容，绝不输出空括号。
+/// 宫位星曜渲染与解读文案统一走此函数，确保「庙旺利陷 + 四化」标注一致。
+String starDisplayText(ZiweiStar s) {
+  final parts = <String>[];
+  if (s.brightness != null && s.brightness!.isNotEmpty) parts.add(s.brightness!);
+  if (s.sihua != null) parts.add(s.sihuaText);
+  final suffix = parts.isEmpty ? '' : '(${parts.join('·')})';
+  return '${s.label}$suffix';
+}
+
+/// 亮度（庙旺利陷平）中文形容词，用于把星曜亮度写进运势/健康句式。
+/// null 或未知 → 空串（调用方据此跳过，保持句子通顺）。
+/// 7 档：庙=得地有力 / 旺=乘旺 / 得=得地 / 利=平顺 / 平=中和 / 不=势弱 / 陷=偏弱。
+String dignityAdjective(String? brightness) {
+  switch (brightness) {
+    case '庙':
+      return '得地有力';
+    case '旺':
+      return '乘旺';
+    case '得':
+      return '得地';
+    case '利':
+      return '平顺';
+    case '平':
+      return '中和';
+    case '不':
+      return '势弱';
+    case '陷':
+      return '偏弱';
+    default:
+      return '';
+  }
+}
+
+/// 星曜 + 亮度形容词组合，如「武曲(庙)·得地有力」，供运势句式嵌入。
+String starDignityPhrase(ZiweiStar s) {
+  final adj = dignityAdjective(s.brightness);
+  final base = starDisplayText(s);
+  return adj.isEmpty ? base : '$base·$adj';
 }
 
 String _areaOf(ZiweiChart chart, int palaceIndex) {
@@ -62,10 +95,10 @@ String _oppositePalaceNote(ZiweiChart chart, int palaceIndex) {
   if (oppPalace.majors.isEmpty) {
     return '（对宫${oppPalace.roleLabel}亦无主星）';
   }
-  final stars = oppPalace.majors.map(_starText).join('、');
+  final stars = oppPalace.majors.map(starDisplayText).join('、');
   final sb = StringBuffer('（对宫${oppPalace.roleLabel}：$stars坐守');
   if (oppPalace.bads.isNotEmpty) {
-    sb.write('、需注意${oppPalace.bads.map(_starText).join('、')}扰动');
+    sb.write('、需注意${oppPalace.bads.map(starDisplayText).join('、')}扰动');
   }
   sb.write('）');
   return sb.toString();
@@ -156,8 +189,18 @@ String summarizeOverall(ZiweiChart chart) {
   if (ming.majors.isEmpty) {
     sb.write('命宫无主星，借对宫星情参看，格局平实，行事宜多方参考。');
   } else {
-    final names = ming.majors.map(_starText).join('、');
-    sb.write('命宫$names坐守，格局清朗，先天心性已具主见。');
+    final names = ming.majors.map(starDignityPhrase).join('、');
+    final adjs = ming.majors
+        .map((s) => dignityAdjective(s.brightness))
+        .where((a) => a.isNotEmpty)
+        .toList();
+    if (adjs.contains('偏弱')) {
+      sb.write('命宫$names坐守，其中偏弱之星宜多借力、勿独撑；格局仍具主见。');
+    } else if (adjs.isNotEmpty) {
+      sb.write('命宫$names坐守（${adjs.join('、')}），主星得地乘旺，格局更显其能。');
+    } else {
+      sb.write('命宫$names坐守，格局清朗，先天心性已具主见。');
+    }
   }
 
   final luAreas = <String>[];
@@ -202,10 +245,19 @@ List<String> summarizeDecades(ZiweiChart chart) {
       b.write('本宫无主星，借对宫星情参看');
       b.write(_oppositePalaceNote(chart, palace.index));
     } else {
-      b.write('宫内${majors.map(_starText).join('、')}坐守');
+      b.write('宫内${majors.map(starDignityPhrase).join('、')}坐守');
+      final adjs = majors
+          .map((s) => dignityAdjective(s.brightness))
+          .where((a) => a.isNotEmpty)
+          .toList();
+      if (adjs.contains('偏弱')) {
+        b.write('（其中偏弱，宜守成、忌冒进）');
+      } else if (adjs.isNotEmpty) {
+        b.write('（${adjs.join('、')}）');
+      }
     }
     if (bads.isNotEmpty) {
-      b.write('，需注意${bads.map(_starText).join('、')}扰动');
+      b.write('，需注意${bads.map(starDisplayText).join('、')}扰动');
     } else if (majors.isNotEmpty) {
       b.write('，整体平顺');
     }
@@ -223,7 +275,7 @@ String summarizeFlowYear(ZiweiChart chart, FlowYearMark flow) {
   final illPalace = chart.palaces[illnessIndex];
   final sb = StringBuffer();
 
-  final mingMajors = mingPalace.majors.map(_starText).join('、');
+  final mingMajors = mingPalace.majors.map(starDisplayText).join('、');
   sb.write('${flow.year}年（${flow.ganzhi}）流年命宫');
   sb.write(mingMajors.isNotEmpty ? '$mingMajors坐守' : '无主星、借对宫');
 
@@ -232,7 +284,7 @@ String summarizeFlowYear(ZiweiChart chart, FlowYearMark flow) {
     sb.write('，见${flowNames.join('、')}');
   }
 
-  final illMajors = illPalace.majors.map(_starText).join('、');
+  final illMajors = illPalace.majors.map(starDisplayText).join('、');
   final bodyPart = ZiweiRulesRepository.bodyPartFor(illnessIndex);
   sb.write('；流年疾厄宫${illMajors.isNotEmpty ? '$illMajors坐守' : '空宫'}，身体留意$bodyPart。');
 
@@ -250,12 +302,12 @@ String summarizeFlowMonth(ZiweiChart chart, FlowMonthMark flow) {
   final illPalace = chart.palaces[flow.illnessIndex];
   final sb = StringBuffer();
 
-  final mingMajors = mingPalace.majors.map(_starText).join('、');
+  final mingMajors = mingPalace.majors.map(starDisplayText).join('、');
   final monthLabel = _lunarMonthLabel(flow.month, flow.isLeap);
   sb.write('${flow.year}年$monthLabel（${flow.ganzhi}）流月命宫');
   sb.write(mingMajors.isNotEmpty ? '$mingMajors坐守' : '无主星、借对宫');
 
-  final illMajors = illPalace.majors.map(_starText).join('、');
+  final illMajors = illPalace.majors.map(starDisplayText).join('、');
   final bodyPart = ZiweiRulesRepository.bodyPartFor(flow.illnessIndex);
   sb.write('；流月疾厄宫${illMajors.isNotEmpty ? '$illMajors坐守' : '空宫'}，身体留意$bodyPart。');
 
@@ -270,11 +322,11 @@ String summarizeFlowDay(ZiweiChart chart, FlowDayMark flow) {
   final illPalace = chart.palaces[flow.illnessIndex];
   final sb = StringBuffer();
 
-  final mingMajors = mingPalace.majors.map(_starText).join('、');
+  final mingMajors = mingPalace.majors.map(starDisplayText).join('、');
   sb.write('${flow.date.year}-${flow.date.month}-${flow.date.day}（${flow.ganzhi}）流日命宫');
   sb.write(mingMajors.isNotEmpty ? '$mingMajors坐守' : '无主星、借对宫');
 
-  final illMajors = illPalace.majors.map(_starText).join('、');
+  final illMajors = illPalace.majors.map(starDisplayText).join('、');
   final bodyPart = ZiweiRulesRepository.bodyPartFor(flow.illnessIndex);
   sb.write('；流日疾厄宫${illMajors.isNotEmpty ? '$illMajors坐守' : '空宫'}，身体留意$bodyPart。');
 
@@ -303,7 +355,7 @@ List<HealthWatchItem> analyzeHealthWatch(
 
     // 1) 本局煞星落流年疾厄宫
     if (palace.bads.isNotEmpty) {
-      final names = palace.bads.map(_starText).join('、');
+      final names = palace.bads.map(starDisplayText).join('、');
       out.add(HealthWatchItem(
         year: year,
         age: year - birthYear + 1,
@@ -333,17 +385,23 @@ List<HealthWatchItem> analyzeHealthWatch(
     final stemIdx = ((year + 6) % 10 + 10) % 10;
     final huaJi = huaJiStarByStem(stemIdx);
     int? nativeIndex;
+    ZiweiStar? jiStar;
     for (final p in chart.palaces) {
-      if (p.stars.any((s) => s.label == huaJi)) {
+      final s = p.stars.where((s) => s.label == huaJi).firstOrNull;
+      if (s != null) {
         nativeIndex = p.index;
+        jiStar = s;
         break;
       }
     }
     if (nativeIndex == illnessIndex) {
+      // 庙旺利陷语气：化忌星若落陷则加重提醒，得地则减轻
+      final adj = dignityAdjective(jiStar?.brightness);
+      final adjText = adj.isNotEmpty ? '，$adj' : '';
       final note = _niHaiXiaStarNote[huaJi];
       final reason = note != null
-          ? '流年疾厄宫见流年化忌（$huaJi，$note）'
-          : '流年疾厄宫见流年化忌（$huaJi）';
+          ? '流年疾厄宫见流年化忌（$huaJi$adjText，$note）'
+          : '流年疾厄宫见流年化忌（$huaJi$adjText）';
       out.add(HealthWatchItem(
         year: year,
         age: year - birthYear + 1,
