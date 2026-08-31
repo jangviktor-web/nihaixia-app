@@ -2,18 +2,36 @@ import 'package:flutter/material.dart';
 import 'package:ziwei_core/ziwei_core.dart';
 import 'package:nihaisha_app/services/ziwei_engine.dart';
 import 'package:nihaisha_app/services/ziwei_interpretation.dart';
+import 'package:nihaisha_app/services/city_location_service.dart';
 import 'ziwei_reference_screen.dart';
 import 'ziwei_doc_screen.dart';
 import 'ziwei_cases_list_screen.dart';
 import '../data/ziwei_case_data.dart';
+import '../data/saved_chart_repository.dart';
 import '../theme/app_colors.dart';
 
 /// 紫微斗数排盘界面。
 ///
 /// 输入公历生辰 + 时辰 + 性别，调用 [calculateZiweiChart] 计算并可视化命盘。
 /// 结果属「民俗文化参考」，非医疗诊断。
+///
+/// [initialSolar] 等参数为可选回填（命盘库回看时传入）：命盘库保存的是生辰与
+/// 地点，进入本页后自动重排，不持久化整盘，确保数据准确且可随引擎升级而刷新。
 class ZiweiChartScreen extends StatefulWidget {
-  const ZiweiChartScreen({super.key});
+  final DateTime? initialSolar;
+  final bool? initialGender;
+  final String? initialCityName;
+  final double? initialLng;
+  final double? initialLat;
+
+  const ZiweiChartScreen({
+    super.key,
+    this.initialSolar,
+    this.initialGender,
+    this.initialCityName,
+    this.initialLng,
+    this.initialLat,
+  });
 
   @override
   State<ZiweiChartScreen> createState() => _ZiweiChartScreenState();
@@ -45,14 +63,136 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
   // ---- 流年盘状态 ----
   FlowYearMark? _flowMark; // 当前选中的流年（null = 不显示流年叠加）
   int? _flowYear; // 选中的流年年份
+  // ---- 流月/流日盘状态 ----
+  DateTime? _flowDate; // 触发流月/流日的公历日期（null = 不显示）
+  FlowMonthMark? _flowMonthMark;
+  FlowDayMark? _flowDayMark;
   bool _useTrueSolarTime = true; // 真太阳时校准（专业排盘默认开启）
   bool _showAllHealth = false; // 健康提醒：展开终身（出生→百岁）vs 默认未来30年
   final _longitudeCtrl = TextEditingController(); // 出生地经度（东经，留空用默认 120°）
+  CityLocation? _selectedCity; // 选中的出生城市（真太阳时定位，优先于手动经度）
+
+  @override
+  void initState() {
+    super.initState();
+    // 预加载中文城市经纬度数据（真太阳时地点选择，静态缓存、幂等）
+    CityLocationService.load();
+    // 命盘库回看：回填生辰、性别、地点后自动重排
+    if (widget.initialSolar != null) {
+      final s = widget.initialSolar!;
+      _year = s.year;
+      _month = s.month;
+      _day = s.day;
+      _shiChenIndex = _shiChenIndexForHour(s.hour);
+      if (widget.initialGender != null) _isMale = widget.initialGender!;
+      if (widget.initialLng != null) {
+        _longitudeCtrl.text = widget.initialLng!.toStringAsFixed(2);
+      }
+      CityLocationService.load().then((cities) {
+        if (!mounted) return;
+        CityLocation? match;
+        if (widget.initialCityName != null) {
+          match = cities
+              .where((c) =>
+                  c.name == widget.initialCityName ||
+                  c.displayName == widget.initialCityName)
+              .firstOrNull;
+        }
+        if (match != null) {
+          setState(() {
+            _selectedCity = match;
+            _longitudeCtrl.clear(); // 城市优先于手动经度
+          });
+        }
+        _calculate();
+      });
+    }
+  }
+
+  /// 由生辰小时反查时辰索引（子时跨 23:00–01:00，兜底归子时）。
+  int _shiChenIndexForHour(int hour) {
+    for (int i = 0; i < _shiChen.length; i++) {
+      if (_shiChen[i].$2 == hour) return i;
+    }
+    return 0;
+  }
 
   @override
   void dispose() {
     _longitudeCtrl.dispose();
     super.dispose();
+  }
+
+  /// 打开中文城市搜索弹窗，返回选中的城市（取消返回 null）。
+  Future<CityLocation?> _openCityPicker() async {
+    final all = await CityLocationService.load();
+    return _buildCityDialog(all);
+  }
+
+  /// 同步构建城市搜索弹窗（无 await gap，安全使用 context）。
+  Future<CityLocation?> _buildCityDialog(List<CityLocation> all) {
+    final screenH = MediaQuery.of(context).size.height;
+    final queryCtrl = TextEditingController();
+    List<CityLocation> results = CityLocationService.searchIn(all, '', 80);
+    return showDialog<CityLocation>(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setSt) {
+            return AlertDialog(
+              title: const Text('选择出生城市'),
+              content: SizedBox(
+                width: double.maxFinite,
+                height: screenH * 0.7,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: queryCtrl,
+                      autofocus: true,
+                      decoration: const InputDecoration(
+                        prefixIcon: Icon(Icons.search),
+                        labelText: '搜索城市 / 省份',
+                        hintText: '如 北京、上海、广州、浙江、乌鲁木齐',
+                        isDense: true,
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: (q) => setSt(
+                        () => results = CityLocationService.searchIn(all, q, 80),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: results.length,
+                        itemBuilder: (_, i) {
+                          final c = results[i];
+                          return ListTile(
+                            dense: true,
+                            title: Text(c.displayName),
+                            subtitle: Text(
+                              '${c.lng.toStringAsFixed(2)}°E, '
+                              '${c.lat.toStringAsFixed(2)}°N',
+                            ),
+                            onTap: () => Navigator.pop(ctx, c),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: const Text('取消'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   /// 某年某月的天数（闰年 2 月 29 天）。
@@ -93,6 +233,11 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
     setState(() {
       _calculating = true;
       _error = null;
+      _flowMark = null;
+      _flowYear = null;
+      _flowDate = null;
+      _flowMonthMark = null;
+      _flowDayMark = null;
     });
     // 用 microtask 让 loading 先渲染
     Future.microtask(() {
@@ -107,7 +252,10 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
         final chart = calculateZiweiChart(
           solar: solar,
           gender: _isMale ? Gender.male : Gender.female,
-          location: lng != null ? Location(lng, 30) : null,
+          // 优先用选中城市（真太阳时：含精确纬度）；否则退回手动经度（纬度未知，沿用默认 30 仅作历史兼容）
+          location: _selectedCity != null
+              ? Location(_selectedCity!.lng, _selectedCity!.lat)
+              : (lng != null ? Location(lng, 30) : null),
           useTrueSolarTime: _useTrueSolarTime,
         );
         if (mounted) {
@@ -124,6 +272,74 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
           });
         }
       }
+    });
+  }
+
+  /// 将当前排盘存入命盘库。弹出名称输入框（默认「命盘 日期 性别」），
+  /// 收集生辰/性别/地点后写入 [SavedChartRepository]，并提示已存入。
+  Future<void> _saveToLibrary() async {
+    if (_chart == null) return;
+    final hour = _shiChen[_shiChenIndex].$2;
+    final solar = DateTime(_year, _month, _day, hour, 0);
+    final genderLabel = _isMale ? '男' : '女';
+    final defaultName =
+        '命盘 $_year-${_month.toString().padLeft(2, '0')}-${_day.toString().padLeft(2, '0')} $genderLabel';
+    final nameCtrl = TextEditingController(text: defaultName);
+
+    final name = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('添加到命盘库'),
+        content: TextField(
+          controller: nameCtrl,
+          decoration: const InputDecoration(
+            labelText: '命盘名称',
+            border: OutlineInputBorder(),
+          ),
+          autofocus: true,
+          textInputAction: TextInputAction.done,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('取消'),
+          ),
+          FilledButton(
+            onPressed: () {
+              final v = nameCtrl.text.trim();
+              Navigator.pop(ctx, v.isEmpty ? defaultName : v);
+            },
+            child: const Text('保存'),
+          ),
+        ],
+      ),
+    );
+    if (name == null) return;
+
+    final lngText = _longitudeCtrl.text.trim();
+    final saved = SavedChart(
+      name: name,
+      isMale: _isMale,
+      solarIso: solar.toIso8601String(),
+      lng: _selectedCity != null ? _selectedCity!.lng : double.tryParse(lngText),
+      lat: _selectedCity != null ? _selectedCity!.lat : null,
+      cityName: _selectedCity?.displayName,
+      createdAt: DateTime.now().millisecondsSinceEpoch,
+    );
+    await SavedChartRepository.insert(saved);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('已存入命盘库')),
+      );
+    }
+  }
+
+  /// 依据所选公历日期，计算流月/流日盘标记（基于已算出的命盘）。
+  void _computeFlowMonthDay() {
+    if (_chart == null || _flowDate == null) return;
+    setState(() {
+      _flowMonthMark = calculateFlowMonthMark(_chart!, _flowDate!);
+      _flowDayMark = calculateFlowDayMark(_chart!, _flowDate!);
     });
   }
 
@@ -192,11 +408,25 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
           if (_chart != null && !_calculating) ...[
             _buildSummaryCard(cs, _chart!),
             const SizedBox(height: 12),
+            // 添加到命盘库（Material 图标，无 emoji）
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: _saveToLibrary,
+                icon: const Icon(Icons.bookmark_add_outlined),
+                label: const Text('添加到命盘库'),
+              ),
+            ),
+            const SizedBox(height: 12),
             _buildCaseReferenceCard(cs, _chart!),
             const SizedBox(height: 12),
             _buildFlowYearBar(cs, _chart!),
             const SizedBox(height: 8),
-            _buildPlate(cs, _chart!, _flowMark),
+            _buildFlowMonthDayBar(cs, _chart!),
+            const SizedBox(height: 8),
+            _buildPlate(cs, _chart!, _flowMark,
+                flowMonthMingIndex: _flowMonthMark?.mingIndex,
+                flowDayMingIndex: _flowDayMark?.mingIndex),
             const SizedBox(height: 12),
             _buildDecadeList(cs, _chart!),
             _buildInterpretationSection(cs, _chart!),
@@ -313,14 +543,57 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
               onChanged: (v) => setState(() => _useTrueSolarTime = v),
             ),
             const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () async {
+                      final city = await _openCityPicker();
+                      if (city != null) {
+                        setState(() {
+                          _selectedCity = city;
+                          _longitudeCtrl.text =
+                              city.lng.toStringAsFixed(2);
+                        });
+                      }
+                    },
+                    icon: const Icon(Icons.location_city_outlined),
+                    label: Text(
+                      _selectedCity != null
+                          ? _selectedCity!.displayName
+                          : '选择出生城市（中文搜索）',
+                    ),
+                  ),
+                ),
+                if (_selectedCity != null) ...[
+                  const SizedBox(width: 8),
+                  IconButton(
+                    icon: const Icon(Icons.clear),
+                    tooltip: '清除城市，改用手动经度',
+                    onPressed: () => setState(() => _selectedCity = null),
+                  ),
+                ],
+              ],
+            ),
+            if (_selectedCity != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  '已按城市经纬度（${_selectedCity!.lng.toStringAsFixed(2)}°E, '
+                  '${_selectedCity!.lat.toStringAsFixed(2)}°N）校正真太阳时',
+                  style: TextStyle(fontSize: 10, color: cs.onSurfaceVariant),
+                ),
+              ),
+            const SizedBox(height: 8),
             TextField(
               controller: _longitudeCtrl,
+              enabled: _selectedCity == null,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
                 signed: true,
               ),
               decoration: InputDecoration(
-                labelText: '出生地经度（东经）',
+                labelText: '出生地经度（东经，选城市后可不改）',
                 hintText: '留空按东经120°（UTC+8 标准线），如北京 116.41',
                 isDense: true,
                 border: const OutlineInputBorder(),
@@ -552,7 +825,89 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
     );
   }
 
-  Widget _buildPlate(ColorScheme cs, ZiweiChart chart, FlowYearMark? flow) {
+  /// 流月/流日选择条：选一个公历日期，展示该日所在「流月」与「流日」干支。
+  /// 流月/流日命宫会同步高亮到下方命盘（见 [_buildPalaceCell]）。
+  Widget _buildFlowMonthDayBar(ColorScheme cs, ZiweiChart chart) {
+    final hasFlow = _flowMonthMark != null && _flowDayMark != null;
+    return Card(
+      elevation: 1,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        child: Row(
+          children: [
+            Icon(Icons.date_range_outlined, size: 18, color: cs.primary),
+            const SizedBox(width: 8),
+            const Text('流月/流日',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+            const SizedBox(width: 8),
+            Expanded(
+              child: TextButton.icon(
+                onPressed: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: _flowDate ?? DateTime.now(),
+                    firstDate: DateTime(1900),
+                    lastDate: DateTime(2100),
+                    helpText: '选择流月/流日基准日期',
+                  );
+                  if (picked != null && mounted) {
+                    setState(() => _flowDate = picked);
+                    _computeFlowMonthDay();
+                  }
+                },
+                icon: const Icon(Icons.calendar_today_outlined, size: 16),
+                label: Text(
+                  _flowDate == null
+                      ? '选日期看流月/流日'
+                      : '${_flowDate!.year}-${_flowDate!.month}-${_flowDate!.day}',
+                  style: const TextStyle(fontSize: 12),
+                ),
+                style: TextButton.styleFrom(
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.zero,
+                ),
+              ),
+            ),
+            if (hasFlow) ...[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text('流月 ${_flowMonthMark!.ganzhi}',
+                      style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: cs.primary)),
+                  Text('流日 ${_flowDayMark!.ganzhi}',
+                      style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: cs.tertiary)),
+                ],
+              ),
+              IconButton(
+                tooltip: '关闭流月/流日',
+                visualDensity: VisualDensity.compact,
+                onPressed: () => setState(() {
+                  _flowDate = null;
+                  _flowMonthMark = null;
+                  _flowDayMark = null;
+                }),
+                icon: const Icon(Icons.close, size: 16),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlate(
+    ColorScheme cs,
+    ZiweiChart chart,
+    FlowYearMark? flow, {
+    int? flowMonthMingIndex,
+    int? flowDayMingIndex,
+  }) {
     // 4×4 盘面：外围 12 宫按地支固定盘位，中心 2×2 为命盘核心。
     // slot(0..15) → 地支索引(0子..11亥) 或 -1(核心)
     const slotToBranch = [
@@ -581,6 +936,8 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                       chart,
                       chart.palaces[slotToBranch[slot]],
                       flow,
+                      flowMonthMingIndex: flowMonthMingIndex,
+                      flowDayMingIndex: flowDayMingIndex,
                     ),
           ],
         ),
@@ -630,11 +987,17 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
     ColorScheme cs,
     ZiweiChart chart,
     ZiweiPalace p,
-    FlowYearMark? flow,
-  ) {
+    FlowYearMark? flow, {
+    int? flowMonthMingIndex,
+    int? flowDayMingIndex,
+  }) {
     final isLife = p.isLife;
     final isBody = p.isBody;
     final isFlowMing = flow != null && flow.mingIndex == p.index;
+    final isFlowMonthMing =
+        flowMonthMingIndex != null && flowMonthMingIndex == p.index;
+    final isFlowDayMing =
+        flowDayMingIndex != null && flowDayMingIndex == p.index;
     final flowStarsHere = flow?.flowStars[p.index] ?? const <String>[];
     final flowLabel = flowStarsHere.isEmpty
         ? null
@@ -646,16 +1009,26 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
           border: Border.all(
             color: isFlowMing
                 ? cs.primary
+                : isFlowMonthMing
+                ? cs.tertiary
+                : isFlowDayMing
+                ? cs.secondary
                 : isLife
                 ? cs.error
                 : isBody
                 ? cs.tertiary
                 : cs.outlineVariant,
-            width: isFlowMing ? 2.2 : (isLife || isBody ? 1.8 : 0.6),
+            width: (isFlowMing || isFlowMonthMing || isFlowDayMing)
+                ? 2.2
+                : (isLife || isBody ? 1.8 : 0.6),
           ),
           borderRadius: BorderRadius.circular(8),
           color: isFlowMing
               ? cs.primaryContainer.withValues(alpha: 0.35)
+              : isFlowMonthMing
+              ? cs.tertiaryContainer.withValues(alpha: 0.30)
+              : isFlowDayMing
+              ? cs.secondaryContainer.withValues(alpha: 0.30)
               : isLife
               ? cs.errorContainer.withValues(alpha: 0.25)
               : isBody
@@ -680,12 +1053,11 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (isFlowMing)
-                  _badge('流命', cs.primary)
-                else if (isLife)
-                  _badge('命', cs.error)
-                else if (isBody)
-                  _badge('身', cs.tertiary),
+                if (isFlowMing) _badge('流年命', cs.primary),
+                if (isFlowMonthMing) _badge('流月命', cs.tertiary),
+                if (isFlowDayMing) _badge('流日命', cs.secondary),
+                if (isLife) _badge('命', cs.error),
+                if (isBody) _badge('身', cs.tertiary),
               ],
             ),
             Text(
@@ -988,6 +1360,29 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
             cs: cs,
             child: Text(
               summarizeFlowYear(chart, _flowMark!),
+              style: const TextStyle(fontSize: 13, height: 1.7),
+            ),
+          ),
+          const SizedBox(height: 12),
+        ],
+        if (_flowMonthMark != null) ...[
+          _interpretationCard(
+            title:
+                '流月运势（${_flowMonthMark!.ganzhi}${_flowMonthMark!.isLeap ? '闰' : ''}${_flowMonthMark!.month}月）',
+            cs: cs,
+            child: Text(
+              summarizeFlowMonth(chart, _flowMonthMark!),
+              style: const TextStyle(fontSize: 13, height: 1.7),
+            ),
+          ),
+          const SizedBox(height: 12),
+        ],
+        if (_flowDayMark != null) ...[
+          _interpretationCard(
+            title: '流日运势（${_flowDayMark!.ganzhi}）',
+            cs: cs,
+            child: Text(
+              summarizeFlowDay(chart, _flowDayMark!),
               style: const TextStyle(fontSize: 13, height: 1.7),
             ),
           ),

@@ -12,6 +12,39 @@
 
 ---
 
+## [1.11.10+0] - 2026-08-31 — 紫微斗数命盘库 + 节气养生板块 + 黄历手势 + 大运对宫解析
+
+**一句话**：新增「我的命盘库」（保存生辰随时回看）、独立「节气养生」板块（24 节气健康知识 + 倪师节气解析，移除旧版本草联动）、每日黄历滑动手势（上/下滑切日、左/右滑切月）、以及大运空宫自动附对宫星情解析——四项民俗文化参考增强，全部离线、可测、不引入医疗诊断断言。
+
+**① 新增：自定义命盘库**（`lib/data/database_helper.dart` 升 version 4→5 + `saved_chart_repository.dart` + `saved_charts_screen.dart`）
+- 数据库新增 `user_charts` 表（name/gender/solar_iso/lng/lat/city_name/created_at），仅存生辰与地点，回看时由排盘页重新计算，避免持久化整盘导致数据失准。
+- 排盘结果区新增「添加到命盘库」按钮（`Icons.bookmark_add_outlined`），可命名收藏；命盘库支持左滑删除、点击回看（回填生辰与城市并重排）。
+- 用户价值：常用命盘一键收藏、跨会话回看，省去反复输入生辰。
+
+**② 新增：节气养生独立板块**（`solar_term_section_screen.dart` + `assets/data/solar_term_knowledge.json`）
+- 顶部当前节气卡（节气名 + 距下一节气倒计时 + 养生要点 + 倪师解析），下方 24 节气竖向列表，每项卡片显示健康知识、倪师解析可展开。
+- 内容源自新建 JSON：24 节气养生常识 + 基于倪海厦先生公开讲座原则整理的解析，凡非逐字原文均标注【推断】；统一免责语「倪师原话请以《人纪》《天纪》等著作为准」。
+- 移除旧版 `solar_term_card` 的本草推荐联动，健康知识改用节气 JSON，不再依赖 `HerbRepository.getByNature`。
+- 用户价值：节气养生知识集中、可逐条展开，与本草库解耦更易维护。
+
+**③ 新增：每日黄历滑动手势**（`daily_almanac_screen.dart`）
+- `ListView` 包 `GestureDetector` 监听 `onPanEnd`；纯函数 `resolveSwipe(dx,dy)` 判定：横向占优→切月（左滑下月/右滑上月），纵向超阈值 40→切日（上滑下一天/下滑上一天），抖动返回 null。
+- 新增 `_shiftMonth` 处理跨年；顶部加「上/下滑切日，左/右滑切月」提示；保留右上角日期选择器兜底。
+- 用户价值：单手翻看黄历更顺手，浏览历史/未来日期更流畅。
+
+**④ 增强：大运无主星→附对宫解析**（`ziwei_interpretation.dart`）
+- 新增私有 `_oppositePalaceNote`：某大限宫 `majors.isEmpty` 时，于逐限评语后追加对宫（相隔六宫）主星与煞星提示，对宫亦空则注明。
+- 用户价值：紫微「借星安宫」惯例可视化，空宫大限不再只一句"借对宫"，直接给出对宫星情。
+
+**验证**
+- 新增 `test/ziwei_opposite_palace_test.dart`（构造大限空宫命盘，断言逐限评语含「对宫」且对宫主星名出现）。
+- 新增 `test/swipe_resolve_test.dart`（上/下/左/右/抖动 6 类方向单测）。
+- 新增 `test/saved_chart_repository_test.dart`（insert→getAll→delete 往返 + 倒序校验，sqflite ffi）。
+- 更新 `solar_term_service_test.dart`（适配移除 `seasonNature`，新增 `getSolarTermKnowledge` 用例）。
+- `flutter analyze` 目标 0 新增 error；全量 `flutter test` 覆盖上述新增用例。
+
+---
+
 ## [Unreleased] — 紫微斗数排盘：运势总结 + 健康提醒解读层
 
 **一句话**：排盘后自动生成整体运势、十年大运逐限、单流年运势叙述，并基于流年疾厄宫推算健康提醒（默认未来 30 年，可展开终身）；全部为离线规则模板，结果标注为民俗文化参考、非医疗诊断。

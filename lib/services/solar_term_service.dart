@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:sxwnl_spa_dart/sxwnl_spa_dart.dart';
 
 /// 当前节气信息（基于 sxwnl_spa_dart 0.18.5 的 [getJieQiInfo]，节气内部按 UTC+8 北京时间计算）。
@@ -17,17 +20,37 @@ class SolarTermInfo {
   /// 当季养生要点（中医视角，简明）。
   final String healthTip;
 
-  /// 当季本草药性（温/寒/凉/平/热），用于联动 [HerbRepository.getByNature]。
-  final String seasonNature;
-
   const SolarTermInfo({
     required this.currentTerm,
     required this.nextTerm,
     required this.daysInto,
     required this.daysLeft,
     required this.healthTip,
-    required this.seasonNature,
   });
+}
+
+/// 单节气养生知识（源自 [assets/data/solar_term_knowledge.json]）。
+///
+/// 内容分两层：[health] 为通用中医节气养生常识；[niShi] 为基于倪海厦先生
+/// 公开讲座反复强调的原则（如「春夏养阳、秋冬养阴」「节气交替阴阳转换，
+/// 慢性病易发作」）整理，凡非逐字原文均标注【推断】。
+class SolarTermKnowledge {
+  final String term;
+  final String health;
+  final String niShi;
+
+  const SolarTermKnowledge({
+    required this.term,
+    required this.health,
+    required this.niShi,
+  });
+
+  factory SolarTermKnowledge.fromJson(Map<String, dynamic> json) =>
+      SolarTermKnowledge(
+        term: json['term'] as String,
+        health: json['health'] as String,
+        niShi: json['niShi'] as String,
+      );
 }
 
 /// 24 节气养生要点（中医视角，简明，无占卜断言）。
@@ -58,13 +81,28 @@ const Map<String, String> _healthTips = {
   '冬至': '一阳来复，养藏护阳，节欲少劳。',
 };
 
-/// 当季本草药性（春温升发 / 夏寒清热 / 秋平润燥 / 冬温养藏），用于联动本草库。
-const Map<String, String> _seasonNature = {
-  '立春': '温', '雨水': '温', '惊蛰': '温', '春分': '温', '清明': '温', '谷雨': '温',
-  '立夏': '寒', '小满': '寒', '芒种': '寒', '夏至': '寒', '小暑': '寒', '大暑': '寒',
-  '立秋': '平', '处暑': '平', '白露': '平', '秋分': '平', '寒露': '平', '霜降': '平',
-  '立冬': '温', '小雪': '温', '大雪': '温', '冬至': '温', '小寒': '温', '大寒': '温',
-};
+/// 全量节气养生知识缓存（首次访问按需从资源加载，幂等）。
+Map<String, SolarTermKnowledge>? _knowledgeCache;
+
+/// 加载并缓存 24 节气养生知识（幂等，可重复调用）。
+Future<Map<String, SolarTermKnowledge>> _loadKnowledge() async {
+  if (_knowledgeCache != null) return _knowledgeCache!;
+  final raw =
+      await rootBundle.loadString('assets/data/solar_term_knowledge.json');
+  final list = (jsonDecode(raw) as List<dynamic>)
+      .map((e) => SolarTermKnowledge.fromJson(e as Map<String, dynamic>))
+      .toList();
+  _knowledgeCache = {for (final k in list) k.term: k};
+  return _knowledgeCache!;
+}
+
+/// 获取指定节气的养生知识（[health] + [niShi]）。
+///
+/// [term] 须为 24 节气名之一（如「立春」）。找不到返回 null（调用方兜底）。
+Future<SolarTermKnowledge?> getSolarTermKnowledge(String term) async {
+  final map = await _loadKnowledge();
+  return map[term];
+}
 
 /// 计算当前节气信息。
 ///
@@ -81,7 +119,6 @@ SolarTermInfo getCurrentSolarTerm([DateTime? now]) {
       daysInto: 0,
       daysLeft: 0,
       healthTip: '节气信息暂不可用，请稍后重试。',
-      seasonNature: '平',
     );
   }
   final current = info.prevJieQi.name;
@@ -91,6 +128,5 @@ SolarTermInfo getCurrentSolarTerm([DateTime? now]) {
     daysInto: info.daysSincePrevJieQi.round(),
     daysLeft: info.daysUntilNextJieQi.round(),
     healthTip: _healthTips[current] ?? '顺时养生，起居有常。',
-    seasonNature: _seasonNature[current] ?? '平',
   );
 }

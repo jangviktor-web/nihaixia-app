@@ -1,6 +1,19 @@
 {
   "changelog": [
     {
+      "version": "1.11.10",
+      "date": "2026-08-31",
+      "title": "命盘库 · 节气养生板块 · 黄历手势 · 大运对宫解析",
+      "changes": [
+        "新增我的命盘库：排盘页「添加到命盘库」可命名收藏生辰（仅存生辰与地点），命盘库支持左滑删除、点击回看重排；数据库新增 user_charts 表（version 4→5）",
+        "新增节气养生独立板块：当前节气卡 + 24 节气竖向列表，每项含健康知识与可展开倪师解析；内容源自新建 solar_term_knowledge.json，凡非逐字原文标注【推断】，统一免责语「倪师原话请以《人纪》《天纪》等著作为准」",
+        "移除旧版本草推荐联动：节气健康知识改用 JSON，不再依赖 HerbRepository.getByNature，与本草库解耦",
+        "新增每日黄历滑动手势：上/下滑切日、左/右滑切月，纯函数 resolveSwipe 判定，保留日期选择器兜底",
+        "增强大运无主星解析：空宫大限逐限评语附对宫（相隔六宫）主星与煞星提示，对宫亦空则注明",
+        "新增/更新测试：ziwei_opposite_palace_test、swipe_resolve_test、saved_chart_repository_test，并适配 solar_term_service_test"
+      ]
+    },
+    {
       "version": "1.11.9",
       "date": "2026-08-29",
       "title": "患者会怎么说 · 让条文说人话",

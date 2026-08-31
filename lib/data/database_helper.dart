@@ -20,7 +20,7 @@ class DatabaseHelper {
     final path = join(dbPath, filePath);
     return await openDatabase(
       path,
-      version: 4,
+      version: 5,
       onCreate: _createDB,
       onUpgrade: _upgradeDB,
     );
@@ -104,6 +104,20 @@ class DatabaseHelper {
         viewed_at TEXT NOT NULL
       )
     ''');
+
+    // 自定义命盘库（首次安装即建表；旧库由 onUpgrade 的 <5 分支补齐）
+    await db.execute('''
+      CREATE TABLE user_charts(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        gender INTEGER NOT NULL,
+        solar_iso TEXT NOT NULL,
+        lng REAL,
+        lat REAL,
+        city_name TEXT,
+        created_at INTEGER NOT NULL
+      )
+    ''');
   }
 
   Future<void> _upgradeDB(Database db, int oldVersion, int newVersion) async {
@@ -157,6 +171,21 @@ class DatabaseHelper {
         CREATE TABLE medical_case_recent(
           seq INTEGER PRIMARY KEY,
           viewed_at TEXT NOT NULL
+        )
+      ''');
+    }
+    if (oldVersion < 5) {
+      // 自定义命盘库（保存用户排盘生辰，便于随时回看）
+      await db.execute('''
+        CREATE TABLE user_charts(
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          gender INTEGER NOT NULL,
+          solar_iso TEXT NOT NULL,
+          lng REAL,
+          lat REAL,
+          city_name TEXT,
+          created_at INTEGER NOT NULL
         )
       ''');
     }

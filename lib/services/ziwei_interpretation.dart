@@ -51,6 +51,26 @@ String _areaOf(ZiweiChart chart, int palaceIndex) {
   return _palaceMeanings[role] ?? role;
 }
 
+/// 大限宫无主星时，拼出对宫（相隔六宫）的星情参看提示。
+///
+/// 紫微斗数「借星安宫」惯例：本宫空宫则取对宫同度主星参看。对宫索引恒为
+/// `(palaceIndex + 6) % 12`（十二宫两两相对）。对宫有主星则列出其主星与煞星，
+/// 否则说明对宫亦空。
+String _oppositePalaceNote(ZiweiChart chart, int palaceIndex) {
+  final opp = (palaceIndex + 6) % 12;
+  final oppPalace = chart.palaces[opp];
+  if (oppPalace.majors.isEmpty) {
+    return '（对宫${oppPalace.roleLabel}亦无主星）';
+  }
+  final stars = oppPalace.majors.map(_starText).join('、');
+  final sb = StringBuffer('（对宫${oppPalace.roleLabel}：$stars坐守');
+  if (oppPalace.bads.isNotEmpty) {
+    sb.write('、需注意${oppPalace.bads.map(_starText).join('、')}扰动');
+  }
+  sb.write('）');
+  return sb.toString();
+}
+
 /// 在命盘中查找某星曜原生所在宫的物理地支索引（按中文 label 匹配）。
 int _palaceIndexOfStar(ZiweiChart chart, String starLabel) {
   for (final p in chart.palaces) {
@@ -180,6 +200,7 @@ List<String> summarizeDecades(ZiweiChart chart) {
     b.write('第${d.index}大限 ${d.rangeLabel}，行${d.roleLabel}运：');
     if (majors.isEmpty) {
       b.write('本宫无主星，借对宫星情参看');
+      b.write(_oppositePalaceNote(chart, palace.index));
     } else {
       b.write('宫内${majors.map(_starText).join('、')}坐守');
     }
@@ -214,6 +235,48 @@ String summarizeFlowYear(ZiweiChart chart, FlowYearMark flow) {
   final illMajors = illPalace.majors.map(_starText).join('、');
   final bodyPart = ZiweiRulesRepository.bodyPartFor(illnessIndex);
   sb.write('；流年疾厄宫${illMajors.isNotEmpty ? '$illMajors坐守' : '空宫'}，身体留意$bodyPart。');
+
+  return sb.toString();
+}
+
+// ---------------------------------------------------------------------------
+// c-2) 流月运势（1–2 句，结构与流年对齐）
+// ---------------------------------------------------------------------------
+/// 农历月份中文（数字，含闰月标识）。
+String _lunarMonthLabel(int month, bool isLeap) => '${isLeap ? '闰' : ''}$month月';
+
+String summarizeFlowMonth(ZiweiChart chart, FlowMonthMark flow) {
+  final mingPalace = chart.palaces[flow.mingIndex];
+  final illPalace = chart.palaces[flow.illnessIndex];
+  final sb = StringBuffer();
+
+  final mingMajors = mingPalace.majors.map(_starText).join('、');
+  final monthLabel = _lunarMonthLabel(flow.month, flow.isLeap);
+  sb.write('${flow.year}年$monthLabel（${flow.ganzhi}）流月命宫');
+  sb.write(mingMajors.isNotEmpty ? '$mingMajors坐守' : '无主星、借对宫');
+
+  final illMajors = illPalace.majors.map(_starText).join('、');
+  final bodyPart = ZiweiRulesRepository.bodyPartFor(flow.illnessIndex);
+  sb.write('；流月疾厄宫${illMajors.isNotEmpty ? '$illMajors坐守' : '空宫'}，身体留意$bodyPart。');
+
+  return sb.toString();
+}
+
+// ---------------------------------------------------------------------------
+// c-3) 流日运势（1–2 句，结构与流年对齐）
+// ---------------------------------------------------------------------------
+String summarizeFlowDay(ZiweiChart chart, FlowDayMark flow) {
+  final mingPalace = chart.palaces[flow.mingIndex];
+  final illPalace = chart.palaces[flow.illnessIndex];
+  final sb = StringBuffer();
+
+  final mingMajors = mingPalace.majors.map(_starText).join('、');
+  sb.write('${flow.date.year}-${flow.date.month}-${flow.date.day}（${flow.ganzhi}）流日命宫');
+  sb.write(mingMajors.isNotEmpty ? '$mingMajors坐守' : '无主星、借对宫');
+
+  final illMajors = illPalace.majors.map(_starText).join('、');
+  final bodyPart = ZiweiRulesRepository.bodyPartFor(flow.illnessIndex);
+  sb.write('；流日疾厄宫${illMajors.isNotEmpty ? '$illMajors坐守' : '空宫'}，身体留意$bodyPart。');
 
   return sb.toString();
 }

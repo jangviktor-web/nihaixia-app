@@ -6,6 +6,9 @@ import 'ziwei_chart_screen.dart';
 import 'yijing_screen.dart';
 import 'critical_illness_list_screen.dart';
 import 'medical_case_library_screen.dart';
+import 'daily_almanac_screen.dart';
+import 'saved_charts_screen.dart';
+import 'solar_term_section_screen.dart';
 import '../theme/app_colors.dart';
 
 class ToolsScreen extends StatelessWidget {
@@ -98,6 +101,39 @@ class ToolsScreen extends StatelessWidget {
               MaterialPageRoute(
                 builder: (_) => const MedicalCaseLibraryScreen(),
               ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _ToolCard(
+            icon: Icons.calendar_month_outlined,
+            title: '每日黄历',
+            subtitle: '建除/彭祖百忌/冲煞/宜忌 · 民俗文化参考',
+            color: context.colors.success,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const DailyAlmanacScreen()),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _ToolCard(
+            icon: Icons.bookmark_add_outlined,
+            title: '我的命盘库',
+            subtitle: '收藏生辰排盘 · 随时回看命盘',
+            color: context.colors.info,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SavedChartsScreen()),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _ToolCard(
+            icon: Icons.spa_outlined,
+            title: '节气养生',
+            subtitle: '24 节气健康知识 · 倪师节气解析',
+            color: Theme.of(context).colorScheme.tertiary,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SolarTermSectionScreen()),
             ),
           ),
         ],
