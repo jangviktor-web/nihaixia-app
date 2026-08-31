@@ -65,6 +65,14 @@ class SanPanHeCanScreen extends StatelessWidget {
               hecan.baziFull),
           _row(cs, Icons.filter_alt_outlined, '八字 · 旬空（空亡）',
               hecan.kongWang),
+          _row(
+            cs,
+            Icons.hub_outlined,
+            '八字 · 刑冲合害',
+            hecan.relations.isEmpty
+                ? '—'
+                : hecan.relations.join(' · '),
+          ),
           if (!hecan.mingGuaAvailable)
             Padding(
               padding: const EdgeInsets.only(top: 8, left: 4),

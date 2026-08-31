@@ -3,6 +3,7 @@ import 'package:nihaisha_app/services/ziwei_engine.dart';
 import 'package:nihaisha_app/engine/minggua_engine.dart';
 import 'package:nihaisha_app/engine/bazi_analysis.dart';
 import 'package:nihaisha_app/engine/bazi_ten_gods.dart';
+import 'package:nihaisha_app/engine/bazi_relations.dart';
 
 /// 三盘合参输入：统一锚定到同一出生时空，确保紫微 / 八字 / 命卦同源合参。
 ///
@@ -42,6 +43,7 @@ class SanPanHeCan {
   final String favorable; // 八字用神
   final List<String> tenGods; // 八字四柱十神（顺序 年/月/日/时，日柱位为『日主』）
   final String kongWang; // 八字旬空（空亡）地支，如『戌、亥』
+  final List<String> relations; // 八字地支刑冲合害/合会关系标签，如 ['子午冲','申子辰三合水']
   final String xianTianName; // 易经先天卦名
   final String houTianName; // 易经后天卦名
   final bool mingGuaAvailable; // 命卦是否成功推算
@@ -53,6 +55,7 @@ class SanPanHeCan {
     required this.favorable,
     required this.tenGods,
     required this.kongWang,
+    required this.relations,
     required this.xianTianName,
     required this.houTianName,
     required this.mingGuaAvailable,
@@ -101,6 +104,9 @@ SanPanHeCan computeSanPanHeCan(HeCanInput input) {
   final tenGods = tenGodsPerPillar(gans[2], gans);
   final kw = kongWang(gans[2], zhis[2]);
 
+  // 八字地支刑冲合害 / 合会（取四柱地支）
+  final relations = detectBaziRelations(zhis);
+
   // 紫微命宫主星
   final ming = chart.palaces.firstWhere(
     (p) => p.isLife,
@@ -131,6 +137,7 @@ SanPanHeCan computeSanPanHeCan(HeCanInput input) {
     favorable: baZi.favorable.isEmpty ? '—' : baZi.favorable.join('、'),
     tenGods: tenGods,
     kongWang: kw.isEmpty ? '—' : '${kw[0]}、${kw[1]}',
+    relations: relations,
     xianTianName: mg?.xianTian.name ?? '—',
     houTianName: mg?.houTian.name ?? '—',
     mingGuaAvailable: mg != null,

@@ -41,6 +41,12 @@ void main() {
       // 八字旬空非空（经典口诀情境下应为两字地支）
       expect(hecan.kongWang, isNotEmpty);
 
+      // 八字刑冲合害/合会：标签列表，元素非空
+      expect(hecan.relations, isA<List<String>>());
+      for (final r in hecan.relations) {
+        expect(r, isNotEmpty);
+      }
+
       // 命卦降级一致性：可用则两卦名非空非占位，不可用则均为"—"
       if (hecan.mingGuaAvailable) {
         expect(hecan.xianTianName, isNot('—'));
