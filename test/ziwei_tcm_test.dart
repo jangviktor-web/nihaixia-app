@@ -59,6 +59,12 @@ void main() {
 
   group('免责声明仍在渲染卡片中', () {
     testWidgets('排盘后健康提醒卡片含「非医疗诊断」声明', (tester) async {
+      // 放大测试视口，使长列表（含底部健康卡片）一次性挂载，避免依赖滚动
+      final view = tester.view;
+      view.physicalSize = const Size(900, 4000);
+      view.devicePixelRatio = 1;
+      addTearDown(() => view.resetPhysicalSize());
+
       await tester.pumpWidget(
         MaterialApp(
           theme: ThemeData(extensions: [AppColors.light], useMaterial3: true),
@@ -73,12 +79,6 @@ void main() {
       await tester.tap(btn);
       await tester.pumpAndSettle();
       await tester.pump(const Duration(seconds: 2));
-      // 健康提醒卡片位于长列表底部，测试中 ListView 仅挂载可见子项，需滚动挂载
-      final listView = find.byType(ListView);
-      for (int i = 0; i < 10; i++) {
-        await tester.drag(listView, const Offset(0, -600));
-        await tester.pumpAndSettle();
-      }
       // 免责声明字符串（来自 ziwei_chart_screen 健康卡片头部）仍在渲染卡片中
       expect(find.textContaining('非医疗诊断'), findsWidgets);
     });
