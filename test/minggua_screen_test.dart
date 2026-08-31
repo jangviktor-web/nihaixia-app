@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nihaisha_app/screens/minggua_calculator_screen.dart';
 import 'package:nihaisha_app/screens/minggua_library_screen.dart';
+import 'package:nihaisha_app/theme/app_colors.dart';
+
+/// 与真实 App 一致：MaterialApp 须注册 AppColors 主题扩展，
+/// 否则屏幕内 `context.colors`（`Theme.of(ctx).extension<AppColors>()!`）会因扩展缺失抛 null。
+Widget _app(Widget home) => MaterialApp(
+      theme: ThemeData(useMaterial3: true, extensions: [AppColors.light]),
+      home: home,
+    );
 
 void main() {
   testWidgets('四柱命卦计算器：输入生辰排盘出先天/后天卦', (tester) async {
-    await tester.pumpWidget(
-      const MaterialApp(home: MingGuaCalculatorScreen()),
-    );
+    await tester.pumpWidget(_app(const MingGuaCalculatorScreen()));
 
     expect(find.text('四柱命卦'), findsOneWidget);
     expect(find.text('生辰信息'), findsOneWidget);
@@ -25,9 +31,7 @@ void main() {
   });
 
   testWidgets('四柱命卦讲义库渲染三区块', (tester) async {
-    await tester.pumpWidget(
-      const MaterialApp(home: MingGuaLibraryScreen()),
-    );
+    await tester.pumpWidget(_app(const MingGuaLibraryScreen()));
 
     expect(find.text('四柱命卦讲义'), findsOneWidget);
     expect(find.text('排法（算法源）'), findsOneWidget);
