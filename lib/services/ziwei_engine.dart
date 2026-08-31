@@ -172,6 +172,32 @@ String? brightnessLabel(int index) {
   }
 }
 
+/// 晚子时规则：将「用户录入的实际出生时辰（年/月/日/时/分）」解析为
+/// 传给 [calculateZiweiChart] 的公历 [DateTime]。
+///
+/// 采用标准晚子时 convention：
+/// - 实际钟表时间落在 23:00–23:59（晚子时）：时辰为「子」，且公历日期滚动到
+///   次日（排盘以次日子时论命，日柱归入次日）。为兼容引擎 noSplit 模式
+///   （hour>=23 时会再 +1 天导致跨两日），此处把时辰固化为次日 00:00–00:59
+///   的早子时，等价得到「次日日柱 + 子时」，与晚子时论法一致。
+/// - 实际时间 00:00–00:59（早子时）：子时，保持当日。
+/// - 其余时刻：按录入原样。
+///
+/// 真太阳时仍由 [calculateZiweiChart] 在传入 DateTime 之上叠加，不受影响。
+DateTime resolveBirthSolar({
+  required int year,
+  required int month,
+  required int day,
+  required int hour,
+  required int minute,
+}) {
+  if (hour == 23) {
+    final next = DateTime(year, month, day).add(const Duration(days: 1));
+    return DateTime(next.year, next.month, next.day, 0, minute);
+  }
+  return DateTime(year, month, day, hour, minute);
+}
+
 /// 四化类型 → 中文后缀。
 String sihuaLabel(SiHuaType type) {
   switch (type) {
@@ -284,6 +310,8 @@ class ZiweiChart {
   final String baziDay;
   final String baziTime;
   final String lunarText;
+  final int lunarMonth; // 农历（物理）月 1-12
+  final bool lunarIsLeap; // 出生时农历月是否为闰月
   final String genderLabel;
   final String elementBureauLabel;
   final String? mingZhuLabel;
@@ -301,6 +329,8 @@ class ZiweiChart {
     required this.baziDay,
     required this.baziTime,
     required this.lunarText,
+    required this.lunarMonth,
+    required this.lunarIsLeap,
     required this.genderLabel,
     required this.elementBureauLabel,
     required this.mingZhuLabel,
@@ -315,6 +345,10 @@ class ZiweiChart {
 
   String get baziFull =>
       '$baziYear $baziMonth $baziDay $baziTime';
+
+  /// 出生农历月显示：「闰X月」或「X月」。仅用于展示，不改变排盘正确性。
+  String get lunarMonthDisplay =>
+      lunarIsLeap ? '闰$lunarMonth月' : '$lunarMonth月';
 }
 
 /// 计算紫微斗数命盘。
@@ -432,6 +466,8 @@ ZiweiChart calculateZiweiChart({
     baziDay: baziDay,
     baziTime: baziTime,
     lunarText: '农历 ${date.lunar}',
+    lunarMonth: date.lunar.month,
+    lunarIsLeap: date.lunar.isLeap,
     genderLabel: gender == Gender.male ? '男' : '女',
     elementBureauLabel: plate.elementBureau.label,
     mingZhuLabel:
