@@ -5,6 +5,7 @@ import '../engine/diagnostic_rules.dart';
 import '../models/formula.dart';
 import '../models/herb.dart';
 import '../widgets/meridian_icons.dart';
+import '../widgets/solar_term_card.dart';
 import '../theme/app_colors.dart';
 import 'acupuncture_screen.dart';
 import 'formula_detail_screen.dart';
@@ -55,15 +56,22 @@ class _KnowledgeScreenState extends State<KnowledgeScreen>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
+      body: Column(
         children: [
-          _MeridianTab(),
-          _FormulaTab(),
-          _HerbTab(),
-          const AcupunctureScreen(),
-          const NeijingKnowledgeScreen(),
-          const SearchTab(),
+          const SolarTermCard(),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _MeridianTab(),
+                _FormulaTab(),
+                _HerbTab(),
+                const AcupunctureScreen(),
+                const NeijingKnowledgeScreen(),
+                const SearchTab(),
+              ],
+            ),
+          ),
         ],
       ),
     );

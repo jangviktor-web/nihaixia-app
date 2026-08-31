@@ -18,6 +18,7 @@ dependencies:
   http: ^1.2.0
   package_info_plus: ^8.0.0
   ziwei_core: ^0.13.0
+  sxwnl_spa_dart: ^0.18.5
   open_filex: ^4.7.0
 
 dev_dependencies:
