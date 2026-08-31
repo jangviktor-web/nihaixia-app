@@ -7,7 +7,9 @@ import 'package:nihaisha_app/data/minggua_data.dart';
 import 'package:nihaisha_app/engine/yijing_engine.dart';
 import 'yijing_detail_screen.dart';
 import 'markdown_doc_screen.dart';
+import 'san_pan_hecan_screen.dart';
 import '../theme/app_colors.dart';
+import '../services/san_pan_hecan_service.dart';
 
 /// 四柱命卦计算器：生辰 → 八字 → 先天卦（前半生）/ 后天卦（后半生）。
 /// 算法依倪师《天纪·四柱命卦》讲义并经原文示例校准；值年卦需皇极经世查条表，暂不自动算。
@@ -139,7 +141,33 @@ class _MingGuaCalculatorScreenState extends State<MingGuaCalculatorScreen> {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('四柱命卦')),
+      appBar: AppBar(
+        title: const Text('四柱命卦'),
+        actions: [
+          TextButton.icon(
+            icon: const Icon(Icons.auto_awesome_outlined, size: 18),
+            label: const Text('三盘合参'),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => SanPanHeCanScreen(
+                  input: HeCanInput(
+                    year: _year,
+                    month: _month,
+                    day: _day,
+                    hour: _shiChen[_shiChenIndex].$2,
+                    minute: 0,
+                    isMale: _isMale,
+                    lateZiEnabled: false,
+                    useTrueSolarTime: true,
+                    location: null,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

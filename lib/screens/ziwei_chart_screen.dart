@@ -6,9 +6,11 @@ import 'package:nihaisha_app/services/city_location_service.dart';
 import 'ziwei_reference_screen.dart';
 import 'ziwei_doc_screen.dart';
 import 'ziwei_cases_list_screen.dart';
+import 'san_pan_hecan_screen.dart';
 import '../data/ziwei_case_data.dart';
 import '../data/saved_chart_repository.dart';
 import '../theme/app_colors.dart';
+import '../services/san_pan_hecan_service.dart';
 
 /// 紫微斗数排盘界面。
 ///
@@ -369,6 +371,30 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
       appBar: AppBar(
         title: const Text('紫微斗数排盘'),
         actions: [
+          TextButton.icon(
+            icon: const Icon(Icons.auto_awesome_outlined, size: 18),
+            label: const Text('三盘合参'),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => SanPanHeCanScreen(
+                  input: HeCanInput(
+                    year: _year,
+                    month: _month,
+                    day: _day,
+                    hour: _birthHour,
+                    minute: _birthMinute,
+                    isMale: _isMale,
+                    lateZiEnabled: _lateZiShiEnabled,
+                    useTrueSolarTime: _useTrueSolarTime,
+                    location: _selectedCity != null
+                        ? Location(_selectedCity!.lng, _selectedCity!.lat)
+                        : null,
+                  ),
+                ),
+              ),
+            ),
+          ),
           IconButton(
             tooltip: '十四主星 / 十二宫位 / 倪师论命理',
             icon: const Icon(Icons.menu_book_outlined),
