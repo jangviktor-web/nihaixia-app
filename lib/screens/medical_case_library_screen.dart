@@ -79,6 +79,10 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
     return _all;
   }
 
+  void _reload() {
+    setState(() => _future = _load());
+  }
+
   /// 同步累计治法(经方方剂名)/疾病(西医病名)分类频次，按频次降序取前若干，
   /// 末位追加「其他治法」「其他疾病」哨兵（对应无方剂名/无西医病名的医案）。
   /// 访问 c.formulaNames / c.diseaseNames 会同时填充全局 memo 缓存，保证详情秒开。
@@ -240,6 +244,15 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
             return const Center(child: StateView.loading());
+          }
+          if (snapshot.hasError) {
+            return Center(
+              child: StateView.error(
+                title: '医案数据加载失败',
+                message: snapshot.error.toString(),
+                onRetry: _reload,
+              ),
+            );
           }
           final filtered = _filtered;
           return Column(

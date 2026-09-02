@@ -19,6 +19,7 @@ class _NeijingSearchScreenState extends State<NeijingSearchScreen> {
   Map<String, String> _cache = {}; // asset -> 全文
   List<NeiJingLecture>? _docs;
   bool _loading = false;
+  String? _error;
   String _query = '';
 
   @override
@@ -29,19 +30,30 @@ class _NeijingSearchScreenState extends State<NeijingSearchScreen> {
 
   Future<void> _ensureLoaded() async {
     if (_docs != null) return;
-    setState(() => _loading = true);
-    final docs = <NeiJingLecture>[];
-    final cache = <String, String>{};
-    for (final l in kNeiJingLectures) {
-      cache[l.asset] = await rootBundle.loadString(l.asset);
-      docs.add(l);
-    }
-    if (!mounted) return;
     setState(() {
-      _docs = docs;
-      _cache = cache;
-      _loading = false;
+      _loading = true;
+      _error = null;
     });
+    try {
+      final docs = <NeiJingLecture>[];
+      final cache = <String, String>{};
+      for (final l in kNeiJingLectures) {
+        cache[l.asset] = await rootBundle.loadString(l.asset);
+        docs.add(l);
+      }
+      if (!mounted) return;
+      setState(() {
+        _docs = docs;
+        _cache = cache;
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e.toString();
+        _loading = false;
+      });
+    }
   }
 
   void _onChanged(String v) {
@@ -113,7 +125,15 @@ class _NeijingSearchScreenState extends State<NeijingSearchScreen> {
               ),
             ),
           ),
-          if (_loading)
+          if (_error != null)
+            Center(
+              child: StateView.error(
+                title: '加载失败',
+                message: _error,
+                onRetry: _ensureLoaded,
+              ),
+            )
+          else if (_loading)
             const Padding(
               padding: EdgeInsets.all(24),
               child: Center(

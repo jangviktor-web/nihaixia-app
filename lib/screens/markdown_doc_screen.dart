@@ -39,12 +39,12 @@ class _MarkdownDocScreenState extends State<MarkdownDocScreen> {
   }
 
   Future<String> _load() async {
-    try {
-      final raw = await rootBundle.loadString(widget.asset);
-      return widget.linkFormulas ? _injectFormulaLinks(raw) : raw;
-    } catch (e) {
-      return '（原文加载失败：$e）';
-    }
+    final raw = await rootBundle.loadString(widget.asset);
+    return widget.linkFormulas ? _injectFormulaLinks(raw) : raw;
+  }
+
+  void _reload() {
+    setState(() => _future = _load());
   }
 
   /// 将正文中的已知方剂名包成 `formula://` 链接（单次最长匹配，避免嵌套）。
@@ -85,6 +85,15 @@ class _MarkdownDocScreenState extends State<MarkdownDocScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
             return const Center(child: StateView.loading());
+          }
+          if (snapshot.hasError) {
+            return Center(
+              child: StateView.error(
+                title: '原文加载失败',
+                message: snapshot.error.toString(),
+                onRetry: _reload,
+              ),
+            );
           }
           return Column(
             children: [
