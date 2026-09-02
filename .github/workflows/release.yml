@@ -1,0 +1,63 @@
+name: Build Release APK
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.47.0"
+          channel: 'stable'
+          cache: true
+
+      - name: Install Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install SDK packages
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+
+      - name: Restore signing key (canonical = KEYSTORE_BASE64 secret)
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/keystore.jks
+          printf 'storeFile=../keystore.jks\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\nstoreType=PKCS12\n' \
+            "${{ secrets.KEYSTORE_PASSWORD }}" "${{ secrets.KEY_ALIAS }}" "${{ secrets.KEY_PASSWORD }}" > key.properties
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Precache
+        run: flutter precache --android
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Stage artifacts with tag suffix
+        run: |
+          TAG=${GITHUB_REF_NAME}
+          mkdir -p artifacts
+          for f in build/app/outputs/flutter-apk/*.apk; do
+            name=$(basename "$f" .apk)
+            cp "$f" "artifacts/${name}-${TAG}.apk"
+          done
+
+      - name: Publish Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "artifacts/*.apk"
+          generateReleaseNotes: true
+          token: ${{ github.token }}

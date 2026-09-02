@@ -39,6 +39,8 @@ android {
                 keyPassword = map["keyPassword"]
                 storeFile = file(map["storeFile"] ?: "")
                 storePassword = map["storePassword"]
+                // canonical keystore 是 openssl 生成的 PKCS12（.jks 后缀），必须显式 storeType 否则 Gradle 按默认 jks 解析失败
+                storeType = map["storeType"] ?: "PKCS12"
             }
         }
     }
