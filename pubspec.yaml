@@ -20,6 +20,7 @@ dependencies:
   ziwei_core: ^0.13.0
   sxwnl_spa_dart: ^0.18.5
   open_filex: ^4.7.0
+  lucide_icons: ^0.257.0
 
 dev_dependencies:
   flutter_test:
@@ -48,3 +49,4 @@ flutter:
     - assets/critical_illness/
     - assets/medical_cases/
     - assets/neijing/
+    - assets/design/
