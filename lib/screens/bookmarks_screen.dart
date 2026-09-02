@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../widgets/state_view.dart';
 import 'package:flutter/services.dart';
 import '../models/bookmark.dart';
-import '../theme/app_colors.dart';
 import '../data/database_helper.dart';
 import '../data/formula_repository.dart';
 import '../data/herb_repository.dart';
@@ -330,35 +330,10 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
           // 收藏列表
           Expanded(
             child: _bookmarks.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.bookmark_border,
-                          size: 64,
-                          color: context.colors.onSurfaceVariant,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          '暂无收藏',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurfaceVariant,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          '在辨证结果或方剂详情中点击收藏',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: context.colors.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
+                ? StateView.empty(
+                    title: '暂无收藏',
+                    hint: '在辨证结果或方剂详情中点击收藏',
+                    icon: Icons.bookmark_border,
                   )
                 : ListView.builder(
                     padding: const EdgeInsets.all(12),

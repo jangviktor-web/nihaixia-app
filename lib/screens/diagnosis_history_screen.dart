@@ -46,7 +46,7 @@ class _DiagnosisHistoryScreenState extends State<DiagnosisHistoryScreen> {
       body: _loading
           ? const Center(child: StateView.loading())
           : _records.isEmpty
-              ? const Center(child: Text('暂无诊断记录', style: TextStyle(fontSize: 16)))
+              ? const Center(child: StateView.empty(title: '暂无诊断记录', fullScreen: false))
               : ListView(
                   children: [
                     _buildTrendSection(),

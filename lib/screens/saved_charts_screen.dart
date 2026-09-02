@@ -54,32 +54,11 @@ class _SavedChartsScreenState extends State<SavedChartsScreen> {
           ? const Center(child: StateView.loading())
           : _charts.isEmpty
               ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.bookmark_outline,
-                            size: 48, color: cs.onSurfaceVariant),
-                        const SizedBox(height: 12),
-                        Text(
-                          '还没有保存的命盘',
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: cs.onSurfaceVariant,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '在紫微排盘页排盘后，点「添加到命盘库」即可收藏',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: cs.onSurfaceVariant,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
+                  child: StateView.empty(
+                    title: '还没有保存的命盘',
+                    hint: '在紫微排盘页排盘后，点「添加到命盘库」即可收藏',
+                    icon: Icons.bookmark_outline,
+                    fullScreen: false,
                   ),
                 )
               : ListView.separated(

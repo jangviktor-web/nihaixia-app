@@ -84,7 +84,7 @@ class _MedicalCaseInsightsScreenState extends State<MedicalCaseInsightsScreen> {
                 ),
                 const SizedBox(height: 4),
                 if (stats.formulas.isEmpty)
-                  _empty(context)
+                  _empty()
                 else
                   for (final (i, f) in stats.formulas.indexed) ...[
                     ListTile(
@@ -134,7 +134,7 @@ class _MedicalCaseInsightsScreenState extends State<MedicalCaseInsightsScreen> {
                 ),
                 const SizedBox(height: 4),
                 if (stats.diagnoses.isEmpty)
-                  _empty(context)
+                  _empty()
                 else
                   for (final (i, d) in stats.diagnoses.indexed) ...[
                     ListTile(
@@ -204,16 +204,7 @@ class _MedicalCaseInsightsScreenState extends State<MedicalCaseInsightsScreen> {
     );
   }
 
-  Widget _empty(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        child: Text(
-          '暂无数据',
-          style: TextStyle(
-            fontSize: 12,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
-        ),
-      );
+  Widget _empty() => const StateView.empty(title: '暂无数据', fullScreen: false);
 }
 
 /// 统计结果：摘要 + 两个 TOP 列表（count / pct 占全量比例）。

@@ -136,13 +136,7 @@ class _NeijingSearchScreenState extends State<NeijingSearchScreen> {
               ),
             )
           else if (results.isEmpty)
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: Text(
-                '未找到「$_query」相关篇章',
-                style: TextStyle(fontSize: 12, color: cs.outline),
-              ),
-            )
+            StateView.empty(title: '未找到「$_query」相关篇章')
           else
             Expanded(
               child: ListView.builder(

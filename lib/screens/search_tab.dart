@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../widgets/state_view.dart';
 import '../data/acupuncture_repository.dart';
 import '../data/acupoint_repository.dart';
 import '../data/formula_repository.dart';
@@ -456,12 +457,7 @@ class _SearchTabState extends State<SearchTab> {
     }
 
     if (_results.totalCount == 0) {
-      return Center(
-        child: Text(
-          '未找到匹配结果',
-          style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
-        ),
-      );
+      return Center(child: StateView.empty(title: '未找到匹配结果', fullScreen: false));
     }
 
     return ListView(

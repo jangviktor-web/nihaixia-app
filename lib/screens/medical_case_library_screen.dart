@@ -312,21 +312,12 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
               ),
               Expanded(
                 child: filtered.isEmpty
-                    ? Center(
-                        child: Text(
-                          _view == 'fav'
-                              ? '暂无收藏医案\n在医案详情页点击书签收藏'
-                              : _view == 'recent'
-                                  ? '暂无最近浏览'
-                                  : '无匹配医案',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 13,
-                            height: 1.6,
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
-                        ),
+                    ? StateView.empty(
+                        title: _view == 'fav'
+                            ? '暂无收藏医案\n在医案详情页点击书签收藏'
+                            : _view == 'recent'
+                                ? '暂无最近浏览'
+                                : '无匹配医案',
                       )
                     : ListView.separated(
                         padding: const EdgeInsets.fromLTRB(12, 6, 12, 16),
