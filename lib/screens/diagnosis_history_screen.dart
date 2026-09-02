@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/state_view.dart';
 import '../data/database_helper.dart';
 import '../widgets/meridian_icons.dart';
 import '../theme/app_colors.dart';
@@ -43,7 +44,7 @@ class _DiagnosisHistoryScreenState extends State<DiagnosisHistoryScreen> {
         ],
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: StateView.loading())
           : _records.isEmpty
               ? const Center(child: Text('暂无诊断记录', style: TextStyle(fontSize: 16)))
               : ListView(

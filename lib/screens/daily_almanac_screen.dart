@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/state_view.dart';
 import 'package:nihaisha_app/services/lunar_almanac_service.dart';
 import '../theme/app_colors.dart';
 import '../widgets/almanac_cards.dart';
@@ -109,7 +110,7 @@ class _DailyAlmanacScreenState extends State<DailyAlmanacScreen> {
               const Center(
                 child: Padding(
                   padding: EdgeInsets.all(24),
-                  child: CircularProgressIndicator(),
+                  child: StateView.loading(),
                 ),
               )
             else if (_almanac != null)

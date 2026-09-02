@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import '../widgets/state_view.dart';
 
 import '../data/medical_case_data.dart';
 import '../data/formula_repository.dart';
@@ -67,7 +68,7 @@ class _MedicalCaseInsightsScreenState extends State<MedicalCaseInsightsScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('医案数据洞察')),
       body: _loading || stats == null
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: StateView.loading())
           : ListView(
               padding: const EdgeInsets.all(14),
               children: [

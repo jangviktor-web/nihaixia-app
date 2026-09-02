@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import '../widgets/state_view.dart';
 import 'package:flutter/services.dart';
 
 import '../data/database_helper.dart';
@@ -238,7 +239,7 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
         future: _future,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: StateView.loading());
           }
           final filtered = _filtered;
           return Column(

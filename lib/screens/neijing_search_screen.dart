@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/state_view.dart';
 import 'package:flutter/services.dart';
 
 import '../data/neijing_lecture_data.dart';
@@ -116,7 +117,7 @@ class _NeijingSearchScreenState extends State<NeijingSearchScreen> {
             const Padding(
               padding: EdgeInsets.all(24),
               child: Center(
-                child: CircularProgressIndicator(),
+                child: StateView.loading(),
               ),
             )
           else if (_query.isEmpty)

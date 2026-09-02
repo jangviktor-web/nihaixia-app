@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/state_view.dart';
 import 'package:nihaisha_app/services/solar_term_service.dart';
 
 /// 节气养生独立板块。
@@ -61,7 +62,7 @@ class _SolarTermSectionScreenState extends State<SolarTermSectionScreen> {
             const Center(
               child: Padding(
                 padding: EdgeInsets.all(24),
-                child: CircularProgressIndicator(),
+                child: StateView.loading(),
               ),
             )
           else ...[

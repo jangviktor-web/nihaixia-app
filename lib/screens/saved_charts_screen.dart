@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/state_view.dart';
 import 'package:nihaisha_app/data/saved_chart_repository.dart';
 import 'package:nihaisha_app/screens/ziwei_chart_screen.dart';
 
@@ -50,7 +51,7 @@ class _SavedChartsScreenState extends State<SavedChartsScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('我的命盘库')),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: StateView.loading())
           : _charts.isEmpty
               ? Center(
                   child: Padding(

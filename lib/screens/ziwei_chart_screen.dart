@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/state_view.dart';
 import 'package:ziwei_core/ziwei_core.dart';
 import 'package:nihaisha_app/services/ziwei_engine.dart';
 import 'package:nihaisha_app/services/ziwei_interpretation.dart';
@@ -422,7 +423,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
             const Center(
               child: Padding(
                 padding: EdgeInsets.all(24),
-                child: CircularProgressIndicator(),
+                child: StateView.loading(),
               ),
             ),
           if (_error != null)
