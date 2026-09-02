@@ -1677,7 +1677,6 @@ class DiagnosticRules {
   // ==================== 六经详情数据 ====================
   static final Map<String, Map<String, dynamic>> meridianDetails = {
     '太阳': {
-      'color': '#FF9800',
       'nature': '寒水',
       'organ': '膀胱·小肠',
       'keyPulse': '脉浮，头项强痛而恶寒',
@@ -1690,7 +1689,6 @@ class DiagnosticRules {
       'formulas': ['桂枝汤', '麻黄汤', '桂枝加葛根汤', '大青龙汤', '小青龙汤', '葛根汤', '麻杏甘石汤'],
     },
     '阳明': {
-      'color': '#F44336',
       'nature': '燥金',
       'organ': '胃·大肠',
       'keyPulse': '脉洪大，身热汗出，不恶寒反恶热',
@@ -1703,7 +1701,6 @@ class DiagnosticRules {
       'formulas': ['白虎汤', '白虎加人参汤', '大承气汤', '小承气汤', '调胃承气汤', '栀子豉汤'],
     },
     '少阳': {
-      'color': '#FF5722',
       'nature': '风木',
       'organ': '胆·三焦',
       'keyPulse': '脉弦，口苦咽干目眩',
@@ -1716,7 +1713,6 @@ class DiagnosticRules {
       'formulas': ['小柴胡汤', '大柴胡汤', '柴胡加芒硝汤', '柴胡加龙骨牡蛎汤', '柴胡桂枝汤'],
     },
     '太阴': {
-      'color': '#2196F3',
       'nature': '湿土',
       'organ': '脾·肺',
       'keyPulse': '脉缓弱，腹满而吐，食不下，自利益甚',
@@ -1729,7 +1725,6 @@ class DiagnosticRules {
       'formulas': ['理中汤', '四逆汤', '小建中汤', '厚朴生姜半夏甘草人参汤', '防己黄芪汤'],
     },
     '少阴': {
-      'color': '#9C27B0',
       'nature': '君火/寒水',
       'organ': '心·肾',
       'keyPulse': '脉微细，但欲寐',
@@ -1742,7 +1737,6 @@ class DiagnosticRules {
       'formulas': ['四逆汤', '真武汤', '附子汤', '黄连阿胶汤', '桃花汤', '麻黄附子细辛汤'],
     },
     '厥阴': {
-      'color': '#607D8B',
       'nature': '风木/相火',
       'organ': '肝·心包',
       'keyPulse': '脉弦或微欲绝，寒热错杂',

@@ -154,24 +154,6 @@ class DiagnosisResult {
     return meridian;
   }
 
-  String get meridianColor {
-    switch (meridian) {
-      case '太阳':
-        return '#FF9800';
-      case '阳明':
-        return '#F44336';
-      case '少阳':
-        return '#FF5722';
-      case '太阴':
-        return '#2196F3';
-      case '少阴':
-        return '#9C27B0';
-      case '厥阴':
-        return '#607D8B';
-      default:
-        return '#795548';
-    }
-  }
 }
 
 class DifferentialDiagnosisResult {
