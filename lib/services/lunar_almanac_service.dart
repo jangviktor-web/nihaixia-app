@@ -1,5 +1,10 @@
 import 'package:sxwnl_spa_dart/sxwnl_spa_dart.dart';
 
+// 只引入四柱轻量接口：与紫微命盘 / 三盘合参共用 [ZiweiDate.bazi] 同一口径，
+// 避免自行按底层历法重写导致与命盘页干支不一致。
+// 用 show 限定作用域，避开与 sxwnl_spa_dart 的同名导出（如 BaZi）产生歧义。
+import 'ziwei_engine.dart' show calcZiweiBaZi, ZiweiBaZi;
+
 /// 每日黄历（老黄历）单日数据模型。
 ///
 /// 数据基于 sxwnl_spa_dart 0.18.5 的农历 / 干支计算，叠加通用建除十二神、彭祖百忌、
@@ -8,6 +13,8 @@ class AlmanacDay {
   final DateTime solar; // 公历日期
   final String weekdayName; // 周X
   final String lunarText; // 农历 2026年七月十五
+  final String ganzhiYear; // 年干支，如「甲辰」
+  final String ganzhiMonth; // 月干支，如「壬申」
   final String ganzhiDay; // 日干支，如「甲子」
   final String jianChu; // 建除十二神之一（建/除/满/平/定/执/破/危/成/收/开/闭）
   final int jianChuIndex; // 0=建 … 11=闭
@@ -23,6 +30,8 @@ class AlmanacDay {
     required this.solar,
     required this.weekdayName,
     required this.lunarText,
+    required this.ganzhiYear,
+    required this.ganzhiMonth,
     required this.ganzhiDay,
     required this.jianChu,
     required this.jianChuIndex,
@@ -133,6 +142,14 @@ AlmanacDay getDailyAlmanac(DateTime solar) {
   final gz = dayGanZhi(ad);
   final lunar = LunarDate.fromSolar(ad);
 
+  // 年柱 / 月柱 / 日柱：取自紫微引擎的四柱（正午基准、平太阳时），
+  // 与命盘页、三盘合参同口径。日柱与 dayGanZhi 结果一致（见单测校验），
+  // 三柱统一由本来源提供以保证同源。
+  final ZiweiBaZi bz = calcZiweiBaZi(
+    DateTime(solar.year, solar.month, solar.day, 12, 0),
+    useTrueSolarTime: false,
+  );
+
   // 建除：月支 → 日支 偏移
   final monthBranch = _lunarMonthToBranch[lunar.month];
   final dayBranch = gz.zhi.index;
@@ -158,7 +175,9 @@ AlmanacDay getDailyAlmanac(DateTime solar) {
     solar: solar,
     weekdayName: ['一', '二', '三', '四', '五', '六', '日'][solar.weekday - 1],
     lunarText: '农历 $lunar',
-    ganzhiDay: gz.toString(),
+    ganzhiYear: bz.year,
+    ganzhiMonth: bz.month,
+    ganzhiDay: bz.day,
     jianChu: _jianChuNames[jcIdx],
     jianChuIndex: jcIdx,
     pengZu: [_pengZuGan[gz.gan.index], _pengZuZhi[gz.zhi.index]],

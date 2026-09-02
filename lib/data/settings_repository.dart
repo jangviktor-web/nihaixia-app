@@ -13,12 +13,20 @@ class SettingsRepository extends ChangeNotifier {
   bool _autoCopyPrescription = false;
   bool _loaded = false;
 
+  // ---- 排盘共享设置（紫微 / 八字 同步）----
+  bool _useTrueSolarTime = true; // 紫微真太阳时校准（默认开启）
+  bool _lateZiShiEnabled = false; // 晚子时归次日口径（true=晚子时；同步紫微+八字，八字取反为早子时）
+  bool _fireEarthSame = true; // 长生十二神起长生口径（true=火土同宫，现代子平主流）
+
   ThemeMode get themeMode => _themeMode;
   double get textScaleFactor => _textScaleFactor;
   String get defaultGender => _defaultGender;
   String get diagnosticLevel => _diagnosticLevel;
   bool get autoCopyPrescription => _autoCopyPrescription;
   bool get isLoaded => _loaded;
+  bool get useTrueSolarTime => _useTrueSolarTime;
+  bool get lateZiShiEnabled => _lateZiShiEnabled;
+  bool get fireEarthSame => _fireEarthSame;
 
   Future<void> load() async {
     final db = await DatabaseHelper.instance.database;
@@ -44,6 +52,15 @@ class SettingsRepository extends ChangeNotifier {
           break;
         case 'auto_copy_prescription':
           _autoCopyPrescription = value == 'true';
+          break;
+        case 'use_true_solar_time':
+          _useTrueSolarTime = value == 'true';
+          break;
+        case 'late_zi_shi_enabled':
+          _lateZiShiEnabled = value == 'true';
+          break;
+        case 'fire_earth_same':
+          _fireEarthSame = value == 'true';
           break;
       }
     }
@@ -79,6 +96,24 @@ class SettingsRepository extends ChangeNotifier {
     _autoCopyPrescription = value;
     notifyListeners();
     await _save('auto_copy_prescription', value.toString());
+  }
+
+  Future<void> setUseTrueSolarTime(bool value) async {
+    _useTrueSolarTime = value;
+    notifyListeners();
+    await _save('use_true_solar_time', value.toString());
+  }
+
+  Future<void> setLateZiShiEnabled(bool value) async {
+    _lateZiShiEnabled = value;
+    notifyListeners();
+    await _save('late_zi_shi_enabled', value.toString());
+  }
+
+  Future<void> setFireEarthSame(bool value) async {
+    _fireEarthSame = value;
+    notifyListeners();
+    await _save('fire_earth_same', value.toString());
   }
 
   Future<void> _save(String key, String value) async {

@@ -494,6 +494,74 @@ ZiweiChart calculateZiweiChart({
   );
 }
 
+/// 四柱干支（年 / 月 / 日 / 时）。
+///
+/// 与 [ZiweiChart] 的 `baziXxx` 字段同源（[ZiweiDate.bazi]），
+/// 供只需干支、不需要排紫微盘的场景（如每日黄历）轻量取用。
+///
+/// 命名加 `Ziwei` 前缀：避开 `sxwnl_spa_dart` 已导出的同名 `BaZi`，
+/// 防止同时 import 两个包时产生符号歧义。
+class ZiweiBaZi {
+  final String year;
+  final String month;
+  final String day;
+  final String time;
+
+  const ZiweiBaZi({
+    required this.year,
+    required this.month,
+    required this.day,
+    required this.time,
+  });
+}
+
+/// 轻量取四柱干支：只构造 [ZiweiDate] 读 `bazi`，**不执行排盘**
+/// （不调用 [ZiweiEngine.calculate]），因此开销极小且与命盘/三盘合参同口径。
+///
+/// - [solar] 公历时刻；仅需年柱月柱日柱时传正午基准（如 `DateTime(y, m, d, 12)`）
+///   即可避开子时换日歧义。
+/// - [location] 经纬度；`null` 时引擎默认 `Location(120, 30)`。
+/// - [useTrueSolarTime] 真太阳时开关，与 [calculateZiweiChart] 语义一致。
+/// - [gender] 不影响四柱，仅为构造 [ZiweiDate] 所需。
+/// - [ratHourMode] 早晚子时口径覆盖：不传（null）则用规则集默认（晚子时 / noSplit）；
+///   传 [RatHourMode.todayGan] 即“早子时”（23:00–24:00 算当日，日柱不变）；
+///   八字排盘页的开关即驱动此参数，黄历等其它调用保持默认。
+ZiweiBaZi calcZiweiBaZi(
+  DateTime solar, {
+  Location? location,
+  bool useTrueSolarTime = false,
+  Gender gender = Gender.male,
+  RatHourMode? ratHourMode,
+}) {
+  final ruleset = ConfigLoader.getDefault();
+  final base = ruleset.calendarOptions;
+  final options = ratHourMode == null
+      ? base
+      : CalendarOptions(
+          ratHourMode: ratHourMode,
+          leapRule: base.leapRule,
+          wuHuDunBasedOn: base.wuHuDunBasedOn,
+          siHuaBasedOn: base.siHuaBasedOn,
+          childhoodRule: base.childhoodRule,
+          flowLimitBasedOn: base.flowLimitBasedOn,
+          enableHistorical: base.enableHistorical,
+        );
+  final date = ZiweiDate.fromSolar(
+    AstroDateTime(solar.year, solar.month, solar.day, solar.hour, solar.minute),
+    gender: gender,
+    options: options,
+    location: location,
+    useTrueSolarTime: useTrueSolarTime,
+  );
+  final bz = date.bazi;
+  return ZiweiBaZi(
+    year: '${bz.year.gan.label}${bz.year.zhi.label}',
+    month: '${bz.month.gan.label}${bz.month.zhi.label}',
+    day: '${bz.day.gan.label}${bz.day.zhi.label}',
+    time: '${bz.time.gan.label}${bz.time.zhi.label}',
+  );
+}
+
 int _starTypePriority(StarType type) {
   switch (type) {
     case StarType.major:

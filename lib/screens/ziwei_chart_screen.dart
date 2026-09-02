@@ -6,12 +6,10 @@ import 'package:nihaisha_app/services/city_location_service.dart';
 import 'ziwei_reference_screen.dart';
 import 'ziwei_doc_screen.dart';
 import 'ziwei_cases_list_screen.dart';
-import 'san_pan_hecan_screen.dart';
 import '../data/ziwei_case_data.dart';
 import '../data/saved_chart_repository.dart';
+import '../data/settings_repository.dart';
 import '../theme/app_colors.dart';
-import '../services/san_pan_hecan_service.dart';
-import '../engine/bazi_twelve_stages.dart';
 
 /// 紫微斗数排盘界面。
 ///
@@ -84,6 +82,10 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
   @override
   void initState() {
     super.initState();
+    // 同步共享排盘设置（与设置页双向一致）
+    _useTrueSolarTime = SettingsRepository.instance.useTrueSolarTime;
+    _lateZiShiEnabled = SettingsRepository.instance.lateZiShiEnabled;
+    _fireEarthSame = SettingsRepository.instance.fireEarthSame;
     // 预加载中文城市经纬度数据（真太阳时地点选择，静态缓存、幂等）
     CityLocationService.load();
     // 命盘库回看：回填生辰、性别、地点后自动重排
@@ -373,33 +375,6 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
       appBar: AppBar(
         title: const Text('紫微斗数排盘'),
         actions: [
-          TextButton.icon(
-            icon: const Icon(Icons.auto_awesome_outlined, size: 18),
-            label: const Text('三盘合参'),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => SanPanHeCanScreen(
-                  input: HeCanInput(
-                    year: _year,
-                    month: _month,
-                    day: _day,
-                    hour: _birthHour,
-                    minute: _birthMinute,
-                    isMale: _isMale,
-                    lateZiEnabled: _lateZiShiEnabled,
-                    useTrueSolarTime: _useTrueSolarTime,
-                    twelveStageMode: _fireEarthSame
-                        ? TwelveStageMode.fireEarthSame
-                        : TwelveStageMode.waterEarthSame,
-                    location: _selectedCity != null
-                        ? Location(_selectedCity!.lng, _selectedCity!.lat)
-                        : null,
-                  ),
-                ),
-              ),
-            ),
-          ),
           IconButton(
             tooltip: '十四主星 / 十二宫位 / 倪师论命理',
             icon: const Icon(Icons.menu_book_outlined),
@@ -631,7 +606,10 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                 style: TextStyle(fontSize: 10, color: cs.onSurfaceVariant),
               ),
               value: _lateZiShiEnabled,
-              onChanged: (v) => setState(() => _lateZiShiEnabled = v),
+              onChanged: (v) {
+                setState(() => _lateZiShiEnabled = v);
+                SettingsRepository.instance.setLateZiShiEnabled(v);
+              },
             ),
             Text(
               '23:00–23:59 为晚子时，紫微流派对其归属有分歧：开启上方开关则归次日子时'
@@ -651,7 +629,10 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                 style: TextStyle(fontSize: 10, color: cs.onSurfaceVariant),
               ),
               value: _useTrueSolarTime,
-              onChanged: (v) => setState(() => _useTrueSolarTime = v),
+              onChanged: (v) {
+                setState(() => _useTrueSolarTime = v);
+                SettingsRepository.instance.setUseTrueSolarTime(v);
+              },
             ),
             const SizedBox(height: 4),
             // 长生十二神起长生口径（火土同宫 / 水土同宫）：小白用户生成八字前自选
@@ -669,8 +650,10 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                     ButtonSegment(value: false, label: Text('水土同宫')),
                   ],
                   selected: {_fireEarthSame},
-                  onSelectionChanged: (s) =>
-                      setState(() => _fireEarthSame = s.first),
+                  onSelectionChanged: (s) {
+                    setState(() => _fireEarthSame = s.first);
+                    SettingsRepository.instance.setFireEarthSame(s.first);
+                  },
                 ),
                 Text(
                   _fireEarthSame

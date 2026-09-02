@@ -4,7 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:share_plus/share_plus.dart';
 import '../data/settings_repository.dart';
+import '../data/database_helper.dart';
 import '../data/changelog_repository.dart';
 import '../services/update_service.dart';
 import '../theme/app_colors.dart';
@@ -182,6 +184,60 @@ void showSettingsDialog(
       ],
     ),
   );
+}
+
+// ==================== 数据管理（可复用：设置页 / 对话页共用） ====================
+
+void confirmClearHistory(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('清除诊断历史'),
+      content: const Text('确定要删除所有诊断记录吗？此操作不可恢复。'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('取消'),
+        ),
+        FilledButton(
+          onPressed: () async {
+            await DatabaseHelper.instance.clearDiagnosisHistory();
+            if (context.mounted) {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('诊断历史已清除')),
+              );
+            }
+          },
+          child: const Text('清除'),
+        ),
+      ],
+    ),
+  );
+}
+
+Future<void> exportBookmarks(BuildContext context) async {
+  final bookmarks = await DatabaseHelper.instance.getAllBookmarks();
+  if (!context.mounted) return;
+
+  if (bookmarks.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('暂无收藏')),
+    );
+    return;
+  }
+
+  String text = '【汉唐中医·收藏导出】\n\n';
+  for (final b in bookmarks) {
+    text += '━━━━━━━━━━━━━━\n';
+    text += '${b.title}\n';
+    text += '${b.category}\n';
+    text += '${b.createdAt}\n\n';
+    text += '${b.content}\n\n';
+  }
+  text += '—— 来自「汉唐中医」App';
+
+  await Share.share(text);
 }
 
 // ==================== 清理缓存 ====================

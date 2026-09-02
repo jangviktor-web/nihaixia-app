@@ -52,6 +52,7 @@ android {
             } else {
                 signingConfigs.getByName("debug")
             }
+            // 生产构建：开启 R8 混淆 + 资源收缩（瘦身 + 符号混淆）
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(

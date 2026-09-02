@@ -2,33 +2,29 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import '../data/chinese_convert.dart';
-import '../data/formula_repository.dart';
-import '../data/herb_repository.dart';
-import '../models/formula.dart';
-import '../models/herb.dart';
+import '../data/acupoint_repository.dart';
+import '../models/acupoint_detail.dart';
 
-/// 方剂组成字段富文本：把正文中的已知方剂名/药材名渲染为可点链接。
+/// 针灸方案字段富文本：把正文中的已知穴位名渲染为可点链接。
 /// 先 toSimplified 归一匹配，命中目标用仓库正名解析，文本按原文渲染，
-/// 实现医案↔方剂/药材交叉跳转（繁体原文照常可点）。
+/// 实现医案 ↔ 穴位详情交叉跳转（繁体原文照常可点）。
 ///
-/// 跳转行为通过 [onFormulaTap] / [onHerbTap] 回调交由调用方注入，
+/// 跳转行为通过 [onAcupointTap] 回调交由调用方注入，
 /// 保持 widgets → data/models 单向依赖（不反向 import 页面）。
-class FormulaRichText extends StatefulWidget {
-  final String formula;
-  final ValueChanged<Formula>? onFormulaTap;
-  final ValueChanged<Herb>? onHerbTap;
-  const FormulaRichText({
+class AcupointRichText extends StatefulWidget {
+  final String text;
+  final ValueChanged<AcupointDetail>? onAcupointTap;
+  const AcupointRichText({
     super.key,
-    required this.formula,
-    this.onFormulaTap,
-    this.onHerbTap,
+    required this.text,
+    this.onAcupointTap,
   });
 
   @override
-  State<FormulaRichText> createState() => _FormulaRichTextState();
+  State<AcupointRichText> createState() => _AcupointRichTextState();
 }
 
-class _FormulaRichTextState extends State<FormulaRichText> {
+class _AcupointRichTextState extends State<AcupointRichText> {
   /// 持有本次构建创建的 recognizer，dispose 时统一释放（避免每次 build 新建泄漏）。
   final List<TapGestureRecognizer> _recognizers = [];
 
@@ -56,7 +52,7 @@ class _FormulaRichTextState extends State<FormulaRichText> {
       fontSize: 14,
       height: 1.6,
     );
-    final spans = _buildSpans(widget.formula, base, linkStyle);
+    final spans = _buildSpans(widget.text, base, linkStyle);
     return RichText(
       text: TextSpan(
         // 显式设置 onSurface，避免 [RichText] 不继承 [DefaultTextStyle] 颜色时
@@ -71,26 +67,19 @@ class _FormulaRichTextState extends State<FormulaRichText> {
     );
   }
 
-  /// 合并候选（方剂 + 药材别名），长度降序、同长方剂优先，非重叠扫描原文。
+  /// 候选穴位名（含「穴」后缀与去后缀两种形态），长度降序、非重叠扫描原文。
   List<InlineSpan> _buildSpans(String text, TextStyle base, TextStyle link) {
-    final candidates = <({String name, bool isFormula})>[
-      for (final f in FormulaRepository.getAll())
-        if (f.name.length >= 2) (name: f.name, isFormula: true),
-      for (final h in HerbRepository.getAll())
-        if (h.name.length >= 2) (name: h.name, isFormula: false),
-      for (final a in HerbRepository.aliasNames)
-        if (a.length >= 2) (name: a, isFormula: false),
-    ]..sort((a, b) {
-        final byLen = b.name.length.compareTo(a.name.length);
-        if (byLen != 0) return byLen;
-        return (a.isFormula ? 0 : 1).compareTo(b.isFormula ? 0 : 1);
-      });
+    final candidates = <String>[
+      for (final a in AcupointRepository.getAll()) a.name,
+      for (final a in AcupointRepository.getAll()) a.name.replaceAll('穴', ''),
+    ]..removeWhere((n) => n.length < 2)
+     ..sort((a, b) => b.length.compareTo(a.length));
 
     final norm = toSimplified(text);
     final used = List<bool>.filled(text.length, false);
-    final hits = <({int start, int end, String name, bool isFormula})>[];
+    final hits = <({int start, int end, String name})>[];
     for (final cand in candidates) {
-      final name = toSimplified(cand.name);
+      final name = toSimplified(cand);
       if (name.length > norm.length) continue;
       var idx = 0;
       while (true) {
@@ -105,16 +94,10 @@ class _FormulaRichTextState extends State<FormulaRichText> {
           }
         }
         if (!overlapped) {
-          // 药材须精确+别名命中（不做模糊兜底，避免柴胡错跳含柴胡的方剂）
-          final ok = cand.isFormula ||
-              HerbRepository.getExactByName(cand.name) != null;
+          // 仅当仓库确有该穴位时才链接（不做模糊兜底，避免普通词误跳）。
+          final ok = AcupointRepository.findByName(cand) != null;
           if (ok) {
-            hits.add((
-              start: start,
-              end: end,
-              name: cand.name,
-              isFormula: cand.isFormula,
-            ));
+            hits.add((start: start, end: end, name: cand));
             for (var k = start; k < end; k++) {
               used[k] = true;
             }
@@ -134,13 +117,8 @@ class _FormulaRichTextState extends State<FormulaRichText> {
       final label = text.substring(hit.start, hit.end);
       final recognizer = TapGestureRecognizer()
         ..onTap = () {
-          if (hit.isFormula) {
-            final f = FormulaRepository.getByName(hit.name);
-            if (f != null) widget.onFormulaTap?.call(f);
-          } else {
-            final h = HerbRepository.getExactByName(hit.name);
-            if (h != null) widget.onHerbTap?.call(h);
-          }
+          final a = AcupointRepository.findByName(label);
+          if (a != null) widget.onAcupointTap?.call(a);
         };
       _recognizers.add(recognizer);
       spans.add(
@@ -159,7 +137,7 @@ class _FormulaRichTextState extends State<FormulaRichText> {
   }
 
   /// 把正文中的 `**加粗**` 解析为加粗 TextSpan（星号不再显示）。
-  /// 仅作用于普通文本段；药材/方剂链接段保持自身样式。
+  /// 仅作用于普通文本段；穴位链接段保持自身样式。
   List<InlineSpan> _spansWithBold(String text, TextStyle style) {
     final result = <InlineSpan>[];
     final re = RegExp(r'\*\*(.+?)\*\*');

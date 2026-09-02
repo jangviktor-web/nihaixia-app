@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sxwnl_spa_dart/sxwnl_spa_dart.dart';
 import 'package:nihaisha_app/services/lunar_almanac_service.dart';
+import 'package:nihaisha_app/services/ziwei_engine.dart' show calcZiweiBaZi;
 
 const List<String> _branchNames = [
   '子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥',
@@ -66,6 +67,42 @@ void main() {
         expect(a.jianChuIndex, inInclusiveRange(0, 11));
         expect(a.yi, isNotEmpty);
       }
+    });
+  });
+
+  group('年柱月柱日柱', () {
+    test('三柱均为两字干支且日柱与 dayGanZhi 同源一致（连续 400 天）', () {
+      final start = DateTime(2026, 1, 1);
+      for (int i = 0; i < 400; i++) {
+        final d = start.add(Duration(days: i));
+        final a = getDailyAlmanac(d);
+        expect(a.ganzhiYear.length, equals(2), reason: '$d 年柱');
+        expect(a.ganzhiMonth.length, equals(2), reason: '$d 月柱');
+        expect(a.ganzhiDay.length, equals(2), reason: '$d 日柱');
+        // 旧来源（sxwnl dayGanZhi，正午基准）应与新来源完全一致
+        final ad = AstroDateTime(d.year, d.month, d.day, 12, 0, 0);
+        expect(a.ganzhiDay, equals(dayGanZhi(ad).toString()),
+            reason: '$d 日柱两来源应一致');
+      }
+    });
+
+    test('年柱按立春分界、月柱按节气分界（2026 边界日）', () {
+      // 2026 立春为 2 月 4 日：立春前仍属乙巳年（丑/子月），立春后为丙午年（寅月）
+      final beforeLiChun = getDailyAlmanac(DateTime(2026, 2, 3));
+      final afterLiChun = getDailyAlmanac(DateTime(2026, 2, 4));
+      expect(beforeLiChun.ganzhiYear, equals('乙巳'));
+      expect(afterLiChun.ganzhiYear, equals('丙午'));
+      expect(afterLiChun.ganzhiMonth, equals('庚寅')); // 丙年寅月
+    });
+
+    test('三柱与紫微引擎四柱接口逐字一致（同正午基准）', () {
+      final d = DateTime(2026, 9, 1);
+      final a = getDailyAlmanac(d);
+      final bz = calcZiweiBaZi(DateTime(d.year, d.month, d.day, 12, 0),
+          useTrueSolarTime: false);
+      expect(a.ganzhiYear, equals(bz.year));
+      expect(a.ganzhiMonth, equals(bz.month));
+      expect(a.ganzhiDay, equals(bz.day));
     });
   });
 }
