@@ -146,21 +146,30 @@ class HerbRepository {
     return _herbs.where((h) => h.category == category).toList();
   }
 
+  /// 药材是否命中查询词，**含异名归一**。
+  ///
+  /// 这是全项目药材检索的唯一入口 —— 页面禁止再自行写 `h.name.contains(...)`。
+  /// 背景：`_canonicalOf` 是异名的唯一来源，若各页面自己拼字符串匹配，新增/调整
+  /// 异名映射时页面不会同步，就会出现「异名搜不到」（如 茈胡 搜不到 柴胡）。
+  /// 历史上 knowledge_screen 与 search_tab 各自复制了一份匹配逻辑且都漏了归一，
+  /// 导致 103 个异名中 74 / 87 个失效。修复方式是收敛到本方法，而非各处打补丁。
+  static bool matchesQuery(Herb h, String query) {
+    if (query.isEmpty) return false;
+    final q = query.toLowerCase();
+    final cq = canonicalOf(query).toLowerCase();
+    return h.name.toLowerCase().contains(q) ||
+        h.name.toLowerCase().contains(cq) ||
+        (h.action ?? '').toLowerCase().contains(q) ||
+        (h.nature ?? '').toLowerCase().contains(q) ||
+        (h.original ?? '').toLowerCase().contains(q) ||
+        h.flavor.toLowerCase().contains(q) ||
+        h.category.toLowerCase().contains(q) ||
+        h.meridians.any((m) => m.toLowerCase().contains(q));
+  }
+
   static List<Herb> search(String query) {
     if (query.isEmpty) return [];
-    final q = query.toLowerCase();
-    final cq = canonicalOf(query);
-    return _herbs.where((h) {
-      return h.name.contains(q) ||
-          h.name == cq ||
-          h.name.contains(cq) ||
-          (h.action?.contains(q) ?? false) ||
-          (h.nature?.contains(q) ?? false) ||
-          (h.original?.contains(q) ?? false) ||
-          (h.flavor.contains(q)) ||
-          h.category.contains(q) ||
-          h.meridians.any((m) => m.contains(q));
-    }).toList();
+    return _herbs.where((h) => matchesQuery(h, query)).toList();
   }
 
   /// 只做「正名精确命中 + 别名归一」，不做模糊兜底。

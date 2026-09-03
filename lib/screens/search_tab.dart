@@ -107,8 +107,11 @@ class _SearchTabState extends State<SearchTab> {
       setState(() => _suggestions = []);
       return;
     }
+    // 走 HerbRepository.matchesQuery（含异名归一）。
+    // 此前此处只按 h.name 裸匹配，输入「茈胡」「山药」等异名时下拉一片空白，
+    // 用户会误判为「检索不到」。禁止改回 h.name.contains(...)。
     final herbNames = HerbRepository.getAll()
-        .where((h) => h.name.contains(query))
+        .where((h) => HerbRepository.matchesQuery(h, query))
         .map((h) => h.name)
         .take(4);
     final formulaNames = FormulaRepository.getAll()

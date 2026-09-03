@@ -423,13 +423,10 @@ class _HerbTabState extends State<_HerbTab> {
       herbs = herbs.where((h) => h.meridians.contains(_selectedMeridian)).toList();
     }
     if (_searchQuery.isNotEmpty) {
-      final q = _searchQuery.toLowerCase();
-      herbs = herbs.where((h) =>
-          h.name.toLowerCase().contains(q) ||
-          (h.action ?? '').toLowerCase().contains(q) ||
-          h.flavor.toLowerCase().contains(q) ||
-          h.category.toLowerCase().contains(q)
-      ).toList();
+      // 走 HerbRepository.matchesQuery（含异名归一）。
+      // 此前此处自行拼字符串匹配，漏了 canonicalOf，导致 103 个异名中 74 个在此页搜不到
+      //（例：茈胡 → 应命中柴胡）。禁止改回本地匹配。
+      herbs = herbs.where((h) => HerbRepository.matchesQuery(h, _searchQuery)).toList();
     }
     return herbs;
   }
