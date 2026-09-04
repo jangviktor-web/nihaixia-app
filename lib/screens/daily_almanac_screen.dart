@@ -127,6 +127,8 @@ class _DailyAlmanacScreenState extends State<DailyAlmanacScreen> {
       const SizedBox(height: 12),
       AlmanacJianChuCard(almanac: a),
       const SizedBox(height: 12),
+      AlmanacZodiacChongCard(almanac: a),
+      const SizedBox(height: 12),
       AlmanacPengZuCard(almanac: a),
       const SizedBox(height: 12),
       AlmanacYiJiCard(
@@ -147,6 +149,10 @@ class _DailyAlmanacScreenState extends State<DailyAlmanacScreen> {
       if (a.festivals.isNotEmpty) ...[
         const SizedBox(height: 12),
         AlmanacFestivalCard(festivals: a.festivals),
+      ],
+      if (a.deityFestivals.isNotEmpty) ...[
+        const SizedBox(height: 12),
+        AlmanacDeityFestivalCard(festivals: a.deityFestivals),
       ],
     ];
   }

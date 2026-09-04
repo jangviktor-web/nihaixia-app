@@ -72,7 +72,8 @@ class AlmanacDateHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final tagText = almanac.solarTerm ??
-        (almanac.festivals.isNotEmpty ? almanac.festivals.first : null);
+        (almanac.festivals.isNotEmpty ? almanac.festivals.first : null) ??
+        (almanac.deityFestivals.isNotEmpty ? almanac.deityFestivals.first : null);
     return Card(
       elevation: 2,
       child: Padding(
@@ -166,6 +167,65 @@ class AlmanacJianChuCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// 生肖相冲卡片：当日地支生肖 vs 六冲生肖。
+class AlmanacZodiacChongCard extends StatelessWidget {
+  const AlmanacZodiacChongCard({super.key, required this.almanac});
+
+  final AlmanacDay almanac;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('当日生肖',
+                      style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant)),
+                  const SizedBox(height: 4),
+                  Text(
+                    almanac.dayZodiac,
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: cs.onPrimaryContainer,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.sync_alt, size: 22, color: cs.onSurfaceVariant),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text('相冲生肖',
+                      style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant)),
+                  const SizedBox(height: 4),
+                  Text(
+                    almanac.chongZodiac,
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: cs.onSurface,
                     ),
                   ),
                 ],
@@ -315,6 +375,62 @@ class AlmanacFestivalCard extends StatelessWidget {
                       label: Text(
                         f,
                         style: TextStyle(color: cs.onSecondaryContainer),
+                      ),
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  )
+                  .toList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// 神仙节日卡片（《玉匣记》圣诞 / 降临 / 斋期等，固定农历日期）。
+class AlmanacDeityFestivalCard extends StatelessWidget {
+  const AlmanacDeityFestivalCard({super.key, required this.festivals});
+
+  final List<String> festivals;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.temple_buddhist_outlined,
+                    size: 18, color: cs.tertiary),
+                const SizedBox(width: 8),
+                const Text(
+                  '神仙节日',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  '玉匣记',
+                  style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: festivals
+                  .map(
+                    (f) => Chip(
+                      backgroundColor: cs.tertiaryContainer.withValues(alpha: 0.6),
+                      label: Text(
+                        f,
+                        style: TextStyle(color: cs.onTertiaryContainer),
                       ),
                       visualDensity: VisualDensity.compact,
                     ),

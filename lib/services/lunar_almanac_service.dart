@@ -1,5 +1,7 @@
 import 'package:sxwnl_spa_dart/sxwnl_spa_dart.dart';
 
+import '../data/yuxiaji_deity_data.dart';
+
 // 只引入四柱轻量接口：与紫微命盘 / 三盘合参共用 [ZiweiDate.bazi] 同一口径，
 // 避免自行按底层历法重写导致与命盘页干支不一致。
 // 用 show 限定作用域，避开与 sxwnl_spa_dart 的同名导出（如 BaZi）产生歧义。
@@ -21,10 +23,13 @@ class AlmanacDay {
   final List<String> pengZu; // 彭祖百忌（2 条：天干忌 + 地支忌）
   final String chong; // 日冲，如「冲午」
   final String sha; // 煞方，如「煞南」
+  final String dayZodiac; // 日支生肖，如「鼠」
+  final String chongZodiac; // 被冲生肖，如「马」（日支六冲）
   final List<String> yi; // 宜
   final List<String> ji; // 忌
   final String? solarTerm; // 当日节气（若有）
   final List<String> festivals; // 节日（含传统/法定/节气）
+  final List<String> deityFestivals; // 神仙节日（《玉匣记》圣诞/斋期等）
 
   const AlmanacDay({
     required this.solar,
@@ -38,10 +43,13 @@ class AlmanacDay {
     required this.pengZu,
     required this.chong,
     required this.sha,
+    required this.dayZodiac,
+    required this.chongZodiac,
     required this.yi,
     required this.ji,
     required this.solarTerm,
     required this.festivals,
+    required this.deityFestivals,
   });
 }
 
@@ -102,6 +110,13 @@ const List<String> _shaByBranch = [
 ];
 
 // ---------------------------------------------------------------------------
+// 生肖相冲（日支六冲 → 被冲地支的生肖；地支 → 生肖）
+// ---------------------------------------------------------------------------
+const List<String> _zodiacByBranch = [
+  '鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪',
+];
+
+// ---------------------------------------------------------------------------
 // 宜忌（按建除十二神，标准通胜口径）
 // ---------------------------------------------------------------------------
 const Map<int, List<String>> _yiByJianChu = {
@@ -155,10 +170,12 @@ AlmanacDay getDailyAlmanac(DateTime solar) {
   final dayBranch = gz.zhi.index;
   final jcIdx = ((dayBranch - monthBranch) % 12 + 12) % 12;
 
-  // 冲煞
+  // 冲煞 + 生肖相冲（日支六冲：冲支 = 日支 + 6，被冲生肖随之）
   final chongIdx = (dayBranch + 6) % 12;
   final chong = '冲${_branchNames[chongIdx]}';
   final sha = '煞${_shaByBranch[dayBranch]}';
+  final dayZodiac = _zodiacByBranch[dayBranch];
+  final chongZodiac = _zodiacByBranch[chongIdx];
 
   // 节气（当日若是交节则为该节气名）
   String? term;
@@ -170,6 +187,15 @@ AlmanacDay getDailyAlmanac(DateTime solar) {
       .map((f) => f.name)
       .where((n) => n.isNotEmpty)
       .toList();
+
+  // 神仙节日（《玉匣记》）：与 FestivalEngine 同口径——闰月不过节，
+  // 键为农历月日各两位。独立成表，与既有节日各自成卡、互不覆盖。
+  final deityKey =
+      '${lunar.month.toString().padLeft(2, '0')}'
+      '${lunar.day.toString().padLeft(2, '0')}';
+  final deityFests = lunar.isLeap
+      ? const <String>[]
+      : kYuxiajiDeityFestivals[deityKey] ?? const <String>[];
 
   return AlmanacDay(
     solar: solar,
@@ -183,9 +209,12 @@ AlmanacDay getDailyAlmanac(DateTime solar) {
     pengZu: [_pengZuGan[gz.gan.index], _pengZuZhi[gz.zhi.index]],
     chong: chong,
     sha: sha,
+    dayZodiac: dayZodiac,
+    chongZodiac: chongZodiac,
     yi: _yiByJianChu[jcIdx] ?? const [],
     ji: _jiByJianChu[jcIdx] ?? const [],
     solarTerm: term,
     festivals: fests,
+    deityFestivals: deityFests,
   );
 }
