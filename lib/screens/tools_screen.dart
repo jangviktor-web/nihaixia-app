@@ -8,6 +8,7 @@ import 'bazi_paipan_screen.dart';
 import 'critical_illness_list_screen.dart';
 import 'medical_case_library_screen.dart';
 import 'daily_almanac_screen.dart';
+import 'yuxiaji_omen_screen.dart';
 import 'saved_charts_screen.dart';
 import 'solar_term_section_screen.dart';
 import 'settings_screen.dart';
@@ -136,6 +137,17 @@ class ToolsScreen extends StatelessWidget {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const DailyAlmanacScreen()),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _ToolCard(
+            icon: Icons.auto_awesome,
+            title: '玉匣灵兆',
+            subtitle: '面热/眼跳/耳鸣/心惊 · 十二时辰兆占 · 民俗文化参考',
+            color: Theme.of(context).colorScheme.tertiary,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const YuxiajiOmenScreen()),
             ),
           ),
           const SizedBox(height: 12),

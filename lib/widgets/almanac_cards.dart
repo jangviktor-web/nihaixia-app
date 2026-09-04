@@ -444,6 +444,61 @@ class AlmanacDeityFestivalCard extends StatelessWidget {
   }
 }
 
+/// 潮汕节俗卡片（神诞/游神/固定拜神日，地方性日期带地域标注）。
+class AlmanacChaoshanCard extends StatelessWidget {
+  const AlmanacChaoshanCard({super.key, required this.festivals});
+
+  final List<String> festivals;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.festival_outlined, size: 18, color: cs.primary),
+                const SizedBox(width: 8),
+                const Text(
+                  '潮汕节俗',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  '潮汕神诞 · 初一十五拜伯公',
+                  style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: festivals
+                  .map(
+                    (f) => Chip(
+                      backgroundColor: cs.primaryContainer.withValues(alpha: 0.5),
+                      label: Text(
+                        f,
+                        style: TextStyle(color: cs.onPrimaryContainer),
+                      ),
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  )
+                  .toList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 /// 日期头右侧的胶囊标签（节气 / 节日名）。
 class _AlmanacTag extends StatelessWidget {
   const _AlmanacTag({required this.text, required this.color});

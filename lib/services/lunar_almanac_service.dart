@@ -1,5 +1,6 @@
 import 'package:sxwnl_spa_dart/sxwnl_spa_dart.dart';
 
+import '../data/chaoshan_festival_data.dart';
 import '../data/yuxiaji_deity_data.dart';
 
 // 只引入四柱轻量接口：与紫微命盘 / 三盘合参共用 [ZiweiDate.bazi] 同一口径，
@@ -30,6 +31,7 @@ class AlmanacDay {
   final String? solarTerm; // 当日节气（若有）
   final List<String> festivals; // 节日（含传统/法定/节气）
   final List<String> deityFestivals; // 神仙节日（《玉匣记》圣诞/斋期等）
+  final List<String> chaoshanFestivals; // 潮汕神诞/节俗（地方性，带地域标注）
 
   const AlmanacDay({
     required this.solar,
@@ -50,6 +52,7 @@ class AlmanacDay {
     required this.solarTerm,
     required this.festivals,
     required this.deityFestivals,
+    required this.chaoshanFestivals,
   });
 }
 
@@ -197,6 +200,19 @@ AlmanacDay getDailyAlmanac(DateTime solar) {
       ? const <String>[]
       : kYuxiajiDeityFestivals[deityKey] ?? const <String>[];
 
+  // 潮汕节俗：与引擎节日双向子串去重（春节/元宵/端午/除夕等已由
+  // 节日卡展示，避免同屏重复），与玉匣记源互不干预、各自成卡。
+  final chaoshanAll = lunar.isLeap
+      ? const <String>[]
+      : kChaoshanFestivals[deityKey] ?? const <String>[];
+  final chaoshanFests = chaoshanAll
+      .where(
+        (c) => !fests.any(
+          (f) => f == c || c.contains(f) || f.contains(c),
+        ),
+      )
+      .toList();
+
   return AlmanacDay(
     solar: solar,
     weekdayName: ['一', '二', '三', '四', '五', '六', '日'][solar.weekday - 1],
@@ -216,5 +232,6 @@ AlmanacDay getDailyAlmanac(DateTime solar) {
     solarTerm: term,
     festivals: fests,
     deityFestivals: deityFests,
+    chaoshanFestivals: chaoshanFests,
   );
 }
