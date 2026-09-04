@@ -621,11 +621,9 @@ class _SearchTabState extends State<SearchTab> {
               '${h.category}',
               style: const TextStyle(fontSize: 12),
             ),
-            trailing: h.hasDetailedInfo ? const Icon(Icons.chevron_right, size: 20) : null,
-            onTap: h.hasDetailedInfo
-                ? () => Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => HerbDetailScreen(herb: h)))
-                : null,
+            trailing: const Icon(Icons.chevron_right, size: 20),
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (_) => HerbDetailScreen(herb: h))),
           ),
         )),
         if (!isExpanded && items.length > 15)
