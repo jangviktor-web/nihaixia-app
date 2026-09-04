@@ -1,9 +1,10 @@
 name: Build Release APK
 
+# 2026-09-04：改为仅手动触发。此前与 build-apk.yml 同时监听 v* tag 会双重构建，
+# 且本 workflow 产物带 -TAG 后缀、与 README 下载链接（原始文件名）不一致。
+# 正式发版统一走 build-apk.yml；本文件保留作备用手动通道（Actions 页面 Run workflow）。
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_dispatch:
 
 permissions:
   contents: write
