@@ -24,6 +24,8 @@
 //   TEMP="C:/Users/jangviktor/AppData/Local/Temp" TMP="C:/Users/jangviktor/AppData/Local/Temp" \
 //     /d/flutter/bin/flutter test test/qa_herb_click_test.dart
 
+import 'dart:io';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -66,13 +68,30 @@ bool _hasLabel(InlineSpan span, String label) {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  Directory? _dbTempDir;
+
   setUpAll(() async {
     // 桌面 test runner 需要 ffi 版 sqflite 工厂；被 push 的 HerbDetailScreen.initState
     // 会调 DatabaseHelper，否则抛 "Bad state: databaseFactory not initialized"。
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
+    // flutter test 多 isolate 并行跑测试文件，共享同一数据库文件会产生跨 isolate
+    // SQLite 文件锁竞争（code 5 database is locked，全量跑偶发挂）。给本文件
+    // 专属临时库路径隔离（同 qa_herb_backlinks_test 的修复）。
+    _dbTempDir = await Directory.systemTemp.createTemp('qa_herb_click_db');
+    await databaseFactory.setDatabasesPath(_dbTempDir!.path);
     await HerbRepository.load();
     await FormulaRepository.load();
+  });
+
+  tearDownAll(() async {
+    final dir = _dbTempDir;
+    if (dir != null) {
+      try {
+        await dir.delete(recursive: true);
+      } catch (_) {// 清理失败不影响测试结论
+      }
+    }
   });
 
   // 与 medical_case_detail_screen.dart 完全一致的导航闭包。
