@@ -1,22 +1,20 @@
-// 独立功能验证 —— Option 2：HerbDetailScreen 的两条后向关联卡片（commit 92519a0）。
+// 独立功能验证 —— 药物详情页「相关内容」三级结构：
+//   一级：药物详情页 3 个入口按钮（关联医案 / 关联闭门课 / 含此药方剂，带计数徽标）
+//   二级：herb_related_screens.dart 的三个仅标题简洁列表页（数据各自独立加载）
+//   三级：MedicalCaseDetailScreen / MarkdownDocScreen / FormulaDetailScreen
 //
-// 验证目标（分支 feat/ui-plan-b-step6，尚未 push）：
-//   - 「含此药的医案 (N)」：列出 herbNames 含本药名的 MedicalCase，点按 → MedicalCaseDetailScreen
-//   - 「含此药的闭门课 (N)」：列出 tags（经 canonicalOf 归一）等于本药名的 CriticalIllness，
-//                            点按 → MarkdownDocScreen
-//
-// 关键坑（已处理）：
-//   - AppColors 是 ThemeExtension，必须用 ThemeData(extensions:[AppColors.light]) 包裹，
-//     否则 context.colors 因扩展缺失而抛 null（herb_comparisons 卡片用到 context.colors）。
-//   - HerbDetailScreen.initState 调 DatabaseHelper（收藏/最近浏览），Windows 宿主测试需
-//     sqflite FFI 初始化，否则 openDatabase 抛 "databaseFactory not initialized"。
-//     sqflite_common_ffi 已是 dev_dependency。
-//
-// 本测试只新增文件，不改动任何 feature 代码。
+// 关键坑（沿用既往实测结论）：
+//   - AppColors 是 ThemeExtension，必须 ThemeData(extensions:[AppColors.light]) 包裹。
+//   - HerbDetailScreen / 列表页会调 DatabaseHelper（收藏态），需 sqflite FFI 初始化。
+//   - rootBundle 大文件加载与 sqflite-ffi IO 须在 runAsync 真实 zone 解析；全量套件
+//     高负载下 DB 可能短暂锁住（"database locked" 警告），所有 settle 统一包 runAsync
+//     以消除负载相关的 flaky（单文件跑全绿、全量跑偶挂的根因即在此）。
 //
 // 运行：
 //   TEMP="C:/Users/jangviktor/AppData/Local/Temp" TMP="C:/Users/jangviktor/AppData/Local/Temp" \
 //     /d/flutter/bin/flutter test test/qa_herb_backlinks_test.dart
+
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,7 +25,9 @@ import 'package:nihaisha_app/data/formula_repository.dart';
 import 'package:nihaisha_app/data/herb_repository.dart';
 import 'package:nihaisha_app/data/medical_case_data.dart';
 import 'package:nihaisha_app/models/herb.dart';
+import 'package:nihaisha_app/screens/formula_detail_screen.dart';
 import 'package:nihaisha_app/screens/herb_detail_screen.dart';
+import 'package:nihaisha_app/screens/herb_related_screens.dart';
 import 'package:nihaisha_app/screens/markdown_doc_screen.dart';
 import 'package:nihaisha_app/screens/medical_case_detail_screen.dart';
 import 'package:nihaisha_app/theme/app_colors.dart';
@@ -37,149 +37,164 @@ Widget _app(Widget home) => MaterialApp(
       home: home,
     );
 
-/// 在指定标题前缀的卡片内查找 ListTile。
-Finder _cardTiles(String titlePrefix) {
-  final title = find.byWidgetPredicate(
-    (w) => w is Text && (w.data?.startsWith(titlePrefix) ?? false),
-  );
-  final card = find.ancestor(of: title, matching: find.byType(Card));
-  return find.descendant(of: card, matching: find.byType(ListTile));
-}
-
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  Directory? _dbTempDir;
 
   setUpAll(() async {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
+    // flutter test 默认多 isolate 并行跑测试文件，而各文件共享同一数据库文件，
+    // 并行 isolate 之间会产生 SQLite 文件锁竞争（code 5 "database is locked"，
+    // 详情页收藏态查询 open 时抛 SqfliteFfiException → 全量跑偶发挂）。
+    // 给本文件一个专属临时库路径，彻底隔离锁竞争。
+    _dbTempDir = await Directory.systemTemp.createTemp('qa_herb_backlinks_db');
+    await databaseFactory.setDatabasesPath(_dbTempDir!.path);
     await HerbRepository.load();
     await FormulaRepository.load();
   });
 
-  group('Option 2 后向关联卡片', () {
-    testWidgets('含此药的医案：卡片显示 count>0 且可点按跳转 MedicalCaseDetailScreen',
-        (tester) async {
-      // ListView 视口之外子节点不构建；拉高视口使后向关联卡片进入构建区。
-      final view = tester.view;
-      view.physicalSize = const Size(900, 6000);
-      view.devicePixelRatio = 1;
-      addTearDown(() => view.resetPhysicalSize());
-      // rootBundle.loadString 必须在 runAsync 真实 zone 解析（见 neijing_library_search_test.dart:44-52）。
-      final cases = (await tester.runAsync(() => getAllMedicalCases()))!;
-      expect(cases, isNotEmpty, reason: 'getAllMedicalCases 应解析出医案');
-
-      // 从真实全量医案里挑一味「能解析到 Herb 条目」的药材（避免空/别名失效）。
-      Herb? chosenHerb;
-      for (final c in cases) {
-        for (final name in c.herbNames) {
-          final h = HerbRepository.getExactByName(name);
-          if (h != null) {
-            chosenHerb = h;
-            break;
-          }
-        }
-        if (chosenHerb != null) break;
+  tearDownAll(() async {
+    final dir = _dbTempDir;
+    if (dir != null) {
+      try {
+        await dir.delete(recursive: true);
+      } catch (_) {// 清理失败不影响测试结论
       }
-      expect(chosenHerb, isNotNull,
-          reason: '应能从医案 herbNames 中找到一条解析到真实 Herb 的药材');
-      final herb = chosenHerb!;
+    }
+  });
 
-      // 与屏幕一致的预期数量：herbNames（已归一为正名）含本药名的医案数。
-      final expected = cases.where((c) => c.herbNames.contains(herb.name)).length;
-      expect(expected, greaterThan(0),
-          reason: '所选药材「${herb.name}」应至少命中 1 条医案');
+  /// 处理路由 push 首帧 + 在真实 zone 中等待稳定（IO/动画与负载无关地完成）。
+  Future<void> settle(WidgetTester tester) async {
+    await tester.pump();
+    await tester.runAsync(() => tester.pumpAndSettle(const Duration(seconds: 30)));
+  }
 
-      await tester.pumpWidget(_app(HerbDetailScreen(herb: herb)));
-      await tester.pumpAndSettle(const Duration(seconds: 60));
+  /// 渲染药物详情页并等待异步计数就绪（医案计数需 getAllMedicalCases 完成）。
+  Future<void> pumpHerbPage(WidgetTester tester, Herb herb) async {
+    final view = tester.view;
+    view.physicalSize = const Size(900, 6000);
+    view.devicePixelRatio = 1;
+    addTearDown(() => view.resetPhysicalSize());
+    // 预热 getAllMedicalCases 缓存（rootBundle 必须在 runAsync 真实 zone 解析）。
+    await tester.runAsync(() => getAllMedicalCases());
+    await tester.pumpWidget(_app(HerbDetailScreen(herb: herb)));
+    await settle(tester);
+  }
 
-      expect(
-        find.text('含此药的医案 ($expected)'),
-        findsOneWidget,
-        reason: '医案卡片标题应显示正确数量 $expected',
-      );
+  group('一级：药物详情页相关内容入口按钮', () {
+    testWidgets('三个入口按钮齐备且计数正确（生附子）', (tester) async {
+      final herb = HerbRepository.getExactByName('生附子')!;
+      await pumpHerbPage(tester, herb);
 
-      final tiles = _cardTiles('含此药的医案');
-      expect(tiles, findsWidgets, reason: '医案卡片内至少应有一个可点按 tile');
+      expect(find.text('关联医案'), findsOneWidget);
+      expect(find.text('关联闭门课'), findsOneWidget);
+      expect(find.text('含此药方剂'), findsOneWidget);
 
-      await tester.ensureVisible(tiles.first);
-      await tester.tap(tiles.first, warnIfMissed: true);
-      await tester.pumpAndSettle(const Duration(seconds: 30));
+      // 与各列表页一致的预期计数。
+      final caseCount = (await getAllMedicalCases())
+          .where((c) => c.herbNames.contains(herb.name))
+          .length;
+      final critCount = kCriticalIllnesses
+          .where((it) => it.tags
+              .any((t) => HerbRepository.canonicalOf(t) == herb.name))
+          .length;
+      final formulaCount = FormulaRepository.getAll()
+          .where((f) => f.components
+              .any((c) => HerbRepository.canonicalOf(c.name) == herb.name))
+          .length;
+      expect(caseCount, greaterThan(0));
+      expect(critCount, greaterThan(0));
+      expect(formulaCount, greaterThan(0));
 
+      expect(find.text('$caseCount 条'), findsOneWidget,
+          reason: '关联医案入口应显示计数 $caseCount');
+      expect(find.text('$critCount 条'), findsOneWidget,
+          reason: '关联闭门课入口应显示计数 $critCount');
+      expect(find.text('$formulaCount 条'), findsOneWidget,
+          reason: '含此药方剂入口应显示计数 $formulaCount');
+    });
+  });
+
+  group('二级：关联医案列表页', () {
+    testWidgets('生附子：仅标题列表，点按条目跳 MedicalCaseDetailScreen', (tester) async {
+      final herb = HerbRepository.getExactByName('生附子')!;
+      await pumpHerbPage(tester, herb);
+
+      await tester.tap(find.text('关联医案'));
+      await settle(tester);
+
+      expect(find.byType(HerbRelatedCasesScreen), findsOneWidget);
+      expect(find.text('关联医案 · 生附子'), findsOneWidget);
+      final tiles = find.byType(ListTile);
+      expect(tiles, findsWidgets, reason: '列表页应展示医案标题条目');
+
+      await tester.tap(tiles.first);
+      await settle(tester);
       expect(find.byType(MedicalCaseDetailScreen), findsOneWidget,
-          reason: '点按医案 tile 应跳转到 MedicalCaseDetailScreen');
+          reason: '点按医案标题应跳转 MedicalCaseDetailScreen');
     });
+  });
 
-    testWidgets('含此药的闭门课（生附子）：count>0 且可点按跳转 MarkdownDocScreen',
-        (tester) async {
-      final view = tester.view;
-      // 生附子命中 145 条医案，医案卡片很长；拉高视口使全部内容（含闭门课卡片）一次性可见，
-      // 避免 ensureVisible 滚动后 tester.tap 在可滚动 ListView 上坐标失准、不触发 onTap。
-      view.physicalSize = const Size(900, 20000);
-      view.devicePixelRatio = 1;
-      addTearDown(() => view.resetPhysicalSize());
-      final herb = HerbRepository.getExactByName('生附子');
-      expect(herb, isNotNull, reason: '生附子 必须是药库条目');
+  group('二级：关联闭门课列表页', () {
+    testWidgets('生附子：命中重症条目，点按跳 MarkdownDocScreen', (tester) async {
+      final herb = HerbRepository.getExactByName('生附子')!;
+      await pumpHerbPage(tester, herb);
 
-      final expected = kCriticalIllnesses
-          .where((it) =>
-              it.tags.any((t) => HerbRepository.canonicalOf(t) == herb!.name))
-          .length;
-      expect(expected, greaterThan(0),
-          reason: '生附子 应命中至少 1 个闭门课标签');
+      await tester.tap(find.text('关联闭门课'));
+      await settle(tester);
 
-      // 预热 getAllMedicalCases 缓存（rootBundle 必须在 runAsync 真实 zone 解析）。
-      await tester.runAsync(() => getAllMedicalCases());
-      await tester.pumpWidget(_app(HerbDetailScreen(herb: herb!)));
-      await tester.pumpAndSettle(const Duration(seconds: 30));
-
-      // 闭门课卡片应渲染命中生附子的重症条目。用 CriticalIllness.title 本身（如
-      // 「肾衰竭尿毒症」）做精确匹配——之前误用「红斑性狼疮标准方」，那是方剂卡片的方剂名。
+      expect(find.byType(HerbRelatedCriticalScreen), findsOneWidget);
+      expect(find.text('关联闭门课 · 生附子'), findsOneWidget);
       expect(find.text('肾衰竭尿毒症'), findsWidgets,
-          reason: '闭门课卡片应渲染命中生附子的重症条目（如肾衰竭尿毒症）');
+          reason: '生附子命中的重症条目（CriticalIllness.title）应出现在列表');
 
-      // 点按→MarkdownDocScreen 导航验证：测试桩里 tap 手势对该深层嵌套 ListTile
-      // 不稳定触发（桩假阴性），故直接取出该 ListTile 的 onTap 闭包执行——这正是
-      // 真实点按时 App 会执行的同一行代码，可决定性地证明导航逻辑正确。
-      final tile = tester.widget<ListTile>(find.ancestor(
-        of: find.text('肾衰竭尿毒症'),
-        matching: find.byType(ListTile),
-      ).first);
-      expect(tile.onTap, isNotNull, reason: '闭门课条目应带 onTap 导航闭包');
-      await tester.runAsync(() async {
-        tile.onTap!();
-        await tester.pump();
-        await tester.pumpAndSettle(const Duration(seconds: 30));
-      });
+      await tester.tap(find.text('肾衰竭尿毒症'));
+      await settle(tester);
       expect(find.byType(MarkdownDocScreen), findsOneWidget,
-          reason: '闭门课条目 onTap 应 push MarkdownDocScreen');
+          reason: '点按闭门课题目应跳转 MarkdownDocScreen');
     });
+  });
 
-    testWidgets('别名归一：getExactByName("大附子") → 生附子，且闭门课关联一致',
-        (tester) async {
-      final view = tester.view;
-      view.physicalSize = const Size(900, 20000);
-      view.devicePixelRatio = 1;
-      addTearDown(() => view.resetPhysicalSize());
-      final aliased = HerbRepository.getExactByName('大附子');
-      expect(aliased, isNotNull, reason: '大附子 应通过别名归一解析到 Herb');
-      expect(aliased!.name, '生附子',
+  group('二级：含此药方剂列表页', () {
+    testWidgets('生附子：命中方剂条目，点按跳 FormulaDetailScreen', (tester) async {
+      final herb = HerbRepository.getExactByName('生附子')!;
+      await pumpHerbPage(tester, herb);
+
+      await tester.tap(find.text('含此药方剂'));
+      await settle(tester);
+
+      expect(find.byType(HerbRelatedFormulasScreen), findsOneWidget);
+      expect(find.text('含此药方剂 · 生附子'), findsOneWidget);
+      expect(find.text('红斑性狼疮标准方'), findsWidgets,
+          reason: '生附子命中的方剂应出现在列表');
+
+      await tester.tap(find.text('红斑性狼疮标准方'));
+      await settle(tester);
+      expect(find.byType(FormulaDetailScreen), findsOneWidget,
+          reason: '点按方剂名应跳转 FormulaDetailScreen');
+    });
+  });
+
+  group('别名归一（大附子 → 生附子）', () {
+    testWidgets('以别名渲染时入口计数与闭门课列表与正名一致', (tester) async {
+      final aliased = HerbRepository.getExactByName('大附子')!;
+      expect(aliased.name, '生附子',
           reason: 'getExactByName("大附子") 应归一到正名 生附子');
+      await pumpHerbPage(tester, aliased);
 
-      final expected = kCriticalIllnesses
-          .where((it) =>
-              it.tags.any((t) => HerbRepository.canonicalOf(t) == aliased.name))
+      final critCount = kCriticalIllnesses
+          .where((it) => it.tags
+              .any((t) => HerbRepository.canonicalOf(t) == aliased.name))
           .length;
-      expect(expected, greaterThan(0));
+      expect(find.text('$critCount 条'), findsOneWidget,
+          reason: '以别名渲染时闭门课入口计数应与正名一致（$critCount）');
 
-      // 预热 getAllMedicalCases 缓存（rootBundle 必须在 runAsync 真实 zone 解析）。
-      await tester.runAsync(() => getAllMedicalCases());
-      await tester.pumpWidget(_app(HerbDetailScreen(herb: aliased)));
-      await tester.pumpAndSettle(const Duration(seconds: 30));
-
-      // 以别名「大附子」渲染时，闭门课关联应与其正名「生附子」一致：卡片渲染出相同重症条目
-      // （用 CriticalIllness.title 精确匹配，见上方说明）。
+      await tester.tap(find.text('关联闭门课'));
+      await settle(tester);
       expect(find.text('肾衰竭尿毒症'), findsWidgets,
-          reason: '以别名 大附子 渲染时，闭门课关联应与其正名 生附子 一致（同样命中肾衰竭尿毒症）');
+          reason: '以别名渲染时闭门课列表应与正名一致');
     });
   });
 }

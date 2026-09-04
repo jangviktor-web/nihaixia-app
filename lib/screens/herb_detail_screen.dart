@@ -7,9 +7,7 @@ import '../data/herb_repository.dart';
 import '../data/database_helper.dart';
 import '../data/medical_case_data.dart';
 import '../data/critical_illness_data.dart';
-import 'formula_detail_screen.dart';
-import 'medical_case_detail_screen.dart';
-import 'markdown_doc_screen.dart';
+import 'herb_related_screens.dart';
 
 class HerbDetailScreen extends StatefulWidget {
   final Herb herb;
@@ -100,6 +98,10 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
   Widget build(BuildContext context) {
     final herb = widget.herb;
     final cs = Theme.of(context).colorScheme;
+    final relatedFormulas = FormulaRepository.getAll()
+        .where((f) => f.components
+            .any((c) => HerbRepository.canonicalOf(c.name) == herb.name))
+        .toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -359,172 +361,99 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
               ),
             ),
 
-          // 含此药的方剂
-          Builder(
-            builder: (context) {
-              final formulas = FormulaRepository.getAll()
-                  .where((f) => f.components
-                      .any((c) => HerbRepository.canonicalOf(c.name) == herb.name))
-                  .toList();
-              if (formulas.isEmpty) return const SizedBox.shrink();
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.medication, color: cs.primary),
-                          const SizedBox(width: 8),
-                          Text(
-                            '含此药的方剂 (${formulas.length})',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: cs.primary,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      ...formulas.map((f) => ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            title: Text(f.name,
-                                style: const TextStyle(fontWeight: FontWeight.bold)),
-                            subtitle: Text(
-                              '${f.meridian} · ${f.indication.length > 40 ? '${f.indication.substring(0, 40)}...' : f.indication}',
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                            trailing: const Icon(Icons.chevron_right, size: 20),
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => FormulaDetailScreen(formula: f),
-                              ),
-                            ),
-                          )),
-                        ],
+          // 相关内容入口（三级结构第一级：药物页仅放入口按钮，列表/详情各自独立加载）
+          Card(
+            margin: const EdgeInsets.only(bottom: 12),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                children: [
+                  _entryButton(
+                    context,
+                    icon: Icons.article_outlined,
+                    label: '关联医案',
+                    count: _casesReady ? _relatedCases.length : null,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => HerbRelatedCasesScreen(herb: herb),
                       ),
                     ),
-                  );
-                },
+                  ),
+                  _entryDivider(cs),
+                  _entryButton(
+                    context,
+                    icon: Icons.menu_book,
+                    label: '关联闭门课',
+                    count: _relatedCritical.length,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => HerbRelatedCriticalScreen(herb: herb),
+                      ),
+                    ),
+                  ),
+                  _entryDivider(cs),
+                  _entryButton(
+                    context,
+                    icon: Icons.medication,
+                    label: '含此药方剂',
+                    count: relatedFormulas.length,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => HerbRelatedFormulasScreen(herb: herb),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-
-          // 含此药的医案（后向关联）
-          Builder(
-            builder: (context) {
-              if (!_casesReady || _relatedCases.isEmpty) {
-                return const SizedBox.shrink();
-              }
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.article_outlined, color: cs.primary),
-                          const SizedBox(width: 8),
-                          Text(
-                            '含此药的医案 (${_relatedCases.length})',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: cs.primary,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      ..._relatedCases.map((c) => ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            title: Text('#${c.seq}  ${c.displayName}',
-                                style: const TextStyle(fontWeight: FontWeight.bold)),
-                            subtitle: Text(
-                              c.diagnosis.isNotEmpty ? c.diagnosis : c.mechanism,
-                              style: const TextStyle(fontSize: 12),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            trailing: const Icon(Icons.chevron_right, size: 20),
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => MedicalCaseDetailScreen(c: c),
-                              ),
-                            ),
-                          )),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-
-          // 含此药的闭门课（后向关联）
-          Builder(
-            builder: (context) {
-              if (_relatedCritical.isEmpty) return const SizedBox.shrink();
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.menu_book, color: cs.primary),
-                          const SizedBox(width: 8),
-                          Text(
-                            '含此药的闭门课 (${_relatedCritical.length})',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: cs.primary,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      ..._relatedCritical.map((it) => ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            title: Text(it.title,
-                                style: const TextStyle(fontWeight: FontWeight.bold)),
-                            subtitle: Text(
-                              it.subtitle,
-                              style: const TextStyle(fontSize: 12),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            trailing: const Icon(Icons.chevron_right, size: 20),
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => MarkdownDocScreen(
-                                  title: it.title,
-                                  asset: it.asset,
-                                  linkFormulas: !it.isOverview,
-                                  footer:
-                                      '倪师闭门课重症临床 · 传统文化参考 · 非医疗建议',
-                                ),
-                              ),
-                            ),
-                          )),
-                    ],
-                  ),
-                ),
-              );
-            },
+            ),
           ),
         ],
       ),
     );
   }
+
+  /// 相关内容入口按钮：图标 + 标签 + 数量徽标（count 为 null 时显示 …，表示加载中）。
+  Widget _entryButton(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required int? count,
+    required VoidCallback onTap,
+  }) {
+    final cs = Theme.of(context).colorScheme;
+    return Expanded(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 22, color: cs.primary),
+              const SizedBox(height: 4),
+              Text(label, style: const TextStyle(fontSize: 12)),
+              const SizedBox(height: 2),
+              Text(
+                count == null ? '…' : '$count 条',
+                style:
+                    TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _entryDivider(ColorScheme cs) => Container(
+        width: 1,
+        height: 32,
+        color: cs.outlineVariant,
+      );
 
   Widget _buildSection(String title, String content, ColorScheme cs) {
     return Card(
