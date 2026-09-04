@@ -114,7 +114,7 @@ void main() {
       final view = tester.view;
       // 生附子命中 145 条医案，医案卡片很长；拉高视口使全部内容（含闭门课卡片）一次性可见，
       // 避免 ensureVisible 滚动后 tester.tap 在可滚动 ListView 上坐标失准、不触发 onTap。
-      view.physicalSize = const Size(900, 12000);
+      view.physicalSize = const Size(900, 20000);
       view.devicePixelRatio = 1;
       addTearDown(() => view.resetPhysicalSize());
       final herb = HerbRepository.getExactByName('生附子');
@@ -132,23 +132,32 @@ void main() {
       await tester.pumpWidget(_app(HerbDetailScreen(herb: herb!)));
       await tester.pumpAndSettle(const Duration(seconds: 30));
 
-      // 闭门课卡片应渲染命中生附子的重症条目（如「红斑性狼疮标准方」）。
-      // 用卡片内已知重症标题断言卡片存在，避免依赖拼装标题字符串（find.text 精确匹配易假阴性）。
-      // 这证明 Option 2 的「含此药的闭门课」反查数据已正确接通（tags 经 canonicalOf 命中 herb.name）。
-      expect(find.text('红斑性狼疮标准方'), findsWidgets,
-          reason: '闭门课卡片应渲染命中生附子的重症条目（如红斑性狼疮标准方）');
+      // 闭门课卡片应渲染命中生附子的重症条目。用 CriticalIllness.title 本身（如
+      // 「肾衰竭尿毒症」）做精确匹配——之前误用「红斑性狼疮标准方」，那是方剂卡片的方剂名。
+      expect(find.text('肾衰竭尿毒症'), findsWidgets,
+          reason: '闭门课卡片应渲染命中生附子的重症条目（如肾衰竭尿毒症）');
 
-      // 注：该卡片 tile 的 onTap（push MarkdownDocScreen）与同文件「含此药的医案」卡片
-      // 的 onTap（push MedicalCaseDetailScreen）使用逐字相同的 Navigator.push(context,
-      // MaterialPageRoute(builder: (_) => XScreen(...))) 模式；后者已由本组「含此药的医案」
-      // 用例通过「真实点按 tile → 跳转 MedicalCaseDetailScreen」完整证明。闭门课卡片的
-      // 点按导航因此已被同款模式覆盖，此处不再对深层嵌套 ListTile 做易假阴性的自动化点按。
+      // 点按→MarkdownDocScreen 导航验证：测试桩里 tap 手势对该深层嵌套 ListTile
+      // 不稳定触发（桩假阴性），故直接取出该 ListTile 的 onTap 闭包执行——这正是
+      // 真实点按时 App 会执行的同一行代码，可决定性地证明导航逻辑正确。
+      final tile = tester.widget<ListTile>(find.ancestor(
+        of: find.text('肾衰竭尿毒症'),
+        matching: find.byType(ListTile),
+      ).first);
+      expect(tile.onTap, isNotNull, reason: '闭门课条目应带 onTap 导航闭包');
+      await tester.runAsync(() async {
+        tile.onTap!();
+        await tester.pump();
+        await tester.pumpAndSettle(const Duration(seconds: 30));
+      });
+      expect(find.byType(MarkdownDocScreen), findsOneWidget,
+          reason: '闭门课条目 onTap 应 push MarkdownDocScreen');
     });
 
     testWidgets('别名归一：getExactByName("大附子") → 生附子，且闭门课关联一致',
         (tester) async {
       final view = tester.view;
-      view.physicalSize = const Size(900, 6000);
+      view.physicalSize = const Size(900, 20000);
       view.devicePixelRatio = 1;
       addTearDown(() => view.resetPhysicalSize());
       final aliased = HerbRepository.getExactByName('大附子');
@@ -167,9 +176,10 @@ void main() {
       await tester.pumpWidget(_app(HerbDetailScreen(herb: aliased)));
       await tester.pumpAndSettle(const Duration(seconds: 30));
 
-      // 以别名「大附子」渲染时，闭门课关联应与其正名「生附子」一致：卡片渲染出相同重症条目。
-      expect(find.text('红斑性狼疮标准方'), findsWidgets,
-          reason: '以别名 大附子 渲染时，闭门课关联应与其正名 生附子 一致（同样命中红斑性狼疮标准方）');
+      // 以别名「大附子」渲染时，闭门课关联应与其正名「生附子」一致：卡片渲染出相同重症条目
+      // （用 CriticalIllness.title 精确匹配，见上方说明）。
+      expect(find.text('肾衰竭尿毒症'), findsWidgets,
+          reason: '以别名 大附子 渲染时，闭门课关联应与其正名 生附子 一致（同样命中肾衰竭尿毒症）');
     });
   });
 }
