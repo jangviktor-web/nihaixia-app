@@ -11,6 +11,8 @@
 /// - [extractKnownNames]：箭头分段 + 噪声清洗 + 长度降序非重叠匹配 + 去重。
 library;
 
+import 'package:flutter/services.dart';
+
 import 'chinese_convert.dart';
 import 'disease_repository.dart';
 import 'formula_repository.dart';
@@ -398,4 +400,15 @@ List<MedicalCase> parseMedicalCaseTable(String md) {
   }
 
   return cases;
+}
+
+/// 全量医案（进程内缓存）：供详情页「含此药的医案」后向关联使用。
+/// 首次解析 + 索引提取约数秒（随病例数增长），之后复用缓存；
+/// 与医案详情「相关医案」共用同一 [_herbNameCache]/[_formulaNameCache]，不重复计算。
+List<MedicalCase>? _allCasesCache;
+Future<List<MedicalCase>> getAllMedicalCases() async {
+  if (_allCasesCache != null) return _allCasesCache!;
+  final md = await rootBundle.loadString('assets/medical_cases/cases_table.md');
+  _allCasesCache = parseMedicalCaseTable(md);
+  return _allCasesCache!;
 }

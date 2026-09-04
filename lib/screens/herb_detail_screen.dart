@@ -5,7 +5,11 @@ import '../models/bookmark.dart';
 import '../data/formula_repository.dart';
 import '../data/herb_repository.dart';
 import '../data/database_helper.dart';
+import '../data/medical_case_data.dart';
+import '../data/critical_illness_data.dart';
 import 'formula_detail_screen.dart';
+import 'medical_case_detail_screen.dart';
+import 'markdown_doc_screen.dart';
 
 class HerbDetailScreen extends StatefulWidget {
   final Herb herb;
@@ -18,17 +22,40 @@ class HerbDetailScreen extends StatefulWidget {
 
 class _HerbDetailScreenState extends State<HerbDetailScreen> {
   bool _isBookmarked = false;
+  List<MedicalCase> _relatedCases = const [];
+  bool _casesReady = false;
+  List<CriticalIllness> _relatedCritical = const [];
 
   @override
   void initState() {
     super.initState();
     _checkBookmark();
+    _loadBacklinks();
   }
 
   void _checkBookmark() async {
     final db = DatabaseHelper.instance;
     final bookmarked = await db.isBookmarked(widget.herb.name);
     setState(() => _isBookmarked = bookmarked);
+  }
+
+  /// 计算后向关联：含此药的闭门课（静态 const，同步即可）+ 含此药的医案（全量解析较重，异步避免首帧卡顿）。
+  Future<void> _loadBacklinks() async {
+    _relatedCritical = kCriticalIllnesses
+        .where((it) =>
+            it.tags.any((t) => HerbRepository.canonicalOf(t) == widget.herb.name))
+        .toList();
+    try {
+      final cases = await getAllMedicalCases();
+      if (!mounted) return;
+      setState(() {
+        _relatedCases =
+            cases.where((c) => c.herbNames.contains(widget.herb.name)).toList();
+        _casesReady = true;
+      });
+    } catch (_) {
+      if (mounted) setState(() => _casesReady = true);
+    }
   }
 
   void _toggleBookmark() async {
@@ -366,7 +393,7 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
                             title: Text(f.name,
                                 style: const TextStyle(fontWeight: FontWeight.bold)),
                             subtitle: Text(
-                              '${f.meridian} · ${f.indication.length > 40 ? f.indication.substring(0, 40) + "..." : f.indication}',
+                              '${f.meridian} · ${f.indication.length > 40 ? '${f.indication.substring(0, 40)}...' : f.indication}',
                               style: const TextStyle(fontSize: 12),
                             ),
                             trailing: const Icon(Icons.chevron_right, size: 20),
@@ -374,6 +401,116 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (_) => FormulaDetailScreen(formula: f),
+                              ),
+                            ),
+                          )),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+
+          // 含此药的医案（后向关联）
+          Builder(
+            builder: (context) {
+              if (!_casesReady || _relatedCases.isEmpty) {
+                return const SizedBox.shrink();
+              }
+              return Card(
+                margin: const EdgeInsets.only(bottom: 12),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.article_outlined, color: cs.primary),
+                          const SizedBox(width: 8),
+                          Text(
+                            '含此药的医案 (${_relatedCases.length})',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: cs.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      ..._relatedCases.map((c) => ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text('#${c.seq}  ${c.displayName}',
+                                style: const TextStyle(fontWeight: FontWeight.bold)),
+                            subtitle: Text(
+                              c.diagnosis.isNotEmpty ? c.diagnosis : c.mechanism,
+                              style: const TextStyle(fontSize: 12),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            trailing: const Icon(Icons.chevron_right, size: 20),
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => MedicalCaseDetailScreen(c: c),
+                              ),
+                            ),
+                          )),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+
+          // 含此药的闭门课（后向关联）
+          Builder(
+            builder: (context) {
+              if (_relatedCritical.isEmpty) return const SizedBox.shrink();
+              return Card(
+                margin: const EdgeInsets.only(bottom: 12),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.menu_book, color: cs.primary),
+                          const SizedBox(width: 8),
+                          Text(
+                            '含此药的闭门课 (${_relatedCritical.length})',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: cs.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      ..._relatedCritical.map((it) => ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(it.title,
+                                style: const TextStyle(fontWeight: FontWeight.bold)),
+                            subtitle: Text(
+                              it.subtitle,
+                              style: const TextStyle(fontSize: 12),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            trailing: const Icon(Icons.chevron_right, size: 20),
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => MarkdownDocScreen(
+                                  title: it.title,
+                                  asset: it.asset,
+                                  linkFormulas: !it.isOverview,
+                                  footer:
+                                      '倪师闭门课重症临床 · 传统文化参考 · 非医疗建议',
+                                ),
                               ),
                             ),
                           )),

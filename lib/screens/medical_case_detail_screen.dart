@@ -164,9 +164,29 @@ class _MedicalCaseDetailScreenState extends State<MedicalCaseDetailScreen> {
                             }
                           },
                         )
-                      : Text(
-                          value,
-                          style: const TextStyle(fontSize: 14, height: 1.6),
+                      : FormulaRichText(
+                          formula: value,
+                          onFormulaTap: (f) {
+                            if (context.mounted) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      FormulaDetailScreen(formula: f),
+                                ),
+                              );
+                            }
+                          },
+                          onHerbTap: (h) {
+                            if (context.mounted) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => HerbDetailScreen(herb: h),
+                                ),
+                              );
+                            }
+                          },
                         ),
             ],
           ),
