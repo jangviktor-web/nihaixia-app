@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nihaisha_app/data/neijing_lecture_data.dart';
 import 'package:nihaisha_app/screens/neijing_library_screen.dart';
 import 'package:nihaisha_app/screens/neijing_search_screen.dart';
+import 'package:nihaisha_app/theme/app_colors.dart';
 
 /// 内经阅读库 + 全文搜索：数据完整性 + 页面冒烟。
 void main() {
@@ -31,7 +32,10 @@ void main() {
   group('阅读库页冒烟', () {
     testWidgets('渲染篇目列表并进入首篇', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(home: NeijingLibraryScreen()),
+        MaterialApp(
+          theme: ThemeData(useMaterial3: true, extensions: [AppColors.light]),
+          home: const NeijingLibraryScreen(),
+        ),
       );
       await tester.pump();
       expect(find.text('黄帝内经 · 阅读库'), findsOneWidget);
@@ -56,7 +60,10 @@ void main() {
   group('全文搜索页冒烟', () {
     testWidgets('输入关键词命中篇目', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(home: NeijingSearchScreen()),
+        MaterialApp(
+          theme: ThemeData(useMaterial3: true, extensions: [AppColors.light]),
+          home: const NeijingSearchScreen(),
+        ),
       );
       await tester.pump();
 

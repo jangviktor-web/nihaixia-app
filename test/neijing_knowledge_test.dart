@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nihaisha_app/data/neijing_data.dart';
 import 'package:nihaisha_app/screens/neijing_knowledge_screen.dart';
+import 'package:nihaisha_app/theme/app_colors.dart';
 
 /// 《人纪·黄帝内经》知识卡：数据完整性 + 页面冒烟。
 void main() {
@@ -39,7 +40,10 @@ void main() {
   group('内经速查页冒烟', () {
     testWidgets('三 Tab 可切换且内容渲染', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(home: NeijingKnowledgeScreen()),
+        MaterialApp(
+          theme: ThemeData(useMaterial3: true, extensions: [AppColors.light]),
+          home: const NeijingKnowledgeScreen(),
+        ),
       );
       await tester.pumpAndSettle();
 
