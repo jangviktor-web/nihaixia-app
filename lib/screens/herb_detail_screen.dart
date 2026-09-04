@@ -36,6 +36,7 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
   void _checkBookmark() async {
     final db = DatabaseHelper.instance;
     final bookmarked = await db.isBookmarked(widget.herb.name);
+    if (!mounted) return;
     setState(() => _isBookmarked = bookmarked);
   }
 
@@ -77,7 +78,7 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
         source: 'herb_detail',
       ));
     }
-    setState(() => _isBookmarked = !_isBookmarked);
+    if (mounted) setState(() => _isBookmarked = !_isBookmarked);
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
