@@ -104,6 +104,36 @@ const List<int> _taoHua = [9, 0, 3, 6]; // 桃花
 const List<int> _huaGai = [4, 7, 10, 1]; // 华盖
 const List<int> _jiangXing = [0, 3, 6, 9]; // 将星
 
+/// 太极贵人：日干 → 地支（甲乙子午、丙丁卯酉、戊己四库、庚辛寅亥、壬癸巳申）。
+const Map<int, List<int>> _taiJiGuiRen = {
+  0: [0, 6], 1: [0, 6], 2: [3, 9], 3: [3, 9], 4: [4, 10, 1, 7],
+  5: [4, 10, 1, 7], 6: [2, 11], 7: [2, 11], 8: [5, 8], 9: [5, 8],
+};
+
+/// 国印贵人：日干 → 地支（甲戌、乙亥、丙丑、丁寅、戊丑、己寅、
+/// 庚辰、辛巳、壬未、癸申）。
+const List<int> _guoYin = [10, 11, 1, 2, 1, 2, 4, 5, 7, 8];
+
+/// 金舆：日干 → 地支（禄前二位，甲辰、乙巳、丙未、丁申、戊未、
+/// 己申、庚戌、辛亥、壬丑、癸寅）。
+const List<int> _jinYu = [4, 5, 7, 8, 7, 8, 10, 11, 1, 2];
+
+/// 福星贵人：日干 → 地支（通行口诀：甲丙寅子、乙卯丑、丁亥、
+/// 戊申、己未、庚午、辛巳、壬辰、癸卯丑）。
+const Map<int, List<int>> _fuXingGuiRen = {
+  0: [2, 0], 1: [3, 1], 2: [2, 0], 3: [11], 4: [8], 5: [7],
+  6: [6], 7: [9], 8: [4], 9: [3, 1],
+};
+
+/// 德秀贵人：月支 → （德干，秀干），按月支三合局五行取阳阴干。
+/// 寅午戌→丙丁，申子辰→壬癸，巳酉丑→庚辛，亥卯未→甲乙。
+const Map<int, List<int>> _deXiu = {
+  0: [8, 9], 4: [8, 9], 8: [8, 9], // 申子辰：壬癸
+  2: [2, 3], 6: [2, 3], 10: [2, 3], // 寅午戌：丙丁
+  5: [6, 7], 9: [6, 7], 1: [6, 7], // 巳酉丑：庚辛
+  11: [0, 1], 3: [0, 1], 7: [0, 1], // 亥卯未：甲乙
+};
+
 /// 天德：月支 → 应见天干字。
 const Map<int, String> _tianDe = {
   2: '丁', 3: '申', 4: '壬', 5: '辛', 6: '亥', 7: '甲',
@@ -215,6 +245,53 @@ BaZiAnalysis analyzeBaZi({
   for (var i = 0; i < 4; i++) {
     if (zhiIdx[i] == _yangRen[dm]) addShensha('羊刃', i, _zhiChars[_yangRen[dm]]);
   }
+
+  // ---- 神煞扩展（11 种，通行口径）----
+  void addBranchShensha(String name, int target) {
+    for (var i = 0; i < 4; i++) {
+      if (zhiIdx[i] == target) addShensha(name, i, _zhiChars[target]);
+    }
+  }
+
+  void addStemShensha(String name, String stemChar) {
+    for (var i = 0; i < 4; i++) {
+      if (gans[i] == stemChar) addShensha(name, i, stemChar);
+    }
+  }
+
+  // 太极贵人（日干）
+  for (final b in _taiJiGuiRen[dm] ?? const <int>[]) {
+    addBranchShensha('太极贵人', b);
+  }
+  // 国印贵人（日干）
+  addBranchShensha('国印贵人', _guoYin[dm]);
+  // 金舆（日干，禄前二位）
+  addBranchShensha('金舆', _jinYu[dm]);
+  // 福星贵人（日干）
+  for (final b in _fuXingGuiRen[dm] ?? const <int>[]) {
+    addBranchShensha('福星贵人', b);
+  }
+  // 德秀贵人（月支三合组 → 德干/秀干查四干）
+  final deXiu = _deXiu[zhiIdx[1]];
+  if (deXiu != null) {
+    addStemShensha('德秀贵人', _ganChars[deXiu[0]]);
+    addStemShensha('德秀贵人', _ganChars[deXiu[1]]);
+  }
+  // 红鸾 / 天喜（年支：卯起逆行，天喜为红鸾冲位）
+  final hongLuanTarget = (3 - zhiIdx[0] + 12) % 12;
+  addBranchShensha('红鸾', hongLuanTarget);
+  addBranchShensha('天喜', (hongLuanTarget + 6) % 12);
+  // 孤辰 / 寡宿（年支所在季组）
+  const guChen = [2, 2, 5, 5, 5, 8, 8, 8, 11, 11, 11, 2];
+  const guaSu = [10, 10, 1, 1, 1, 4, 4, 4, 7, 7, 7, 10];
+  addBranchShensha('孤辰', guChen[zhiIdx[0]]);
+  addBranchShensha('寡宿', guaSu[zhiIdx[0]]);
+  // 劫煞 / 亡神（年支三合组：劫煞取绝位，亡神取临官位）
+  const jieShaByGroup = [5, 8, 11, 2];
+  const wangShenByGroup = [11, 2, 5, 8];
+  final yearGroup = _sanHeGroup(zhiIdx[0]);
+  addBranchShensha('劫煞', jieShaByGroup[yearGroup]);
+  addBranchShensha('亡神', wangShenByGroup[yearGroup]);
 
   // ---- 格局（月支藏干透干 + 建禄/羊刃）----
   final monthBranch = zhiIdx[1];
