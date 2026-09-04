@@ -21,6 +21,7 @@ dependencies:
   sxwnl_spa_dart: ^0.18.5
   open_filex: ^4.7.0
   lucide_icons: ^0.257.0
+  bazi_core: ^0.6.7
 
 dev_dependencies:
   flutter_test:

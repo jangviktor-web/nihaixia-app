@@ -18,7 +18,7 @@ packages:
     source: hosted
     version: "2.13.1"
   bazi_core:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: bazi_core
       sha256: f673814f1cba10fdca454c5fe990224136cf4741e0617a0654f508718b7bb53c
