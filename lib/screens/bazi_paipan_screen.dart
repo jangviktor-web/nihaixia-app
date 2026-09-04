@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show Clipboard, ClipboardData;
+import 'package:share_plus/share_plus.dart';
 
 import 'package:nihaisha_app/services/bazi_service.dart';
 import 'package:nihaisha_app/data/settings_repository.dart';
@@ -6,6 +8,7 @@ import 'package:nihaisha_app/engine/bazi_twelve_stages.dart' show TwelveStageMod
 import 'package:ziwei_core/ziwei_core.dart' show Location;
 
 import 'package:nihaisha_app/widgets/bazi_location_picker.dart';
+import 'package:nihaisha_app/widgets/bazi_fortune_card.dart';
 import 'package:nihaisha_app/widgets/bazi_paipan_widgets.dart';
 
 /// 八字排盘：生辰 → 四柱 + 十神 + 旬空 + 刑冲合害 + 长生十二神 + 八字详批。
@@ -48,6 +51,7 @@ class _BaZiPaipanScreenState extends State<BaZiPaipanScreen> {
   double? _locLat;
 
   BaZiPaipan? _result;
+  BaZiFortune? _fortune;
   String? _error;
 
   @override
@@ -82,10 +86,52 @@ class _BaZiPaipanScreenState extends State<BaZiPaipanScreen> {
         location: location,
       );
       if (!mounted) return;
-      setState(() => _result = r);
+      setState(() {
+        _result = r;
+        _fortune = computeBaZiFortune(
+          solar,
+          isMale: _isMale,
+          location: location,
+          earlyZiShi: _earlyZiShi,
+        );
+      });
     } catch (e) {
       if (mounted) setState(() => _error = '计算失败：$e');
     }
+  }
+
+  /// 拼接纯文本排盘结果（复制 / 分享共用）。
+  String _buildShareText() {
+    final r = _result!;
+    final pillars = [r.bazi.year, r.bazi.month, r.bazi.day, r.bazi.time];
+    final b = StringBuffer()
+      ..writeln('【八字排盘】')
+      ..writeln('四柱：${pillars.join(' ')}')
+      ..writeln('十神：${r.tenGods.join(' ')}')
+      ..writeln(
+          '纳音：${[for (final p in pillars) nayinOfPillar(p)].join(' ')}')
+      ..writeln('旬空：${r.kongWang.isEmpty ? '无' : r.kongWang.join('、')}')
+      ..writeln('关系：${r.relations.isEmpty ? '无' : r.relations.join('、')}');
+    final f = _fortune;
+    if (f != null) {
+      b.writeln(
+          '起运：${f.startAge.toStringAsFixed(1)} 岁（${f.qiYunTime.year} 年交运）');
+      b.writeln('大运：${f.decades.map((d) => d.ganZhi).join(' → ')}');
+    }
+    b.writeln('—— 来自汉唐中医（民俗文化参考，非医疗建议）');
+    return b.toString();
+  }
+
+  Future<void> _copyShareText() async {
+    await Clipboard.setData(ClipboardData(text: _buildShareText()));
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('已复制排盘文本')),
+    );
+  }
+
+  Future<void> _shareResult() async {
+    await Share.share(_buildShareText(), subject: '八字排盘');
   }
 
   int _daysInMonth(int year, int month) {
@@ -109,7 +155,20 @@ class _BaZiPaipanScreenState extends State<BaZiPaipanScreen> {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('八字排盘')),
+      appBar: AppBar(title: const Text('八字排盘'), actions: [
+    if (_result != null) ...[
+      IconButton(
+        icon: const Icon(Icons.copy_outlined),
+        tooltip: '复制排盘文本',
+        onPressed: _copyShareText,
+      ),
+      IconButton(
+        icon: const Icon(Icons.share_outlined),
+        tooltip: '分享',
+        onPressed: _shareResult,
+      ),
+    ],
+  ]),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -135,6 +194,10 @@ class _BaZiPaipanScreenState extends State<BaZiPaipanScreen> {
             const SizedBox(height: 12),
             BaZiFourPillarsCard(result: _result!),
             const SizedBox(height: 12),
+            if (_fortune != null) ...[
+              BaZiFortuneCard(fortune: _fortune!),
+              const SizedBox(height: 12),
+            ],
             BaZiRelationsCard(result: _result!),
             const SizedBox(height: 12),
             BaZiTwelveStagesCard(result: _result!),

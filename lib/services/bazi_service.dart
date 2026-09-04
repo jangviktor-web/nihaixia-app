@@ -6,6 +6,8 @@ library;
 
 import 'package:ziwei_core/ziwei_core.dart' show Gender, Location, RatHourMode;
 
+import 'package:bazi_core/bazi_core.dart' as bazi;
+
 import 'package:nihaisha_app/engine/bazi_analysis.dart'
     show analyzeBaZi, BaZiAnalysis;
 import 'package:nihaisha_app/engine/bazi_relations.dart'
@@ -96,4 +98,90 @@ BaZiPaipan computeBaZiPaipan(
     twelveStages: stages,
     analysis: analysis,
   );
+}
+
+// ---- 大运 / 流年（编排 bazi_core Fortune，UI 不直接依赖引擎类型）----
+
+/// 单步大运（含其辖下 10 流年）的轻量视图。
+class BaZiDecade {
+  final int index; // 第几步大运（1 起）
+  final String ganZhi; // 大运干支（如 癸未）
+  final int startAge; // 起步虚岁
+  final int endAge; // 结束虚岁
+  final List<({int year, String ganZhi})> years; // 10 个流年
+
+  const BaZiDecade({
+    required this.index,
+    required this.ganZhi,
+    required this.startAge,
+    required this.endAge,
+    required this.years,
+  });
+}
+
+/// 大运 / 流年汇总。
+class BaZiFortune {
+  final double startAge; // 起运虚岁（精确值，如 2.72）
+  final DateTime qiYunTime; // 精确交运钟表时间
+  final List<BaZiDecade> decades; // N 步大运
+
+  const BaZiFortune({
+    required this.startAge,
+    required this.qiYunTime,
+    required this.decades,
+  });
+}
+
+/// 计算大运 / 流年。
+///
+/// 顺逆由 bazi_core 按传统规则内部判定：方向 = 年干阴阳 × 性别
+/// （阳男阴女顺排、阴男阳女逆排，见 bazi_core fortune.dart）。
+/// [location] 语义同 [computeBaZiPaipan]；`null` 时按默认东经 120°。
+/// [earlyZiShi] 早晚子时口径，与四柱排盘保持一致。
+BaZiFortune computeBaZiFortune(
+  DateTime solar, {
+  required bool isMale,
+  Location? location,
+  bool earlyZiShi = false,
+  int decadeCount = 8,
+}) {
+  final chart = bazi.BaziChart.createBySolarDate(
+    clockTime: bazi.AstroDateTime(
+        solar.year, solar.month, solar.day, solar.hour, solar.minute),
+    location: location ?? Location(120, 30),
+    ratHourMode:
+        earlyZiShi ? RatHourMode.todayGan : RatHourMode.noSplit,
+    useTrueSolarTime: true,
+    gender: isMale ? Gender.male : Gender.female,
+  );
+  final fortune = bazi.Fortune.createByBaziChart(chart);
+  final decades = <BaZiDecade>[];
+  for (var i = 1; i <= decadeCount; i++) {
+    final d = fortune.getDecadeByIndex(i);
+    decades.add(BaZiDecade(
+      index: d.index,
+      ganZhi: '${d.ganZhi}',
+      startAge: d.startAge,
+      endAge: d.endAge,
+      years: [
+        for (final y in d.flowYears) (year: y.year, ganZhi: '${y.ganZhi}'),
+      ],
+    ));
+  }
+  final qt = fortune.qiYunTime;
+  return BaZiFortune(
+    startAge: fortune.startAge,
+    qiYunTime: DateTime(qt.year, qt.month, qt.day, qt.hour, qt.minute),
+    decades: decades,
+  );
+}
+
+/// 四柱纳音（如 甲子 → 海中金）。基于 sxwnl 权威纳音表，无需自维护。
+String nayinOfPillar(String ganzhi) {
+  assert(ganzhi.length == 2);
+  final gz = bazi.GanZhi(
+    bazi.TianGan.fromName(ganzhi.substring(0, 1)),
+    bazi.DiZhi.fromName(ganzhi.substring(1, 2)),
+  );
+  return gz.naYin;
 }

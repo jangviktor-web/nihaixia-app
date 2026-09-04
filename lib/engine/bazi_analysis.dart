@@ -400,3 +400,11 @@ BaZiAnalysis analyzeBaZi({
         : '日主偏弱，宜用${favorable.join('、')}生扶助之。',
   );
 }
+
+/// 地支藏干（天干字符列表），如 卯 → [乙]、丑 → [己, 癸, 辛]。
+///
+/// 供四柱卡渲染「藏干」行使用（数据与详批引擎同源：[_hiddenStems]）。
+List<String> branchHiddenStems(String zhi) {
+  final idx = _zhiIdx(zhi);
+  return [for (final h in _hiddenStems[idx] ?? const <int>[]) _ganChars[h]];
+}

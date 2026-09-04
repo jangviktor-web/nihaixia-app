@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../services/bazi_service.dart';
-import '../engine/bazi_analysis.dart' show BaZiAnalysis;
+import '../engine/bazi_analysis.dart'
+    show BaZiAnalysis, branchHiddenStems;
 import '../theme/app_colors.dart';
 
 /// 八字排盘结果卡片组件集合。
@@ -61,6 +62,24 @@ class BaZiFourPillarsCard extends StatelessWidget {
                         Text(
                           result.tenGods[i],
                           style: TextStyle(fontSize: 11, color: cs.primary),
+                        ),
+                        const SizedBox(height: 3),
+                        // 藏干（如 卯→乙）：与详批引擎同源
+                        Text(
+                          branchHiddenStems(pillars[i].substring(1, 2)).join(' '),
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: cs.onSurfaceVariant,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        // 纳音（如 甲子→海中金）：sxwnl 权威表
+                        Text(
+                          nayinOfPillar(pillars[i]),
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: cs.onSurfaceVariant,
+                          ),
                         ),
                       ],
                     ),
