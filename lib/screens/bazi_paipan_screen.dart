@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'package:nihaisha_app/services/bazi_service.dart';
-import 'package:nihaisha_app/engine/bazi_twelve_stages.dart' show TwelveStageMode;
 import 'package:nihaisha_app/data/settings_repository.dart';
+import 'package:nihaisha_app/engine/bazi_twelve_stages.dart' show TwelveStageMode;
+import 'package:ziwei_core/ziwei_core.dart' show Location;
+
+import 'package:nihaisha_app/widgets/bazi_location_picker.dart';
 import 'package:nihaisha_app/widgets/bazi_paipan_widgets.dart';
 
 /// 八字排盘：生辰 → 四柱 + 十神 + 旬空 + 刑冲合害 + 长生十二神 + 八字详批。
@@ -40,6 +43,9 @@ class _BaZiPaipanScreenState extends State<BaZiPaipanScreen> {
   bool _isMale = true;
   bool _fireEarthSame = true; // 长生十二神口径：火土同宫(默认) / 水土同宫
   bool _earlyZiShi = false; // 早晚子时口径：晚子时(默认，23:00–24:00算次日) / 早子时(算当日)
+  String? _locName; // 出生地点（真太阳时校正；null=未设置→引擎默认东经120°）
+  double? _locLng;
+  double? _locLat;
 
   BaZiPaipan? _result;
   String? _error;
@@ -50,6 +56,9 @@ class _BaZiPaipanScreenState extends State<BaZiPaipanScreen> {
     // 同步共享排盘设置（与设置页双向一致）
     _fireEarthSame = SettingsRepository.instance.fireEarthSame;
     _earlyZiShi = !SettingsRepository.instance.lateZiShiEnabled; // 全局晚子时(true) -> 早子时取反
+    _locName = SettingsRepository.instance.lastCityName;
+    _locLng = SettingsRepository.instance.lastLng;
+    _locLat = SettingsRepository.instance.lastLat;
   }
 
   void _compute() {
@@ -60,6 +69,8 @@ class _BaZiPaipanScreenState extends State<BaZiPaipanScreen> {
     try {
       final hour = _shiChen[_shiChenIndex].$2;
       final solar = DateTime(_year, _month, _day, hour, 0);
+      final location =
+          (_locLng != null) ? Location(_locLng!, _locLat ?? 30) : null;
       final r = computeBaZiPaipan(
         solar,
         isMale: _isMale,
@@ -68,6 +79,7 @@ class _BaZiPaipanScreenState extends State<BaZiPaipanScreen> {
             ? TwelveStageMode.fireEarthSame
             : TwelveStageMode.waterEarthSame,
         earlyZiShi: _earlyZiShi,
+        location: location,
       );
       if (!mounted) return;
       setState(() => _result = r);
@@ -104,6 +116,21 @@ class _BaZiPaipanScreenState extends State<BaZiPaipanScreen> {
           _disclaimer(cs),
           const SizedBox(height: 12),
           _buildInputCard(cs),
+          BaZiLocationRow(
+            cityName: _locName,
+            lng: _locLng,
+            lat: _locLat,
+            onSelected: (city) {
+              setState(() {
+                _locName = city.name;
+                _locLng = city.lng;
+                _locLat = city.lat;
+              });
+              SettingsRepository.instance
+                  .setLastLocation(city.name, city.lng, city.lat);
+              if (_result != null) _compute(); // 地点变更后重排
+            },
+          ),
           if (_result != null) ...[
             const SizedBox(height: 12),
             BaZiFourPillarsCard(result: _result!),

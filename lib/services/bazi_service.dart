@@ -4,7 +4,7 @@
 /// 其余关系检测复用既有纯函数引擎，本文件只做编排，不重复实现历法 / 五行算法。
 library;
 
-import 'package:ziwei_core/ziwei_core.dart' show Gender, RatHourMode;
+import 'package:ziwei_core/ziwei_core.dart' show Gender, Location, RatHourMode;
 
 import 'package:nihaisha_app/engine/bazi_analysis.dart'
     show analyzeBaZi, BaZiAnalysis;
@@ -48,6 +48,8 @@ class BaZiPaipan {
 ///
 /// [solar] 为公历生辰（含时辰）；[isMale] 性别（不影响四柱，仅为构造所需）；
 /// [useTrueSolarTime] 真太阳时开关，与命盘页语义一致；
+/// [location] 出生地经纬度：`null` 时引擎默认 `Location(120, 30)`（东经 120°）。
+/// 为保证时柱正确，调用方应显式传入真实出生地（见 ziwei_engine.dart:523 说明）。
 /// [twelveStageMode] 长生十二神口径（火土同宫 / 水土同宫）；
 /// [earlyZiShi] 早晚子时口径：默认 `false`（晚子时，23:00–24:00 算次日，与紫微同口径）；
 /// `true` 即“早子时”（23:00–24:00 算当日，日柱不变），供排盘页开关切换。
@@ -57,12 +59,14 @@ BaZiPaipan computeBaZiPaipan(
   bool useTrueSolarTime = true,
   TwelveStageMode twelveStageMode = TwelveStageMode.fireEarthSame,
   bool earlyZiShi = false,
+  Location? location,
 }) {
   final bazi = calcZiweiBaZi(
     solar,
     gender: isMale ? Gender.male : Gender.female,
     useTrueSolarTime: useTrueSolarTime,
     ratHourMode: earlyZiShi ? RatHourMode.todayGan : null,
+    location: location,
   );
   final gans = <String>[
     _splitGanZhi(bazi.year).$1,

@@ -677,6 +677,9 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                           _longitudeCtrl.text =
                               city.lng.toStringAsFixed(2);
                         });
+                        // 同步最近出生地点，供八字排盘共用真太阳时校正。
+                        SettingsRepository.instance
+                            .setLastLocation(city.name, city.lng, city.lat);
                       }
                     },
                     icon: const Icon(Icons.location_city_outlined),

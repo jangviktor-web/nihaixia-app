@@ -18,6 +18,11 @@ class SettingsRepository extends ChangeNotifier {
   bool _lateZiShiEnabled = false; // 晚子时归次日口径（true=晚子时；同步紫微+八字，八字取反为早子时）
   bool _fireEarthSame = true; // 长生十二神起长生口径（true=火土同宫，现代子平主流）
 
+  // ---- 最近出生地点（真太阳时校正用，紫微/八字共用；null=未设置）----
+  String? _lastCityName;
+  double? _lastLng;
+  double? _lastLat;
+
   ThemeMode get themeMode => _themeMode;
   double get textScaleFactor => _textScaleFactor;
   String get defaultGender => _defaultGender;
@@ -27,6 +32,9 @@ class SettingsRepository extends ChangeNotifier {
   bool get useTrueSolarTime => _useTrueSolarTime;
   bool get lateZiShiEnabled => _lateZiShiEnabled;
   bool get fireEarthSame => _fireEarthSame;
+  String? get lastCityName => _lastCityName;
+  double? get lastLng => _lastLng;
+  double? get lastLat => _lastLat;
 
   Future<void> load() async {
     final db = await DatabaseHelper.instance.database;
@@ -61,6 +69,15 @@ class SettingsRepository extends ChangeNotifier {
           break;
         case 'fire_earth_same':
           _fireEarthSame = value == 'true';
+          break;
+        case 'last_city_name':
+          _lastCityName = value.isEmpty ? null : value;
+          break;
+        case 'last_lng':
+          _lastLng = double.tryParse(value);
+          break;
+        case 'last_lat':
+          _lastLat = double.tryParse(value);
           break;
       }
     }
@@ -114,6 +131,17 @@ class SettingsRepository extends ChangeNotifier {
     _fireEarthSame = value;
     notifyListeners();
     await _save('fire_earth_same', value.toString());
+  }
+
+  /// 记录最近出生地点（紫微选城市 / 八字选城市时写入，两处共用）。
+  Future<void> setLastLocation(String? cityName, double? lng, double? lat) async {
+    _lastCityName = (cityName == null || cityName.isEmpty) ? null : cityName;
+    _lastLng = lng;
+    _lastLat = lat;
+    notifyListeners();
+    await _save('last_city_name', _lastCityName ?? '');
+    await _save('last_lng', (lng ?? 120).toStringAsFixed(4));
+    await _save('last_lat', (lat ?? 30).toStringAsFixed(4));
   }
 
   Future<void> _save(String key, String value) async {
