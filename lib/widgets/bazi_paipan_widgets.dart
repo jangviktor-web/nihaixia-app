@@ -64,9 +64,15 @@ class BaZiFourPillarsCard extends StatelessWidget {
                           style: TextStyle(fontSize: 11, color: cs.primary),
                         ),
                         const SizedBox(height: 3),
-                        // 藏干（如 卯→乙）：与详批引擎同源
+                        // 藏干+副星（如 申→庚伤官 壬正财 戊劫财）：与详批引擎同源
                         Text(
-                          branchHiddenStems(pillars[i].substring(1, 2)).join(' '),
+                          [
+                            for (var j = 0;
+                                j <
+                                    result.hiddenTenGods[i].length;
+                                j++)
+                              '${branchHiddenStems(pillars[i].substring(1, 2))[j]}${result.hiddenTenGods[i][j]}',
+                          ].join(' '),
                           style: TextStyle(
                             fontSize: 10,
                             color: cs.onSurfaceVariant,
@@ -92,12 +98,31 @@ class BaZiFourPillarsCard extends StatelessWidget {
                 Icon(Icons.block_outlined, size: 16, color: cs.onSurfaceVariant),
                 const SizedBox(width: 6),
                 Text(
-                  '旬空（空亡）',
+                  '空亡（各柱）',
                   style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  result.kongWang.isEmpty ? '无' : result.kongWang.join('、'),
+                  result.kongWangPillars.join(' / '),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                Icon(Icons.child_care_outlined, size: 16, color: cs.onSurfaceVariant),
+                const SizedBox(width: 6),
+                Text(
+                  '胎元 / 胎息',
+                  style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  '${result.taiYuan} / ${result.taiXi}',
                   style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,

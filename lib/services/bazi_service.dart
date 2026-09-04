@@ -18,6 +18,8 @@ import 'package:nihaisha_app/engine/bazi_twelve_stages.dart'
     show TwelveStageMode, twelveStagesForPillars;
 import 'package:nihaisha_app/services/ziwei_engine.dart'
     show ZiweiBaZi, calcZiweiBaZi;
+import 'package:nihaisha_app/engine/bazi_extra.dart'
+    show taiYuanOf, taiXiOf, kongWangPerPillar, selfTwelveStages, hiddenTenGods;
 
 /// 单柱干支（如「甲辰」）拆成 (干, 支)。
 (String, String) _splitGanZhi(String gz) =>
@@ -33,6 +35,11 @@ class BaZiPaipan {
   final List<String> relations; // 刑冲合害 / 合会标签
   final List<String> twelveStages; // 长生十二神（年/月/日/时）
   final BaZiAnalysis analysis; // 格局 / 日主强弱 / 神煞 / 五行 / 用神忌神
+  final String taiYuan; // 胎元
+  final String taiXi; // 胎息
+  final List<String> kongWangPillars; // 各柱空亡（按各柱旬）
+  final List<String> selfStages; // 自坐十二神
+  final List<List<String>> hiddenTenGods; // 副星（各柱藏干十神）
 
   const BaZiPaipan({
     required this.bazi,
@@ -43,6 +50,11 @@ class BaZiPaipan {
     required this.relations,
     required this.twelveStages,
     required this.analysis,
+    required this.taiYuan,
+    required this.taiXi,
+    required this.kongWangPillars,
+    required this.selfStages,
+    required this.hiddenTenGods,
   });
 }
 
@@ -97,6 +109,12 @@ BaZiPaipan computeBaZiPaipan(
     relations: relations,
     twelveStages: stages,
     analysis: analysis,
+    taiYuan: taiYuanOf(bazi.month),
+    taiXi: taiXiOf(bazi.day),
+    kongWangPillars:
+        kongWangPerPillar([bazi.year, bazi.month, bazi.day, bazi.time]),
+    selfStages: selfTwelveStages(gans, zhis),
+    hiddenTenGods: hiddenTenGods(gans, zhis),
   );
 }
 
