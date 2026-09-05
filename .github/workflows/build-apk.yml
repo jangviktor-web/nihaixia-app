@@ -119,7 +119,7 @@ jobs:
         with:
           name: ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
-          body_path: release_notes/v1.11.12.md
+          body_path: release_notes/v1.11.13.md
           fail_on_unmatched_files: false
           files: |
             build/app/outputs/flutter-apk/*.apk
