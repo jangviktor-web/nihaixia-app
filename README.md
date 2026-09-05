@@ -82,6 +82,12 @@
 
 <img width="6000"  src="https://github.com/user-attachments/assets/cb1f78e8-3864-4290-bc30-14095812e94b" />
 
+**v1.11.13 每日黄历 · 生肖相冲 / 玉匣记神仙节日 + 潮汕节俗 / 玉匣灵兆模块**
+
+![v1.11.13 黄历三卡与玉匣灵兆](docs/images/screenshot_v1113_almanac_omen.jpg)
+
+从左到右：① **每日黄历 · 生肖相冲** —— 依每日地支经六冲推算当日相冲生肖（如子日冲马），一眼看清。 ② **每日黄历 · 玉匣记神仙节日 + 潮汕节俗** —— 玉匣记收三元五腊圣诞（114 条）、十殿阎君（10 条）与斋期，共 125 个农历日；潮汕地方条目单列（如「司命帝君」「灶公生」），与既有传统节日运行时去重互不覆盖。 ③ **玉匣灵兆 · 占面热法** 与 ④ **玉匣灵兆 · 占眼皮法** —— 玉匣记身体兆占，十二时辰各占断，当前时辰自动高亮，可展开十二时辰详表（左眼跳财、右眼有女思等）；工具页新增入口，附民俗参考免责声明。
+
 </div>
 
 ---
@@ -125,9 +131,9 @@
 > 完全离线｜无需联网｜无需注册｜Android 6.0+
 > 通用版 APK 约 64MB，分架构版 22–26MB
 > 自 V1.11.9 起由 GitHub Actions 自动构建发布，推送 `v*` tag 即出包
-> **最后更新：2026-08-31（v1.11.10）**
+> **最后更新：2026-09-05（v1.11.13）**
 
-### 📥 方式一：下载预编译 APK（V1.11.10）
+### 📥 方式一：下载预编译 APK（V1.11.13）
 
 > ### ⚠️ 升级须知：签名密钥已统一，通常可直接覆盖安装
 >
@@ -144,23 +150,26 @@
 
 <div align="left">
 
-[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安装包‑3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.10/app-release.apk)
+[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安装包‑3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.13/app-release.apk)
 &nbsp;&nbsp;
-[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安装包‑0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.10/app-arm64-v8a-release.apk)
+[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安装包‑0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.13/app-arm64-v8a-release.apk)
 &nbsp;&nbsp;
-[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安装包‑9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.10/app-armeabi-v7a-release.apk)
+[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安装包‑9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.13/app-armeabi-v7a-release.apk)
 &nbsp;&nbsp;
-[![📦 x86_64(虚拟机)](https://img.shields.io/badge/📦%20x86_64(虚拟机)-安卓安装包‑1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.10/app-x86_64-release.apk)
+[![📦 x86_64(虚拟机)](https://img.shields.io/badge/📦%20x86_64(虚拟机)-安卓安装包‑1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.13/app-x86_64-release.apk)
 
 </div>
 
 | 安装包 | 大小 | 适用说明 |
 |---|---|---|
-| 通用版 `app-release.apk` | 64.0MB | 全CPU架构，绝大多数安卓设备直接选这个 |
-| arm64‑v8a `app‑arm64‑v8a‑release.apk` | 23.9MB | 新款64位安卓手机，体积更小 |
-| armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | 21.8MB | 老旧32位安卓设备 |
-| x86_64 `app‑x86_64‑release.apk` | 25.5MB | 安卓虚拟机、模拟器使用 |
+| 通用版 `app-release.apk` | 64.8MB | 全CPU架构，绝大多数安卓设备直接选这个 |
+| arm64‑v8a `app‑arm64‑v8a‑release.apk` | 24.3MB | 新款64位安卓手机，体积更小 |
+| armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | 22.1MB | 老旧32位安卓设备 |
+| x86_64 `app‑x86_64‑release.apk` | 25.9MB | 安卓虚拟机、模拟器使用 |
 
+> **V1.11.13 八字神煞扩展 · 黄历神仙节日/生肖相冲/潮汕节俗 · 玉匣灵兆**：八字排盘新增 11 种神煞（太极贵人/国印/金舆/福星贵人/德秀/红鸾/天喜/孤辰/寡宿/劫煞/亡神）；每日黄历新增三张卡片——玉匣记神仙节日（125 个农历日）、生肖相冲（当日地支→相冲生肖）、潮汕节俗（94 个农历日），三源运行时去重互不覆盖；新增民俗模块「玉匣灵兆」（玉匣记身体兆占：十二时辰兆占 + 鸦鸣鹊噪 + 占灯花）。详见 [Release Notes](release_notes/v1.11.13.md)。
+> **V1.11.12 本草一键通 · 详情页三级结构**：药库列表/搜索每行可点进详情；医案与闭门课正文药材名（含异名）可点直达药物页；药物详情页相关内容改为「关联医案/关联闭门课/含此药方剂」三个入口 → 简洁列表 → 详情，页面更清爽。详见 [Release Notes](release_notes/v1.11.12.md)。
+> **V1.11.11 同药异名合并 · 异名检索修复**：18 组异名同种条目归一（479→461），检索收敛到唯一入口 matchesQuery，按旧名（如「茈胡」）也能命中「柴胡」；三盘合参与八字补全（十神/旬空/刑冲合害/长生十二神）落地。详见 [Release Notes](release_notes/v1.11.11.md)。
 > **V1.11.10 命盘随身 · 节气养生**：新增「我的命盘库」（生辰存一次、随时回看）、独立「节气养生」板块（24 节气健康要点 + 倪师节气解析）、每日黄历滑动手势（上/下滑切日、左/右滑切月），以及大运空宫自动附对宫星情解析。四项民俗文化参考增强，全部离线、可测、不引入医疗诊断断言。详见 [Release Notes](release_notes/v1.11.10.md)。
 > **V1.11.9 让条文说人话**：为 170 首经方补齐「患者会怎么说」口语画像（大白话 + 辨证指针 + 治法 + 原文条文），辨证结果页新增口语卡片可逐句自核；同时让引擎听懂"怕冷""怕风"等现代症状词——原先这些词字面打不中古文条文、关联不到方剂的老毛病，已由口语语料兜底召回，并以「增强分上限 < 1」的非劣化不变式确保原有正确排序不被打乱。
 > 含 V1.11.8 健康人基线判定、寒热真假八维法、六经公式分型速查等全部历史修复。
