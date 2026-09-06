@@ -3,6 +3,7 @@ import '../widgets/state_view.dart';
 import 'package:nihaisha_app/services/lunar_almanac_service.dart';
 import '../theme/app_colors.dart';
 import '../widgets/almanac_cards.dart';
+import '../data/saved_chart_repository.dart';
 
 /// 滑动手势方向（纯函数 [resolveSwipe] 的判定结果）。
 enum SwipeDir { dayNext, dayPrev }
@@ -37,11 +38,27 @@ class _DailyAlmanacScreenState extends State<DailyAlmanacScreen> {
   DateTime _date = DateTime.now();
   AlmanacDay? _almanac;
   bool _loading = true;
+  String? _userZodiac; // 本命生肖（最近命盘推导；null=未设置→不显预警）
 
   @override
   void initState() {
     super.initState();
     _compute();
+    _loadUserZodiac();
+  }
+
+  /// 由最近一条已存命盘推导本命生肖，供「今日相冲」个性化预警。
+  /// 无命盘/解析失败则静默保持 null，不影响黄历展示。
+  Future<void> _loadUserZodiac() async {
+    try {
+      final charts = await SavedChartRepository.getAll();
+      if (charts.isEmpty) return;
+      final dt = DateTime.parse(charts.first.solarIso);
+      final z = getUserZodiacFromSolar(dt);
+      if (mounted) setState(() => _userZodiac = z);
+    } catch (_) {
+      // 命盘库不可用或解析失败：保持 null，预警静默关闭。
+    }
   }
 
   void _compute() {
@@ -127,7 +144,7 @@ class _DailyAlmanacScreenState extends State<DailyAlmanacScreen> {
       const SizedBox(height: 12),
       AlmanacJianChuCard(almanac: a),
       const SizedBox(height: 12),
-      AlmanacZodiacChongCard(almanac: a),
+      AlmanacZodiacChongCard(almanac: a, userZodiac: _userZodiac),
       const SizedBox(height: 12),
       AlmanacPengZuCard(almanac: a),
       const SizedBox(height: 12),
@@ -146,6 +163,8 @@ class _DailyAlmanacScreenState extends State<DailyAlmanacScreen> {
         chipColor: context.colors.dangerContainer.withValues(alpha: 0.5),
         items: a.ji,
       ),
+      const SizedBox(height: 12),
+      AlmanacTongShengCard(almanac: a),
       if (a.festivals.isNotEmpty) ...[
         const SizedBox(height: 12),
         AlmanacFestivalCard(festivals: a.festivals),

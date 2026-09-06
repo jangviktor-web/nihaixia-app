@@ -180,8 +180,107 @@ class AlmanacJianChuCard extends StatelessWidget {
 }
 
 /// 生肖相冲卡片：当日地支生肖 vs 六冲生肖。
+///
+/// [userZodiac] 为当前用户本命生肖（由已存命盘推导，可为 null）。
+/// 若 [userZodiac] 恰为当日相冲生肖，额外高亮警示「今日冲你本命」。
 class AlmanacZodiacChongCard extends StatelessWidget {
-  const AlmanacZodiacChongCard({super.key, required this.almanac});
+  const AlmanacZodiacChongCard({
+    super.key,
+    required this.almanac,
+    this.userZodiac,
+  });
+
+  final AlmanacDay almanac;
+  final String? userZodiac;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final clashWithUser =
+        userZodiac != null && userZodiac == almanac.chongZodiac;
+    return Card(
+      elevation: 2,
+      color: clashWithUser ? cs.errorContainer : null,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (clashWithUser) ...[
+              Row(
+                children: [
+                  Icon(Icons.warning_amber_rounded,
+                      size: 18, color: cs.onErrorContainer),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '今日相冲你的本命生肖（${almanac.chongZodiac}），诸事谨慎',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: cs.onErrorContainer,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+            ],
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('当日生肖',
+                          style: TextStyle(
+                              fontSize: 13, color: cs.onSurfaceVariant)),
+                      const SizedBox(height: 4),
+                      Text(
+                        almanac.dayZodiac,
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: cs.onPrimaryContainer,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(Icons.sync_alt, size: 22, color: cs.onSurfaceVariant),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text('相冲生肖',
+                          style: TextStyle(
+                              fontSize: 13, color: cs.onSurfaceVariant)),
+                      const SizedBox(height: 4),
+                      Text(
+                        almanac.chongZodiac,
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: clashWithUser
+                              ? cs.onErrorContainer
+                              : cs.onSurface,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// 通胜要览卡片：黄道吉时 + 财神/喜神/福神方位（《玉匣记》通书通用口诀）。
+class AlmanacTongShengCard extends StatelessWidget {
+  const AlmanacTongShengCard({super.key, required this.almanac});
 
   final AlmanacDay almanac;
 
@@ -192,47 +291,119 @@ class AlmanacZodiacChongCard extends StatelessWidget {
       elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('当日生肖',
-                      style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant)),
-                  const SizedBox(height: 4),
-                  Text(
-                    almanac.dayZodiac,
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: cs.onPrimaryContainer,
-                    ),
-                  ),
-                ],
-              ),
+            Row(
+              children: [
+                Icon(Icons.auto_awesome_outlined, size: 18, color: cs.tertiary),
+                const SizedBox(width: 8),
+                const Text(
+                  '通胜要览',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  '玉匣记通书',
+                  style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
+                ),
+              ],
             ),
-            Icon(Icons.sync_alt, size: 22, color: cs.onSurfaceVariant),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text('相冲生肖',
-                      style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant)),
-                  const SizedBox(height: 4),
-                  Text(
-                    almanac.chongZodiac,
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: cs.onSurface,
-                    ),
+            const SizedBox(height: 10),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.schedule, size: 18, color: cs.primary),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('黄道吉时', style: TextStyle(fontSize: 12)),
+                      const SizedBox(height: 4),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: almanac.jiShi
+                            .map(
+                              (s) => Chip(
+                                backgroundColor: cs.primaryContainer
+                                    .withValues(alpha: 0.5),
+                                label: Text(s,
+                                    style:
+                                        TextStyle(color: cs.onPrimaryContainer)),
+                                visualDensity: VisualDensity.compact,
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            _TongShengRow(
+              icon: Icons.account_balance_wallet_outlined,
+              label: '财神',
+              value: almanac.caiShen,
+              color: cs.secondary,
+            ),
+            _TongShengRow(
+              icon: Icons.favorite_outline,
+              label: '喜神',
+              value: almanac.xiShen,
+              color: cs.tertiary,
+            ),
+            _TongShengRow(
+              icon: Icons.stars_outlined,
+              label: '福神',
+              value: almanac.fuShen,
+              color: cs.primary,
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// 通胜要览内的「方位」单行（图标 + 标签 + 值）。
+class _TongShengRow extends StatelessWidget {
+  const _TongShengRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: color),
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 36,
+            child: Text(label, style: const TextStyle(fontSize: 13)),
+          ),
+          Text(
+            '$value方',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: cs.onSurface,
+            ),
+          ),
+        ],
       ),
     );
   }
