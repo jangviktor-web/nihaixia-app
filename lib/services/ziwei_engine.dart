@@ -449,11 +449,12 @@ ZiweiChart calculateZiweiChart({
   // 关闭开关或 01:00–23:00：默认排盘。全程使用规则集默认（todayGan），既符合紫微流派
   // 口径，又避免 date.options 与 ruleset.calendarOptions 不一致报错；早晚子时的日/时柱
   // 差异由「日期偏移」（早子时）与「时柱覆盖」（晚子时）两种手段实现，不另造 options。
-  final DateTime baseSolar = (ratHourMode && solar.hour < 1)
-      ? solar.add(const Duration(days: 1))
-      : solar;
+  // 校正逻辑执行位置（约束 A/B）：原始 solar 只读，永远不把偏移后的日期直接喂内核。
+  // 内核统一以「原始 solar + todayGan 规则集」排盘，得到基础盘（命宫 / 十二宫 /
+  // 农历均对应真实公历输入）；早子时（hour<1）与晚子时（hour>=23）的日 / 时柱及
+  // 农历，在下方通过 copyWith 以「校正后的干支集合」覆盖，不污染内核其它派生字段。
   final date = ZiweiDate.fromSolar(
-    AstroDateTime(baseSolar.year, baseSolar.month, baseSolar.day, baseSolar.hour, baseSolar.minute),
+    AstroDateTime(solar.year, solar.month, solar.day, solar.hour, solar.minute),
     gender: gender,
     options: ruleset.calendarOptions,
     location: location,
@@ -566,7 +567,7 @@ ZiweiChart calculateZiweiChart({
     decades: decades,
     basePlate: plate,
   );
-  // 晚子时：时柱取「次日子时」与八字口径一致（日柱 / 命宫保持当天口径，已由 mode 保证）。
+  // 晚子时：时柱取「次日子时」与八字口径一致（日柱 / 命宫 / 农历保持当天口径）。
   if (ratHourMode && solar.hour >= 23) {
     final nextTime = calcZiweiBaZi(
       DateTime(solar.year, solar.month, solar.day, solar.hour, solar.minute),
@@ -576,6 +577,28 @@ ZiweiChart calculateZiweiChart({
       ratHourMode: RatHourMode.noSplit,
     );
     chart = chart.copyWith(baziTime: nextTime.time);
+  }
+  // 早子时：日柱取次日、时柱子时、农历同步切换到次日（约束 B）。
+  // 单独以「出生日 +1 天」构造一个只读 ZiweiDate，仅用于提取校正后的干支与农历，
+  // 不进入内核排盘，确保原始 solar 不被偏移后喂内核（约束 A）。
+  else if (ratHourMode && solar.hour < 1) {
+    final nextSolar = DateTime(solar.year, solar.month, solar.day, solar.hour, solar.minute)
+        .add(const Duration(days: 1));
+    final nextDate = ZiweiDate.fromSolar(
+      AstroDateTime(nextSolar.year, nextSolar.month, nextSolar.day, nextSolar.hour, nextSolar.minute),
+      gender: gender,
+      options: ruleset.calendarOptions,
+      location: location,
+      useTrueSolarTime: useTrueSolarTime,
+    );
+    final nbz = nextDate.bazi;
+    chart = chart.copyWith(
+      baziDay: '${nbz.day.gan.label}${nbz.day.zhi.label}',
+      baziTime: '${nbz.time.gan.label}${nbz.time.zhi.label}',
+      lunarText: '农历 ${nextDate.lunar}',
+      lunarMonth: nextDate.lunar.month,
+      lunarIsLeap: nextDate.lunar.isLeap,
+    );
   }
   return chart;
 }

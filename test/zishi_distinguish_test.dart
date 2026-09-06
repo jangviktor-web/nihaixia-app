@@ -145,4 +145,50 @@ void main() {
     // 日柱不同，证明紫微盘基于校正后日柱（而非原始时间）生成。
     expect(c1.baziDay != c2.baziDay, isTrue);
   });
+
+  // 约束 B（早子时）：日柱取次日、农历同步切换到次日农历，公历标题仍显示原始输入。
+  test('约束B 早子时：农历跟随校正日柱（公历+1 农历同步+1）', () {
+    final solar = DateTime(2026, 9, 6, 0, 20);
+    final early = calculateZiweiChart(
+      solar: solar,
+      gender: Gender.male,
+      useTrueSolarTime: true,
+      ratHourMode: true,
+    );
+    // 校正后的参考日 = 出生日 +1 天（todayGan 口径、关闭子时修正），其农历即应显示的农历。
+    final refNext = calculateZiweiChart(
+      solar: DateTime(2026, 9, 7, 0, 20),
+      gender: Gender.male,
+      useTrueSolarTime: true,
+      ratHourMode: false,
+    );
+    expect(early.baziDay, '甲申');
+    expect(early.baziTime, '甲子');
+    // 农历显示跟随校正后的干支：与「+1 天」命盘的农历完全一致。
+    expect(early.lunarText, refNext.lunarText);
+    expect(early.lunarMonth, refNext.lunarMonth);
+    expect(early.lunarIsLeap, refNext.lunarIsLeap);
+  });
+
+  // 约束 B（晚子时）：日柱 / 农历保持当天口径不变，仅时柱由壬子校正为甲子。
+  test('约束B 晚子时：农历不变、仅时柱校正', () {
+    final solar = DateTime(2026, 9, 6, 23, 30);
+    final late = calculateZiweiChart(
+      solar: solar,
+      gender: Gender.male,
+      useTrueSolarTime: true,
+      ratHourMode: true,
+    );
+    final plain = calculateZiweiChart(
+      solar: solar,
+      gender: Gender.male,
+      useTrueSolarTime: true,
+      ratHourMode: false,
+    );
+    expect(late.baziDay, plain.baziDay);
+    expect(late.lunarText, plain.lunarText);
+    expect(late.lunarMonth, plain.lunarMonth);
+    expect(late.baziTime, '甲子');
+    expect(plain.baziTime, '壬子');
+  });
 }
