@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/state_view.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import '../data/ziwei_case_data.dart';
@@ -40,7 +41,7 @@ class _ZiweiDocScreenState extends State<ZiweiDocScreen> {
         future: _future,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: StateView.loading());
           }
           final text = snapshot.data ?? '';
           return Column(

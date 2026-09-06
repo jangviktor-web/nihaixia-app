@@ -7,6 +7,9 @@ class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
   static Database? _database;
 
+  /// 收藏变更版本号：每次增删收藏自增，供收藏页实时刷新（解决「退出应用才更新」问题）。
+  static final ValueNotifier<int> bookmarkVersion = ValueNotifier<int>(0);
+
   DatabaseHelper._init();
 
   Future<Database> get database async {
@@ -193,7 +196,9 @@ class DatabaseHelper {
 
   Future<int> insertBookmark(Bookmark bookmark) async {
     final db = await database;
-    return await db.insert('bookmarks', bookmark.toJson()..remove('id'));
+    final id = await db.insert('bookmarks', bookmark.toJson()..remove('id'));
+    bookmarkVersion.value++;
+    return id;
   }
 
   Future<List<Bookmark>> getAllBookmarks() async {
@@ -215,7 +220,9 @@ class DatabaseHelper {
 
   Future<int> deleteBookmark(int id) async {
     final db = await database;
-    return await db.delete('bookmarks', where: 'id = ?', whereArgs: [id]);
+    final count = await db.delete('bookmarks', where: 'id = ?', whereArgs: [id]);
+    bookmarkVersion.value++;
+    return count;
   }
 
   Future<bool> isBookmarked(String title) async {

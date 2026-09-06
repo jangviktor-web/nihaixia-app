@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -28,6 +29,7 @@ class UpdateService {
   static const _repoName = 'nihaixia-app';
   static const _ignoredVersionKey = 'ignored_update_version';
   static const _permanentlyIgnoredKey = 'permanently_ignored_versions';
+  static const _mirrorEnabledKey = 'update_mirror_enabled';
 
   /// 获取当前应用版本号
   static Future<String> getCurrentVersion() async {
@@ -35,33 +37,66 @@ class UpdateService {
     return info.version;
   }
 
-  /// 检查是否有新版本
+  /// 是否启用镜像加速（默认开启：国内 GitHub 访问慢时自动切换镜像）
+  static Future<bool> isMirrorEnabled() async {
+    try {
+      final db = await DatabaseHelper.instance.database;
+      final rows = await db.query('user_settings',
+          where: "key = ?", whereArgs: [_mirrorEnabledKey]);
+      if (rows.isEmpty) return true;
+      return (rows.first['value'] as String) == 'true';
+    } catch (_) {
+      return true;
+    }
+  }
+
+  /// 设置是否启用镜像加速
+  static Future<void> setMirrorEnabled(bool enabled) async {
+    final db = await DatabaseHelper.instance.database;
+    await db.insert(
+      'user_settings',
+      {'key': _mirrorEnabledKey, 'value': enabled ? 'true' : 'false'},
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  /// 检查是否有新版本（自动尝试主源 + 镜像源）
   static Future<UpdateInfo?> checkForUpdate() async {
     try {
       final currentVersion = await getCurrentVersion();
-      final url = Uri.parse(
-          'https://api.github.com/repos/$_repoOwner/$_repoName/releases/latest');
-      final response = await http.get(url).timeout(
-        const Duration(seconds: 10),
-        onTimeout: () => throw Exception('网络超时'),
-      );
+      final mirror = await isMirrorEnabled();
+      final sources = <String>[
+        'https://api.github.com/repos/$_repoOwner/$_repoName/releases/latest',
+        if (mirror)
+          'https://mirror.ghproxy.com/https://api.github.com/repos/$_repoOwner/$_repoName/releases/latest',
+      ];
 
-      if (response.statusCode != 200) return null;
+      Map<String, dynamic>? releaseData;
+      for (final url in sources) {
+        try {
+          final response = await http.get(Uri.parse(url)).timeout(
+            const Duration(seconds: 10),
+            onTimeout: () => throw Exception('网络超时'),
+          );
+          if (response.statusCode == 200) {
+            releaseData = json.decode(response.body) as Map<String, dynamic>;
+            break;
+          }
+        } catch (e) {
+          debugPrint('更新源不可用，尝试下一镜像: $url -> $e');
+        }
+      }
+      if (releaseData == null) return null;
 
-      final data = json.decode(response.body);
-      final tagName = data['tag_name'] ?? '';
+      final tagName = releaseData['tag_name'] ?? '';
       final remoteVersion = tagName.replaceFirst('v', '');
 
-      // 比较版本号
       if (!_isNewerVersion(remoteVersion, currentVersion)) return null;
-
-      // 检查是否已被忽略
       if (await _isIgnored(remoteVersion)) return null;
 
-      // 查找APK资源
       String apkUrl = '';
       int apkSize = 0;
-      final assets = data['assets'] as List<dynamic>? ?? [];
+      final assets = releaseData['assets'] as List<dynamic>? ?? [];
       for (final asset in assets) {
         final name = asset['name'] ?? '';
         if (name.endsWith('.apk')) {
@@ -76,7 +111,7 @@ class UpdateService {
       return UpdateInfo(
         version: remoteVersion,
         tagName: tagName,
-        body: data['body'] ?? '暂无更新说明',
+        body: releaseData['body'] ?? '暂无更新说明',
         apkDownloadUrl: apkUrl,
         apkSize: apkSize,
       );
@@ -149,40 +184,95 @@ class UpdateService {
     );
   }
 
-  /// 下载APK文件
+  /// 下载APK文件（自动尝试主源 + 镜像源，首字节超时即切换）
   static Future<File?> downloadApk(
     String url,
     void Function(double progress)? onProgress,
   ) async {
+    final candidates = <String>[url];
+    final mirror = await isMirrorEnabled();
+    if (mirror && url.contains('github.com')) {
+      candidates.add('https://ghproxy.net/$url');
+      candidates.add('https://github.akams.cn/$url');
+    }
+    for (final candidate in candidates) {
+      final file = await _tryDownload(candidate, onProgress);
+      if (file != null) return file;
+    }
+    return null;
+  }
+
+  /// 单个下载源尝试：15s 内未收到首字节判定该镜像过慢，返回 null 交由上层切换
+  static Future<File?> _tryDownload(
+    String url,
+    void Function(double progress)? onProgress,
+  ) async {
+    final client = http.Client();
+    File? file;
     try {
       final dir = await getTemporaryDirectory();
       final filePath = '${dir.path}/nihaisha_update.apk';
-      final file = File(filePath);
+      file = File(filePath);
       if (await file.exists()) await file.delete();
 
       final request = http.Request('GET', Uri.parse(url));
-      final response = await http.Client().send(request).timeout(
+      final response = await client.send(request).timeout(
         const Duration(minutes: 5),
       );
+      if (response.statusCode != 200) {
+        debugPrint('下载失败[HTTP ${response.statusCode}]: $url');
+        return null;
+      }
 
       final totalBytes = response.contentLength ?? 0;
       int receivedBytes = 0;
       final sink = file.openWrite();
 
-      await for (final chunk in response.stream) {
-        sink.add(chunk);
-        receivedBytes += chunk.length;
-        if (totalBytes > 0 && onProgress != null) {
-          onProgress(receivedBytes / totalBytes);
+      final firstByteCompleter = Completer<void>();
+      late StreamSubscription<List<int>> subscription;
+      Timer? firstByteTimer;
+      var firstByteArrived = false;
+
+      firstByteTimer = Timer(const Duration(seconds: 15), () {
+        if (!firstByteArrived) {
+          debugPrint('镜像首字节超时，切换: $url');
+          firstByteCompleter.completeError(Exception('first_byte_timeout'));
         }
+      });
+
+      subscription = response.stream.listen(
+        (chunk) {
+          if (!firstByteArrived) {
+            firstByteArrived = true;
+            firstByteTimer?.cancel();
+          }
+          sink.add(chunk);
+          receivedBytes += chunk.length;
+          if (totalBytes > 0 && onProgress != null) {
+            onProgress(receivedBytes / totalBytes);
+          }
+        },
+        onError: (e, _) => firstByteCompleter.completeError(e),
+        onDone: () => firstByteCompleter.complete(),
+        cancelOnError: true,
+      );
+
+      try {
+        await firstByteCompleter.future;
+      } catch (e) {
+        firstByteTimer.cancel();
+        await subscription.cancel();
+        await sink.close();
+        return null;
       }
       await sink.flush();
       await sink.close();
-
       return file;
     } catch (e) {
-      debugPrint('下载APK失败: $e');
+      debugPrint('下载APK失败[$url]: $e');
       return null;
+    } finally {
+      client.close();
     }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/state_view.dart';
 import 'package:ziwei_core/ziwei_core.dart';
 import 'package:nihaisha_app/services/ziwei_engine.dart';
 import 'package:nihaisha_app/services/ziwei_interpretation.dart';
@@ -8,6 +9,7 @@ import 'ziwei_doc_screen.dart';
 import 'ziwei_cases_list_screen.dart';
 import '../data/ziwei_case_data.dart';
 import '../data/saved_chart_repository.dart';
+import '../data/settings_repository.dart';
 import '../theme/app_colors.dart';
 
 /// 紫微斗数排盘界面。
@@ -59,7 +61,8 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
   int _day = 16;
   int _birthHour = 10; // 实际出生钟表小时 0-23（默认 10 时 ≈ 巳时）
   int _birthMinute = 0; // 实际出生分钟 0-59
-  /// 由实际小时推导的时辰索引（晚子时 23:00–23:59 归子时当日→滚动见 resolveBirthSolar）。
+  /// 由实际小时推导的时辰索引（23:00–23:59 归「子时」；是否将公历日期滚动到次日
+  /// 由 resolveBirthSolar 的 enabled 开关决定，这里只负责时辰归类）。
   int get _shiChenIndex => _shiChenIndexForHour(_birthHour);
   bool _isMale = true;
 
@@ -71,6 +74,8 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
   FlowMonthMark? _flowMonthMark;
   FlowDayMark? _flowDayMark;
   bool _useTrueSolarTime = true; // 真太阳时校准（专业排盘默认开启）
+  bool _distinguishZiShi = false; // 区分早晚子时：默认关闭（子时归自然日）
+  bool _fireEarthSame = true; // 长生十二神起长生口径：默认火土同宫（现代子平主流）
   bool _showAllHealth = false; // 健康提醒：展开终身（出生→百岁）vs 默认未来30年
   final _longitudeCtrl = TextEditingController(); // 出生地经度（东经，留空用默认 120°）
   CityLocation? _selectedCity; // 选中的出生城市（真太阳时定位，优先于手动经度）
@@ -78,6 +83,10 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
   @override
   void initState() {
     super.initState();
+    // 同步共享排盘设置（与设置页双向一致）
+    _useTrueSolarTime = SettingsRepository.instance.useTrueSolarTime;
+    _distinguishZiShi = SettingsRepository.instance.distinguishZiShiEnabled;
+    _fireEarthSame = SettingsRepository.instance.fireEarthSame;
     // 预加载中文城市经纬度数据（真太阳时地点选择，静态缓存、幂等）
     CityLocationService.load();
     // 命盘库回看：回填生辰、性别、地点后自动重排
@@ -248,14 +257,9 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
     // 用 microtask 让 loading 先渲染
     Future.microtask(() {
       try {
-        // 晚子时归次日：由实际出生时:分解析出传给引擎的公历 DateTime。
-        final solar = resolveBirthSolar(
-          year: _year,
-          month: _month,
-          day: _day,
-          hour: _birthHour,
-          minute: _birthMinute,
-        );
+        // 区分早晚子时：直接传原始公历生辰（含 23 点），由引擎按 ratHourMode 校正，
+        // 不再在此预滚动日期（避免与引擎口径重复）。
+        final solar = DateTime(_year, _month, _day, _birthHour, _birthMinute);
         final chart = calculateZiweiChart(
           solar: solar,
           gender: _isMale ? Gender.male : Gender.female,
@@ -264,6 +268,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
               ? Location(_selectedCity!.lng, _selectedCity!.lat)
               : (lng != null ? Location(lng, 30) : null),
           useTrueSolarTime: _useTrueSolarTime,
+          ratHourMode: _distinguishZiShi,
         );
         if (mounted) {
           setState(() {
@@ -286,15 +291,8 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
   /// 收集生辰/性别/地点后写入 [SavedChartRepository]，并提示已存入。
   Future<void> _saveToLibrary() async {
     if (_chart == null) return;
-    // 存入命盘库的生辰须为「解析后」的公历时间（含晚子时次日滚动），
-    // 以便日后回看能原样重排出同一命盘。
-    final solar = resolveBirthSolar(
-      year: _year,
-      month: _month,
-      day: _day,
-      hour: _birthHour,
-      minute: _birthMinute,
-    );
+    // 存入命盘库的生辰为原始公历生辰（含 23 点），回看时由引擎按 ratHourMode 原样重排。
+    final solar = DateTime(_year, _month, _day, _birthHour, _birthMinute);
     final genderLabel = _isMale ? '男' : '女';
     final defaultName =
         '命盘 $_year-${_month.toString().padLeft(2, '0')}-${_day.toString().padLeft(2, '0')} $genderLabel';
@@ -411,7 +409,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
             const Center(
               child: Padding(
                 padding: EdgeInsets.all(24),
-                child: CircularProgressIndicator(),
+                child: StateView.loading(),
               ),
             ),
           if (_error != null)
@@ -527,7 +525,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                                 for (int h = 0; h <= 23; h++)
                                   DropdownMenuItem(
                                     value: h,
-                                    child: Text(h == 23 ? '23(晚子时)' : '$h'),
+                                    child: Text(h == 23 ? (_distinguishZiShi ? '23(晚子时)' : '23(子时)') : '$h'),
                                   ),
                               ],
                               onChanged: (v) =>
@@ -582,11 +580,24 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
               ],
             ),
             const SizedBox(height: 4),
-            // 晚子时口径提示（真实中文说明，无 emoji）
-            Text(
-              '23:00–23:59 为晚子时，归入次日子时（日柱顺延一日）；'
-              '00:00–00:59 为当日早子时。',
-              style: TextStyle(fontSize: 10, color: cs.onSurfaceVariant),
+            // 区分早晚子时开关（默认关闭；开启后由出生时刻自动判定早晚子时）
+            SwitchListTile(
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+              title: const Text(
+                '区分早晚子时',
+                style: TextStyle(fontSize: 12),
+              ),
+              subtitle: Text(
+                '默认关闭：子时归自然日（日柱当天）。开启后 23:00-24:00 为晚子时'
+                '（日柱当天、时柱次日子时），00:00-01:00 为早子时（日柱次日）。',
+                style: TextStyle(fontSize: 10, color: cs.onSurfaceVariant),
+              ),
+              value: _distinguishZiShi,
+              onChanged: (v) {
+                setState(() => _distinguishZiShi = v);
+                SettingsRepository.instance.setDistinguishZiShiEnabled(v);
+              },
             ),
             const SizedBox(height: 4),
             SwitchListTile(
@@ -601,7 +612,39 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                 style: TextStyle(fontSize: 10, color: cs.onSurfaceVariant),
               ),
               value: _useTrueSolarTime,
-              onChanged: (v) => setState(() => _useTrueSolarTime = v),
+              onChanged: (v) {
+                setState(() => _useTrueSolarTime = v);
+                SettingsRepository.instance.setUseTrueSolarTime(v);
+              },
+            ),
+            const SizedBox(height: 4),
+            // 长生十二神起长生口径（火土同宫 / 水土同宫）：小白用户生成八字前自选
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  '长生十二神 · 起长生口径',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
+                SegmentedButton<bool>(
+                  segments: const [
+                    ButtonSegment(value: true, label: Text('火土同宫')),
+                    ButtonSegment(value: false, label: Text('水土同宫')),
+                  ],
+                  selected: {_fireEarthSame},
+                  onSelectionChanged: (s) {
+                    setState(() => _fireEarthSame = s.first);
+                    SettingsRepository.instance.setFireEarthSame(s.first);
+                  },
+                ),
+                Text(
+                  _fireEarthSame
+                      ? '现代子平主流：戊己土寄生于火（戊长生在寅、己长生在酉）'
+                      : '部分古籍 / 纳音派：戊己土寄生于水（戊长生在申、己长生在卯）',
+                  style: TextStyle(fontSize: 10, color: cs.onSurfaceVariant),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
             Row(
@@ -616,6 +659,9 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
                           _longitudeCtrl.text =
                               city.lng.toStringAsFixed(2);
                         });
+                        // 同步最近出生地点，供八字排盘共用真太阳时校正。
+                        SettingsRepository.instance
+                            .setLastLocation(city.name, city.lng, city.lat);
                       }
                     },
                     icon: const Icon(Icons.location_city_outlined),

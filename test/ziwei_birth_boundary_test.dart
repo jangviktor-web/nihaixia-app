@@ -7,19 +7,47 @@ import 'package:nihaisha_app/services/ziwei_engine.dart';
 /// 闰月出生正确暴露「闰X月」。
 void main() {
   group('晚子时 / 早子时 边界', () {
-    test('resolveBirthSolar: 1990-05-20 23:30 → 次日 (5-21) 00:30', () {
+    test('resolveBirthSolar(enabled=true): 1990-05-20 23:30 → 次日 (5-21) 00:30', () {
       final solar = resolveBirthSolar(
         year: 1990,
         month: 5,
         day: 20,
         hour: 23,
         minute: 30,
+        enabled: true,
       );
       expect(solar.year, 1990);
       expect(solar.month, 5);
       expect(solar.day, 21, reason: '晚子时应滚动到次日');
       expect(solar.hour, 0, reason: '次日早子时固化到 0 点');
       expect(solar.minute, 30);
+    });
+
+    test('resolveBirthSolar 默认关闭：1990-05-20 23:30 → 当日 (5-20) 00:30', () {
+      final solar = resolveBirthSolar(
+        year: 1990,
+        month: 5,
+        day: 20,
+        hour: 23,
+        minute: 30,
+        // enabled 默认 false
+      );
+      expect(solar.year, 1990);
+      expect(solar.month, 5);
+      expect(solar.day, 20, reason: '默认关闭：晚子时按当日早子时，日柱不顺延');
+      expect(solar.hour, 0, reason: '当日早子时固化到 0 点');
+      expect(solar.minute, 30);
+    });
+
+    test('默认关闭时 23:30 与 00:30 同日（均当日早子时，日柱一致）', () {
+      final lateZi = resolveBirthSolar(
+        year: 1990, month: 5, day: 20, hour: 23, minute: 30,
+      );
+      final earlyZi = resolveBirthSolar(
+        year: 1990, month: 5, day: 20, hour: 0, minute: 30,
+      );
+      expect(lateZi.day, earlyZi.day, reason: '默认口径下日柱一致');
+      expect(lateZi.hour, 0);
     });
 
     test('resolveBirthSolar: 1990-05-20 00:30 → 当日 (5-20) 00:30', () {
@@ -36,7 +64,7 @@ void main() {
       expect(solar.hour, 0);
     });
 
-    test('engine 收到 23:30 → 次日子时（日柱归入次日，与当日子时不同）', () {
+    test('engine 收到 23:30(enabled=true) → 次日子时（日柱归入次日，与当日子时不同）', () {
       final lateZi = calculateZiweiChart(
         solar: resolveBirthSolar(
           year: 1990,
@@ -44,6 +72,7 @@ void main() {
           day: 20,
           hour: 23,
           minute: 30,
+          enabled: true,
         ),
         gender: Gender.male,
         useTrueSolarTime: false,

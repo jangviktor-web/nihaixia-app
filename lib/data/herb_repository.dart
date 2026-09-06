@@ -11,7 +11,8 @@ class HerbRepository {
   // 误指到古名而断开其自身的「含此药的方剂」关联。
   static const _canonicalOf = {
     // —— 炮制成分类（组成用炮制品，药库存生品/正名）——
-    '炙甘草': '甘草',
+    // 注：炙甘草 已升为药库独立条目（herbs.json），不再归一于甘草；
+    //     生甘草仍为甘草之生用别名，保留归一。
     '生甘草': '甘草',
     // 附子 = 生附子 = 大附子（生品，本经「附子」条即生附子，凡不注炮者即生用）；
     // 炮附子 = 炒附子 = 熟附子 = 制附子（火炮/炮制品）。
@@ -41,18 +42,17 @@ class HerbRepository {
     '橘皮': '陈皮',
     '红枣': '大枣',
     '栝蒌实': '栝楼实',
-    '栝蒌根': '瓜篓根',
-    '芎䓖': '芎穷',
+    '栝蒌根': '天花粉',
+    '芎䓖': '川芎',
     '香豉': '豆豉',
     '茵陈蒿': '茵陈',
     '木防己': '防己',
     '硝石': '消石',
-    '赤硝': '朴消',
+    '赤硝': '芒硝',
     '土瓜根': '王瓜',
     '葱白': '葱实',
     '葱': '葱实',
     '戎盐': '青盐',
-    '椒目': '蜀椒',
     '川椒': '蜀椒',
     '柏叶': '柏叶（侧柏叶）',
     '败酱草': '败酱',
@@ -64,7 +64,7 @@ class HerbRepository {
     '瓜子': '白瓜子',
     '商陆根': '商陆',
     '寒水石': '凝水石',
-    '杏子': '杏核仁',
+    '杏子': '杏仁',
     '鹿角胶': '白胶',
     '野菊花': '菊花',
     '朱砂': '丹砂',
@@ -79,7 +79,7 @@ class HerbRepository {
     '连轺': '连翘',
     '生梓白皮': '梓白皮',
     '葳蕤': '女萎',
-    '猪胆汁': '猪胆、猪肤',
+    '猪胆汁': '猪胆',
     '乱发': '发髲',
     '冬瓜仁': '白瓜子',
     '虻虫': '蜚虻',
@@ -91,11 +91,36 @@ class HerbRepository {
     '桑东南根白皮': '桑根白皮',
     '盐': '卤咸',
     // —— 其余异名/别名（键名本身不在药库）——
-    '猪肤': '猪胆、猪肤',
+    // 注：猪肤已升为药库独立条目（herbs.json，猪肤＝猪皮），不再归一于「猪胆、猪肤」 merged 名；
+    //     猪胆汁→猪胆（见上）；猪胆/猪肤各为独立药材条目。
     '红蓝花': '红花',
     '豆黄卷': '大豆黄卷',
     '白蔹': '白敛',
     '诃梨勒': '诃黎勒（诃子）',
+    '天麻': '赤箭',
+    '茜草': '茜根',
+    '荆芥': '假苏',
+    '天南星': '虎掌',
+    '玉竹': '女萎',
+    '桂心': '肉桂',
+    '桑寄生': '桑上寄生',
+    // —— 同药异名归并（A 组修复：本经名/古名/错别字 → 今用正名）——
+    '茈胡': '柴胡',
+    '芎穷': '川芎',
+    '旋华': '旋覆花',
+    '檗木': '黄柏',
+    '桑蜱蛸': '桑螵蛸',
+    '瓜篓根': '天花粉',
+    '白颈蚯蚓': '地龙',
+    '雀瓮': '蝉蜕',
+    '桃核仁': '桃仁',
+    '杏核仁': '杏仁',
+    '牙子': '狼牙',
+    '青蘘': '胡麻',
+    '姑活': '冬葵子',
+    '牡桂': '肉桂',
+    '菌桂': '肉桂',
+    '栝楼根': '天花粉',
   };
 
   static Future<void> load() async {
@@ -121,21 +146,30 @@ class HerbRepository {
     return _herbs.where((h) => h.category == category).toList();
   }
 
+  /// 药材是否命中查询词，**含异名归一**。
+  ///
+  /// 这是全项目药材检索的唯一入口 —— 页面禁止再自行写 `h.name.contains(...)`。
+  /// 背景：`_canonicalOf` 是异名的唯一来源，若各页面自己拼字符串匹配，新增/调整
+  /// 异名映射时页面不会同步，就会出现「异名搜不到」（如 茈胡 搜不到 柴胡）。
+  /// 历史上 knowledge_screen 与 search_tab 各自复制了一份匹配逻辑且都漏了归一，
+  /// 导致 103 个异名中 74 / 87 个失效。修复方式是收敛到本方法，而非各处打补丁。
+  static bool matchesQuery(Herb h, String query) {
+    if (query.isEmpty) return false;
+    final q = query.toLowerCase();
+    final cq = canonicalOf(query).toLowerCase();
+    return h.name.toLowerCase().contains(q) ||
+        h.name.toLowerCase().contains(cq) ||
+        (h.action ?? '').toLowerCase().contains(q) ||
+        (h.nature ?? '').toLowerCase().contains(q) ||
+        (h.original ?? '').toLowerCase().contains(q) ||
+        h.flavor.toLowerCase().contains(q) ||
+        h.category.toLowerCase().contains(q) ||
+        h.meridians.any((m) => m.toLowerCase().contains(q));
+  }
+
   static List<Herb> search(String query) {
     if (query.isEmpty) return [];
-    final q = query.toLowerCase();
-    final cq = canonicalOf(query);
-    return _herbs.where((h) {
-      return h.name.contains(q) ||
-          h.name == cq ||
-          h.name.contains(cq) ||
-          (h.action?.contains(q) ?? false) ||
-          (h.nature?.contains(q) ?? false) ||
-          (h.original?.contains(q) ?? false) ||
-          (h.flavor.contains(q)) ||
-          h.category.contains(q) ||
-          h.meridians.any((m) => m.contains(q));
-    }).toList();
+    return _herbs.where((h) => matchesQuery(h, query)).toList();
   }
 
   /// 只做「正名精确命中 + 别名归一」，不做模糊兜底。

@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nihaisha_app/screens/ziwei_reference_screen.dart';
+import 'package:nihaisha_app/theme/app_colors.dart';
 
 void main() {
   testWidgets('紫微斗数参考页渲染十四主星/十二宫/倪师论命理', (tester) async {
     await tester.pumpWidget(
-      const MaterialApp(home: ZiweiReferenceScreen()),
+      MaterialApp(
+        theme: ThemeData(useMaterial3: true, extensions: [AppColors.light]),
+        home: const ZiweiReferenceScreen(),
+      ),
     );
 
     // 标题区 + 倪师论命理（首屏可见）

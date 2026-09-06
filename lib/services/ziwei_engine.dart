@@ -175,12 +175,18 @@ String? brightnessLabel(int index) {
 /// 晚子时规则：将「用户录入的实际出生时辰（年/月/日/时/分）」解析为
 /// 传给 [calculateZiweiChart] 的公历 [DateTime]。
 ///
-/// 采用标准晚子时 convention：
-/// - 实际钟表时间落在 23:00–23:59（晚子时）：时辰为「子」，且公历日期滚动到
-///   次日（排盘以次日子时论命，日柱归入次日）。为兼容引擎 noSplit 模式
+/// 紫微斗数对 23:00–23:59 的「晚子时」归属存在流派分歧：
+/// - 一派主张「晚子时归次日子时」（日柱顺延一日）；
+/// - 一派主张「当日早子时」（日柱不顺延）。
+/// 为尊重用户选择，本函数增加 [enabled] 开关：
+/// - [enabled] = true：晚子时（23:00–23:59）滚动到次日 00:00 子时
+///   （排盘以次日子时论命，日柱归入次日）。为兼容引擎 noSplit 模式
 ///   （hour>=23 时会再 +1 天导致跨两日），此处把时辰固化为次日 00:00–00:59
 ///   的早子时，等价得到「次日日柱 + 子时」，与晚子时论法一致。
-/// - 实际时间 00:00–00:59（早子时）：子时，保持当日。
+/// - [enabled] = false（默认）：晚子时按「当日早子时」处理——固化到
+///   当日 00:00–00:59 子时，日柱不顺延。永不向引擎传入 hour==23，
+///   避免引擎 noSplit 模式二次滚动造成跨两日。
+/// - 实际时间 00:00–00:59（早子时）：子时，保持当日（两种口径一致）。
 /// - 其余时刻：按录入原样。
 ///
 /// 真太阳时仍由 [calculateZiweiChart] 在传入 DateTime 之上叠加，不受影响。
@@ -190,10 +196,15 @@ DateTime resolveBirthSolar({
   required int day,
   required int hour,
   required int minute,
+  bool enabled = false,
 }) {
   if (hour == 23) {
-    final next = DateTime(year, month, day).add(const Duration(days: 1));
-    return DateTime(next.year, next.month, next.day, 0, minute);
+    if (enabled) {
+      final next = DateTime(year, month, day).add(const Duration(days: 1));
+      return DateTime(next.year, next.month, next.day, 0, minute);
+    }
+    // 默认关闭：当晚子时按「当日早子时」处理，日柱不顺延。
+    return DateTime(year, month, day, 0, minute);
   }
   return DateTime(year, month, day, hour, minute);
 }
@@ -349,6 +360,46 @@ class ZiweiChart {
   /// 出生农历月显示：「闰X月」或「X月」。仅用于展示，不改变排盘正确性。
   String get lunarMonthDisplay =>
       lunarIsLeap ? '闰$lunarMonth月' : '$lunarMonth月';
+
+  ZiweiChart copyWith({
+    String? baziYear,
+    String? baziMonth,
+    String? baziDay,
+    String? baziTime,
+    String? lunarText,
+    int? lunarMonth,
+    bool? lunarIsLeap,
+    String? genderLabel,
+    String? elementBureauLabel,
+    String? mingZhuLabel,
+    String? shenZhuLabel,
+    int? originMingIndex,
+    int? bodyPalaceIndex,
+    List<ZiweiPalace>? palaces,
+    List<ZiweiSihua>? sihua,
+    List<ZiweiDecade>? decades,
+    ZiWeiPlate? basePlate,
+  }) {
+    return ZiweiChart(
+      baziYear: baziYear ?? this.baziYear,
+      baziMonth: baziMonth ?? this.baziMonth,
+      baziDay: baziDay ?? this.baziDay,
+      baziTime: baziTime ?? this.baziTime,
+      lunarText: lunarText ?? this.lunarText,
+      lunarMonth: lunarMonth ?? this.lunarMonth,
+      lunarIsLeap: lunarIsLeap ?? this.lunarIsLeap,
+      genderLabel: genderLabel ?? this.genderLabel,
+      elementBureauLabel: elementBureauLabel ?? this.elementBureauLabel,
+      mingZhuLabel: mingZhuLabel ?? this.mingZhuLabel,
+      shenZhuLabel: shenZhuLabel ?? this.shenZhuLabel,
+      originMingIndex: originMingIndex ?? this.originMingIndex,
+      bodyPalaceIndex: bodyPalaceIndex ?? this.bodyPalaceIndex,
+      palaces: palaces ?? this.palaces,
+      sihua: sihua ?? this.sihua,
+      decades: decades ?? this.decades,
+      basePlate: basePlate ?? this.basePlate,
+    );
+  }
 }
 
 /// 计算紫微斗数命盘。
@@ -365,8 +416,43 @@ ZiweiChart calculateZiweiChart({
   required Gender gender,
   Location? location,
   bool useTrueSolarTime = true,
+  bool ratHourMode = false,
 }) {
-  final ruleset = ConfigLoader.getDefault();
+  // 紫微盘统一以「todayGan（子时归自然日）」为底层排盘基准：
+  // 晚子时（日柱当天）由 todayGan 直接得出、时柱再覆盖为次日子时；
+  // 早子时（日柱次日）由「出生日 +1 天」得出；关闭或 01:00–23:00 即 todayGan。
+  // 不能用规则集默认（默认是 noSplit），否则 23–24 点会被整体顺延到次日，盘式全错。
+  // 必须自建规则集并把同一 calendarOptions 实例交给 date 与 calculate，
+  // 否则 ZiweiEngine 会报 options 与 ruleset.calendarOptions 不一致。
+  final baseRuleset = ConfigLoader.getDefault();
+  final ruleset = ZiweiRuleset(
+    stars: baseRuleset.stars,
+    flowDefinitions: baseRuleset.flowDefinitions,
+    brightnessLabels: baseRuleset.brightnessLabels,
+    siHuaRules: baseRuleset.siHuaRules,
+    calendarOptions: CalendarOptions(
+      ratHourMode: RatHourMode.todayGan,
+      leapRule: baseRuleset.calendarOptions.leapRule,
+      wuHuDunBasedOn: baseRuleset.calendarOptions.wuHuDunBasedOn,
+      siHuaBasedOn: baseRuleset.calendarOptions.siHuaBasedOn,
+      childhoodRule: baseRuleset.calendarOptions.childhoodRule,
+      flowLimitBasedOn: baseRuleset.calendarOptions.flowLimitBasedOn,
+      enableHistorical: baseRuleset.calendarOptions.enableHistorical,
+    ),
+    mingZhuRule: baseRuleset.mingZhuRule,
+    shenZhuRule: baseRuleset.shenZhuRule,
+  );
+  // 区分早晚子时：开启后 23:00–24:00 归「晚子时」（日柱当天、时柱子时由下行覆盖），
+  // 00:00–01:00 归「早子时」（日柱次日）；关闭或 01:00–23:00 不影响（子时归自然日）。
+  // 早子时（开启且 00:00–01:00）：日柱取次日 → 出生日 +1 天按默认（todayGan）排盘。
+  // 晚子时（开启且 23:00–24:00）：日柱当天、时柱子时次日 → 默认排盘后覆盖时柱（见下）。
+  // 关闭开关或 01:00–23:00：默认排盘。全程使用规则集默认（todayGan），既符合紫微流派
+  // 口径，又避免 date.options 与 ruleset.calendarOptions 不一致报错；早晚子时的日/时柱
+  // 差异由「日期偏移」（早子时）与「时柱覆盖」（晚子时）两种手段实现，不另造 options。
+  // 校正逻辑执行位置（约束 A/B）：原始 solar 只读，永远不把偏移后的日期直接喂内核。
+  // 内核统一以「原始 solar + todayGan 规则集」排盘，得到基础盘（命宫 / 十二宫 /
+  // 农历均对应真实公历输入）；早子时（hour<1）与晚子时（hour>=23）的日 / 时柱及
+  // 农历，在下方通过 copyWith 以「校正后的干支集合」覆盖，不污染内核其它派生字段。
   final date = ZiweiDate.fromSolar(
     AstroDateTime(solar.year, solar.month, solar.day, solar.hour, solar.minute),
     gender: gender,
@@ -460,7 +546,7 @@ ZiweiChart calculateZiweiChart({
   final baziDay = '${bz.day.gan.label}${bz.day.zhi.label}';
   final baziTime = '${bz.time.gan.label}${bz.time.zhi.label}';
 
-  return ZiweiChart(
+  ZiweiChart chart = ZiweiChart(
     baziYear: baziYear,
     baziMonth: baziMonth,
     baziDay: baziDay,
@@ -480,6 +566,108 @@ ZiweiChart calculateZiweiChart({
     sihua: sihuaList,
     decades: decades,
     basePlate: plate,
+  );
+  // 晚子时：时柱取「次日子时」与八字口径一致（日柱 / 命宫 / 农历保持当天口径）。
+  if (ratHourMode && solar.hour >= 23) {
+    final nextTime = calcZiweiBaZi(
+      DateTime(solar.year, solar.month, solar.day, solar.hour, solar.minute),
+      location: location,
+      useTrueSolarTime: useTrueSolarTime,
+      gender: gender,
+      ratHourMode: RatHourMode.noSplit,
+    );
+    chart = chart.copyWith(baziTime: nextTime.time);
+  }
+  // 早子时：日柱取次日、时柱子时、农历同步切换到次日（约束 B）。
+  // 单独以「出生日 +1 天」构造一个只读 ZiweiDate，仅用于提取校正后的干支与农历，
+  // 不进入内核排盘，确保原始 solar 不被偏移后喂内核（约束 A）。
+  else if (ratHourMode && solar.hour < 1) {
+    final nextSolar = DateTime(solar.year, solar.month, solar.day, solar.hour, solar.minute)
+        .add(const Duration(days: 1));
+    final nextDate = ZiweiDate.fromSolar(
+      AstroDateTime(nextSolar.year, nextSolar.month, nextSolar.day, nextSolar.hour, nextSolar.minute),
+      gender: gender,
+      options: ruleset.calendarOptions,
+      location: location,
+      useTrueSolarTime: useTrueSolarTime,
+    );
+    final nbz = nextDate.bazi;
+    chart = chart.copyWith(
+      baziDay: '${nbz.day.gan.label}${nbz.day.zhi.label}',
+      baziTime: '${nbz.time.gan.label}${nbz.time.zhi.label}',
+      lunarText: '农历 ${nextDate.lunar}',
+      lunarMonth: nextDate.lunar.month,
+      lunarIsLeap: nextDate.lunar.isLeap,
+    );
+  }
+  return chart;
+}
+
+/// 四柱干支（年 / 月 / 日 / 时）。
+///
+/// 与 [ZiweiChart] 的 `baziXxx` 字段同源（[ZiweiDate.bazi]），
+/// 供只需干支、不需要排紫微盘的场景（如每日黄历）轻量取用。
+///
+/// 命名加 `Ziwei` 前缀：避开 `sxwnl_spa_dart` 已导出的同名 `BaZi`，
+/// 防止同时 import 两个包时产生符号歧义。
+class ZiweiBaZi {
+  final String year;
+  final String month;
+  final String day;
+  final String time;
+
+  const ZiweiBaZi({
+    required this.year,
+    required this.month,
+    required this.day,
+    required this.time,
+  });
+}
+
+/// 轻量取四柱干支：只构造 [ZiweiDate] 读 `bazi`，**不执行排盘**
+/// （不调用 [ZiweiEngine.calculate]），因此开销极小且与命盘/三盘合参同口径。
+///
+/// - [solar] 公历时刻；仅需年柱月柱日柱时传正午基准（如 `DateTime(y, m, d, 12)`）
+///   即可避开子时换日歧义。
+/// - [location] 经纬度；`null` 时引擎默认 `Location(120, 30)`。
+/// - [useTrueSolarTime] 真太阳时开关，与 [calculateZiweiChart] 语义一致。
+/// - [gender] 不影响四柱，仅为构造 [ZiweiDate] 所需。
+/// - [ratHourMode] 早晚子时口径覆盖：不传（null）则用规则集默认（晚子时 / noSplit）；
+///   传 [RatHourMode.todayGan] 即“早子时”（23:00–24:00 算当日，日柱不变）；
+///   八字排盘页的开关即驱动此参数，黄历等其它调用保持默认。
+ZiweiBaZi calcZiweiBaZi(
+  DateTime solar, {
+  Location? location,
+  bool useTrueSolarTime = false,
+  Gender gender = Gender.male,
+  RatHourMode? ratHourMode,
+}) {
+  final ruleset = ConfigLoader.getDefault();
+  final base = ruleset.calendarOptions;
+  final options = ratHourMode == null
+      ? base
+      : CalendarOptions(
+          ratHourMode: ratHourMode,
+          leapRule: base.leapRule,
+          wuHuDunBasedOn: base.wuHuDunBasedOn,
+          siHuaBasedOn: base.siHuaBasedOn,
+          childhoodRule: base.childhoodRule,
+          flowLimitBasedOn: base.flowLimitBasedOn,
+          enableHistorical: base.enableHistorical,
+        );
+  final date = ZiweiDate.fromSolar(
+    AstroDateTime(solar.year, solar.month, solar.day, solar.hour, solar.minute),
+    gender: gender,
+    options: options,
+    location: location,
+    useTrueSolarTime: useTrueSolarTime,
+  );
+  final bz = date.bazi;
+  return ZiweiBaZi(
+    year: '${bz.year.gan.label}${bz.year.zhi.label}',
+    month: '${bz.month.gan.label}${bz.month.zhi.label}',
+    day: '${bz.day.gan.label}${bz.day.zhi.label}',
+    time: '${bz.time.gan.label}${bz.time.zhi.label}',
   );
 }
 

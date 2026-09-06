@@ -12,6 +12,147 @@
 
 ---
 
+## [1.11.17+9] - 2026-09-06 — 早晚子时校正约束落地（原始时间只读 + 农历跟随校正干支）
+
+**一句话**：紫微排盘早晚子时校正重构，原始出生时间只读、农历显示跟随校正后的干支。
+
+**① 重构：紫微早晚子时校正**（`lib/services/ziwei_engine.dart`）
+- 内核统一以原始出生时间排盘，仅以 `copyWith` 覆盖校正后的日柱/时柱/农历；原始输入时间对象不再被偏移后喂内核。
+- 约束A：原始出生时间只读，UI 展示用户原始填写的出生时刻，不显示偏移后的日期。
+- 约束B：农历显示跟随校正后的干支——晚子时公历/农历不变仅换时柱；早子时公历+1 农历同步切到次日农历。
+
+**② 测试加固**（`test/zishi_distinguish_test.dart`）
+- 新增两条约束B回归用例（早子时农历跟随、晚子时农历不变仅时柱校正），紫微+八字共 7 例 + 四柱用例全绿。
+
+---
+
+## [1.11.16+8] - 2026-09-06 — 新增小儿关煞测算 + 百科模块
+
+**一句话**：输入生辰即测所犯关煞（36 关 + 18 扩展煞，按重/中/轻分级），并附关煞百科检索。
+
+**① 新增：小儿关煞测算**（`lib/engine/guansha_engine.dart` + `lib/data/guansha_data.dart` + `lib/screens/guansha_screen.dart`）
+- 复用 `computeBaZiPaipan` 八字引擎推算四柱，对照《小儿关煞大全（核对版）》54 条查法（36 关 + 18 扩展煞）判定所犯关煞。
+- 命中按 重关 > 中关 > 轻关 排序，每条附「犯者忌」与民俗化解建议；测算页含出生地（BaziLocationRow）选择。
+- 金标准回归：示例生辰 壬寅/辛亥/壬申/乙巳 恰好犯 {将军箭, 和尚关, 撞命关, 断肠关}，其余 32 种不犯。
+
+**② 新增：关煞百科**（`lib/screens/guansha_screen.dart`）
+- 双 Tab：测算 + 百科；百科支持名称 / 别名检索 + 类别筛选，附民俗文化免责声明。
+
+**验证**：`flutter test`（关煞单测）13/13 通过；`flutter analyze` 0 issue；aapt2 四包 versionName=1.11.16 / versionCode=2008 一致；签名指纹 `b0fcd4f4…55069`（与线上同签名可覆盖安装）。
+
+---
+
+## [1.11.15+7] - 2026-09-06 — 命盘库双排盘入口 · 修复八字排盘无法存入命盘库
+
+**一句话**：命盘库点击已存命盘可选用「紫微 / 八字」两种方式排盘（生辰自动带入）；八字排盘页补上缺失的「添加到命盘库」入口。
+
+**① 新增：命盘库双排盘入口**（`saved_charts_screen.dart` + `bazi_paipan_screen.dart`）
+- 点击命盘条目弹底部选择框：紫微斗数排盘 / 八字排盘，两种排盘共用同一份生辰数据（solarIso + 性别 + 出生地）。
+- 八字排盘页新增可选回填参数（`initialSolar/initialIsMale/initialCityName/initialLng/initialLat`），回看时自动回填生辰（时辰块归入与 `shiChenIndexOf` 同口径）并立即排盘，与紫微回看同口径。
+
+**② 修复：八字排盘存盘入口缺失**（`bazi_paipan_screen.dart`）
+- 根因：该页对 `SavedChartRepository` 零引用，保存功能从未接入，非存库失败。
+- 修复：新增 `_saveToLibrary()`，与紫微排盘共用命盘库；生辰经 `resolveBirthSolar` 按当前子时口径解析（晚子时归次日，与紫微存盘同源），连同出生地经纬度/城市一并写入 `user_charts` 表。
+- 交互：四柱卡下方新增按钮（与紫微同款样式）；存库失败 SnackBar 明确反馈；命盘库空态提示更新为「紫微 / 八字排盘页」（`saved_charts_screen.dart`）。
+
+**验证**：`flutter analyze` 改动文件 0 issue；aapt2 四包 versionName=1.11.15 / versionCode=7 一致；签名指纹 `b0fcd4f4…55069`（与线上同签名可覆盖安装）。
+
+---
+
+## [1.11.14+6] - 2026-09-06 — 黄历通胜要览 · 本命相冲预警 · 交互与工程质量优化
+
+**一句话**：每日黄历新增「通胜要览」卡（黄道吉时 + 财神/喜神/福神方位）与本命相冲个性化预警；切日手势改横向拖拽杜绝滚动误触；宜忌双栏合并缩短页面；干支单一来源化并补齐 10 用例口径钉死测试网。
+
+**① 新增：通胜要览卡**（`lunar_almanac_service.dart` + `almanac_cards.dart`）
+- 黄道吉时：十二黄道黑道神·青龙起例（申子辰→子、寅午戌→午、亥卯未→卯、巳酉丑→寅），黄道六神各占一时辰。
+- 财神/喜神/福神方位：按日干查表（通书通用口诀，集中 const 表便于按流派校正）。
+
+**② 新增：本命相冲预警**（`lunar_almanac_service.dart` + `daily_almanac_screen.dart`）
+- 新增 `getUserZodiacFromSolar()`：复用 `calcZiweiBaZi` 年柱地支→生肖（含立春口径，与命盘页同源）。
+- 命盘库最近命盘 → 本命生肖；当日相冲生肖命中时相冲卡整体 errorContainer 红底 + 警示行。未存命盘静默关闭。
+
+**③ 修复：切日手势误触**（`daily_almanac_screen.dart`）
+- `onPanEnd` → `onHorizontalDragEnd`：纵向滚动完全归 ListView，对角快滑不再意外切日。
+
+**④ 工程改进**
+- 干支单一来源：展示值与派生索引一律由 `bz.day` 解析（新增 `_ganNames`），`dayGanZhi` 仅留作 FestivalEngine 入参，格式异常有兜底防崩。
+- 宜忌双栏合并卡 `AlmanacYiJiPairCard`；黄历结果内存缓存（800 条上限）；日期头标签 `Flexible + maxLines` 溢出护栏。
+- 测试网 `test/almanac_tongsheng_test.dart` 10 用例（吉时恒 6/子日吉时/方位合法词/本命生肖含立春边界/LunarDate.month 1-based 钉死/建除口径）；修正误导性旧测试名（2026-02-17 实为冲辰非冲鼠）。
+
+**验证**：黄历相关 5 测试文件 44 用例全过；`flutter analyze` 改动文件 0 新增 issue；aapt2 四包 versionName=1.11.14 / versionCode=6 一致；签名指纹 `b0fcd4f4…55069`（与线上同签名可覆盖安装）。
+
+---
+
+## [1.11.13+5] - 2026-09-04 — 八字神煞扩展 · 黄历神仙节日/生肖相冲/潮汕节俗 · 玉匣灵兆模块
+
+**一句话**：八字排盘新增 11 种神煞（太极贵人/国印/金舆/福星贵人/德秀/红鸾/天喜/孤辰/寡宿/劫煞/亡神）；每日黄历接入玉匣记神仙节日、生肖相冲（每日地支→相冲生肖）、潮汕地方节俗三张新卡片；新增民俗参考模块「玉匣灵兆」（玉匣记身体兆占：十二时辰兆占 + 鸦鸣鹊噪 + 占灯花）。
+
+**① 新增：八字神煞扩展**（`lib/engine/bazi_analysis.dart`）
+- 新增 11 种神煞判定，复用既有 `addShensha` 通道：太极贵人、国印贵人、金舆、福星贵人、德秀（按月支）、红鸾/天喜（红鸾=(3-年支)%12，天喜+6）、孤辰/寡宿（按年支三会组）、劫煞/亡神（按年支三合组）。
+- 用户价值：神煞落位更完整，命盘可读性提升。
+
+**② 新增：黄历神仙节日（玉匣记）**（`lib/data/yuxiaji_deity_data.dart` + `lunar_almanac_service.dart`）
+- 三元五腊圣诞（114 条）+ 十殿阎君诞辰（10 条）+ 斋期范围，共 125 个农历日 / 138 条；工具脚本 `tool/gen_yuxiaji_data.py` 由 JSON 生成。
+- 新增独立卡片 `AlmanacDeityFestivalCard`（标注「玉匣记」），与传统节日卡互不覆盖。
+
+**③ 新增：生肖相冲**（`lunar_almanac_service.dart` + `almanac_cards.dart`）
+- 按每日地支经六冲推算当日相冲生肖，新增 `AlmanacZodiacChongCard`（如 子日冲马）；`dayZodiac`/`chongZodiac` 字段并入 `AlmanacDay`。
+
+**④ 新增：潮汕节俗**（`lib/data/chaoshan_festival_data.dart`）
+- 94 个农历日（63 月令 + 48 固定拜神日），本地条目标「·地名」；与玉匣记/传统节日运行时双向去重，互不覆盖。新增 `AlmanacChaoshanCard`。
+
+**⑤ 新增：玉匣灵兆模块**（`lib/screens/yuxiaji_omen_screen.dart` + `tools_screen.dart`）
+- 玉匣记身体兆占：十二时辰兆占（眼跳/耳鸣/面热等 12 类 × 12 时辰占断）、鸦鸣鹊噪方向占、占灯花法。顶部附民俗参考免责声明。工具页新增入口。
+
+**验证**：全量 `flutter test` 390/390 通过；`flutter analyze` 0 error/warning；aapt2 四包 `1.11.13/5` 一致；签名指纹 `b0fcd4f4...55069`（v2，与已装版同签名可覆盖安装）。
+
+---
+
+## [1.11.12+4] - 2026-09-04 — 本草一键通 + 正文药名可点 + 详情页三级结构
+
+**一句话**：药库列表与搜索结果的每一行都能点进详情；医案与闭门课正文里的药材名（含异名归一）可直接点击跳转药物页；药物详情页的关联内容改为「入口按钮 → 简洁列表 → 详情」三级结构，信息不再堆叠。
+
+**① 改进：本草列表/搜索全部可点击**（`lib/screens/knowledge_screen.dart` + `search_tab.dart`）
+- 移除 `hasDetailedInfo` 门控，每行均跳 `HerbDetailScreen` 且常显 chevron；空字段药材打开只显示更少分区、不崩。
+- 用户价值：「药名点了没反应」根治，任意药名一键进详情。
+
+**② 新增：医案/闭门课正文药名可点**（`medical_case_detail_screen.dart` + `markdown_doc_screen.dart`）
+- 医案详情自由文本字段（病机/治法/倪师观点等）改用 `FormulaRichText` 渲染，药材/方剂名可点。
+- 闭门课 markdown 正文注入 `herb://` 链接（方剂+药材+异名合并正则，长度优先），点击经 `getExactByName` 归一后跳药物详情页。
+- 用户价值：读医案/闭门课时顺手查药，索引前后向闭环。
+
+**③ 改版：详情页相关内容三级结构**（新增 `herb_related_screens.dart`，改 `herb_detail_screen.dart`）
+- 三张内联卡片（生附子页曾堆 145 条医案 tile）替换为三个入口按钮（关联医案/关联闭门课/含此药方剂，带数量徽标）。
+- 各入口进入仅标题的简洁列表页（数据各自独立加载），再点条目进 MedicalCaseDetailScreen / MarkdownDocScreen / FormulaDetailScreen。
+- 用户价值：药物页保持清爽，各层级独立加载不卡顿。
+
+**④ 修复：收藏态异步崩溃隐患**（`herb_detail_screen.dart` + `formula_detail_screen.dart`）
+- `_checkBookmark`/`_toggleBookmark` 异步回调补 `mounted` 守卫，消除 widget 已 dispose 后 `setState` 抛错（快速返回上一页即触发）。
+
+**验证**：全量 `flutter test` 333/333 通过；`flutter analyze` 0 error/warning；`tool/audit_alias_search.dart` 功能级审计 PASS；aapt2 四包 `1.11.12/4` 一致；签名指纹 `b0fcd4f4...55069`（v2，与已装版同签名可覆盖安装）。
+
+---
+
+## [1.11.11+3] - 2026-09-03 — 同药异名合并 + 异名检索修复 + 三盘合参与八字补全
+
+**一句话**：18 组同药异名合并归一（479→461 条）并修复合并后 74 个异名搜不到的回归；紫微+八字+命卦三盘合参 B 方案落地；八字补全十神/旬空/刑冲合害/长生十二神。
+
+**① 数据：同药异名合并**（`assets/data/herbs.json` + `lib/data/herb_repository.dart`）
+- 18 组异名同种条目删除只留正名（479→461），`_canonicalOf` 登记 103 条「异名→正名」映射。
+- **修复**：检索逻辑收敛到唯一入口 `matchesQuery`（`c940ef5`），修复合并后 74 个异名在药库页搜不到的回归（如按「茈胡」检索命中「柴胡」）。
+
+**② 新增：三盘合参与八字补全**（`2af6254`/`c211d58`/`9168225`/`7f477ac`）
+- 三盘合参（紫微+八字+命卦）同源合参 B 方案；晚子时归次日改为可开关（默认关闭）。
+- 八字：十神逐柱 + 旬空（空亡）、刑冲合害/合会关系检测、长生十二神双口径（火土同宫/水土同宫）用户自选。
+
+**③ 改进：UI 统一状态与设计 Token**（Step6 批次 1-3，`e0a0077`/`d3ca0c7`/`8fb70f2`/`e26ede5`）
+- 新增统一状态组件 `StateView`（loading/empty/error），10 处 loading/空状态统一，3 处静默加载接入错误+重试。
+- 设计 Token 体系（间距/圆角/字号）落地，消除硬编码色值。
+
+**④ CI**：接入 canonical 签名密钥 `KEYSTORE_BASE64`（`fdfddbe`），GitHub Actions 四架构 APK 与本地同签名出包。
+
+---
+
 ## [1.11.10+0] - 2026-08-31 — 紫微斗数命盘库 + 节气养生板块 + 黄历手势 + 大运对宫解析
 
 **一句话**：新增「我的命盘库」（保存生辰随时回看）、独立「节气养生」板块（24 节气健康知识 + 倪师节气解析，移除旧版本草联动）、每日黄历滑动手势（上/下滑切日、左/右滑切月）、以及大运空宫自动附对宫星情解析——四项民俗文化参考增强，全部离线、可测、不引入医疗诊断断言。

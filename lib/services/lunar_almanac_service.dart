@@ -1,5 +1,13 @@
 import 'package:sxwnl_spa_dart/sxwnl_spa_dart.dart';
 
+import '../data/chaoshan_festival_data.dart';
+import '../data/yuxiaji_deity_data.dart';
+
+// 只引入四柱轻量接口：与紫微命盘 / 三盘合参共用 [ZiweiDate.bazi] 同一口径，
+// 避免自行按底层历法重写导致与命盘页干支不一致。
+// 用 show 限定作用域，避开与 sxwnl_spa_dart 的同名导出（如 BaZi）产生歧义。
+import 'ziwei_engine.dart' show calcZiweiBaZi, ZiweiBaZi;
+
 /// 每日黄历（老黄历）单日数据模型。
 ///
 /// 数据基于 sxwnl_spa_dart 0.18.5 的农历 / 干支计算，叠加通用建除十二神、彭祖百忌、
@@ -8,31 +16,56 @@ class AlmanacDay {
   final DateTime solar; // 公历日期
   final String weekdayName; // 周X
   final String lunarText; // 农历 2026年七月十五
+  final String ganzhiYear; // 年干支，如「甲辰」
+  final String ganzhiMonth; // 月干支，如「壬申」
   final String ganzhiDay; // 日干支，如「甲子」
   final String jianChu; // 建除十二神之一（建/除/满/平/定/执/破/危/成/收/开/闭）
   final int jianChuIndex; // 0=建 … 11=闭
   final List<String> pengZu; // 彭祖百忌（2 条：天干忌 + 地支忌）
   final String chong; // 日冲，如「冲午」
   final String sha; // 煞方，如「煞南」
+  final String dayZodiac; // 日支生肖，如「鼠」
+  final String chongZodiac; // 被冲生肖，如「马」（日支六冲）
   final List<String> yi; // 宜
   final List<String> ji; // 忌
   final String? solarTerm; // 当日节气（若有）
   final List<String> festivals; // 节日（含传统/法定/节气）
+  final List<String> deityFestivals; // 神仙节日（《玉匣记》圣诞/斋期等）
+  final List<String> chaoshanFestivals; // 潮汕神诞/节俗（地方性，带地域标注）
+
+  /// 黄道吉时（十二黄道黑道神推算，当日吉时列表，如「子时」「卯时」）。
+  final List<String> jiShi;
+  /// 财神方位（《玉匣记》通书通用口诀，按日干）。
+  final String caiShen;
+  /// 喜神方位（同上）。
+  final String xiShen;
+  /// 福神方位（同上）。
+  final String fuShen;
 
   const AlmanacDay({
     required this.solar,
     required this.weekdayName,
     required this.lunarText,
+    required this.ganzhiYear,
+    required this.ganzhiMonth,
     required this.ganzhiDay,
     required this.jianChu,
     required this.jianChuIndex,
     required this.pengZu,
     required this.chong,
     required this.sha,
+    required this.dayZodiac,
+    required this.chongZodiac,
     required this.yi,
     required this.ji,
     required this.solarTerm,
     required this.festivals,
+    required this.deityFestivals,
+    required this.chaoshanFestivals,
+    required this.jiShi,
+    required this.caiShen,
+    required this.xiShen,
+    required this.fuShen,
   });
 }
 
@@ -93,6 +126,13 @@ const List<String> _shaByBranch = [
 ];
 
 // ---------------------------------------------------------------------------
+// 生肖相冲（日支六冲 → 被冲地支的生肖；地支 → 生肖）
+// ---------------------------------------------------------------------------
+const List<String> _zodiacByBranch = [
+  '鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪',
+];
+
+// ---------------------------------------------------------------------------
 // 宜忌（按建除十二神，标准通胜口径）
 // ---------------------------------------------------------------------------
 const Map<int, List<String>> _yiByJianChu = {
@@ -125,23 +165,119 @@ const Map<int, List<String>> _jiByJianChu = {
   11: ['开市', '出行', '求医', '嫁娶', '动土'],
 };
 
+// ---------------------------------------------------------------------------
+// 通胜要览：黄道吉时 + 财神/喜神/福神方位（《玉匣记》通书通用口诀）。
+// 注：方位口诀各流派略有出入，此处取通用版，集中于此便于按需校正。
+// ---------------------------------------------------------------------------
+
+// 十二时辰名（地支顺序，与 yuxiaji_omen 共用口径）。
+const List<String> _shiChenNames = [
+  '子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥',
+];
+
+// 十二黄道黑道神（青龙起例，index 0=青龙 … 11=勾陈）。
+// 黄道（吉）= 青龙/明堂/金匮/天德/玉堂/司命；黑道（凶）= 其余。
+const List<bool> _isHuangDao = [
+  true,  // 0 青龙
+  true,  // 1 明堂
+  false, // 2 天刑
+  false, // 3 朱雀
+  true,  // 4 金匮
+  true,  // 5 天德
+  false, // 6 白虎
+  true,  // 7 玉堂
+  false, // 8 天牢
+  false, // 9 玄武
+  true,  // 10 司命
+  false, // 11 勾陈
+];
+
+// 青龙起例：按日支所属三合局，定青龙所在时辰（地支索引）。
+// 申子辰→子(0) 寅午戌→午(6) 亥卯未→卯(3) 巳酉丑→寅(2)。
+int _qingLongStart(int dayBranch) {
+  if (dayBranch == 0 || dayBranch == 4 || dayBranch == 8) return 0;
+  if (dayBranch == 2 || dayBranch == 6 || dayBranch == 10) return 6;
+  if (dayBranch == 3 || dayBranch == 7 || dayBranch == 11) return 3;
+  return 2; // 巳(5)/酉(9)/丑(1)
+}
+
+// 财神方位（按日干 甲乙丙丁戊己庚辛壬癸，通书通用版）。
+const List<String> _caiShenByGan = [
+  '东北', '西南', '正西', '正西', '正北', '正北', '正东', '正东', '正南', '正南',
+];
+
+// 喜神方位（按日干，五合分组：甲己/乙庚/丙辛/丁壬/戊癸）。
+const List<String> _xiShenByGan = [
+  '东北', '西北', '西南', '正南', '东南', '东北', '西北', '西南', '正南', '东南',
+];
+
+// 福神方位（按日干，五合分组，通书通用版）。
+const List<String> _fuShenByGan = [
+  '西南', '正西', '正南', '正北', '正东', '西南', '正西', '正南', '正北', '正东',
+];
+
+/// 由出生公历推导本命生肖（年柱地支 → 生肖），与命盘页同口径（含立春）。
+/// 用于「今日相冲 vs 本命生肖」个性化预警；无有效数据返回 null。
+String? getUserZodiacFromSolar(DateTime solar) {
+  final bz = calcZiweiBaZi(solar, useTrueSolarTime: false);
+  if (bz.year.length < 2) return null;
+  final branchChar = bz.year[1];
+  final idx = _branchNames.indexOf(branchChar);
+  return idx >= 0 ? _zodiacByBranch[idx] : null;
+}
+
+// 日干名称（按索引 0-9，甲→癸）。
+const List<String> _ganNames = [
+  '甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸',
+];
+
+/// 已算日期的结果缓存（键 YYYY-M-D），上限 800 条超出即清空——
+/// 滑动切日来回翻看免重复计算，纯内存、无持久化。
+final Map<String, AlmanacDay> _almanacCache = <String, AlmanacDay>{};
+
 /// 计算指定公历日期的每日黄历。
 ///
 /// [solar] 公历日期（时分用于真太阳时无关的日柱判定，内部取正午基准）。
+///
+/// 单一来源原则：所有展示值（三柱/干支索引/生肖/吉时/方位）均由
+/// [calcZiweiBaZi] 的日柱字符串 `bz.day` 派生；`dayGanZhi` 仅作为
+/// FestivalEngine 的内部入参保留，不参与任何展示值。
+/// 两者一致性由单测钉死（连续 400 天，见 lunar_almanac_test）。
 AlmanacDay getDailyAlmanac(DateTime solar) {
+  final cacheKey = '${solar.year}-${solar.month}-${solar.day}';
+  final cached = _almanacCache[cacheKey];
+  if (cached != null) return cached;
+
   final ad = AstroDateTime(solar.year, solar.month, solar.day, 12, 0, 0);
   final gz = dayGanZhi(ad);
   final lunar = LunarDate.fromSolar(ad);
 
+  // 年柱 / 月柱 / 日柱：取自紫微引擎的四柱（正午基准、平太阳时），
+  // 与命盘页、三盘合参同口径。
+  final ZiweiBaZi bz = calcZiweiBaZi(
+    DateTime(solar.year, solar.month, solar.day, 12, 0),
+    useTrueSolarTime: false,
+  );
+
+  // 日干支索引：由 bz.day（两字干支，如「甲子」）解析——展示值与派生
+  // 索引同源。兜底：格式异常时回退底层直算，保证不崩。
+  int ganIdx = _ganNames.indexOf(bz.day.isNotEmpty ? bz.day[0] : '');
+  int dayBranch = _branchNames.indexOf(bz.day.length >= 2 ? bz.day[1] : '');
+  if (ganIdx < 0 || dayBranch < 0) {
+    ganIdx = gz.gan.index;
+    dayBranch = gz.zhi.index;
+  }
+
   // 建除：月支 → 日支 偏移
   final monthBranch = _lunarMonthToBranch[lunar.month];
-  final dayBranch = gz.zhi.index;
   final jcIdx = ((dayBranch - monthBranch) % 12 + 12) % 12;
 
-  // 冲煞
+  // 冲煞 + 生肖相冲（日支六冲：冲支 = 日支 + 6，被冲生肖随之）
   final chongIdx = (dayBranch + 6) % 12;
   final chong = '冲${_branchNames[chongIdx]}';
   final sha = '煞${_shaByBranch[dayBranch]}';
+  final dayZodiac = _zodiacByBranch[dayBranch];
+  final chongZodiac = _zodiacByBranch[chongIdx];
 
   // 节气（当日若是交节则为该节气名）
   String? term;
@@ -154,19 +290,64 @@ AlmanacDay getDailyAlmanac(DateTime solar) {
       .where((n) => n.isNotEmpty)
       .toList();
 
-  return AlmanacDay(
+  // 神仙节日（《玉匣记》）：与 FestivalEngine 同口径——闰月不过节，
+  // 键为农历月日各两位。独立成表，与既有节日各自成卡、互不覆盖。
+  final deityKey =
+      '${lunar.month.toString().padLeft(2, '0')}'
+      '${lunar.day.toString().padLeft(2, '0')}';
+  final deityFests = lunar.isLeap
+      ? const <String>[]
+      : kYuxiajiDeityFestivals[deityKey] ?? const <String>[];
+
+  // 潮汕节俗：与引擎节日双向子串去重（春节/元宵/端午/除夕等已由
+  // 节日卡展示，避免同屏重复），与玉匣记源互不干预、各自成卡。
+  final chaoshanAll = lunar.isLeap
+      ? const <String>[]
+      : kChaoshanFestivals[deityKey] ?? const <String>[];
+  final chaoshanFests = chaoshanAll
+      .where(
+        (c) => !fests.any(
+          (f) => f == c || c.contains(f) || f.contains(c),
+        ),
+      )
+      .toList();
+
+  // 通胜要览：黄道吉时（十二黄道黑道神，青龙起例按日支三合局）+ 三神方位（按日干）。
+  final ql = _qingLongStart(dayBranch);
+  final jiShi = <String>[
+    for (int i = 0; i < 12; i++)
+      if (_isHuangDao[(i - ql + 12) % 12]) '${_shiChenNames[i]}时',
+  ];
+  final caiShen = _caiShenByGan[ganIdx];
+  final xiShen = _xiShenByGan[ganIdx];
+  final fuShen = _fuShenByGan[ganIdx];
+
+  final day = AlmanacDay(
     solar: solar,
     weekdayName: ['一', '二', '三', '四', '五', '六', '日'][solar.weekday - 1],
     lunarText: '农历 $lunar',
-    ganzhiDay: gz.toString(),
+    ganzhiYear: bz.year,
+    ganzhiMonth: bz.month,
+    ganzhiDay: bz.day,
     jianChu: _jianChuNames[jcIdx],
     jianChuIndex: jcIdx,
-    pengZu: [_pengZuGan[gz.gan.index], _pengZuZhi[gz.zhi.index]],
+    pengZu: [_pengZuGan[ganIdx], _pengZuZhi[dayBranch]],
     chong: chong,
     sha: sha,
+    dayZodiac: dayZodiac,
+    chongZodiac: chongZodiac,
     yi: _yiByJianChu[jcIdx] ?? const [],
     ji: _jiByJianChu[jcIdx] ?? const [],
     solarTerm: term,
     festivals: fests,
+    deityFestivals: deityFests,
+    chaoshanFestivals: chaoshanFests,
+    jiShi: jiShi,
+    caiShen: caiShen,
+    xiShen: xiShen,
+    fuShen: fuShen,
   );
+  if (_almanacCache.length >= 800) _almanacCache.clear();
+  _almanacCache[cacheKey] = day;
+  return day;
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../widgets/state_view.dart';
 import '../data/acupuncture_repository.dart';
 import '../data/acupoint_repository.dart';
 import '../data/formula_repository.dart';
@@ -106,8 +107,11 @@ class _SearchTabState extends State<SearchTab> {
       setState(() => _suggestions = []);
       return;
     }
+    // 走 HerbRepository.matchesQuery（含异名归一）。
+    // 此前此处只按 h.name 裸匹配，输入「茈胡」「山药」等异名时下拉一片空白，
+    // 用户会误判为「检索不到」。禁止改回 h.name.contains(...)。
     final herbNames = HerbRepository.getAll()
-        .where((h) => h.name.contains(query))
+        .where((h) => HerbRepository.matchesQuery(h, query))
         .map((h) => h.name)
         .take(4);
     final formulaNames = FormulaRepository.getAll()
@@ -456,12 +460,7 @@ class _SearchTabState extends State<SearchTab> {
     }
 
     if (_results.totalCount == 0) {
-      return Center(
-        child: Text(
-          '未找到匹配结果',
-          style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
-        ),
-      );
+      return Center(child: StateView.empty(title: '未找到匹配结果', fullScreen: false));
     }
 
     return ListView(
@@ -622,11 +621,9 @@ class _SearchTabState extends State<SearchTab> {
               '${h.category}',
               style: const TextStyle(fontSize: 12),
             ),
-            trailing: h.hasDetailedInfo ? const Icon(Icons.chevron_right, size: 20) : null,
-            onTap: h.hasDetailedInfo
-                ? () => Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => HerbDetailScreen(herb: h)))
-                : null,
+            trailing: const Icon(Icons.chevron_right, size: 20),
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (_) => HerbDetailScreen(herb: h))),
           ),
         )),
         if (!isExpanded && items.length > 15)

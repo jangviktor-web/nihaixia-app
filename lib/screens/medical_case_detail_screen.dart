@@ -5,8 +5,10 @@ import 'package:share_plus/share_plus.dart';
 import '../data/database_helper.dart';
 import '../data/medical_case_data.dart';
 import '../widgets/formula_rich_text.dart';
+import '../widgets/acupoint_rich_text.dart';
 import 'formula_detail_screen.dart';
 import 'herb_detail_screen.dart';
+import 'acupoint_detail_screen.dart';
 
 /// 医案详情：12 字段逐条展示 + 收藏/复制/分享 + 相关医案。
 /// [allCases] 由列表页传入，供底部「相关医案」计算（避免详情页重复解析全量）。
@@ -147,10 +149,45 @@ class _MedicalCaseDetailScreenState extends State<MedicalCaseDetailScreen> {
                         }
                       },
                     )
-                  : Text(
-                      value,
-                      style: const TextStyle(fontSize: 14, height: 1.6),
-                    ),
+                  : label == '针灸方案'
+                      ? AcupointRichText(
+                          text: value,
+                          onAcupointTap: (a) {
+                            if (context.mounted) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      AcupointDetailScreen(acupoint: a),
+                                ),
+                              );
+                            }
+                          },
+                        )
+                      : FormulaRichText(
+                          formula: value,
+                          onFormulaTap: (f) {
+                            if (context.mounted) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      FormulaDetailScreen(formula: f),
+                                ),
+                              );
+                            }
+                          },
+                          onHerbTap: (h) {
+                            if (context.mounted) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => HerbDetailScreen(herb: h),
+                                ),
+                              );
+                            }
+                          },
+                        ),
             ],
           ),
         ),

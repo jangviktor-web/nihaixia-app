@@ -17,7 +17,7 @@ import 'formula_detail_screen.dart';
 import 'meridian_detail_screen.dart';
 import '../models/formula.dart';
 import '../widgets/oral_hint_card.dart';
-import 'app_dialogs.dart';
+import 'settings_screen.dart';
 
 /// 高危禁忌关键词（用于结果卡红色强提示）
 const Set<String> _highRiskKeywords = {
@@ -905,62 +905,6 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
 
-  // ==================== 数据管理 ====================
-
-  void _confirmClearHistory() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('清除诊断历史'),
-        content: const Text('确定要删除所有诊断记录吗？此操作不可恢复。'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
-          ),
-          FilledButton(
-            onPressed: () async {
-              await DatabaseHelper.instance.clearDiagnosisHistory();
-              if (context.mounted) {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('诊断历史已清除')),
-                );
-              }
-            },
-            child: const Text('清除'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _exportBookmarks() async {
-    final bookmarks = await DatabaseHelper.instance.getAllBookmarks();
-    if (!mounted) return;
-
-    if (bookmarks.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('暂无收藏')),
-      );
-      return;
-    }
-
-    String text = '【汉唐中医·收藏导出】\n\n';
-    for (final b in bookmarks) {
-      text += '━━━━━━━━━━━━━━\n';
-      text += '${b.title}\n';
-      text += '${b.category}\n';
-      text += '${b.createdAt}\n\n';
-      text += '${b.content}\n\n';
-    }
-    text += '—— 来自「汉唐中医」App';
-
-    await Share.share(text);
-  }
-
-
-
   // ==================== 检测更新 ====================
 
 
@@ -1027,10 +971,9 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           IconButton(
             icon: const Icon(Icons.settings),
-            onPressed: () => showSettingsDialog(
+            onPressed: () => Navigator.push(
               context,
-              onClearHistory: _confirmClearHistory,
-              onExportBookmarks: _exportBookmarks,
+              MaterialPageRoute(builder: (_) => const SettingsScreen()),
             ),
             tooltip: '设置',
           ),

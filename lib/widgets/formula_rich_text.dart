@@ -129,7 +129,7 @@ class _FormulaRichTextState extends State<FormulaRichText> {
     var i = 0;
     for (final hit in hits) {
       if (hit.start > i) {
-        spans.add(TextSpan(text: text.substring(i, hit.start)));
+        spans.addAll(_spansWithBold(text.substring(i, hit.start), base));
       }
       final label = text.substring(hit.start, hit.end);
       final recognizer = TapGestureRecognizer()
@@ -153,8 +153,31 @@ class _FormulaRichTextState extends State<FormulaRichText> {
       i = hit.end;
     }
     if (i < text.length) {
-      spans.add(TextSpan(text: text.substring(i)));
+      spans.addAll(_spansWithBold(text.substring(i), base));
     }
     return spans;
+  }
+
+  /// 把正文中的 `**加粗**` 解析为加粗 TextSpan（星号不再显示）。
+  /// 仅作用于普通文本段；药材/方剂链接段保持自身样式。
+  List<InlineSpan> _spansWithBold(String text, TextStyle style) {
+    final result = <InlineSpan>[];
+    final re = RegExp(r'\*\*(.+?)\*\*');
+    var last = 0;
+    for (final m in re.allMatches(text)) {
+      if (m.start > last) {
+        result.add(TextSpan(text: text.substring(last, m.start)));
+      }
+      result.add(TextSpan(
+        text: m.group(1),
+        style: style.copyWith(fontWeight: FontWeight.bold),
+      ));
+      last = m.end;
+    }
+    if (last < text.length) {
+      result.add(TextSpan(text: text.substring(last)));
+    }
+    if (result.isEmpty) result.add(TextSpan(text: text));
+    return result;
   }
 }

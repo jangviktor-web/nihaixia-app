@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/state_view.dart';
 import '../engine/diagnostic_rules.dart';
 import '../data/formula_repository.dart';
 import '../widgets/meridian_icons.dart';
@@ -17,7 +18,7 @@ class MeridianDetailScreen extends StatelessWidget {
     if (details == null) {
       return Scaffold(
         appBar: AppBar(title: Text('$meridian病')),
-        body: const Center(child: Text('暂无详细信息')),
+        body: const Center(child: StateView.empty(title: '暂无详细信息', fullScreen: false)),
       );
     }
 
@@ -202,7 +203,7 @@ class MeridianDetailScreen extends StatelessWidget {
             _SectionTitle(title: '常用方剂 (${formulas.length})', color: color),
             const SizedBox(height: 8),
             if (formulas.isEmpty)
-              const Text('暂无对应方剂')
+              const StateView.empty(title: '暂无对应方剂', fullScreen: false)
             else
               ...formulas.map((f) => Card(
                     margin: const EdgeInsets.symmetric(vertical: 4),

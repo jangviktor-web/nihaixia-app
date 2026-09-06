@@ -27,6 +27,7 @@ class _FormulaDetailScreenState extends State<FormulaDetailScreen> {
   void _checkBookmark() async {
     final db = DatabaseHelper.instance;
     final bookmarked = await db.isBookmarked(widget.formula.name);
+    if (!mounted) return;
     setState(() => _isBookmarked = bookmarked);
   }
 
@@ -49,7 +50,7 @@ class _FormulaDetailScreenState extends State<FormulaDetailScreen> {
         source: 'formula_detail',
       ));
     }
-    setState(() => _isBookmarked = !_isBookmarked);
+    if (mounted) setState(() => _isBookmarked = !_isBookmarked);
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

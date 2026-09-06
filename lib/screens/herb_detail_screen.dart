@@ -5,7 +5,9 @@ import '../models/bookmark.dart';
 import '../data/formula_repository.dart';
 import '../data/herb_repository.dart';
 import '../data/database_helper.dart';
-import 'formula_detail_screen.dart';
+import '../data/medical_case_data.dart';
+import '../data/critical_illness_data.dart';
+import 'herb_related_screens.dart';
 
 class HerbDetailScreen extends StatefulWidget {
   final Herb herb;
@@ -18,17 +20,41 @@ class HerbDetailScreen extends StatefulWidget {
 
 class _HerbDetailScreenState extends State<HerbDetailScreen> {
   bool _isBookmarked = false;
+  List<MedicalCase> _relatedCases = const [];
+  bool _casesReady = false;
+  List<CriticalIllness> _relatedCritical = const [];
 
   @override
   void initState() {
     super.initState();
     _checkBookmark();
+    _loadBacklinks();
   }
 
   void _checkBookmark() async {
     final db = DatabaseHelper.instance;
     final bookmarked = await db.isBookmarked(widget.herb.name);
+    if (!mounted) return;
     setState(() => _isBookmarked = bookmarked);
+  }
+
+  /// 计算后向关联：含此药的闭门课（静态 const，同步即可）+ 含此药的医案（全量解析较重，异步避免首帧卡顿）。
+  Future<void> _loadBacklinks() async {
+    _relatedCritical = kCriticalIllnesses
+        .where((it) =>
+            it.tags.any((t) => HerbRepository.canonicalOf(t) == widget.herb.name))
+        .toList();
+    try {
+      final cases = await getAllMedicalCases();
+      if (!mounted) return;
+      setState(() {
+        _relatedCases =
+            cases.where((c) => c.herbNames.contains(widget.herb.name)).toList();
+        _casesReady = true;
+      });
+    } catch (_) {
+      if (mounted) setState(() => _casesReady = true);
+    }
   }
 
   void _toggleBookmark() async {
@@ -50,7 +76,7 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
         source: 'herb_detail',
       ));
     }
-    setState(() => _isBookmarked = !_isBookmarked);
+    if (mounted) setState(() => _isBookmarked = !_isBookmarked);
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -72,6 +98,10 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
   Widget build(BuildContext context) {
     final herb = widget.herb;
     final cs = Theme.of(context).colorScheme;
+    final relatedFormulas = FormulaRepository.getAll()
+        .where((f) => f.components
+            .any((c) => HerbRepository.canonicalOf(c.name) == herb.name))
+        .toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -331,62 +361,99 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
               ),
             ),
 
-          // 含此药的方剂
-          Builder(
-            builder: (context) {
-              final formulas = FormulaRepository.getAll()
-                  .where((f) => f.components
-                      .any((c) => HerbRepository.canonicalOf(c.name) == herb.name))
-                  .toList();
-              if (formulas.isEmpty) return const SizedBox.shrink();
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.medication, color: cs.primary),
-                          const SizedBox(width: 8),
-                          Text(
-                            '含此药的方剂 (${formulas.length})',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: cs.primary,
-                            ),
-                          ),
-                        ],
+          // 相关内容入口（三级结构第一级：药物页仅放入口按钮，列表/详情各自独立加载）
+          Card(
+            margin: const EdgeInsets.only(bottom: 12),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                children: [
+                  _entryButton(
+                    context,
+                    icon: Icons.article_outlined,
+                    label: '关联医案',
+                    count: _casesReady ? _relatedCases.length : null,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => HerbRelatedCasesScreen(herb: herb),
                       ),
-                      const SizedBox(height: 8),
-                      ...formulas.map((f) => ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            title: Text(f.name,
-                                style: const TextStyle(fontWeight: FontWeight.bold)),
-                            subtitle: Text(
-                              '${f.meridian} · ${f.indication.length > 40 ? f.indication.substring(0, 40) + "..." : f.indication}',
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                            trailing: const Icon(Icons.chevron_right, size: 20),
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => FormulaDetailScreen(formula: f),
-                              ),
-                            ),
-                          )),
-                    ],
+                    ),
                   ),
-                ),
-              );
-            },
+                  _entryDivider(cs),
+                  _entryButton(
+                    context,
+                    icon: Icons.menu_book,
+                    label: '关联闭门课',
+                    count: _relatedCritical.length,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => HerbRelatedCriticalScreen(herb: herb),
+                      ),
+                    ),
+                  ),
+                  _entryDivider(cs),
+                  _entryButton(
+                    context,
+                    icon: Icons.medication,
+                    label: '含此药方剂',
+                    count: relatedFormulas.length,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => HerbRelatedFormulasScreen(herb: herb),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
     );
   }
+
+  /// 相关内容入口按钮：图标 + 标签 + 数量徽标（count 为 null 时显示 …，表示加载中）。
+  Widget _entryButton(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required int? count,
+    required VoidCallback onTap,
+  }) {
+    final cs = Theme.of(context).colorScheme;
+    return Expanded(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 22, color: cs.primary),
+              const SizedBox(height: 4),
+              Text(label, style: const TextStyle(fontSize: 12)),
+              const SizedBox(height: 2),
+              Text(
+                count == null ? '…' : '$count 条',
+                style:
+                    TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _entryDivider(ColorScheme cs) => Container(
+        width: 1,
+        height: 32,
+        color: cs.outlineVariant,
+      );
 
   Widget _buildSection(String title, String content, ColorScheme cs) {
     return Card(

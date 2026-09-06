@@ -1,0 +1,62 @@
+/* 设计 Token —— 单一来源（与 lib/theme/app_colors.dart + app_tokens.dart 对齐）
+   颜色来源 AppColors（light/dark），间距/圆角/字号来源 AppSpacing/AppRadius/AppType。 */
+
+:root {
+  /* 颜色 · light */
+  --color-primary: #8B4513;
+  --color-on-primary: #FFFFFF;
+  --color-primary-container: #F5D7BC;
+  --color-on-primary-container: #2B1A00;
+  --color-background: #FAF7F2;
+  --color-surface: #FFFFFF;
+  --color-surface-container-highest: #EFE8DF;
+  --color-on-surface: #201B15;
+  --color-on-surface-variant: #6F675C;
+  --color-outline: #857C71;
+  --color-danger: #C62828;
+  --color-warning: #9A5B00;
+  --color-success: #2E7D32;
+  --color-info: #1565C0;
+
+  /* 间距 */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-xxl: 32px;
+
+  /* 圆角 */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  /* 字号 */
+  --type-display: 24px;
+  --type-headline: 20px;
+  --type-subhead: 18px;
+  --type-title: 16px;
+  --type-body: 14px;
+  --type-caption: 12px;
+  --type-micro: 11px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-primary: #E0A878;
+    --color-on-primary: #4A2A08;
+    --color-primary-container: #5C3A10;
+    --color-on-primary-container: #F5D7BC;
+    --color-background: #191512;
+    --color-surface: #221D18;
+    --color-surface-container-highest: #2C2620;
+    --color-on-surface: #EFE9E2;
+    --color-on-surface-variant: #C4BBB0;
+    --color-outline: #8F867A;
+    --color-danger: #FFB4AB;
+    --color-warning: #FFB950;
+    --color-success: #81C784;
+    --color-info: #90CAF9;
+  }
+}

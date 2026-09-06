@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import '../widgets/state_view.dart';
 import 'package:flutter/services.dart';
 
 import '../data/database_helper.dart';
@@ -76,6 +77,10 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
     // 异步刷新收藏/最近浏览（不阻塞列表渲染）
     _refreshFavRecent();
     return _all;
+  }
+
+  void _reload() {
+    setState(() => _future = _load());
   }
 
   /// 同步累计治法(经方方剂名)/疾病(西医病名)分类频次，按频次降序取前若干，
@@ -238,7 +243,16 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
         future: _future,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: StateView.loading());
+          }
+          if (snapshot.hasError) {
+            return Center(
+              child: StateView.error(
+                title: '医案数据加载失败',
+                message: snapshot.error.toString(),
+                onRetry: _reload,
+              ),
+            );
           }
           final filtered = _filtered;
           return Column(
@@ -311,21 +325,12 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
               ),
               Expanded(
                 child: filtered.isEmpty
-                    ? Center(
-                        child: Text(
-                          _view == 'fav'
-                              ? '暂无收藏医案\n在医案详情页点击书签收藏'
-                              : _view == 'recent'
-                                  ? '暂无最近浏览'
-                                  : '无匹配医案',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 13,
-                            height: 1.6,
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
-                        ),
+                    ? StateView.empty(
+                        title: _view == 'fav'
+                            ? '暂无收藏医案\n在医案详情页点击书签收藏'
+                            : _view == 'recent'
+                                ? '暂无最近浏览'
+                                : '无匹配医案',
                       )
                     : ListView.separated(
                         padding: const EdgeInsets.fromLTRB(12, 6, 12, 16),

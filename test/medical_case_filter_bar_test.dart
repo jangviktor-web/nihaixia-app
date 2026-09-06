@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'package:nihaisha_app/screens/medical_case_library_screen.dart';
+import 'package:nihaisha_app/theme/app_colors.dart';
 
 void main() {
   setUpAll(() {
@@ -18,7 +19,10 @@ void main() {
     await tester.runAsync(() async {
       await rootBundle.loadString('assets/medical_cases/cases_table.md');
       await tester.pumpWidget(
-        const MaterialApp(home: MedicalCaseLibraryScreen()),
+        MaterialApp(
+          theme: ThemeData(useMaterial3: true, extensions: [AppColors.light]),
+          home: const MedicalCaseLibraryScreen(),
+        ),
       );
       // 冷启动 sqflite 首次 open database 真实 IO 较慢，先真实等几秒
       // 让所有 await (FormulaRepository/HerbRepository/rootBundle/sqflite) 完成。

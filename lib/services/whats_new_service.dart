@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import '../data/database_helper.dart';
 import '../data/changelog_repository.dart';
+import '../theme/app_colors.dart';
 
 /// App 更新后弹窗「本次更新了什么」。
 ///
@@ -43,7 +44,7 @@ class WhatsNewService {
       builder: (ctx) => AlertDialog(
         title: Row(
           children: [
-            const Icon(Icons.new_releases, color: Colors.green),
+            Icon(Icons.new_releases, color: ctx.colors.success),
             const SizedBox(width: 8),
             Expanded(child: Text('更新到 v$version')),
           ],

@@ -1,9 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../widgets/state_view.dart';
 import 'package:flutter/services.dart';
 import '../models/bookmark.dart';
-import '../theme/app_colors.dart';
 import '../data/database_helper.dart';
+import '../data/formula_repository.dart';
+import '../data/herb_repository.dart';
+import '../screens/formula_detail_screen.dart';
+import '../screens/herb_detail_screen.dart';
 
 class BookmarksScreen extends StatefulWidget {
   const BookmarksScreen({super.key});
@@ -22,7 +26,18 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
   @override
   void initState() {
     super.initState();
+    DatabaseHelper.bookmarkVersion.addListener(_onBookmarkChanged);
     _loadData();
+  }
+
+  @override
+  void dispose() {
+    DatabaseHelper.bookmarkVersion.removeListener(_onBookmarkChanged);
+    super.dispose();
+  }
+
+  void _onBookmarkChanged() {
+    if (mounted) _loadData();
   }
 
   void _loadData() async {
@@ -50,6 +65,43 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
     final db = DatabaseHelper.instance;
     await db.deleteBookmark(id);
     _loadData();
+  }
+
+  /// 点击收藏项：优先跳转到对应条目的详情页（方剂→方剂介绍页，药物→药物页）。
+  /// 若按名称查不到对应条目（如名称变更），则回退为原始文本展示。
+  void _openBookmark(Bookmark b) {
+    if (b.category == '方剂') {
+      final formula = FormulaRepository.getByName(b.title);
+      if (formula != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => FormulaDetailScreen(formula: formula)),
+        );
+        return;
+      }
+    } else if (b.category == '本草') {
+      final herb = HerbRepository.getByName(b.title);
+      if (herb != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => HerbDetailScreen(herb: herb)),
+        );
+        return;
+      }
+    }
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(b.title),
+        content: SingleChildScrollView(child: Text(b.content)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('关闭'),
+          ),
+        ],
+      ),
+    );
   }
 
   // ==================== 文件夹管理 ====================
@@ -278,35 +330,10 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
           // 收藏列表
           Expanded(
             child: _bookmarks.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.bookmark_border,
-                          size: 64,
-                          color: context.colors.onSurfaceVariant,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          '暂无收藏',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurfaceVariant,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          '在辨证结果或方剂详情中点击收藏',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: context.colors.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
+                ? StateView.empty(
+                    title: '暂无收藏',
+                    hint: '在辨证结果或方剂详情中点击收藏',
+                    icon: Icons.bookmark_border,
                   )
                 : ListView.builder(
                     padding: const EdgeInsets.all(12),
@@ -391,23 +418,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
                               ),
                             ],
                           ),
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (ctx) => AlertDialog(
-                                title: Text(b.title),
-                                content: SingleChildScrollView(
-                                  child: Text(b.content),
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(ctx),
-                                    child: const Text('关闭'),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
+                          onTap: () => _openBookmark(b),
                         ),
                       );
                     },

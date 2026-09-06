@@ -4,11 +4,16 @@ import 'ziwuliuzhu_screen.dart';
 import 'diagnosis_history_screen.dart';
 import 'ziwei_chart_screen.dart';
 import 'yijing_screen.dart';
+import 'bazi_paipan_screen.dart';
 import 'critical_illness_list_screen.dart';
 import 'medical_case_library_screen.dart';
 import 'daily_almanac_screen.dart';
+import 'yuxiaji_omen_screen.dart';
+import 'dream_screen.dart';
+import 'guansha_screen.dart';
 import 'saved_charts_screen.dart';
 import 'solar_term_section_screen.dart';
+import 'settings_screen.dart';
 import '../theme/app_colors.dart';
 
 class ToolsScreen extends StatelessWidget {
@@ -23,6 +28,17 @@ class ToolsScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          _ToolCard(
+            icon: Icons.settings,
+            title: '设置',
+            subtitle: '外观/诊断/排盘口径（晚子时·长生十二神）· 数据管理',
+            color: colorScheme.primary,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SettingsScreen()),
+            ),
+          ),
+          const SizedBox(height: 12),
           _ToolCard(
             icon: Icons.straighten,
             title: '经方剂量换算器',
@@ -53,6 +69,17 @@ class ToolsScreen extends StatelessWidget {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const ZiweiChartScreen()),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _ToolCard(
+            icon: Icons.view_column_outlined,
+            title: '八字排盘',
+            subtitle: '四柱 + 十神 + 旬空 + 刑冲合害 + 长生十二神 · 民俗参考',
+            color: colorScheme.tertiary,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const BaZiPaipanScreen()),
             ),
           ),
           const SizedBox(height: 12),
@@ -112,6 +139,39 @@ class ToolsScreen extends StatelessWidget {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const DailyAlmanacScreen()),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _ToolCard(
+            icon: Icons.auto_awesome,
+            title: '玉匣灵兆',
+            subtitle: '面热/眼跳/耳鸣/心惊 · 十二时辰兆占 · 民俗文化参考',
+            color: Theme.of(context).colorScheme.tertiary,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const YuxiajiOmenScreen()),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _ToolCard(
+            icon: Icons.nightlight_round,
+            title: '周公解梦',
+            subtitle: '搜梦境查吉凶 · 民俗文化参考',
+            color: Theme.of(context).colorScheme.tertiary,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const DreamScreen()),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _ToolCard(
+            icon: Icons.child_care,
+            title: '小儿关煞',
+            subtitle: '生辰测关煞 · 民俗文化参考',
+            color: Theme.of(context).colorScheme.tertiary,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const GuanshaScreen()),
             ),
           ),
           const SizedBox(height: 12),

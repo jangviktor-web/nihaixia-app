@@ -138,8 +138,10 @@ class _MingGuaCalculatorScreenState extends State<MingGuaCalculatorScreen> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return Scaffold(
-      appBar: AppBar(title: const Text('四柱命卦')),
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('四柱命卦'),
+        ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
