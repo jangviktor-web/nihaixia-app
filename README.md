@@ -131,9 +131,9 @@
 > 完全离线｜无需联网｜无需注册｜Android 6.0+
 > 通用版 APK 约 64MB，分架构版 22–26MB
 > 自 V1.11.9 起由 GitHub Actions 自动构建发布，推送 `v*` tag 即出包
-> **最后更新：2026-09-05（v1.11.13）**
+> **最后更新：2026-09-06（v1.11.15）**
 
-### 📥 方式一：下载预编译 APK（V1.11.13）
+### 📥 方式一：下载预编译 APK（V1.11.15）
 
 > ### ⚠️ 升级须知：签名密钥已统一，通常可直接覆盖安装
 >
@@ -150,13 +150,13 @@
 
 <div align="left">
 
-[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安装包‑3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.13/app-release.apk)
+[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安装包‑3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.15/app-release.apk)
 &nbsp;&nbsp;
-[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安装包‑0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.13/app-arm64-v8a-release.apk)
+[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安装包‑0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.15/app-arm64-v8a-release.apk)
 &nbsp;&nbsp;
-[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安装包‑9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.13/app-armeabi-v7a-release.apk)
+[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安装包‑9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.15/app-armeabi-v7a-release.apk)
 &nbsp;&nbsp;
-[![📦 x86_64(虚拟机)](https://img.shields.io/badge/📦%20x86_64(虚拟机)-安卓安装包‑1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.13/app-x86_64-release.apk)
+[![📦 x86_64(虚拟机)](https://img.shields.io/badge/📦%20x86_64(虚拟机)-安卓安装包‑1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.15/app-x86_64-release.apk)
 
 </div>
 
@@ -167,6 +167,7 @@
 | armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | 22.1MB | 老旧32位安卓设备 |
 | x86_64 `app‑x86_64‑release.apk` | 25.9MB | 安卓虚拟机、模拟器使用 |
 
+> **V1.11.15 命盘库双排盘入口 · 黄历通胜要览 · 本命相冲预警**：命盘库点击已存命盘可选「紫微 / 八字」排盘，生辰自动带入立即排盘；八字排盘页补上「添加到命盘库」入口（与紫微共用命盘库）；每日黄历新增「通胜要览」卡（黄道吉时 + 财神/喜神/福神方位）与本命相冲预警；切日手势改横向拖拽防误触；宜忌双栏合并。详见 [Release Notes](release_notes/v1.11.15.md)。
 > **V1.11.13 八字神煞扩展 · 黄历神仙节日/生肖相冲/潮汕节俗 · 玉匣灵兆**：八字排盘新增 11 种神煞（太极贵人/国印/金舆/福星贵人/德秀/红鸾/天喜/孤辰/寡宿/劫煞/亡神）；每日黄历新增三张卡片——玉匣记神仙节日（125 个农历日）、生肖相冲（当日地支→相冲生肖）、潮汕节俗（94 个农历日），三源运行时去重互不覆盖；新增民俗模块「玉匣灵兆」（玉匣记身体兆占：十二时辰兆占 + 鸦鸣鹊噪 + 占灯花）。详见 [Release Notes](release_notes/v1.11.13.md)。
 > **V1.11.12 本草一键通 · 详情页三级结构**：药库列表/搜索每行可点进详情；医案与闭门课正文药材名（含异名）可点直达药物页；药物详情页相关内容改为「关联医案/关联闭门课/含此药方剂」三个入口 → 简洁列表 → 详情，页面更清爽。详见 [Release Notes](release_notes/v1.11.12.md)。
 > **V1.11.11 同药异名合并 · 异名检索修复**：18 组异名同种条目归一（479→461），检索收敛到唯一入口 matchesQuery，按旧名（如「茈胡」）也能命中「柴胡」；三盘合参与八字补全（十神/旬空/刑冲合害/长生十二神）落地。详见 [Release Notes](release_notes/v1.11.11.md)。
