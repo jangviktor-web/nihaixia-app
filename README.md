@@ -88,6 +88,12 @@
 
 从左到右：① **每日黄历 · 生肖相冲** —— 依每日地支经六冲推算当日相冲生肖（如子日冲马），一眼看清。 ② **每日黄历 · 玉匣记神仙节日 + 潮汕节俗** —— 玉匣记收三元五腊圣诞（114 条）、十殿阎君（10 条）与斋期，共 125 个农历日；潮汕地方条目单列（如「司命帝君」「灶公生」），与既有传统节日运行时去重互不覆盖。 ③ **玉匣灵兆 · 占面热法** 与 ④ **玉匣灵兆 · 占眼皮法** —— 玉匣记身体兆占，十二时辰各占断，当前时辰自动高亮，可展开十二时辰详表（左眼跳财、右眼有女思等）；工具页新增入口，附民俗参考免责声明。
 
+**v1.11.17 周公解梦 · 小儿关煞 · 紫微早晚子时校正**
+
+![v1.11.17 周公解梦与小儿关煞](docs/images/screenshot_v1117_guansha_dream.jpg)
+
+新增「周公解梦」模块（412 条梦境民俗解读，关键词/分类检索，吉凶标注）；新增「小儿关煞」模块（36 关 + 18 扩展煞，支持测算与百科检索，附民俗文化参考免责声明）；紫微排盘早晚子时校正重构，原始出生时间只读、农历显示跟随校正后的干支。
+
 </div>
 
 ---
@@ -131,9 +137,9 @@
 > 完全离线｜无需联网｜无需注册｜Android 6.0+
 > 通用版 APK 约 64MB，分架构版 22–26MB
 > 自 V1.11.9 起由 GitHub Actions 自动构建发布，推送 `v*` tag 即出包
-> **最后更新：2026-09-06（v1.11.15）**
+> **最后更新：2026-09-07（v1.11.17）**
 
-### 📥 方式一：下载预编译 APK（V1.11.15）
+### 📥 方式一：下载预编译 APK（V1.11.17）
 
 > ### ⚠️ 升级须知：签名密钥已统一，通常可直接覆盖安装
 >
@@ -150,23 +156,24 @@
 
 <div align="left">
 
-[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安装包‑3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.15/app-release.apk)
+[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安装包‑3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.17/app-release.apk)
 &nbsp;&nbsp;
-[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安装包‑0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.15/app-arm64-v8a-release.apk)
+[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安装包‑0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.17/app-arm64-v8a-release.apk)
 &nbsp;&nbsp;
-[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安装包‑9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.15/app-armeabi-v7a-release.apk)
+[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安装包‑9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.17/app-armeabi-v7a-release.apk)
 &nbsp;&nbsp;
-[![📦 x86_64(虚拟机)](https://img.shields.io/badge/📦%20x86_64(虚拟机)-安卓安装包‑1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.15/app-x86_64-release.apk)
+[![📦 x86_64(虚拟机)](https://img.shields.io/badge/📦%20x86_64(虚拟机)-安卓安装包‑1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.17/app-x86_64-release.apk)
 
 </div>
 
 | 安装包 | 大小 | 适用说明 |
 |---|---|---|
-| 通用版 `app-release.apk` | 64.8MB | 全CPU架构，绝大多数安卓设备直接选这个 |
-| arm64‑v8a `app‑arm64‑v8a‑release.apk` | 24.3MB | 新款64位安卓手机，体积更小 |
-| armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | 22.1MB | 老旧32位安卓设备 |
-| x86_64 `app‑x86_64‑release.apk` | 25.9MB | 安卓虚拟机、模拟器使用 |
+| 通用版 `app-release.apk` | 65.3MB | 全CPU架构，绝大多数安卓设备直接选这个 |
+| arm64‑v8a `app‑arm64‑v8a‑release.apk` | 24.4MB | 新款64位安卓手机，体积更小 |
+| armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | 22.3MB | 老旧32位安卓设备 |
+| x86_64 `app‑x86_64‑release.apk` | 26.0MB | 安卓虚拟机、模拟器使用 |
 
+> **V1.11.17 周公解梦 · 小儿关煞 · 早晚子时校正约束落地**：新增「周公解梦」模块（412 条梦境民俗解读，关键词/分类检索，吉凶标注）；新增「小儿关煞」模块（36 关 + 18 扩展煞，支持测算与百科检索，附民俗文化参考免责声明）；紫微排盘早晚子时校正重构，原始出生时间只读、农历显示跟随校正后的干支。详见 [Release Notes](release_notes/v1.11.17.md)。
 > **V1.11.15 命盘库双排盘入口 · 黄历通胜要览 · 本命相冲预警**：命盘库点击已存命盘可选「紫微 / 八字」排盘，生辰自动带入立即排盘；八字排盘页补上「添加到命盘库」入口（与紫微共用命盘库）；每日黄历新增「通胜要览」卡（黄道吉时 + 财神/喜神/福神方位）与本命相冲预警；切日手势改横向拖拽防误触；宜忌双栏合并。详见 [Release Notes](release_notes/v1.11.15.md)。
 > **V1.11.13 八字神煞扩展 · 黄历神仙节日/生肖相冲/潮汕节俗 · 玉匣灵兆**：八字排盘新增 11 种神煞（太极贵人/国印/金舆/福星贵人/德秀/红鸾/天喜/孤辰/寡宿/劫煞/亡神）；每日黄历新增三张卡片——玉匣记神仙节日（125 个农历日）、生肖相冲（当日地支→相冲生肖）、潮汕节俗（94 个农历日），三源运行时去重互不覆盖；新增民俗模块「玉匣灵兆」（玉匣记身体兆占：十二时辰兆占 + 鸦鸣鹊噪 + 占灯花）。详见 [Release Notes](release_notes/v1.11.13.md)。
 > **V1.11.12 本草一键通 · 详情页三级结构**：药库列表/搜索每行可点进详情；医案与闭门课正文药材名（含异名）可点直达药物页；药物详情页相关内容改为「关联医案/关联闭门课/含此药方剂」三个入口 → 简洁列表 → 详情，页面更清爽。详见 [Release Notes](release_notes/v1.11.12.md)。
