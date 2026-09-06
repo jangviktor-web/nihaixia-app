@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/lunar_almanac_service.dart';
+import '../theme/app_colors.dart';
 
 /// 每日黄历页面的卡片组件集合。
 ///
@@ -109,9 +110,12 @@ class AlmanacDateHeader extends StatelessWidget {
               ),
             ),
             if (tagText != null)
-              _AlmanacTag(
-                text: tagText,
-                color: almanac.solarTerm != null ? cs.primary : cs.secondary,
+              Flexible(
+                child: _AlmanacTag(
+                  text: tagText,
+                  color:
+                      almanac.solarTerm != null ? cs.primary : cs.secondary,
+                ),
               ),
           ],
         ),
@@ -509,6 +513,102 @@ class AlmanacYiJiCard extends StatelessWidget {
   }
 }
 
+/// 宜 / 忌 合并卡片：左「宜」右「忌」双栏并排，减少纵向滚动（P1）。
+class AlmanacYiJiPairCard extends StatelessWidget {
+  const AlmanacYiJiPairCard({super.key, required this.yi, required this.ji});
+
+  final List<String> yi;
+  final List<String> ji;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: _YiJiColumn(
+                kind: '宜',
+                icon: Icons.check_circle_outline,
+                color: colors.success,
+                chipColor: colors.successContainer.withValues(alpha: 0.5),
+                items: yi,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _YiJiColumn(
+                kind: '忌',
+                icon: Icons.block,
+                color: colors.danger,
+                chipColor: colors.dangerContainer.withValues(alpha: 0.5),
+                items: ji,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// 宜/忌单栏：标题行 + 条目 chips。
+class _YiJiColumn extends StatelessWidget {
+  const _YiJiColumn({
+    required this.kind,
+    required this.icon,
+    required this.color,
+    required this.chipColor,
+    required this.items,
+  });
+
+  final String kind;
+  final IconData icon;
+  final Color color;
+  final Color chipColor;
+  final List<String> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, size: 18, color: color),
+            const SizedBox(width: 8),
+            Text(
+              kind,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: items
+              .map(
+                (s) => Chip(
+                  backgroundColor: chipColor,
+                  label: Text(s, style: TextStyle(color: color)),
+                  visualDensity: VisualDensity.compact,
+                ),
+              )
+              .toList(),
+        ),
+      ],
+    );
+  }
+}
+
 /// 节日卡片（含传统 / 法定 / 节气节日）。
 class AlmanacFestivalCard extends StatelessWidget {
   const AlmanacFestivalCard({super.key, required this.festivals});
@@ -687,6 +787,8 @@ class _AlmanacTag extends StatelessWidget {
       ),
       child: Text(
         text,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w600,

@@ -226,25 +226,50 @@ String? getUserZodiacFromSolar(DateTime solar) {
   return idx >= 0 ? _zodiacByBranch[idx] : null;
 }
 
+// 日干名称（按索引 0-9，甲→癸）。
+const List<String> _ganNames = [
+  '甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸',
+];
+
+/// 已算日期的结果缓存（键 YYYY-M-D），上限 800 条超出即清空——
+/// 滑动切日来回翻看免重复计算，纯内存、无持久化。
+final Map<String, AlmanacDay> _almanacCache = <String, AlmanacDay>{};
+
 /// 计算指定公历日期的每日黄历。
 ///
 /// [solar] 公历日期（时分用于真太阳时无关的日柱判定，内部取正午基准）。
+///
+/// 单一来源原则：所有展示值（三柱/干支索引/生肖/吉时/方位）均由
+/// [calcZiweiBaZi] 的日柱字符串 `bz.day` 派生；`dayGanZhi` 仅作为
+/// FestivalEngine 的内部入参保留，不参与任何展示值。
+/// 两者一致性由单测钉死（连续 400 天，见 lunar_almanac_test）。
 AlmanacDay getDailyAlmanac(DateTime solar) {
+  final cacheKey = '${solar.year}-${solar.month}-${solar.day}';
+  final cached = _almanacCache[cacheKey];
+  if (cached != null) return cached;
+
   final ad = AstroDateTime(solar.year, solar.month, solar.day, 12, 0, 0);
   final gz = dayGanZhi(ad);
   final lunar = LunarDate.fromSolar(ad);
 
   // 年柱 / 月柱 / 日柱：取自紫微引擎的四柱（正午基准、平太阳时），
-  // 与命盘页、三盘合参同口径。日柱与 dayGanZhi 结果一致（见单测校验），
-  // 三柱统一由本来源提供以保证同源。
+  // 与命盘页、三盘合参同口径。
   final ZiweiBaZi bz = calcZiweiBaZi(
     DateTime(solar.year, solar.month, solar.day, 12, 0),
     useTrueSolarTime: false,
   );
 
+  // 日干支索引：由 bz.day（两字干支，如「甲子」）解析——展示值与派生
+  // 索引同源。兜底：格式异常时回退底层直算，保证不崩。
+  int ganIdx = _ganNames.indexOf(bz.day.isNotEmpty ? bz.day[0] : '');
+  int dayBranch = _branchNames.indexOf(bz.day.length >= 2 ? bz.day[1] : '');
+  if (ganIdx < 0 || dayBranch < 0) {
+    ganIdx = gz.gan.index;
+    dayBranch = gz.zhi.index;
+  }
+
   // 建除：月支 → 日支 偏移
   final monthBranch = _lunarMonthToBranch[lunar.month];
-  final dayBranch = gz.zhi.index;
   final jcIdx = ((dayBranch - monthBranch) % 12 + 12) % 12;
 
   // 冲煞 + 生肖相冲（日支六冲：冲支 = 日支 + 6，被冲生肖随之）
@@ -293,12 +318,11 @@ AlmanacDay getDailyAlmanac(DateTime solar) {
     for (int i = 0; i < 12; i++)
       if (_isHuangDao[(i - ql + 12) % 12]) '${_shiChenNames[i]}时',
   ];
-  final ganIdx = gz.gan.index;
   final caiShen = _caiShenByGan[ganIdx];
   final xiShen = _xiShenByGan[ganIdx];
   final fuShen = _fuShenByGan[ganIdx];
 
-  return AlmanacDay(
+  final day = AlmanacDay(
     solar: solar,
     weekdayName: ['一', '二', '三', '四', '五', '六', '日'][solar.weekday - 1],
     lunarText: '农历 $lunar',
@@ -307,7 +331,7 @@ AlmanacDay getDailyAlmanac(DateTime solar) {
     ganzhiDay: bz.day,
     jianChu: _jianChuNames[jcIdx],
     jianChuIndex: jcIdx,
-    pengZu: [_pengZuGan[gz.gan.index], _pengZuZhi[gz.zhi.index]],
+    pengZu: [_pengZuGan[ganIdx], _pengZuZhi[dayBranch]],
     chong: chong,
     sha: sha,
     dayZodiac: dayZodiac,
@@ -323,4 +347,7 @@ AlmanacDay getDailyAlmanac(DateTime solar) {
     xiShen: xiShen,
     fuShen: fuShen,
   );
+  if (_almanacCache.length >= 800) _almanacCache.clear();
+  _almanacCache[cacheKey] = day;
+  return day;
 }

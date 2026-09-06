@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/state_view.dart';
 import 'package:nihaisha_app/services/lunar_almanac_service.dart';
-import '../theme/app_colors.dart';
 import '../widgets/almanac_cards.dart';
 import '../data/saved_chart_repository.dart';
 
@@ -25,8 +24,8 @@ SwipeDir? resolveSwipe(double dx, double dy) {
 /// 年柱月柱日柱取自紫微引擎同一套四柱口径（见 [AlmanacDay.ganzhiYear]）。
 /// 结果属「民俗文化参考」，非行事指令。
 ///
-/// 交互：左滑切前一天、右滑切后一天（[resolveSwipe] 判定），
-/// 纵向手势交回列表用于滚动长内容（如「忌」条目较多时）。
+/// 交互：左滑切前一天、右滑切后一天（仅认横向拖拽，[resolveSwipe] 判定），
+/// 纵向手势完全归列表滚动长内容，互不干扰。
 class DailyAlmanacScreen extends StatefulWidget {
   const DailyAlmanacScreen({super.key});
 
@@ -110,14 +109,16 @@ class _DailyAlmanacScreenState extends State<DailyAlmanacScreen> {
         ],
       ),
       body: GestureDetector(
-        onPanEnd: (details) {
+        // 只认横向拖拽（onHorizontalDragEnd）：纵向滚动完全归 ListView，
+        // 对角快滑不再误触切日（P1 修复：原 onPanEnd 靠横纵分量比较，
+        // 斜向滑动会意外切日）。
+        onHorizontalDragEnd: (details) {
           final v = details.velocity.pixelsPerSecond;
           final dir = resolveSwipe(v.dx, v.dy);
           if (dir != null) _applySwipe(dir);
         },
         child: ListView(
-          // 不禁用滚动：内容较长（如「忌」条目多）时可滚到底部完整查看。
-          // 纵向手势归 ListView，横向手势由上层 GestureDetector 切日。
+          // 不禁用滚动：内容较长时可滚到底部完整查看。
           padding: const EdgeInsets.all(16),
           children: [
             const AlmanacSwipeHint(),
@@ -148,21 +149,7 @@ class _DailyAlmanacScreenState extends State<DailyAlmanacScreen> {
       const SizedBox(height: 12),
       AlmanacPengZuCard(almanac: a),
       const SizedBox(height: 12),
-      AlmanacYiJiCard(
-        kind: '宜',
-        icon: Icons.check_circle_outline,
-        color: context.colors.success,
-        chipColor: context.colors.successContainer.withValues(alpha: 0.5),
-        items: a.yi,
-      ),
-      const SizedBox(height: 12),
-      AlmanacYiJiCard(
-        kind: '忌',
-        icon: Icons.block,
-        color: context.colors.danger,
-        chipColor: context.colors.dangerContainer.withValues(alpha: 0.5),
-        items: a.ji,
-      ),
+      AlmanacYiJiPairCard(yi: a.yi, ji: a.ji),
       const SizedBox(height: 12),
       AlmanacTongShengCard(almanac: a),
       if (a.festivals.isNotEmpty) ...[
