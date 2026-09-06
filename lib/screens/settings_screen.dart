@@ -171,38 +171,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
         contentPadding: EdgeInsets.zero,
       );
 
-  // 晚子时 / 早子时的共享开关：isBazi=true 时显示「晚子时/早子时」语义。
-  Widget _lateZiTile(ColorScheme cs, {required bool isBazi}) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (isBazi) ...[
-            const Text('子时口径',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            SegmentedButton<bool>(
-              segments: const [
-                ButtonSegment(value: true, label: Text('晚子时')),
-                ButtonSegment(value: false, label: Text('早子时')),
-              ],
-              selected: {_settings.lateZiShiEnabled}, // true=晚子时
-              onSelectionChanged: (s) => _settings.setLateZiShiEnabled(s.first),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              '晚子时：23:00–次日01:00 算次日（与紫微同口径，主流大宗）；'
-              '早子时：23:00–24:00 算当日，日柱不变。仅影响子时生人。',
-              style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
-            ),
-          ] else
-            SwitchListTile(
-              secondary: const Icon(Icons.nights_stay_outlined),
-              title: const Text('晚子时归次日子时'),
-              subtitle: const Text('开启后 23:00–23:59 日柱顺延一日'),
-              value: _settings.lateZiShiEnabled,
-              onChanged: (v) => _settings.setLateZiShiEnabled(v),
-              contentPadding: EdgeInsets.zero,
-            ),
-        ],
+  // 区分早晚子时的共享开关：八字 / 紫微共用，单一开关、默认关闭。
+  Widget _lateZiTile(ColorScheme cs, {required bool isBazi}) => SwitchListTile(
+        secondary: const Icon(Icons.nights_stay_outlined),
+        title: const Text('区分早晚子时'),
+        subtitle: const Text(
+            '默认关闭：子时归自然日（日柱当天）。开启后由出生时刻自动判定'
+            '晚子时（23:00–24:00，日柱当天、时柱次日）或早子时（00:00–01:00，日柱次日）'),
+        value: _settings.distinguishZiShiEnabled,
+        onChanged: (v) => _settings.setDistinguishZiShiEnabled(v),
+        contentPadding: EdgeInsets.zero,
       );
 
   Widget _twelveStageTile(ColorScheme cs) => Column(

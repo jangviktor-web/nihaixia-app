@@ -360,6 +360,46 @@ class ZiweiChart {
   /// 出生农历月显示：「闰X月」或「X月」。仅用于展示，不改变排盘正确性。
   String get lunarMonthDisplay =>
       lunarIsLeap ? '闰$lunarMonth月' : '$lunarMonth月';
+
+  ZiweiChart copyWith({
+    String? baziYear,
+    String? baziMonth,
+    String? baziDay,
+    String? baziTime,
+    String? lunarText,
+    int? lunarMonth,
+    bool? lunarIsLeap,
+    String? genderLabel,
+    String? elementBureauLabel,
+    String? mingZhuLabel,
+    String? shenZhuLabel,
+    int? originMingIndex,
+    int? bodyPalaceIndex,
+    List<ZiweiPalace>? palaces,
+    List<ZiweiSihua>? sihua,
+    List<ZiweiDecade>? decades,
+    ZiWeiPlate? basePlate,
+  }) {
+    return ZiweiChart(
+      baziYear: baziYear ?? this.baziYear,
+      baziMonth: baziMonth ?? this.baziMonth,
+      baziDay: baziDay ?? this.baziDay,
+      baziTime: baziTime ?? this.baziTime,
+      lunarText: lunarText ?? this.lunarText,
+      lunarMonth: lunarMonth ?? this.lunarMonth,
+      lunarIsLeap: lunarIsLeap ?? this.lunarIsLeap,
+      genderLabel: genderLabel ?? this.genderLabel,
+      elementBureauLabel: elementBureauLabel ?? this.elementBureauLabel,
+      mingZhuLabel: mingZhuLabel ?? this.mingZhuLabel,
+      shenZhuLabel: shenZhuLabel ?? this.shenZhuLabel,
+      originMingIndex: originMingIndex ?? this.originMingIndex,
+      bodyPalaceIndex: bodyPalaceIndex ?? this.bodyPalaceIndex,
+      palaces: palaces ?? this.palaces,
+      sihua: sihua ?? this.sihua,
+      decades: decades ?? this.decades,
+      basePlate: basePlate ?? this.basePlate,
+    );
+  }
 }
 
 /// 计算紫微斗数命盘。
@@ -376,10 +416,44 @@ ZiweiChart calculateZiweiChart({
   required Gender gender,
   Location? location,
   bool useTrueSolarTime = true,
+  bool ratHourMode = false,
 }) {
-  final ruleset = ConfigLoader.getDefault();
+  // 紫微盘统一以「todayGan（子时归自然日）」为底层排盘基准：
+  // 晚子时（日柱当天）由 todayGan 直接得出、时柱再覆盖为次日子时；
+  // 早子时（日柱次日）由「出生日 +1 天」得出；关闭或 01:00–23:00 即 todayGan。
+  // 不能用规则集默认（默认是 noSplit），否则 23–24 点会被整体顺延到次日，盘式全错。
+  // 必须自建规则集并把同一 calendarOptions 实例交给 date 与 calculate，
+  // 否则 ZiweiEngine 会报 options 与 ruleset.calendarOptions 不一致。
+  final baseRuleset = ConfigLoader.getDefault();
+  final ruleset = ZiweiRuleset(
+    stars: baseRuleset.stars,
+    flowDefinitions: baseRuleset.flowDefinitions,
+    brightnessLabels: baseRuleset.brightnessLabels,
+    siHuaRules: baseRuleset.siHuaRules,
+    calendarOptions: CalendarOptions(
+      ratHourMode: RatHourMode.todayGan,
+      leapRule: baseRuleset.calendarOptions.leapRule,
+      wuHuDunBasedOn: baseRuleset.calendarOptions.wuHuDunBasedOn,
+      siHuaBasedOn: baseRuleset.calendarOptions.siHuaBasedOn,
+      childhoodRule: baseRuleset.calendarOptions.childhoodRule,
+      flowLimitBasedOn: baseRuleset.calendarOptions.flowLimitBasedOn,
+      enableHistorical: baseRuleset.calendarOptions.enableHistorical,
+    ),
+    mingZhuRule: baseRuleset.mingZhuRule,
+    shenZhuRule: baseRuleset.shenZhuRule,
+  );
+  // 区分早晚子时：开启后 23:00–24:00 归「晚子时」（日柱当天、时柱子时由下行覆盖），
+  // 00:00–01:00 归「早子时」（日柱次日）；关闭或 01:00–23:00 不影响（子时归自然日）。
+  // 早子时（开启且 00:00–01:00）：日柱取次日 → 出生日 +1 天按默认（todayGan）排盘。
+  // 晚子时（开启且 23:00–24:00）：日柱当天、时柱子时次日 → 默认排盘后覆盖时柱（见下）。
+  // 关闭开关或 01:00–23:00：默认排盘。全程使用规则集默认（todayGan），既符合紫微流派
+  // 口径，又避免 date.options 与 ruleset.calendarOptions 不一致报错；早晚子时的日/时柱
+  // 差异由「日期偏移」（早子时）与「时柱覆盖」（晚子时）两种手段实现，不另造 options。
+  final DateTime baseSolar = (ratHourMode && solar.hour < 1)
+      ? solar.add(const Duration(days: 1))
+      : solar;
   final date = ZiweiDate.fromSolar(
-    AstroDateTime(solar.year, solar.month, solar.day, solar.hour, solar.minute),
+    AstroDateTime(baseSolar.year, baseSolar.month, baseSolar.day, baseSolar.hour, baseSolar.minute),
     gender: gender,
     options: ruleset.calendarOptions,
     location: location,
@@ -471,7 +545,7 @@ ZiweiChart calculateZiweiChart({
   final baziDay = '${bz.day.gan.label}${bz.day.zhi.label}';
   final baziTime = '${bz.time.gan.label}${bz.time.zhi.label}';
 
-  return ZiweiChart(
+  ZiweiChart chart = ZiweiChart(
     baziYear: baziYear,
     baziMonth: baziMonth,
     baziDay: baziDay,
@@ -492,6 +566,18 @@ ZiweiChart calculateZiweiChart({
     decades: decades,
     basePlate: plate,
   );
+  // 晚子时：时柱取「次日子时」与八字口径一致（日柱 / 命宫保持当天口径，已由 mode 保证）。
+  if (ratHourMode && solar.hour >= 23) {
+    final nextTime = calcZiweiBaZi(
+      DateTime(solar.year, solar.month, solar.day, solar.hour, solar.minute),
+      location: location,
+      useTrueSolarTime: useTrueSolarTime,
+      gender: gender,
+      ratHourMode: RatHourMode.noSplit,
+    );
+    chart = chart.copyWith(baziTime: nextTime.time);
+  }
+  return chart;
 }
 
 /// 四柱干支（年 / 月 / 日 / 时）。

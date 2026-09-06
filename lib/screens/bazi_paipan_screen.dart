@@ -3,7 +3,6 @@ import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:share_plus/share_plus.dart';
 
 import 'package:nihaisha_app/services/bazi_service.dart';
-import 'package:nihaisha_app/services/ziwei_engine.dart' show resolveBirthSolar;
 import 'package:nihaisha_app/data/settings_repository.dart';
 import 'package:nihaisha_app/data/saved_chart_repository.dart';
 import 'package:nihaisha_app/engine/bazi_twelve_stages.dart' show TwelveStageMode;
@@ -64,7 +63,7 @@ class _BaZiPaipanScreenState extends State<BaZiPaipanScreen> {
   int _shiChenIndex = 5;
   bool _isMale = true;
   bool _fireEarthSame = true; // 长生十二神口径：火土同宫(默认) / 水土同宫
-  bool _earlyZiShi = false; // 早晚子时口径：晚子时(默认，23:00–24:00算次日) / 早子时(算当日)
+  bool _distinguishZiShi = false; // 区分早晚子时开关（默认关：子时归自然日；开启按 23:00/00:00 精确区分）
   String? _locName; // 出生地点（真太阳时校正；null=未设置→引擎默认东经120°）
   double? _locLng;
   double? _locLat;
@@ -78,7 +77,7 @@ class _BaZiPaipanScreenState extends State<BaZiPaipanScreen> {
     super.initState();
     // 同步共享排盘设置（与设置页双向一致）
     _fireEarthSame = SettingsRepository.instance.fireEarthSame;
-    _earlyZiShi = !SettingsRepository.instance.lateZiShiEnabled; // 全局晚子时(true) -> 早子时取反
+    _distinguishZiShi = SettingsRepository.instance.distinguishZiShiEnabled;
     _locName = SettingsRepository.instance.lastCityName;
     _locLng = SettingsRepository.instance.lastLng;
     _locLat = SettingsRepository.instance.lastLat;
@@ -117,7 +116,7 @@ class _BaZiPaipanScreenState extends State<BaZiPaipanScreen> {
         twelveStageMode: _fireEarthSame
             ? TwelveStageMode.fireEarthSame
             : TwelveStageMode.waterEarthSame,
-        earlyZiShi: _earlyZiShi,
+        ratHourMode: _distinguishZiShi,
         location: location,
       );
       if (!mounted) return;
@@ -127,7 +126,7 @@ class _BaZiPaipanScreenState extends State<BaZiPaipanScreen> {
           solar,
           isMale: _isMale,
           location: location,
-          earlyZiShi: _earlyZiShi,
+          ratHourMode: _distinguishZiShi,
         );
       });
     } catch (e) {
@@ -175,14 +174,8 @@ class _BaZiPaipanScreenState extends State<BaZiPaipanScreen> {
   Future<void> _saveToLibrary() async {
     if (_result == null) return;
     final hour = _shiChen[_shiChenIndex].$2;
-    final solar = resolveBirthSolar(
-      year: _year,
-      month: _month,
-      day: _day,
-      hour: hour,
-      minute: 0,
-      enabled: !_earlyZiShi, // 全局晚子时开关（true=晚子时，与设置页同源）
-    );
+    // 原始公历生辰（含时辰块代表小时）；子时校正交由引擎按 ratHourMode 处理。
+    final solar = DateTime(_year, _month, _day, hour, 0);
     final genderLabel = _isMale ? '男' : '女';
     final defaultName =
         '命盘 $_year-${_month.toString().padLeft(2, '0')}-${_day.toString().padLeft(2, '0')} $genderLabel';
@@ -467,29 +460,24 @@ class _BaZiPaipanScreenState extends State<BaZiPaipanScreen> {
               },
             ),
             const SizedBox(height: 12),
-            SegmentedButton<bool>(
-              segments: const [
-                ButtonSegment(
-                  value: false,
-                  label: Text('晚子时'),
-                ),
-                ButtonSegment(
-                  value: true,
-                  label: Text('早子时'),
-                ),
-              ],
-              selected: {_earlyZiShi},
-              onSelectionChanged: (s) {
-                setState(() => _earlyZiShi = s.first);
-                // 全局共享「晚子时」口径：true=晚子时，故取反写入
-                SettingsRepository.instance.setLateZiShiEnabled(!s.first);
+            SwitchListTile(
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+              title: const Text(
+                '区分早晚子时',
+                style: TextStyle(fontSize: 12),
+              ),
+              subtitle: Text(
+                '默认关闭：子时归自然日（日柱当天、时柱当日子时）。'
+                '开启后 23:00–24:00 算晚子时（日柱当天、时柱次日子时），'
+                '00:00–01:00 算早子时（日柱次日）。仅影响子时生人。',
+                style: TextStyle(fontSize: 10, color: cs.onSurfaceVariant),
+              ),
+              value: _distinguishZiShi,
+              onChanged: (v) {
+                setState(() => _distinguishZiShi = v);
+                SettingsRepository.instance.setDistinguishZiShiEnabled(v);
               },
-            ),
-            const SizedBox(height: 4),
-            Text(
-              '子时口径：晚子时（23:00–次日01:00 算次日，与紫微命盘同口径，主流大宗）；'
-              '早子时（23:00–24:00 算当日，日柱不变）。两者仅影响子时生人。',
-              style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
             ),
             const SizedBox(height: 4),
             Text(

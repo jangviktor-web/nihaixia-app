@@ -15,7 +15,7 @@ class SettingsRepository extends ChangeNotifier {
 
   // ---- 排盘共享设置（紫微 / 八字 同步）----
   bool _useTrueSolarTime = true; // 紫微真太阳时校准（默认开启）
-  bool _lateZiShiEnabled = false; // 晚子时归次日口径（true=晚子时；同步紫微+八字，八字取反为早子时）
+  bool _distinguishZiShiEnabled = false; // 区分早晚子时开关（true=开启：23:00–01:00 按晚子时/早子时精确区分；默认关=子时归自然日）
   bool _fireEarthSame = true; // 长生十二神起长生口径（true=火土同宫，现代子平主流）
 
   // ---- 最近出生地点（真太阳时校正用，紫微/八字共用；null=未设置）----
@@ -30,7 +30,7 @@ class SettingsRepository extends ChangeNotifier {
   bool get autoCopyPrescription => _autoCopyPrescription;
   bool get isLoaded => _loaded;
   bool get useTrueSolarTime => _useTrueSolarTime;
-  bool get lateZiShiEnabled => _lateZiShiEnabled;
+  bool get distinguishZiShiEnabled => _distinguishZiShiEnabled;
   bool get fireEarthSame => _fireEarthSame;
   String? get lastCityName => _lastCityName;
   double? get lastLng => _lastLng;
@@ -64,8 +64,8 @@ class SettingsRepository extends ChangeNotifier {
         case 'use_true_solar_time':
           _useTrueSolarTime = value == 'true';
           break;
-        case 'late_zi_shi_enabled':
-          _lateZiShiEnabled = value == 'true';
+        case 'distinguish_zi_shi_enabled':
+          _distinguishZiShiEnabled = value == 'true';
           break;
         case 'fire_earth_same':
           _fireEarthSame = value == 'true';
@@ -121,10 +121,10 @@ class SettingsRepository extends ChangeNotifier {
     await _save('use_true_solar_time', value.toString());
   }
 
-  Future<void> setLateZiShiEnabled(bool value) async {
-    _lateZiShiEnabled = value;
+  Future<void> setDistinguishZiShiEnabled(bool value) async {
+    _distinguishZiShiEnabled = value;
     notifyListeners();
-    await _save('late_zi_shi_enabled', value.toString());
+    await _save('distinguish_zi_shi_enabled', value.toString());
   }
 
   Future<void> setFireEarthSame(bool value) async {

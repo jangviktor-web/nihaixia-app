@@ -59,6 +59,72 @@ class BaZiPaipan {
   });
 }
 
+/// 构造 bazi_core 命盘，并按 [ratHourMode] 处理早晚子时。
+///
+/// 返回 [chart]（用于大运 / 一般四柱）与可选的 [timeOverride]：晚子时场景下，
+/// 「日柱取当天 + 时柱取次日子时」属于混合口径，bazi_core 单一 [RatHourMode] 无法
+/// 直接表达，故日柱取自 `todayGan` 盘、时柱取自 `noSplit` 盘并覆盖。
+class _BaziChartBuild {
+  final bazi.BaziChart chart;
+  final String? timeOverride;
+  _BaziChartBuild(this.chart, this.timeOverride);
+}
+
+_BaziChartBuild _buildBaziChart(
+  DateTime solar,
+  bool ratHourMode,
+  Location? location,
+  bool useTrueSolarTime,
+  Gender gender,
+) {
+  final hour = solar.hour;
+  final loc = location ?? Location(120, 30);
+  final astro = bazi.AstroDateTime(
+      solar.year, solar.month, solar.day, solar.hour, solar.minute);
+  if (ratHourMode && hour >= 23) {
+    // 晚子时：日柱用当天（todayGan），时柱用次日子时（noSplit）。
+    final dayChart = bazi.BaziChart.createBySolarDate(
+      clockTime: astro,
+      location: loc,
+      ratHourMode: RatHourMode.todayGan,
+      useTrueSolarTime: useTrueSolarTime,
+      gender: gender,
+    );
+    final timeChart = bazi.BaziChart.createBySolarDate(
+      clockTime: astro,
+      location: loc,
+      ratHourMode: RatHourMode.noSplit,
+      useTrueSolarTime: useTrueSolarTime,
+      gender: gender,
+    );
+    return _BaziChartBuild(dayChart, '${timeChart.bazi.time}');
+  }
+  if (ratHourMode && hour < 1) {
+    // 早子时：bazi_core 的 noSplit 仅处理 23–24 点；00–01 点需将出生日 +1 天
+    // 再按 todayGan 排盘，方得「日柱次日、时柱子时」。
+    final nextSolar = solar.add(const Duration(days: 1));
+    final nextAstro = bazi.AstroDateTime(
+        nextSolar.year, nextSolar.month, nextSolar.day, nextSolar.hour, nextSolar.minute);
+    final chart = bazi.BaziChart.createBySolarDate(
+      clockTime: nextAstro,
+      location: loc,
+      ratHourMode: RatHourMode.todayGan,
+      useTrueSolarTime: useTrueSolarTime,
+      gender: gender,
+    );
+    return _BaziChartBuild(chart, null);
+  }
+  // 关闭开关，或 01:00–23:00：子时归自然日（todayGan）。
+  final chart = bazi.BaziChart.createBySolarDate(
+    clockTime: astro,
+    location: loc,
+    ratHourMode: RatHourMode.todayGan,
+    useTrueSolarTime: useTrueSolarTime,
+    gender: gender,
+  );
+  return _BaziChartBuild(chart, null);
+}
+
 /// 计算八字排盘。
 ///
 /// [solar] 为公历生辰（含时辰）；[isMale] 性别（不影响四柱，仅为构造所需）；
@@ -66,37 +132,36 @@ class BaZiPaipan {
 /// [location] 出生地经纬度：`null` 时按 bazi_core 默认 `Location(120, 30)`（东经 120°）。
 /// 为保证时柱正确，调用方应显式传入真实出生地。
 /// [twelveStageMode] 长生十二神口径（火土同宫 / 水土同宫）；
-/// [earlyZiShi] 早晚子时口径：默认 `false`（晚子时 `RatHourMode.noSplit`，
-/// 23:00–24:00 算次日）；`true` 即“早子时”（`RatHourMode.todayGan`，
-/// 23:00–24:00 算当日，日柱不变），供排盘页开关切换。与大运 [computeBaZiFortune] 同口径。
-///
-/// 四柱由 [bazi.BaziChart.createBySolarDate] 算出（原先用 [calcZiweiBaZi] 走
-/// [ZiweiDate.bazi]，与 bazi_core 历法不同源，导致四柱全错）。
+/// [ratHourMode] 区分早晚子时开关（含义同设置项「区分早晚子时」）：
+///   - `false`（默认）：不区分，23:00–01:00 全部「子时归自然日」——日柱取当天、时柱取当日子时，不做偏移。
+///   - `true`：区分早晚子时，由出生时刻自动判定：
+///     · 晚子时（23:00 ≤ t < 24:00）：日柱维持**当天**（不变），时柱取**次日**子时干支；
+///     · 早子时（00:00 ≤ t < 01:00）：日柱取**次日**（公历 +1 天），时柱取新一天子时干支；
+///     · 01:00–23:00 不受影响，开关无作用。
+/// 四柱由 [bazi.BaziChart.createBySolarDate] 算出（与大运同源），再包装为 [ZiweiBaZi]。
 BaZiPaipan computeBaZiPaipan(
   DateTime solar, {
   bool isMale = true,
   bool useTrueSolarTime = true,
   TwelveStageMode twelveStageMode = TwelveStageMode.fireEarthSame,
-  bool earlyZiShi = false,
+  bool ratHourMode = false,
   Location? location,
 }) {
-  // 四柱改用 bazi_core 的 BaziChart（与大运同源），修正原先走 ZiweiDate.bazi
-  // 导致四柱全错的问题。
-  final chart = bazi.BaziChart.createBySolarDate(
-    clockTime: bazi.AstroDateTime(
-        solar.year, solar.month, solar.day, solar.hour, solar.minute),
-    location: location ?? Location(120, 30),
-    ratHourMode: earlyZiShi ? RatHourMode.todayGan : RatHourMode.noSplit,
-    useTrueSolarTime: useTrueSolarTime,
-    gender: isMale ? Gender.male : Gender.female,
+  final built = _buildBaziChart(
+    solar,
+    ratHourMode,
+    location,
+    useTrueSolarTime,
+    isMale ? Gender.male : Gender.female,
   );
-  final four = chart.bazi;
+  final four = built.chart.bazi;
   // 包装为 ZiweiBaZi（仍为 String 四柱），保持下游屏 / 组件读取方式不变。
+  // 晚子时需要把「当日日柱」与「次日子时」混合，故时柱以 timeOverride 覆盖。
   final ziweiBazi = ZiweiBaZi(
     year: '${four.year}',
     month: '${four.month}',
     day: '${four.day}',
-    time: '${four.time}',
+    time: built.timeOverride ?? '${four.time}',
   );
   final gans = <String>[
     _splitGanZhi(ziweiBazi.year).$1,
@@ -171,23 +236,21 @@ class BaZiFortune {
 /// 顺逆由 bazi_core 按传统规则内部判定：方向 = 年干阴阳 × 性别
 /// （阳男阴女顺排、阴男阳女逆排，见 bazi_core fortune.dart）。
 /// [location] 语义同 [computeBaZiPaipan]；`null` 时按默认东经 120°。
-/// [earlyZiShi] 早晚子时口径，与四柱排盘保持一致。
+/// [ratHourMode] 区分早晚子时开关，与四柱排盘保持一致（含义见 [computeBaZiPaipan]）。
 BaZiFortune computeBaZiFortune(
   DateTime solar, {
   required bool isMale,
   Location? location,
-  bool earlyZiShi = false,
+  bool ratHourMode = false,
   int decadeCount = 8,
 }) {
-  final chart = bazi.BaziChart.createBySolarDate(
-    clockTime: bazi.AstroDateTime(
-        solar.year, solar.month, solar.day, solar.hour, solar.minute),
-    location: location ?? Location(120, 30),
-    ratHourMode:
-        earlyZiShi ? RatHourMode.todayGan : RatHourMode.noSplit,
-    useTrueSolarTime: true,
-    gender: isMale ? Gender.male : Gender.female,
-  );
+  final chart = _buildBaziChart(
+    solar,
+    ratHourMode,
+    location,
+    true,
+    isMale ? Gender.male : Gender.female,
+  ).chart;
   final fortune = bazi.Fortune.createByBaziChart(chart);
   final decades = <BaZiDecade>[];
   for (var i = 1; i <= decadeCount; i++) {
