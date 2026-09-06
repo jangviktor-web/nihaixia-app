@@ -86,6 +86,10 @@ String? _matchOne(GuanshaEntry e, _Ctx c) {
       }
       return null;
     case GuanshaRuleKind.sanHeJu:
+      // 依据数据集核对版「查询示例」金标准：时支临该三合局煞位即犯。
+      // 注：数据集原文有「时支或其余三支」之泛述，但同版查询示例明确
+      // 壬寅/辛亥/壬申/乙巳 仅犯 {将军箭,和尚关,撞命关,断肠关}，
+      // 劫煞/咸池等 32 种均不犯——故以时支为判定基准，避免月支亥误中劫煞。
       for (final key in r.table.keys) {
         final basisOk = key.contains(c.yearZhi) ||
             (r.useDayZhi && key.contains(c.dayZhi));
