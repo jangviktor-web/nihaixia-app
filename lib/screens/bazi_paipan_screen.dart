@@ -18,8 +18,25 @@ import 'package:nihaisha_app/widgets/bazi_paipan_widgets.dart';
 /// 四柱取自项目内 [ZiweiDate.bazi]（与命盘 / 黄历同口径），其余关系检测复用既有
 /// 纯函数引擎。长生十二神支持火土同宫 / 水土同宫两种口径（见 [TwelveStageMode]）。
 /// 内容属传统命理文化参考，非医疗建议。
+///
+/// [initialSolar] 等可选参数为命盘库回看回填：传入后自动回填生辰/性别/地点
+/// 并立即排盘（与紫微排盘页同口径）。
 class BaZiPaipanScreen extends StatefulWidget {
-  const BaZiPaipanScreen({super.key});
+  const BaZiPaipanScreen({
+    super.key,
+    this.initialSolar,
+    this.initialIsMale,
+    this.initialCityName,
+    this.initialLng,
+    this.initialLat,
+  });
+
+  /// 命盘库回看：已存生辰（解析后公历，晚子时可能已归次日）。
+  final DateTime? initialSolar;
+  final bool? initialIsMale;
+  final String? initialCityName;
+  final double? initialLng;
+  final double? initialLat;
 
   @override
   State<BaZiPaipanScreen> createState() => _BaZiPaipanScreenState();
@@ -65,6 +82,22 @@ class _BaZiPaipanScreenState extends State<BaZiPaipanScreen> {
     _locName = SettingsRepository.instance.lastCityName;
     _locLng = SettingsRepository.instance.lastLng;
     _locLat = SettingsRepository.instance.lastLat;
+
+    // 命盘库回看：回填生辰/性别/地点后自动排盘（与紫微排盘页同口径）。
+    final s = widget.initialSolar;
+    if (s != null) {
+      _year = s.year;
+      _month = s.month;
+      _day = s.day;
+      // 时辰块归入：子=23,0；丑=1,2；寅=3,4……与 shiChenIndexOf 同口径，
+      // 输入粒度为时辰块起始小时（0/2/…/22）。
+      _shiChenIndex = ((s.hour + 1) ~/ 2) % 12;
+      _isMale = widget.initialIsMale ?? _isMale;
+      _locName = widget.initialCityName ?? _locName;
+      _locLng = widget.initialLng ?? _locLng;
+      _locLat = widget.initialLat ?? _locLat;
+      _compute(); // 自动排盘展示，无需再点按钮
+    }
   }
 
   void _compute() {
