@@ -1,7 +1,9 @@
 /// 八字排盘聚合计算：四柱 + 十神 + 旬空 + 刑冲合害 + 长生十二神 + 八字详批。
 ///
-/// 四柱取自 [calcZiweiBaZi]（与命盘 / 黄历同口径，底层为项目内 [ZiweiDate.bazi]），
-/// 其余关系检测复用既有纯函数引擎，本文件只做编排，不重复实现历法 / 五行算法。
+/// 四柱（年/月/日/时干支）取自 [bazi_core] 的 [bazi.BaziChart.createBySolarDate]，
+/// 与 [computeBaZiFortune] 大运同源，确保四柱与大运口径一致（年柱按立春、
+/// 日柱用权威基准日、子时归属按 [ratHourMode]）。其余关系检测复用既有纯函数引擎，
+/// 本文件只做编排，不重复实现历法 / 五行算法。
 library;
 
 import 'package:ziwei_core/ziwei_core.dart' show Gender, Location, RatHourMode;
@@ -16,8 +18,7 @@ import 'package:nihaisha_app/engine/bazi_ten_gods.dart'
     show kongWang, tenGodsPerPillar;
 import 'package:nihaisha_app/engine/bazi_twelve_stages.dart'
     show TwelveStageMode, twelveStagesForPillars;
-import 'package:nihaisha_app/services/ziwei_engine.dart'
-    show ZiweiBaZi, calcZiweiBaZi;
+import 'package:nihaisha_app/services/ziwei_engine.dart' show ZiweiBaZi;
 import 'package:nihaisha_app/engine/bazi_extra.dart'
     show taiYuanOf, taiXiOf, kongWangPerPillar, selfTwelveStages, hiddenTenGods;
 
@@ -62,11 +63,15 @@ class BaZiPaipan {
 ///
 /// [solar] 为公历生辰（含时辰）；[isMale] 性别（不影响四柱，仅为构造所需）；
 /// [useTrueSolarTime] 真太阳时开关，与命盘页语义一致；
-/// [location] 出生地经纬度：`null` 时引擎默认 `Location(120, 30)`（东经 120°）。
-/// 为保证时柱正确，调用方应显式传入真实出生地（见 ziwei_engine.dart:523 说明）。
+/// [location] 出生地经纬度：`null` 时按 bazi_core 默认 `Location(120, 30)`（东经 120°）。
+/// 为保证时柱正确，调用方应显式传入真实出生地。
 /// [twelveStageMode] 长生十二神口径（火土同宫 / 水土同宫）；
-/// [earlyZiShi] 早晚子时口径：默认 `false`（晚子时，23:00–24:00 算次日，与紫微同口径）；
-/// `true` 即“早子时”（23:00–24:00 算当日，日柱不变），供排盘页开关切换。
+/// [earlyZiShi] 早晚子时口径：默认 `false`（晚子时 `RatHourMode.noSplit`，
+/// 23:00–24:00 算次日）；`true` 即“早子时”（`RatHourMode.todayGan`，
+/// 23:00–24:00 算当日，日柱不变），供排盘页开关切换。与大运 [computeBaZiFortune] 同口径。
+///
+/// 四柱由 [bazi.BaziChart.createBySolarDate] 算出（原先用 [calcZiweiBaZi] 走
+/// [ZiweiDate.bazi]，与 bazi_core 历法不同源，导致四柱全错）。
 BaZiPaipan computeBaZiPaipan(
   DateTime solar, {
   bool isMale = true,
@@ -75,24 +80,35 @@ BaZiPaipan computeBaZiPaipan(
   bool earlyZiShi = false,
   Location? location,
 }) {
-  final bazi = calcZiweiBaZi(
-    solar,
-    gender: isMale ? Gender.male : Gender.female,
+  // 四柱改用 bazi_core 的 BaziChart（与大运同源），修正原先走 ZiweiDate.bazi
+  // 导致四柱全错的问题。
+  final chart = bazi.BaziChart.createBySolarDate(
+    clockTime: bazi.AstroDateTime(
+        solar.year, solar.month, solar.day, solar.hour, solar.minute),
+    location: location ?? Location(120, 30),
+    ratHourMode: earlyZiShi ? RatHourMode.todayGan : RatHourMode.noSplit,
     useTrueSolarTime: useTrueSolarTime,
-    ratHourMode: earlyZiShi ? RatHourMode.todayGan : null,
-    location: location,
+    gender: isMale ? Gender.male : Gender.female,
+  );
+  final four = chart.bazi;
+  // 包装为 ZiweiBaZi（仍为 String 四柱），保持下游屏 / 组件读取方式不变。
+  final ziweiBazi = ZiweiBaZi(
+    year: '${four.year}',
+    month: '${four.month}',
+    day: '${four.day}',
+    time: '${four.time}',
   );
   final gans = <String>[
-    _splitGanZhi(bazi.year).$1,
-    _splitGanZhi(bazi.month).$1,
-    _splitGanZhi(bazi.day).$1,
-    _splitGanZhi(bazi.time).$1,
+    _splitGanZhi(ziweiBazi.year).$1,
+    _splitGanZhi(ziweiBazi.month).$1,
+    _splitGanZhi(ziweiBazi.day).$1,
+    _splitGanZhi(ziweiBazi.time).$1,
   ];
   final zhis = <String>[
-    _splitGanZhi(bazi.year).$2,
-    _splitGanZhi(bazi.month).$2,
-    _splitGanZhi(bazi.day).$2,
-    _splitGanZhi(bazi.time).$2,
+    _splitGanZhi(ziweiBazi.year).$2,
+    _splitGanZhi(ziweiBazi.month).$2,
+    _splitGanZhi(ziweiBazi.day).$2,
+    _splitGanZhi(ziweiBazi.time).$2,
   ];
   final dayGan = gans[2];
   final tenGods = tenGodsPerPillar(dayGan, gans);
@@ -101,7 +117,7 @@ BaZiPaipan computeBaZiPaipan(
   final stages = twelveStagesForPillars(dayGan, zhis, mode: twelveStageMode);
   final analysis = analyzeBaZi(gans: gans, zhis: zhis);
   return BaZiPaipan(
-    bazi: bazi,
+    bazi: ziweiBazi,
     gans: gans,
     zhis: zhis,
     tenGods: tenGods,
@@ -109,10 +125,10 @@ BaZiPaipan computeBaZiPaipan(
     relations: relations,
     twelveStages: stages,
     analysis: analysis,
-    taiYuan: taiYuanOf(bazi.month),
-    taiXi: taiXiOf(bazi.day),
+    taiYuan: taiYuanOf(ziweiBazi.month),
+    taiXi: taiXiOf(ziweiBazi.day),
     kongWangPillars:
-        kongWangPerPillar([bazi.year, bazi.month, bazi.day, bazi.time]),
+        kongWangPerPillar([ziweiBazi.year, ziweiBazi.month, ziweiBazi.day, ziweiBazi.time]),
     selfStages: selfTwelveStages(gans, zhis),
     hiddenTenGods: hiddenTenGods(gans, zhis),
   );
