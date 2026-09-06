@@ -56,7 +56,7 @@ class _SavedChartsScreenState extends State<SavedChartsScreen> {
               ? Center(
                   child: StateView.empty(
                     title: '还没有保存的命盘',
-                    hint: '在紫微排盘页排盘后，点「添加到命盘库」即可收藏',
+                    hint: '在紫微 / 八字排盘页排盘后，点「添加到命盘库」即可收藏',
                     icon: Icons.bookmark_outline,
                     fullScreen: false,
                   ),

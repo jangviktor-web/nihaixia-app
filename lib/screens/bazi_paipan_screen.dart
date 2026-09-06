@@ -3,7 +3,9 @@ import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:share_plus/share_plus.dart';
 
 import 'package:nihaisha_app/services/bazi_service.dart';
+import 'package:nihaisha_app/services/ziwei_engine.dart' show resolveBirthSolar;
 import 'package:nihaisha_app/data/settings_repository.dart';
+import 'package:nihaisha_app/data/saved_chart_repository.dart';
 import 'package:nihaisha_app/engine/bazi_twelve_stages.dart' show TwelveStageMode;
 import 'package:ziwei_core/ziwei_core.dart' show Location;
 
@@ -134,6 +136,80 @@ class _BaZiPaipanScreenState extends State<BaZiPaipanScreen> {
     await Share.share(_buildShareText(), subject: '八字排盘');
   }
 
+  /// 将当前八字排盘存入命盘库（与紫微排盘共用同一 [SavedChartRepository]）。
+  /// 存入前按当前子时口径解析生辰（晚子时归次日，与紫微存盘同口径），
+  /// 回看时由紫微排盘页统一重排。
+  Future<void> _saveToLibrary() async {
+    if (_result == null) return;
+    final hour = _shiChen[_shiChenIndex].$2;
+    final solar = resolveBirthSolar(
+      year: _year,
+      month: _month,
+      day: _day,
+      hour: hour,
+      minute: 0,
+      enabled: !_earlyZiShi, // 全局晚子时开关（true=晚子时，与设置页同源）
+    );
+    final genderLabel = _isMale ? '男' : '女';
+    final defaultName =
+        '命盘 $_year-${_month.toString().padLeft(2, '0')}-${_day.toString().padLeft(2, '0')} $genderLabel';
+    final nameCtrl = TextEditingController(text: defaultName);
+
+    final name = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('添加到命盘库'),
+        content: TextField(
+          controller: nameCtrl,
+          decoration: const InputDecoration(
+            labelText: '命盘名称',
+            border: OutlineInputBorder(),
+          ),
+          autofocus: true,
+          textInputAction: TextInputAction.done,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('取消'),
+          ),
+          FilledButton(
+            onPressed: () {
+              final v = nameCtrl.text.trim();
+              Navigator.pop(ctx, v.isEmpty ? defaultName : v);
+            },
+            child: const Text('保存'),
+          ),
+        ],
+      ),
+    );
+    if (name == null) return;
+
+    final saved = SavedChart(
+      name: name,
+      isMale: _isMale,
+      solarIso: solar.toIso8601String(),
+      lng: _locLng,
+      lat: _locLat,
+      cityName: _locName,
+      createdAt: DateTime.now().millisecondsSinceEpoch,
+    );
+    try {
+      await SavedChartRepository.insert(saved);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('已存入命盘库')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('存入失败：$e')),
+        );
+      }
+    }
+  }
+
   int _daysInMonth(int year, int month) {
     if (month < 1 || month > 12) return 31;
     if (month == 2) {
@@ -193,6 +269,16 @@ class _BaZiPaipanScreenState extends State<BaZiPaipanScreen> {
           if (_result != null) ...[
             const SizedBox(height: 12),
             BaZiFourPillarsCard(result: _result!),
+            const SizedBox(height: 12),
+            // 添加到命盘库（与紫微排盘共用命盘库；Material 图标，无 emoji）
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: _saveToLibrary,
+                icon: const Icon(Icons.bookmark_add_outlined),
+                label: const Text('添加到命盘库'),
+              ),
+            ),
             const SizedBox(height: 12),
             if (_fortune != null) ...[
               BaZiFortuneCard(fortune: _fortune!),
