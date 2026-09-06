@@ -10,6 +10,7 @@ import 'medical_case_library_screen.dart';
 import 'daily_almanac_screen.dart';
 import 'yuxiaji_omen_screen.dart';
 import 'dream_screen.dart';
+import 'guansha_screen.dart';
 import 'saved_charts_screen.dart';
 import 'solar_term_section_screen.dart';
 import 'settings_screen.dart';
@@ -160,6 +161,17 @@ class ToolsScreen extends StatelessWidget {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const DreamScreen()),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _ToolCard(
+            icon: Icons.child_care,
+            title: '小儿关煞',
+            subtitle: '生辰测关煞 · 民俗文化参考',
+            color: Theme.of(context).colorScheme.tertiary,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const GuanshaScreen()),
             ),
           ),
           const SizedBox(height: 12),
