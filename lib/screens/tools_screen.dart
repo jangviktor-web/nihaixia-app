@@ -9,6 +9,7 @@ import 'critical_illness_list_screen.dart';
 import 'medical_case_library_screen.dart';
 import 'daily_almanac_screen.dart';
 import 'yuxiaji_omen_screen.dart';
+import 'dream_screen.dart';
 import 'saved_charts_screen.dart';
 import 'solar_term_section_screen.dart';
 import 'settings_screen.dart';
@@ -148,6 +149,17 @@ class ToolsScreen extends StatelessWidget {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const YuxiajiOmenScreen()),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _ToolCard(
+            icon: Icons.nightlight_round,
+            title: '周公解梦',
+            subtitle: '搜梦境查吉凶 · 民俗文化参考',
+            color: Theme.of(context).colorScheme.tertiary,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const DreamScreen()),
             ),
           ),
           const SizedBox(height: 12),
