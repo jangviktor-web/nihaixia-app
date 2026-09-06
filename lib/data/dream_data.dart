@@ -4165,11 +4165,15 @@ const String kDreamDisclaimer = '本数据仅供民俗文化参考，请勿过�
 /// 若 category 非 null 再叠加 category 相等过滤。返回新列表，不改原列表。
 List<DreamEntry> searchDreams(String query, [String? category]) {
   final q = query.trim().toLowerCase();
-  final result = kDreamEntries.where((e) {
-    if (category != null && e.category != category) return false;
-    if (q.isEmpty) return true;
-    final hay = (e.keyword + e.dream + e.interpretation).toLowerCase();
-    return hay.contains(q);
-  }).toList();
-  return result;
+  Iterable<DreamEntry> list = kDreamEntries;
+  if (category != null) {
+    list = list.where((e) => e.category == category);
+  }
+  if (q.isEmpty) return list.toList();
+  return list
+      .where((e) =>
+          e.keyword.toLowerCase().contains(q) ||
+          e.dream.toLowerCase().contains(q) ||
+          e.interpretation.toLowerCase().contains(q))
+      .toList();
 }

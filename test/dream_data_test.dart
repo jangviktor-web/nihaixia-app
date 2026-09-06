@@ -54,4 +54,11 @@ void main() {
     final hit = r.firstWhere((e) => e.id == 'plant_024');
     expect(hit.auspicious, '吉');
   });
+
+  test('跨字段假阳性回归：阳 在 keyword(太阳)、梦 在 dream(梦见太阳)，但两字段各自都不含"阳梦"', () {
+    // 旧实现把三字段拼接成一段再 contains，会误命中 sky_001；
+    // 三字段独立 contains 的 OR 不应命中。
+    final cross = searchDreams('阳梦');
+    expect(cross.any((e) => e.id == 'sky_001'), isFalse);
+  });
 }
