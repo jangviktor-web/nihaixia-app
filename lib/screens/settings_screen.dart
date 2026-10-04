@@ -15,7 +15,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final _settings = SettingsRepository.instance;
-  bool _mirrorEnabled = true;
+  bool _mirrorEnabled = false; // 默认关闭；真实值由 initState 从设置读入
 
   @override
   void initState() {
@@ -242,13 +242,47 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _mirrorToggleTile(ColorScheme cs) => SwitchListTile(
         secondary: const Icon(Icons.cloud_download_outlined),
-        title: const Text('更新镜像加速'),
-        subtitle: const Text('GitHub 访问慢时自动切换 ghproxy 镜像'),
+        title: const Text('更新镜像加速（第三方代理）'),
+        subtitle: const Text('GitHub 慢时经 ghproxy.net 中继下载更新包；默认关闭'),
         value: _mirrorEnabled,
         onChanged: (v) async {
+          // 打开是「接受第三方中继」这一风险的显式动作，必须先确认风险告知。
+          if (v && !await _confirmMirrorRisk()) return;
+          if (!mounted) return;
           setState(() => _mirrorEnabled = v);
           await UpdateService.setMirrorEnabled(v);
         },
         contentPadding: EdgeInsets.zero,
       );
+
+  /// 开启第三方镜像前的风险告知；用户点「我已知晓并开启」才返回 true。
+  Future<bool> _confirmMirrorRisk() async {
+    final ok = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (c) => AlertDialog(
+        title: const Text('开启第三方镜像加速？'),
+        content: const Text(
+          '开启后，更新包会经第三方中继站点 ghproxy.net 下载。\n\n'
+          '风险告知：\n'
+          '1. 该中继不是本应用的官方服务器，可以看到你的下载请求；\n'
+          '2. 理论上存在被篡改的可能；\n'
+          '3. 建议仅在 GitHub 与 Gitee 都下载缓慢 / 失败时临时开启。\n\n'
+          '下载完成后，本应用会核对安装包体积；若该版本的发布说明里带有 '
+          'SHA-256，也会一并校验哈希。校验不通过会直接丢弃，不会安装。',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(c, false),
+            child: const Text('取消'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(c, true),
+            child: const Text('我已知晓并开启'),
+          ),
+        ],
+      ),
+    );
+    return ok ?? false;
+  }
 }

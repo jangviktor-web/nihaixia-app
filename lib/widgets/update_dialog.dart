@@ -51,6 +51,7 @@ class _UpdateDialogState extends State<UpdateDialog> {
       },
       expectedSize: widget.updateInfo.apkSize,
       expectedSha256: widget.updateInfo.apkSha256,
+      extraApkUrls: widget.updateInfo.extraApkUrls,
     );
 
     if (!mounted) return;

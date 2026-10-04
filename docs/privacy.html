@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>隐私政策 · 汉唐中医（Privacy Policy · HanTang TCM）</title>
+<meta name="description" content="汉唐中医 App 隐私政策：不收集任何个人信息，全部数据仅存于你的设备。">
+<style>
+  :root { --brown:#8B4513; --gold:#d4a853; --ink:#2b2118; --muted:#6b5c4c; --line:#e6dccf; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:#faf7f2; color:var(--ink);
+         font:16px/1.75 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif; }
+  header { background:var(--brown); color:#fff; padding:36px 20px; text-align:center; }
+  header h1 { margin:0 0 6px; font-size:24px; letter-spacing:1px; }
+  header p { margin:0; opacity:.8; font-size:13px; }
+  main { max-width:760px; margin:0 auto; padding:32px 20px 64px; }
+  h2 { font-size:18px; margin:34px 0 10px; padding-left:10px; border-left:4px solid var(--gold); }
+  h3 { font-size:15px; margin:20px 0 6px; color:var(--muted); }
+  ul { padding-left:22px; margin:8px 0; }
+  li { margin:5px 0; }
+  .hl { background:#fff; border:1px solid var(--line); border-left:4px solid var(--brown);
+        border-radius:6px; padding:14px 18px; margin:18px 0; }
+  .hl strong { color:var(--brown); }
+  code { background:#f0e9df; padding:1px 6px; border-radius:4px; font-size:14px; }
+  table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+  th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+  th { background:#f3ece2; }
+  hr { border:0; border-top:1px solid var(--line); margin:44px 0; }
+  footer { text-align:center; color:var(--muted); font-size:13px; padding:24px 20px 48px; }
+  footer a { color:var(--brown); }
+  .en { color:var(--muted); font-size:14px; }
+  .en h2 { font-size:16px; color:var(--ink); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>隐私政策</h1>
+  <p>汉唐中医 · 倪海厦六经辨证中医诊断助手</p>
+</header>
+
+<main>
+
+<div class="hl">
+  <strong>一句话总结：我们不收集你的任何数据。</strong><br>
+  汉唐中医没有账号系统、没有广告、没有统计 SDK。你的问诊记录、收藏与命盘信息全部保存在你自己的手机上，我们和任何第三方都无法读取。
+</div>
+
+<p>生效日期：2026-09-16　|　适用版本：1.11.23 及以后　|　开发者：汉唐中医（开源项目，Apache License 2.0）</p>
+
+<h2>一、我们不收集任何个人信息</h2>
+<ul>
+  <li><strong>无账号、无注册、无登录</strong>——App 打开即用，不要求提供手机号、邮箱、姓名或任何身份信息。</li>
+  <li><strong>无广告 SDK、无统计分析 SDK、无行为追踪</strong>——不接入任何第三方数据采集服务。</li>
+  <li><strong>不申请敏感权限</strong>——不读取定位、通讯录、短信、麦克风、相机、日历，也不读取设备识别码（IMEI / OAID / Android ID）。App 不包含任何读取你相册内容的代码路径。</li>
+</ul>
+
+<h2>二、你的数据只存在你自己的设备上</h2>
+<ul>
+  <li>以下数据保存在本机 App 私有目录，<strong>不会上传到任何服务器</strong>：
+    <ul>
+      <li>辨证问诊的问答记录与历史诊断结果</li>
+      <li>你收藏的方剂、本草、穴位、医案</li>
+      <li>命盘库中保存的出生信息与排盘结果</li>
+      <li>App 设置项（默认性别、诊断详细度等）</li>
+    </ul>
+  </li>
+  <li>卸载 App 即彻底删除上述全部数据。</li>
+  <li>你可以随时在「设置 → 数据管理」中自行清除历史、导出收藏或清理缓存。</li>
+  <li>由于数据从未离开设备，我们<strong>没有</strong>你的数据副本，也无法为你查询、导出或删除——因为我们根本拿不到。</li>
+</ul>
+
+<h2>三、App 声明的权限及用途</h2>
+<p>为保证完全透明，以下是成品 APK 中声明<strong>全部</strong>权限（可用 <code>aapt2 dump badging</code> 对任意安装包自行核验）：</p>
+<table>
+  <tr><th>权限</th><th>用途</th><th>是否涉及个人信息</th></tr>
+  <tr>
+    <td><code>INTERNET</code><br>网络访问</td>
+    <td>仅用于<strong>检查 App 新版本</strong>。请求 GitHub / Gitee 的公开 Release 接口，以及下载加速代理 <code>ghproxy.net</code>。</td>
+    <td>否。请求中不携带任何设备标识、账号或用户数据；不发送、不上传任何内容。</td>
+  </tr>
+  <tr>
+    <td><code>REQUEST_INSTALL_PACKAGES</code><br>安装应用</td>
+    <td>仅用于<strong>应用内更新</strong>：下载新版 APK 后由你手动确认安装。</td>
+    <td>否。App 不会在未经你确认的情况下安装任何应用。</td>
+  </tr>
+  <tr>
+    <td><code>READ_EXTERNAL_STORAGE</code>（仅 Android 12 及以下）<br><code>READ_MEDIA_IMAGES</code><br><code>READ_MEDIA_VIDEO</code><br><code>READ_MEDIA_AUDIO</code></td>
+    <td>由 App 使用的开源文件组件（<code>share_plus</code> 分享、<code>open_filex</code> 打开文件）在构建时自动声明，用于<strong>你主动导出并分享/打开自己生成的文件</strong>。</td>
+    <td>否。App 不扫描、不索引、不读取也不上传你的照片、视频或音频；不存在任何遍历媒体库的代码路径。</td>
+  </tr>
+  <tr>
+    <td><code>DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION</code></td>
+    <td>Android 官方兼容库（AndroidX）自动生成的内部权限，用于限制广播接收器仅限本应用内使用。</td>
+    <td>否。系统内部机制，不涉及任何数据。</td>
+  </tr>
+</table>
+<p class="en">For full transparency, every permission declared in the shipped APK is listed above and can be independently verified with <code>aapt2 dump badging &lt;apk&gt;</code>. The media/storage permissions are auto-declared at build time by the open-source file components (<code>share_plus</code>, <code>open_filex</code>) used to share or open files <em>you</em> explicitly export; the app contains no code path that scans or reads your photo, video or audio library, and never uploads any of it. No device identifiers or user data are transmitted.</p>
+
+<h2>四、网络请求的实际去向</h2>
+<p>开启「检查更新」时，App 会访问以下公开地址，全部为只读的版本信息查询：</p>
+<ul>
+  <li><code>api.github.com/repos/jangviktor-web/nihaixia-app/releases/latest</code></li>
+  <li><code>gitee.com/api/v5/repos/jangviktor-web/nihaixia-app/releases/latest</code></li>
+  <li><code>ghproxy.net</code>（APK 下载加速代理，国内网络备用通道）</li>
+</ul>
+<p>这些请求由你主动触发，用于比对版本号与计算安装包校验值，不包含个人信息。</p>
+
+<h2>五、传统文化模块说明</h2>
+<p>紫微斗数、易经六十四卦、四柱命卦、六爻摇卦、每日黄历、节气养生等模块属于<strong>中国传统民俗文化参考</strong>，与经方医疗模块在界面上清晰分隔，全部在本机离线计算，不上传任何数据，也不构成任何预测或诊断结论。</p>
+
+<h2>六、医疗免责声明</h2>
+<div class="hl">
+  本 App 是一款<strong>中医经方学习与辅助参考工具</strong>，所有辨证结果、方剂建议与养生内容均不可替代执业医师的诊断与治疗，不构成医疗建议。<strong>孕妇、儿童、老年人及患有慢性疾病者，请在医师指导下使用。急重症请立即就医。</strong>
+</div>
+
+<h2>七、未成年人</h2>
+<p>本 App 面向中医学习者与从业者，不针对儿童设计，也不会有意收集儿童的个人信息（实际上不收集任何人的个人信息）。</p>
+
+<h2>八、开源与可验证</h2>
+<p>本项目以 Apache License 2.0 完全开源，源代码公开可查。上述所有承诺均可由任何人独立审计验证，无需依赖我们的自述：</p>
+<ul>
+  <li>源码仓库：<a href="https://github.com/jangviktor-web/nihaixia-app">github.com/jangviktor-web/nihaixia-app</a></li>
+  <li>权限声明：见仓库内 <code>android/app/src/main/AndroidManifest.xml</code></li>
+  <li>测试用例：见仓库内 <code>test/</code> 目录</li>
+</ul>
+
+<h2>九、联系方式</h2>
+<p>对本政策有任何疑问，或发现任何隐私相关问题，请提交 Issue：<br>
+<a href="https://github.com/jangviktor-web/nihaixia-app/issues">github.com/jangviktor-web/nihaixia-app/issues</a></p>
+
+<h2>十、政策变更</h2>
+<p>如本政策发生变更，我们会在本页面更新内容并修改上方的「生效日期」。由于 App 不收集数据，预计不会发生实质性变更。</p>
+
+<hr>
+
+<div class="en">
+<h2>Privacy Policy (English Summary)</h2>
+<p><strong>HanTang TCM</strong> (汉唐中医) collects no personal data whatsoever.</p>
+<ul>
+  <li>No account, no registration, no login, no ads, no analytics SDK, no trackers.</li>
+  <li>All user data (consultation history, bookmarks, saved birth charts, settings) is stored <strong>locally on your device only</strong> and is never uploaded. Uninstalling the app deletes it permanently.</li>
+  <li>Permissions used: <code>INTERNET</code> — solely to check for app updates via public GitHub/Gitee release APIs and the <code>ghproxy.net</code> download mirror; <code>REQUEST_INSTALL_PACKAGES</code> — solely to install an update you explicitly confirm. No device identifiers are transmitted.</li>
+  <li>No sensitive permissions are requested (no location, contacts, SMS, photos, camera, microphone, or calendar).</li>
+  <li>Traditional-culture modules (Zi Wei Dou Shu, I Ching, BaZi, almanac, solar terms) are offline folklore references, not medical or predictive advice.</li>
+  <li><strong>Medical disclaimer:</strong> this app is a study and reference tool for classical Chinese medicine formulas. It does not replace diagnosis or treatment by a licensed physician and does not constitute medical advice. Seek immediate medical care in emergencies.</li>
+  <li>Fully open source under Apache License 2.0 — every claim above is independently auditable at <a href="https://github.com/jangviktor-web/nihaixia-app">github.com/jangviktor-web/nihaixia-app</a>.</li>
+</ul>
+<p>Contact: <a href="https://github.com/jangviktor-web/nihaixia-app/issues">GitHub Issues</a>. Effective date: 2026-09-16.</p>
+</div>
+
+</main>
+
+<footer>
+  汉唐中医 · 隐私政策　|　<a href="./">返回首页</a>　|　<a href="https://github.com/jangviktor-web/nihaixia-app">GitHub</a>
+</footer>
+
+</body>
+</html>

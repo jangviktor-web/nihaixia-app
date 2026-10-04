@@ -486,7 +486,10 @@ Future<void> downloadAndInstall(BuildContext context, UpdateInfo info) async {
       builder: (context, setDialogState) {
         UpdateService.downloadApk(info.apkDownloadUrl, (p) {
           setDialogState(() => progress = p);
-        }, expectedSize: info.apkSize, expectedSha256: info.apkSha256)
+        },
+                expectedSize: info.apkSize,
+                expectedSha256: info.apkSha256,
+                extraApkUrls: info.extraApkUrls)
             .then((file) {
           if (!context.mounted) return;
           Navigator.pop(context);

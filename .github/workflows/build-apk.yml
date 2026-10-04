@@ -13,6 +13,9 @@
 #   KEY_ALIAS            : 别名
 #   KEY_PASSWORD         : 密钥密码
 #   生成示例：base64 -w0 your.keystore.jks
+#
+# 可选：配置 GITEE_TOKEN 后，本流程会在 GitHub Release 发布后自动同步到 Gitee
+#       （推 tag/master + 建同名发行版 + 上传同样 4 个 APK，见 .github/scripts/gitee_release.py）
 
 name: Build APK & Release
 
@@ -114,13 +117,38 @@ jobs:
       - name: Build APK (split per ABI)
         run: flutter build apk --release --split-per-abi
 
+      # 把 4 个包的 SHA-256 追加进 Release 正文。App 内更新按「资产名 → 哈希」校验
+      # 下载到的包，这是走第三方镜像 / 代理时唯一的密码学防线。格式：每行 `<hex>  <文件名>`。
+      - name: Append APK SHA-256 to release body
+        run: |
+          SRC="release_notes/${{ github.ref_name }}.md"
+          OUT="release_notes/${{ github.ref_name }}.body.md"
+          cp "$SRC" "$OUT"
+          {
+            printf '\n---\n\n## 安装包 SHA-256（供 App 内更新校验）\n\n```\n'
+            for f in build/app/outputs/flutter-apk/*.apk; do
+              printf '%s  %s\n' "$(sha256sum "$f" | cut -d' ' -f1)" "$(basename "$f")"
+            done
+            printf '```\n'
+          } >> "$OUT"
+          echo '--- 已追加的校验段 ---'
+          tail -n 8 "$OUT"
+
       - name: Publish to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           name: ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
-          # 动态引用与 tag 同名（vX.Y.Z）的 release note，避免每次发版硬编码旧版本
-          body_path: release_notes/${{ github.ref_name }}.md
+          # 与 tag 同名的 release note；上一步已把 SHA-256 校验段追加进 .body.md
+          body_path: release_notes/${{ github.ref_name }}.body.md
           fail_on_unmatched_files: false
           files: |
             build/app/outputs/flutter-apk/*.apk
+
+      # 同步到 Gitee：推 tag/master + 建或更新同名发行版 + 上传同样 4 个 APK。
+      # 未配置 GITEE_TOKEN 时脚本自行跳过（不会让本次 release 变红）。
+      # 配置：Gitee 私人令牌（勾 projects）→ GitHub 仓库 Settings → Secrets → 新建 GITEE_TOKEN
+      - name: Mirror tag & release to Gitee
+        env:
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+        run: python3 .github/scripts/gitee_release.py
