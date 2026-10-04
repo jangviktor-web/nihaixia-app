@@ -50,8 +50,8 @@ API = 'https://gitee.com/api/v5'
 
 API_TIMEOUT = 120          # 普通 API 请求
 PUSH_TIMEOUT = 120         # 单次 git push
-UPLOAD_TIMEOUT = 600       # 单文件上传（curl --max-time）
-DEADLINE = time.time() + 25 * 60  # 整个脚本的全局死线（25 分钟）
+UPLOAD_TIMEOUT = 900       # 单文件上传（curl --max-time）
+DEADLINE = time.time() + 35 * 60  # 整个脚本的全局死线（35 分钟）
 
 
 def log(msg):
@@ -85,7 +85,8 @@ def upload(path, fn, rel_id):
     url = ('%s/repos/%s/%s/releases/%s/attach_files?access_token=%s'
            % (API, OWNER, REPO, rel_id, urllib.parse.quote(TOK)))
     p = subprocess.run(
-        ['curl', '-sS', '--ssl-no-revoke', '--connect-timeout', '60',
+        ['curl', '-sS', '--ssl-no-revoke', '--http1.1', '-H', 'Expect:',
+         '--connect-timeout', '60',
          '--max-time', str(UPLOAD_TIMEOUT), '-X', 'POST', url, '-F', 'file=@' + path],
         capture_output=True, text=True, timeout=UPLOAD_TIMEOUT + 30)
     out = (p.stdout or '').strip()
@@ -101,7 +102,8 @@ def upload(path, fn, rel_id):
 push_url = 'https://%s:%s@gitee.com/%s/%s.git' % (OWNER, TOK, OWNER, REPO)
 for ref in ('refs/tags/%s:refs/tags/%s' % (TAG, TAG), 'HEAD:refs/heads/master'):
     try:
-        p = subprocess.run(['git', 'push', push_url, ref],
+        # tag 用 -f：重发同号 tag 时远端可能已存在旧 commit 的 tag（实测 v1.11.24 被拒）
+        p = subprocess.run(['git', 'push', '-f', push_url, ref],
                            capture_output=True, text=True, timeout=PUSH_TIMEOUT)
         log('git push %-28s rc=%d %s' % (ref, p.returncode, (p.stderr or '').strip()[:240]))
     except subprocess.TimeoutExpired:
