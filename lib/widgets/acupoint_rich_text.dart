@@ -69,11 +69,17 @@ class _AcupointRichTextState extends State<AcupointRichText> {
 
   /// 候选穴位名（含「穴」后缀与去后缀两种形态），长度降序、非重叠扫描原文。
   List<InlineSpan> _buildSpans(String text, TextStyle base, TextStyle link) {
+    final all = AcupointRepository.getAll();
+    final form = AcupointRepository.kShortNameLinkForm;
     final candidates = <String>[
-      for (final a in AcupointRepository.getAll()) a.name,
-      for (final a in AcupointRepository.getAll()) a.name.replaceAll('穴', ''),
+      for (final a in all) form[a.name] ?? a.name,
+      for (final a in all) form[a.name.replaceAll('穴', '')] ?? a.name.replaceAll('穴', ''),
     ]..removeWhere((n) => n.length < 2)
-     ..sort((a, b) => b.length.compareTo(a.length));
+      // 同上：同长度必须有确定次键，否则并列次序取决于 getAll() 的插入顺序
+     ..sort((a, b) {
+       final byLen = b.length.compareTo(a.length);
+       return byLen != 0 ? byLen : a.compareTo(b);
+     });
 
     final norm = toSimplified(text);
     final used = List<bool>.filled(text.length, false);

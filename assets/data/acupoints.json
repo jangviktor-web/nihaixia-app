@@ -242,6 +242,7 @@
     },
     {
       "name": "中注穴",
+      "meridians": ["冲脉"],
       "meridian": "足少阴肾经",
       "attribute": "",
       "description": "调经止带、通调腑气",
@@ -382,6 +383,7 @@
     },
     {
       "name": "五枢穴",
+      "meridians": ["带脉"],
       "meridian": "足少阳胆经",
       "attribute": "",
       "description": "奇经有一条叫带脉，就是带脉、五枢、维道三个连续的穴道",
@@ -404,6 +406,7 @@
     },
     {
       "name": "交信穴",
+      "meridians": ["阴跷脉"],
       "meridian": "足少阴肾经",
       "attribute": "阴跷脉郄穴",
       "description": "是太溪穴，太溪在大筋和内踝裸的中间，从太溪穴正直上二寸的距离就是复溜",
@@ -456,6 +459,7 @@
     },
     {
       "name": "仆参穴",
+      "meridians": ["阳跷脉"],
       "meridian": "足太阳膀胱经",
       "attribute": "",
       "description": "舒筋活络、强壮腰膝",
@@ -500,6 +504,7 @@
     },
     {
       "name": "会阴",
+      "meridians": ["冲脉"],
       "meridian": "任脉",
       "attribute": "络穴",
       "description": "在会阴部。",
@@ -585,6 +590,7 @@
     },
     {
       "name": "公孙穴",
+      "meridians": ["冲脉"],
       "meridian": "足太阴脾经",
       "attribute": "络穴，八脉交会穴（通冲脉）",
       "description": "健脾化湿、和胃理中",
@@ -651,6 +657,7 @@
     },
     {
       "name": "内关穴",
+      "meridians": ["阴维脉"],
       "meridian": "手厥阴心包经",
       "attribute": "络穴，八脉交会穴（通阴维脉）",
       "description": "宁心安神、理气止痛",
@@ -673,6 +680,7 @@
     },
     {
       "name": "冲门穴",
+      "meridians": ["阴维脉"],
       "meridian": "足太阴脾经",
       "attribute": "",
       "description": "从血海穴直上五寸叫箕门穴",
@@ -750,7 +758,7 @@
     },
     {
       "name": "印堂穴",
-      "meridian": "经外奇穴",
+      "meridian": "督脉",
       "attribute": "",
       "description": "清头明目、通鼻开窍",
       "location": "面部，两眉头中间",
@@ -904,6 +912,7 @@
     },
     {
       "name": "哑门穴",
+      "meridians": ["阳维脉"],
       "meridian": "督脉",
       "attribute": "",
       "description": "治哑",
@@ -926,6 +935,7 @@
     },
     {
       "name": "商曲穴",
+      "meridians": ["冲脉"],
       "meridian": "足少阴肾经",
       "attribute": "",
       "description": "是商曲在下脘穴外开一寸",
@@ -970,6 +980,7 @@
     },
     {
       "name": "四满穴",
+      "meridians": ["冲脉"],
       "meridian": "足少阴肾经",
       "attribute": "",
       "description": "理气调经、利水消肿",
@@ -1011,6 +1022,7 @@
     },
     {
       "name": "地仓穴",
+      "meridians": ["阳跷脉"],
       "meridian": "足阳明胃经",
       "attribute": "",
       "description": "地仓是手阳明、足阳明、阳蹻脉的会穴",
@@ -1052,6 +1064,7 @@
     },
     {
       "name": "外关穴",
+      "meridians": ["阳维脉"],
       "meridian": "手少阳三焦经",
       "attribute": "络穴，八脉交会穴（通阳维脉）",
       "description": "清热解表、通经活络",
@@ -1126,6 +1139,7 @@
     },
     {
       "name": "大横穴",
+      "meridians": ["阴维脉"],
       "meridian": "足太阴脾经",
       "attribute": "",
       "description": "温中散寒、调理肠胃",
@@ -1148,6 +1162,7 @@
     },
     {
       "name": "大赫穴",
+      "meridians": ["冲脉"],
       "meridian": "足少阴肾经",
       "attribute": "",
       "description": "益肾助阳、调经止带",
@@ -1335,6 +1350,7 @@
     },
     {
       "name": "天突穴",
+      "meridians": ["阴维脉"],
       "meridian": "任脉",
       "attribute": "",
       "description": "的穴道是膻中，玉堂、紫宫，华盖，璇玑，穴道怎么找",
@@ -1357,6 +1373,7 @@
     },
     {
       "name": "天髎穴",
+      "meridians": ["阳维脉", "阳跷脉"],
       "meridian": "手少阳三焦经",
       "attribute": "",
       "description": "祛风活络、消肿止痛",
@@ -1445,6 +1462,7 @@
     },
     {
       "name": "头临泣穴",
+      "meridians": ["阳维脉"],
       "meridian": "足少阳胆经",
       "attribute": "",
       "description": "头临泣再跨过来一寸，就是本神",
@@ -1467,6 +1485,7 @@
     },
     {
       "name": "头维穴",
+      "meridians": ["阳维脉"],
       "meridian": "足阳明胃经",
       "attribute": "",
       "description": "头维，额角入发际，本神旁一寸五分，从神庭旁上开四寸半",
@@ -1632,6 +1651,7 @@
     },
     {
       "name": "居髎穴",
+      "meridians": ["阳跷脉"],
       "meridian": "足少阳胆经",
       "attribute": "",
       "description": "居髎穴从章门穴直下八点三寸或八点五寸，很难找",
@@ -1665,6 +1685,7 @@
     },
     {
       "name": "巨骨穴",
+      "meridians": ["阳跷脉"],
       "meridian": "手阳明大肠经",
       "attribute": "",
       "description": "通经活络、化痰散结",
@@ -1676,6 +1697,7 @@
     },
     {
       "name": "巨髎穴",
+      "meridians": ["阳跷脉"],
       "meridian": "足阳明胃经",
       "attribute": "",
       "description": "承泣、四白、巨髎",
@@ -1687,6 +1709,7 @@
     },
     {
       "name": "带脉穴",
+      "meridians": ["带脉"],
       "meridian": "足少阳胆经",
       "attribute": "",
       "description": "奇经有一条叫带脉，就是带脉、五枢、维道三个连续的穴道",
@@ -1698,6 +1721,7 @@
     },
     {
       "name": "幽门穴",
+      "meridians": ["冲脉"],
       "meridian": "足少阴肾经",
       "attribute": "",
       "description": "健脾和胃、降逆止呕",
@@ -1720,6 +1744,7 @@
     },
     {
       "name": "府舍穴",
+      "meridians": ["阴维脉"],
       "meridian": "足太阴脾经",
       "attribute": "",
       "description": "理气散结、健脾和胃",
@@ -1731,6 +1756,7 @@
     },
     {
       "name": "廉泉穴",
+      "meridians": ["阴维脉"],
       "meridian": "任脉",
       "attribute": "",
       "description": "是廉泉穴，这廉泉穴怎么找",
@@ -1905,6 +1931,7 @@
     },
     {
       "name": "承泣穴",
+      "meridians": ["阳跷脉"],
       "meridian": "足阳明胃经",
       "attribute": "",
       "description": "承泣、四白、巨髎",
@@ -1938,6 +1965,7 @@
     },
     {
       "name": "承灵穴",
+      "meridians": ["阳维脉"],
       "meridian": "足少阳胆经",
       "attribute": "",
       "description": "宣肺利鼻、散风清热",
@@ -2078,6 +2106,7 @@
     },
     {
       "name": "本神穴",
+      "meridians": ["阳维脉"],
       "meridian": "足少阳胆经",
       "attribute": "",
       "description": "率谷再过来是完骨，完骨穴在天柱穴与天容穴的中央，在大筋的后方",
@@ -2155,6 +2184,7 @@
     },
     {
       "name": "横骨穴",
+      "meridians": ["冲脉"],
       "meridian": "足少阴肾经",
       "attribute": "",
       "description": "阴谷在脚的内侧，你用手可以摸到，在这个缝隙里面，这里面有两条筋，在两个筋的中间，这是阴谷穴",
@@ -2177,6 +2207,7 @@
     },
     {
       "name": "正营穴",
+      "meridians": ["阳维脉"],
       "meridian": "足少阳胆经",
       "attribute": "",
       "description": "疏风止痛、利窍明目",
@@ -2210,6 +2241,7 @@
     },
     {
       "name": "气冲穴",
+      "meridians": ["冲脉"],
       "meridian": "足阳明胃经",
       "attribute": "",
       "description": "理气止痛、调经种子",
@@ -2254,6 +2286,7 @@
     },
     {
       "name": "气穴",
+      "meridians": ["冲脉"],
       "meridian": "足少阴肾经",
       "attribute": "",
       "description": "益肾调经、理气止痛",
@@ -2526,6 +2559,7 @@
     },
     {
       "name": "照海穴",
+      "meridians": ["阴跷脉"],
       "meridian": "足少阴肾经",
       "attribute": "八脉交会穴（通阴跷脉）",
       "description": "在脚后跟骨头跟大筋交接的地方",
@@ -2591,6 +2625,7 @@
     },
     {
       "name": "申脉穴",
+      "meridians": ["阳跷脉"],
       "meridian": "足太阳膀胱经",
       "attribute": "八脉交会穴（通阳跷脉）",
       "description": "清神志、舒筋络",
@@ -2612,7 +2647,7 @@
       "clinicalNotes": "这里有个经外奇穴，从第十三椎外开三寸半的地方，然后你再往下到第十四椎，在这一\n带找。有个穴道，叫做痞根穴。顾名思义就是痞块之根。中医认为肿瘤、硬块都有根, 就好\n像树木有根嘛。你如果把树砍了，根不砍，树还是会长出来。所以这个穴道用在诊断上，查有没有肿瘤及治好了没有？同时也可以在这穴道下针，把根断掉。\n我们介绍到脚上的时候，还有一个奇穴叫消积穴，这个积，不管是痞块积在那，还是水\n积在那，还有腹胀，通通可以用消积穴。\n再来穴道就没有了，一直要到第十九椎。这第十九椎外开三寸的地方，是我们的胞肓。\n胞肓是我们治大小便的近取穴，都是在下焦排泄系统。大便、小便，都可以在胞肓上治疗。\n再来是第二十椎下外开三寸， 是秩边。 秩边穴是很有名的治痔疮的近取穴， 你可扎长强、\n秩边、孔最。孔最是肺经的郄穴，肺跟大肠相表里，还有温溜穴，都对痔疮有消炎镇痛，止血的效果。秩边对各种痔疮的效果都很好，临床上我们用的很多。我们很常用的穴道可以做个记号，用的很少的，就只要知道有个穴道在那边就可以了。"
     },
     {
-      "name": "瘛脉穴",
+      "name": "瘈脉穴",
       "meridian": "手少阳三焦经",
       "attribute": "",
       "description": "清热聪耳、镇痉止痫",
@@ -2620,7 +2655,7 @@
       "needling": "",
       "moxibustion": "",
       "contraindication": "",
-      "clinicalNotes": "瘛脉治头痛、耳聋耳鸣、小儿惊风。它在耳朵后面，治头部的问题，嚎！"
+      "clinicalNotes": "瘈脉治头痛、耳聋耳鸣、小儿惊风。它在耳朵后面，治头部的问题，嚎！"
     },
     {
       "name": "白环俞穴",
@@ -2646,6 +2681,7 @@
     },
     {
       "name": "目窗穴",
+      "meridians": ["阳维脉"],
       "meridian": "足少阳胆经",
       "attribute": "",
       "description": "头临泣再跨过来一寸，就是本神",
@@ -2668,6 +2704,7 @@
     },
     {
       "name": "睛明穴",
+      "meridians": ["阴跷脉", "阳跷脉"],
       "meridian": "足太阳膀胱经",
       "attribute": "",
       "description": "那这个第一个穴道是睛明穴",
@@ -2701,6 +2738,7 @@
     },
     {
       "name": "石关穴",
+      "meridians": ["冲脉"],
       "meridian": "足少阴肾经",
       "attribute": "",
       "description": "降逆止呕、调理肠胃",
@@ -2844,6 +2882,7 @@
     },
     {
       "name": "筑宾穴",
+      "meridians": ["阴维脉"],
       "meridian": "足少阴肾经",
       "attribute": "阴维脉郄穴",
       "description": "是太溪穴，太溪在大筋和内踝裸的中间，从太溪穴正直上二寸的距离就是复溜",
@@ -2899,6 +2938,7 @@
     },
     {
       "name": "维道穴",
+      "meridians": ["带脉"],
       "meridian": "足少阳胆经",
       "attribute": "",
       "description": "奇经有一条叫带脉，就是带脉、五枢、维道三个连续的穴道",
@@ -2965,6 +3005,7 @@
     },
     {
       "name": "肓俞穴",
+      "meridians": ["冲脉"],
       "meridian": "足少阴肾经",
       "attribute": "",
       "description": "理气止痛、润肠通便",
@@ -3050,6 +3091,7 @@
     },
     {
       "name": "肩井穴",
+      "meridians": ["阳维脉"],
       "meridian": "足少阳胆经",
       "attribute": "",
       "description": "祛风活络、消肿止痛",
@@ -3083,6 +3125,7 @@
     },
     {
       "name": "肩髃穴",
+      "meridians": ["阳跷脉"],
       "meridian": "手阳明大肠经",
       "attribute": "",
       "description": "疏经通络、祛风止痛",
@@ -3234,6 +3277,7 @@
     },
     {
       "name": "脑空穴",
+      "meridians": ["阳维脉"],
       "meridian": "足少阳胆经",
       "attribute": "",
       "description": "清头明目、祛风止痛",
@@ -3297,6 +3341,7 @@
     },
     {
       "name": "腹哀穴",
+      "meridians": ["阴维脉"],
       "meridian": "足太阴脾经",
       "attribute": "",
       "description": "健脾和胃、理气止痛",
@@ -3319,6 +3364,7 @@
     },
     {
       "name": "腹通谷穴",
+      "meridians": ["冲脉"],
       "meridian": "足少阴肾经",
       "attribute": "",
       "description": "健脾和胃、宽胸安神",
@@ -3445,6 +3491,7 @@
     },
     {
       "name": "臑俞穴",
+      "meridians": ["阳维脉", "阳跷脉"],
       "meridian": "手太阳小肠经",
       "attribute": "",
       "description": "舒筋活络、化痰消肿",
@@ -3563,6 +3610,7 @@
     },
     {
       "name": "跗阳穴",
+      "meridians": ["阳跷脉"],
       "meridian": "足太阳膀胱经",
       "attribute": "阳跷脉郄穴",
       "description": "这个右腿外侧，这是脚后跟，这是外踝裸，这边有一条大筋，从大筋和外踝裸的中间，这个穴道，称为昆仑穴",
@@ -3661,6 +3709,7 @@
     },
     {
       "name": "金门穴",
+      "meridians": ["阳维脉"],
       "meridian": "足太阳膀胱经",
       "attribute": "郄穴",
       "description": "安神定志、舒筋活络",
@@ -3705,6 +3754,7 @@
     },
     {
       "name": "阳交",
+      "meridians": ["阳维脉"],
       "meridian": "足少阳胆经",
       "attribute": "阳维脉郄穴",
       "description": "在小腿外侧，当外踝尖上7寸，腓骨后缘。",
@@ -3748,6 +3798,7 @@
     },
     {
       "name": "阳白穴",
+      "meridians": ["阳维脉"],
       "meridian": "足少阳胆经",
       "attribute": "",
       "description": "率谷再过来是完骨，完骨穴在天柱穴与天容穴的中央，在大筋的后方",
@@ -3799,6 +3850,7 @@
     },
     {
       "name": "阴交穴",
+      "meridians": ["冲脉"],
       "meridian": "任脉",
       "attribute": "募穴",
       "description": "再下个穴道是阴交",
@@ -3851,6 +3903,7 @@
     },
     {
       "name": "阴都穴",
+      "meridians": ["冲脉"],
       "meridian": "足少阴肾经",
       "attribute": "",
       "description": "理气降逆、宽胸利膈",
@@ -3932,7 +3985,7 @@
       "needling": "",
       "moxibustion": "",
       "contraindication": "",
-      "clinicalNotes": "颅息治头痛、耳聋耳鸣、小儿惊风。它在瘛脉上面，治头部的问题，嚎！"
+      "clinicalNotes": "颅息治头痛、耳聋耳鸣、小儿惊风。它在瘈脉上面，治头部的问题，嚎！"
     },
     {
       "name": "颊车穴",
@@ -3980,6 +4033,7 @@
     },
     {
       "name": "风府穴",
+      "meridians": ["阳维脉"],
       "meridian": "督脉",
       "attribute": "",
       "description": "治中风",
@@ -3991,6 +4045,7 @@
     },
     {
       "name": "风池穴",
+      "meridians": ["阳维脉", "阳跷脉"],
       "meridian": "足少阳胆经",
       "attribute": "",
       "description": "头临泣再跨过来一寸，就是本神",
@@ -4306,6 +4361,7 @@
     },
     {
       "name": "期门",
+      "meridians": ["阴维脉"],
       "meridian": "足厥阴肝经",
       "attribute": "肝之募穴（足厥阴、足太阴、阴维之会）",
       "description": "肝之募穴，第6肋间隙，前正中线旁开4寸。主治胸胁胀痛、呕吐、呃逆、腹胀、奔豚、肝积。",
@@ -4328,6 +4384,7 @@
     },
     {
       "name": "足临泣",
+      "meridians": ["带脉"],
       "meridian": "足少阳胆经",
       "attribute": "经穴（胆经俞穴，通带脉）",
       "description": "胆经俞穴，八脉交会穴通带脉。足背第4、5跖骨底结合部前方凹陷。主治头痛、目赤、胁痛、疟疾、月经不调、带下、瘰疬。",
