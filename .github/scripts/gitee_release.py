@@ -17,16 +17,23 @@
 
 ⛔ 只上传 APK_NAMES 白名单里的文件。不要改成 `*.apk` 通配 —— 构建目录里常残留
    历史/调试 apk（本机实测被通配扫到 4 个无关包，且超过 Gitee 100MB 附件上限）。
+
+⛔ 超时纪律（v1.11.24 实测教训：urllib 上传挂起吞掉整个 90min job）：
+   - 大文件上传一律走 curl -F 流式（--connect-timeout 60 --max-time 600），
+     不用 urllib 读进内存；
+   - API 请求默认 120s；git push 120s；
+   - 全局死线 25 分钟，超时即停止补传、如实上报缺失（exit 1），
+     绝不让单个挂起请求拖垮整个 job。
 """
 import io
 import json
 import os
 import subprocess
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
-import uuid
 
 OWNER = os.environ.get('GITEE_OWNER', 'jangviktor')
 REPO = os.environ.get('GITEE_REPO', 'nihaixia-app')
@@ -41,6 +48,11 @@ APK_NAMES = (
 )
 API = 'https://gitee.com/api/v5'
 
+API_TIMEOUT = 120          # 普通 API 请求
+PUSH_TIMEOUT = 120         # 单次 git push
+UPLOAD_TIMEOUT = 600       # 单文件上传（curl --max-time）
+DEADLINE = time.time() + 25 * 60  # 整个脚本的全局死线（25 分钟）
+
 
 def log(msg):
     print(msg, flush=True)
@@ -54,22 +66,46 @@ if not TAG:
     sys.exit(0)
 
 
-def api(method, path, payload=None, raw=None, ctype=None, timeout=1800):
+class ApiError(RuntimeError):
+    pass
+
+
+def api(method, path, payload=None, timeout=API_TIMEOUT):
     url = API + path + ('&' if '?' in path else '?') + 'access_token=' + urllib.parse.quote(TOK)
-    data = raw if raw is not None else (
-        json.dumps(payload).encode('utf-8') if payload is not None else None)
+    data = json.dumps(payload).encode('utf-8') if payload is not None else None
     request = urllib.request.Request(url, data=data, method=method)
-    request.add_header('Content-Type', ctype or 'application/json;charset=UTF-8')
+    request.add_header('Content-Type', 'application/json;charset=UTF-8')
     with urllib.request.urlopen(request, timeout=timeout) as resp:
         text = resp.read().decode('utf-8')
     return json.loads(text) if text.strip() else {}
 
 
+def upload(path, fn, rel_id):
+    """curl -F 流式上传单个附件（不读进内存，容忍慢链路，--max-time 兜底）。"""
+    url = ('%s/repos/%s/%s/releases/%s/attach_files?access_token=%s'
+           % (API, OWNER, REPO, rel_id, urllib.parse.quote(TOK)))
+    p = subprocess.run(
+        ['curl', '-sS', '--ssl-no-revoke', '--connect-timeout', '60',
+         '--max-time', str(UPLOAD_TIMEOUT), '-X', 'POST', url, '-F', 'file=@' + path],
+        capture_output=True, text=True, timeout=UPLOAD_TIMEOUT + 30)
+    out = (p.stdout or '').strip()
+    if p.returncode != 0:
+        raise ApiError('curl rc=%d %s' % (p.returncode, (p.stderr or out)[:200]))
+    try:
+        return json.loads(out) if out else {}
+    except ValueError:
+        raise ApiError('非 JSON 响应: %s' % out[:200])
+
+
 # ---------- 1. 推送 tag（与 master 头）到 Gitee（失败不致命：镜像可能已同步） ----------
 push_url = 'https://%s:%s@gitee.com/%s/%s.git' % (OWNER, TOK, OWNER, REPO)
 for ref in ('refs/tags/%s:refs/tags/%s' % (TAG, TAG), 'HEAD:refs/heads/master'):
-    p = subprocess.run(['git', 'push', push_url, ref], capture_output=True, text=True)
-    log('git push %-28s rc=%d %s' % (ref, p.returncode, (p.stderr or '').strip()[:240]))
+    try:
+        p = subprocess.run(['git', 'push', push_url, ref],
+                           capture_output=True, text=True, timeout=PUSH_TIMEOUT)
+        log('git push %-28s rc=%d %s' % (ref, p.returncode, (p.stderr or '').strip()[:240]))
+    except subprocess.TimeoutExpired:
+        log('git push %s 超时(%ds)——跳过（镜像可能已同步）' % (ref, PUSH_TIMEOUT))
 
 # ---------- 2. 建或更新发行版（正文取自 release_notes/<tag>.md） ----------
 body = ''
@@ -106,28 +142,13 @@ else:
 rel_id = rel.get('id')
 
 
-def upload(path, fn):
-    with open(path, 'rb') as f:
-        content = f.read()
-    boundary = ('----giteeupload' + uuid.uuid4().hex).encode()
-    data = b''.join([
-        b'--' + boundary + b'\r\n',
-        ('Content-Disposition: form-data; name="file"; filename="%s"\r\n' % fn).encode('utf-8'),
-        b'Content-Type: application/vnd.android.package-archive\r\n\r\n',
-        content,
-        b'\r\n--' + boundary + b'--\r\n',
-    ])
-    res = api('POST', '/repos/%s/%s/releases/%s/attach_files' % (OWNER, REPO, rel_id),
-              raw=data, ctype='multipart/form-data; boundary=' + boundary.decode())
-    return res, len(content)
-
-
 def attached_names():
     d = api('GET', '/repos/%s/%s/releases/%s' % (OWNER, REPO, rel_id))
     return {a.get('name') for a in (d.get('assets') or [])}
 
 
 # ---------- 3. 上传 4 个 APK（白名单）；最多两轮，第二轮只补前一轮没挂上的 ----------
+timed_out = False
 for attempt in (1, 2):
     have = attached_names()
     pending = [fn for fn in APK_NAMES
@@ -136,17 +157,21 @@ for attempt in (1, 2):
         break
     log('第 %d 轮上传：%s' % (attempt, ', '.join(pending)))
     for fn in pending:
+        if time.time() > DEADLINE:
+            timed_out = True
+            log('  ⛔ 达到全局死线(%d 分钟)，停止补传，如实上报缺失' % (25))
+            break
         try:
-            res, size = upload(os.path.join(APK_DIR, fn), fn)
-            log('  已提交 %-30s (%.1f MB) id=%s' % (fn, size / 1048576.0, res.get('id')))
-        except urllib.error.HTTPError as e:
-            log('  上传失败 %s HTTP %s %s' % (fn, e.code, e.read().decode('utf-8', 'replace')[:240]))
+            res = upload(os.path.join(APK_DIR, fn), fn, rel_id)
+            log('  已提交 %-30s id=%s' % (fn, res.get('id')))
         except Exception as e:  # noqa: BLE001
-            log('  上传失败 %s %s' % (fn, e))
+            log('  上传失败 %s %s' % (fn, str(e)[:240]))
+    if timed_out:
+        break
 
 # ---------- 4. 上传后核验：4 个包必须真的挂上 ----------
-# 实测坑：Gitee attach_files 会「返回成功但未真正挂载」（本次通用包首发即如此，
-# 表现为 API 报成功、下载 URL 404）。故提交后必须回读附件列表核验，不能只信返回值。
+# 实测坑：Gitee attach_files 会「返回成功但未真正挂载」（API 报成功、下载 URL 404）。
+# 故提交后必须回读附件列表核验，不能只信返回值。
 have = attached_names()
 missing = [fn for fn in APK_NAMES if fn not in have]
 if missing:
@@ -156,4 +181,6 @@ else:
 
 log('Gitee 同步完成：https://gitee.com/%s/%s/releases/tag/%s（缺失 %d）' % (
     OWNER, REPO, TAG, len(missing)))
-sys.exit(1 if missing else 0)
+if timed_out:
+    log('（注：因达到死线提前收场，缺失项可删除远端 tag 重推触发重跑）')
+sys.exit(1 if (missing or timed_out) else 0)
