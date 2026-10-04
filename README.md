@@ -100,6 +100,10 @@
 
 从左到右：① **知识库首页** —— 顶部「六经 / 方剂 / 本草 / 针灸 / 内经 / 搜索」六大入口，「当前节气」卡直显节气名、距下一节气天数、太阳黄经与三候，下方「黄帝内经·速查」脏象 / 望诊 / 脉诊三入口一览。 ② **内经条目 · 十维度** —— 52 条结构化条目按 10 个维度（脏象 / 望诊 / 脉诊 / 病因病机 / 经络循行 / 气血津液 / 辨证体系 / 治则方药 / 病证举例 / 误治宜忌）检索，支持六字段搜索（标题 / 原文 / 出处 / 白话 / 倪师解）、按篇名检索与标签交叉筛选；每条卡片显式标注篇名出处（如《素问·灵兰秘典论》第一节）。 ③ **节气养生详情** —— 24 节气逐条给出气候 / 起居 / 饮食 / 穴位 / 不适五类养生要点，并附「倪师解析」卡片，非原文直引处统一标注【推断】，一眼可分「经典原文 vs 解读」。
 
+**v1.11.24 穴位筛选新增六奇经分组 · 国标穴序**
+
+穴位讲解的经络筛选从 15 组扩到 **21 组**：十二正经 + 督任之外，新增**冲脉 / 带脉 / 阴维脉 / 阳维脉 / 阴跷脉 / 阳跷脉**六个奇经分组；57 条交会穴补齐所属经脉标注，多脉穴忠实出现在所有所属脉分组（如公孙同时在「脾经」与「冲脉」），搜「冲脉」等可直接命中其交会穴。随版带出：十二正经 / 督任组内按国标穴序排列、同名并列穴位次键修复、「子宫」解剖语境禁链。
+
 **v1.11.23 伤寒论 / 金匮要略 条文级阅读库 · 方剂⇄条文双向联动**
 
 ![v1.11.23 伤寒金匮条文级阅读库](docs/images/screenshot_v1123_shanghan_jingui.webp)
@@ -150,9 +154,9 @@
 > 完全离线｜无需联网｜无需注册｜Android 6.0+
 > 通用版 APK 约 68MB，分架构版 25–28MB
 > 自 V1.11.9 起由 GitHub Actions 自动构建发布，推送 `v*` tag 即出包
-> **最后更新：2026-09-14（v1.11.23）**
+> **最后更新：2026-10-03（v1.11.24）**
 
-### 📥 方式一：下载预编译 APK（V1.11.23）
+### 📥 方式一：下载预编译 APK（V1.11.24）
 
 > ### ⚠️ 升级须知：签名密钥已统一，通常可直接覆盖安装
 >
@@ -169,13 +173,13 @@
 
 <div align="left">
 
-[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安装包‑3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.23/app-release.apk)
+[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安装包‑3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.24/app-release.apk)
 &nbsp;&nbsp;
-[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安装包‑0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.23/app-arm64-v8a-release.apk)
+[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安装包‑0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.24/app-arm64-v8a-release.apk)
 &nbsp;&nbsp;
-[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安装包‑9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.23/app-armeabi-v7a-release.apk)
+[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安装包‑9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.24/app-armeabi-v7a-release.apk)
 &nbsp;&nbsp;
-[![📦 x86_64(虚拟机)](https://img.shields.io/badge/📦%20x86_64(虚拟机)-安卓安装包‑1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.23/app-x86_64-release.apk)
+[![📦 x86_64(虚拟机)](https://img.shields.io/badge/📦%20x86_64(虚拟机)-安卓安装包‑1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.24/app-x86_64-release.apk)
 
 </div>
 
@@ -186,6 +190,7 @@
 | armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | 25.1MB | 老旧32位安卓设备 |
 | x86_64 `app‑x86_64‑release.apk` | 28.4MB | 安卓虚拟机、模拟器使用 |
 
+> **V1.11.24 穴位筛选新增六奇经分组 · 国标穴序**：经络筛选从 15 组扩到 21 组，新增冲脉 / 带脉 / 阴维脉 / 阳维脉 / 阴跷脉 / 阳跷脉；57 条交会穴补齐次键标注，多脉穴忠实出现在所有所属脉分组（公孙同时在「脾经」与「冲脉」），搜「冲脉」可直接命中其交会穴；随版带出十二正经 / 督任组内国标穴序、同名并列次键修复与「子宫」禁链。详见 [Release Notes](release_notes/v1.11.24.md)。
 > **V1.11.23 伤寒论 / 金匮要略 条文级阅读库 · 方剂⇄条文双向联动**：知识库新增「伤寒金匮」Tab，伤寒论 380 篇、金匮要略 453 篇由「一章一个大文件」拆到**条文级**逐条阅读；正文里的方剂名/药材名一点即跳详情，方剂详情「见于经典」反向列出**专门介绍该方**的伤寒论/金匮条文；同时修复 Markdown 阅读页正文链接点击无反应。详见 [Release Notes](release_notes/v1.11.23.md)。
 > **V1.11.22 黄历神诞检索 · 记梦/身兆记录 + 民俗命理工具集**：自 v1.11.19 起三重增强——工具箱入驻「袁天罡称骨 / 受生债查询 / 轩辕黄帝四季歌」三大民俗参考，并按中医/玄学区划清晰分区（修复日期选择器英文回退）；黄历与周公解梦/玉匣灵兆新增「神诞检索 / 记梦 / 身兆记录」随身入口，全部复用 Bookmark 体系、零新表零迁移。详见 [Release Notes](release_notes/v1.11.22.md)。
 > **V1.11.19 内经结构化条目检索 · 深色模式正文修复 · 早晚子时农历校正**：新增「《黄帝内经》结构化条目检索」页（52 条 / 10 维度，原文·出处·白话·倪师解读四字段分离，六字段搜索 + 维度 + 标签交叉检索）；修复 Markdown 阅读页深色模式白字压浅蓝底不可读（对比度 1.09→9.50）；修复早晚子时 × 真太阳时下农历落后一天、时柱落亥时。详见 [Release Notes](release_notes/v1.11.19.md)。

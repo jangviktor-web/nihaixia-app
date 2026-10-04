@@ -73,3 +73,12 @@ build_apk*.log
 shanghan_src_backup/
 jingui_src_backup/
 docs/source/
+
+# codegraph 语义索引（本地工具产物）
+.codegraph/
+
+# 应用商店上架素材包（本地工作文件）
+apkpure_submission/
+
+# Python 字节码缓存
+__pycache__/

@@ -1,6 +1,20 @@
 {
   "changelog": [
     {
+      "version": "1.11.24",
+      "date": "2026-10-03",
+      "title": "六奇经筛选分组：冲/带/阴维/阳维/阴跷/阳跷交会穴纳入穴位讲解筛选",
+      "changes": [
+        "穴位数据 assets/data/acupoints.json：57 条交会穴补齐次键 meridians 列表（标注所属全部经脉，含六奇经），总数 408 不变",
+        "模型 lib/models/acupoint_detail.dart：打通 meridians 字段与 JSON 解析",
+        "顺序表 lib/data/meridian_order.dart：完整经络顺序 15→21 条（12正经+督任+冲脉+带脉+阴维脉+阳维脉+阴跷脉+阳跷脉+经外奇穴），六奇经正式成为筛选分组",
+        "仓库 lib/data/acupoint_repository.dart：getByMeridian 同时按主键 meridian 与次键 meridians 命中，多脉穴忠实出现在所有所属脉分组；search 新增次键模糊匹配（搜「冲脉」命中其交会穴）；getMeridians 遍历主键+次键全部 add 后按序排序",
+        "多脉穴绝不压缩成单脉：凡带 meridians 的穴同时出现在所有所属脉分组中，保留在各自主脉内容",
+        "测试对齐：test/acupoint_meridian_order_test.dart 与 test/qa_acupoint_meridian_order_verify_test.dart 同步改为 21 条顺序表、主键块 15（去六奇经）、六奇经为表内正式成员",
+        "验证：flutter test 相关 34/34 全过（含 acupoint_link_eligibility_test / acupoint_rich_text_test），flutter analyze lib/data lib/models 0 issue"
+      ]
+    },
+    {
       "version": "1.11.23",
       "date": "2026-09-14",
       "title": "方剂→经典跳转精度收紧至「中间档」+ 修复正文方剂·药材链接点击无反应",

@@ -12,6 +12,28 @@
 
 ---
 
+## [1.11.24+19] - 2026-10-03 — 六奇经筛选分组：冲/带/阴维/阳维/阴跷/阳跷交会穴纳入穴位讲解筛选
+
+**一句话**：穴位讲解的经络筛选分组新增六奇经（冲/带/阴维/阳维/阴跷/阳跷），交会穴忠实出现在所有所属脉分组，多脉穴不再被压缩成单脉。
+
+**① 数据采集与模型**
+- `assets/data/acupoints.json`：57 条交会穴补齐次键 `meridians` 列表（标注所属全部经脉，含六奇经），总数 408 不变。
+- `lib/models/acupoint_detail.dart`：打通 `meridians` 字段与 JSON 解析。
+
+**② 顺序表与仓库**
+- `lib/data/meridian_order.dart`：完整经络顺序 15→21 条（12正经+督任+冲脉+带脉+阴维脉+阳维脉+阴跷脉+阳跷脉+经外奇穴），六奇经正式成为筛选分组。
+- `lib/data/acupoint_repository.dart`：
+  - `getByMeridian` 同时按主键 `meridian` 与次键 `meridians` 命中，多脉穴忠实出现在所有所属脉分组。
+  - `search` 新增次键 `meridians` 模糊匹配（搜「冲脉」命中其交会穴）。
+  - `getMeridians` 遍历主键+次键全部 add 后按序排序，返回 21 条。
+
+**③ 校验**
+- 多脉穴绝不压缩成单脉：凡带 `meridians` 的穴同时出现在所有所属脉分组中，保留在各自主脉内容。
+- `test/acupoint_meridian_order_test.dart` 与 `test/qa_acupoint_meridian_order_verify_test.dart` 同步改为 21 条顺序表、主键块 15（去六奇经）、六奇经为表内正式成员。
+- `flutter test` 相关 34/34 全过（含 `acupoint_link_eligibility_test` / `acupoint_rich_text_test`），`flutter analyze lib/data lib/models` 0 issue。
+
+---
+
 ## [1.11.23+18] - 2026-09-14 — 修复正文方剂·药材链接点击无反应 + 方剂→经典跳转精度收紧
 
 **一句话**：闭门课/伤寒金匮/内经 正文里的方剂·药材链接此前点击无反应（href 被编码未解）已修复；同时方剂「见于经典」跳转精度收紧至中间档，桂枝汤命中 20→12 条。
