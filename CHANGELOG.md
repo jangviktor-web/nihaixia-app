@@ -12,6 +12,77 @@
 
 ---
 
+## [1.11.25+4024] - 2026-10-10 — 易经 64 卦卦象插画
+
+**一句话**：易经模块每卦详情页新增传统卦象典故插画（64 卦全覆盖，源自《天纪学习系统》古籍版画），零新依赖、不动引擎。
+
+- **✨ 新增**：`assets/images/gua/` 新增 64 张卦象插画（jpg，约 1.1 MB），文件名与 `yijing_data.dart` 卦名一一对应（含异体字归一：天山遯→天山遁）。
+- **✨ 新增**：`lib/screens/yijing_detail_screen.dart` 卦名区域插入 `Image.asset`（width 180，`errorBuilder` 兜底缺图静默收起）。
+- **✅ 验证**：`flutter analyze` 0 issue；新增 `test/gua_image_widget_test.dart`（运行时绑定 2 例 + 缺图兜底 1 例）+ 既有易经测试 5/5，合计 8/8 全绿；QA 独立验证双向对账 64/64 无缺无多、IS_PASS: YES。
+
+## [1.11.25+4023] - 2026-10-10 — 五运六气三图可视化 + 文献数据入库
+## [1.11.25+4022] - 2026-10-09 — 新增五运六气推算 + 取穴口径对齐参考站
+
+**一句话**：新增「五运六气推算」模块（岁运/司天在泉/客气六步/客主加临，零新依赖），并将取穴模块的本穴表与五门十变全部对齐教材通用口径（acuherb.xyz/ziwu），同时删除取穴模块的早晚子时开关。
+
+**① ✨ 新增：五运六气推算**
+- 新增 `lib/services/yunqi_engine.dart`（640 行）：纯 Dart 五运六气引擎。岁运太过/不及（含角徵宫商羽五音）、司天/在泉、格局标记（天符/岁会/太一天符/同天符/同岁会/平气）、主运五步、客运五步、主气六步、客气六步、**客主加临顺逆**、三组病候提示。
+- 新增 `lib/screens/yunqi_screen.dart`（849 行）：日期选择（默认今天，可选 1900-2100），展示年干支 → 岁运病候 → 司天病候 → 司天在泉 → 格局 Chip 墙 → 主客运 → 主客气 → 当前之气（高亮）→ 客主加临表 → 免责声明。
+- `lib/screens/tools_screen.dart`：「中医时辰开穴综合计算器」卡片正后方新增「五运六气推算」入口。
+- **零新增依赖**：节气精确时刻复用项目既有 `sxwnl_spa_dart` 的定气算法，未引入任何新包。
+- 口径：运气年以**立春**为界，客气六步以**大寒**为界（两概念不同，代码注释已写明）；UI 默认采用与参考站一致的**日历年**口径。
+- 新增 `test/yunqi_engine_test.dart`（33 例）+ `test/yunqi_screen_test.dart`（3 例）+ `test/yunqi_screen_nocolor_test.dart`（3 例）。
+
+**② 🐛 修复：取穴模块本穴表口径（4 条）**
+- `lib/screens/ziwuliuzhu_screen.dart` 的 `_benXue` 改为教材通用口径：**肝经 行间→大敦**、**大肠经 二间→商阳**（原取到了「子穴」而非「本穴」），心包经改为劳宫、三焦经改为支沟。
+- `_getBenXue` 删除「心包归癸借阴谷 / 三焦寄壬借通谷」的两处自创推导分支，简化为纯查表。
+- 依据：倪师讲义 L6901 亲口定义「本穴就是与该经属性相同的穴道」——按此定义，讲义 L6895 的肝经（行间）、大肠经（二间）两条举例**违背了他自己刚讲的规则**，属讲课口误。
+
+**③ 🐛 修复：五门十变「乙庚」配穴**
+- `_wuMen` 乙庚由 `行间+二间` 改为 **`大敦+商阳`**，并同步修正 `ziwuliuzhu_screen.dart` 里 UI 硬编码表的同一份数据（原为两份拷贝，只改一处会漏）。
+- 「行间+二间」的真实身份是**乙庚合化金的配穴对**（壮水：金生水），不是夫妻经本穴配。
+
+**④ 🔧 变更：取穴模块删除早晚子时开关**
+- `lib/services/ziwuliuzhu_engine.dart` 的 `calcDayGanZhi` 固定 `RatHourMode.noSplit`（**23:00 换日**，与参考站口径一致），UI 移除「晚子时」勾选行。
+- ⚠️ 此口径刻意与「八字排盘」不同（八字晚子时归当日、时柱借次日），仅取穴模块如此。
+
+**⑤ 校验**
+- `flutter analyze`：0 issue（新增/修改文件）。
+- 回归测试：**76/76 全绿**（yunqi 39 + ziwuliuzhu 37）。
+- 与参考站 `acuherb.xyz/ziwu` 逐格对拍：日干支/纳甲/灵龟/飞腾/时辰起点/时干 **19008 项 100% 一致**；五运六气 **62 年 × 24 字段 + 372 客气采样点（双口径）逐格全对**。
+- 变异验证：五运六气 6 个承重点 6/6 被测试捕获，取穴 5 个守门用例全部有效。
+- 已知失败基线：`quality_score_bc_test` / `ziwei_bench_test`（既有，非本次引入）。
+
+
+**一句话**：修复 Android Zoom 页面转场快照机制可把进场页冻在半透明帧（子午流注屏「打开模糊一大片」）的问题，并修复子午流注 TabBar 未绑定 controller 导致点 Tab 不切页的问题。
+
+**① 🐛 转场冻结修复**
+- `lib/main.dart` 明暗两主题均显式配置 `ZoomPageTransitionsBuilder(allowSnapshotting: false, allowEnterRouteSnapshotting: false)`：转场改用实时渲染、不再栅格化快照，消除动画中途冻结导致的整页半透明发糊（根因与 Flutter Zoom 转场快照家族问题一致，官方文档明示快照期间动画可能冻结）。
+
+**② 🐛 子午流注 TabBar 脱钩修复**
+- `lib/screens/ziwuliuzhu_screen.dart`：AppBar.bottom 的 TabBar 补传 `controller: _tabController`（原 `const TabBar` 自建内部 controller，与 TabBarView 脱钩——点 Tab 不切页、滑页指示条不动）。
+
+**③ 校验**
+- `flutter analyze` 0 error（79 条均为既有 info 级 lint）；`flutter test test/ziwuliuzhu_engine_test.dart` 11/11 全过。
+
+---
+
+## [1.11.25+4020] - 2026-10-03 — 子午流注扩展：纳甲/灵龟/飞腾三法开穴引擎
+
+**一句话**：子午流注按时开穴新增纳甲法、灵龟八法、飞腾八法三套算法（倪师本穴/五门十变保留），干支推算与八字模块统一口径。
+
+**① 新增开穴引擎**
+- `lib/services/ziwuliuzhu_engine.dart`（新建，纯 Dart、零新依赖、可单测）：搬运 ziwu 经典标准查表，实现纳甲法（`_najiaPoints`/`_ganYuan`/`_najiaMap`）、灵龟八法（`_lgDayGan/_lgDayZhi/_lgHourGan/_lgHourZhi/_lgGua`，余数5中宫寄坤→照海、女寄艮→内关）、飞腾八法（`_feiteng`）；干支锚点 `2000-01-01=庚辰`（`_baseGan=6/_baseZhi=4`）与八字模块口径对齐。
+
+**② 屏幕重写（四法 Tab）**
+- `lib/screens/ziwuliuzhu_screen.dart` 重写为 TabBar 四 Tab：纳子法 / 纳甲法 / 灵龟八法 / 飞腾八法，复用既有倪师本穴表 `_benXue` 与五门十变 `_wuMen`（倪师口径为准）；新增晚子时 `_lateZi` 开关，统一经 `calcDayGanZhi`/`calcHourGanZhi` 推算，消除与八字模块口径不一致。
+
+**③ 校验**
+- 新增 `test/ziwuliuzhu_engine_test.dart`（11 例）：纳甲查表完整60无冲突、甲日戌时窍阴、合日互用回退、灵龟甲日子时→内关、余数5中宫寄坤→照海、女寄艮→内关、飞腾十干、2000-01-01=庚辰、甲日子时=甲子、晚子时推移次日。
+- `flutter analyze` 0 issue；`flutter test` 11/11 全过。
+
+---
+
 ## [1.11.24+19] - 2026-10-03 — 六奇经筛选分组：冲/带/阴维/阳维/阴跷/阳跷交会穴纳入穴位讲解筛选
 
 **一句话**：穴位讲解的经络筛选分组新增六奇经（冲/带/阴维/阳维/阴跷/阳跷），交会穴忠实出现在所有所属脉分组，多脉穴不再被压缩成单脉。

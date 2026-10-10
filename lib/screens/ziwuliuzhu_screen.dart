@@ -11,7 +11,6 @@ class ZiWuLiuZhuScreen extends StatefulWidget {
 class _ZiWuLiuZhuScreenState extends State<ZiWuLiuZhuScreen>
     with SingleTickerProviderStateMixin {
   DateTime _selectedDate = DateTime.now();
-  bool _lateZi = true; // 晚子时：23:00 后日干支按次日
 
   late final TabController _tabController;
 
@@ -43,24 +42,31 @@ class _ZiWuLiuZhuScreenState extends State<ZiWuLiuZhuScreen>
     '亥': ('三焦经', '21:00–23:00'),
   };
 
-  // 本穴表（经络→本穴）——数据来源：倪海厦人纪讲义·针灸教程 L4316
-  // 心包经归癸（肾），三焦经寄壬（膀胱），不单独列本穴
+  // 本穴表（经络→本穴）——「本穴」＝ 穴性与该经五行属性相同之穴，十二经各一穴。
+  // 口径以参考站 acuherb.xyz/ziwu 为准（教材通用口径），已用 Lightpanda 逐格对拍验证。
+  // ⚠️ 历史坑：本机曾用「行间（肝经·荥火·子穴）」「二间（大肠经·荥水·子穴）」当本穴，属取错；
+  //    讲义明载肝经本穴＝大敦（井木）、大肠经本穴＝商阳（井金）。
+  // ⚠️ 心包/三焦：讲义只给天干归属（三焦亦向壬中寄、心包同归入癸水），未给具体穴名，
+  //    本机曾自行推导为「借阴谷/通谷」，现按参考站改为劳宫/支沟。勿再改回归癸寄壬推导。
   static const _benXue = {
-    '胆经': '临泣', '肝经': '行间', '小肠经': '阳谷', '心经': '少府',
-    '胃经': '足三里', '脾经': '太白', '大肠经': '二间', '肺经': '经渠',
-    '膀胱经': '通谷', '肾经': '阴谷',
+    '胆经': '临泣', '肝经': '大敦', '小肠经': '阳谷', '心经': '少府',
+    '胃经': '足三里', '脾经': '太白', '大肠经': '商阳', '肺经': '经渠',
+    '膀胱经': '通谷', '肾经': '阴谷', '心包经': '劳宫', '三焦经': '支沟',
   };
 
-  // 心包经→癸→肾经本穴，三焦经→壬→膀胱经本穴
   String _getBenXue(String meridian) {
-    if (meridian == '心包经') return '阴谷（归癸·肾经）';
-    if (meridian == '三焦经') return '通谷（寄壬·膀胱经）';
     return _benXue[meridian] ?? '';
   }
 
-  // 五门十变——数据来源：倪海厦人纪讲义·针灸教程 L4316
+  // 五门十变：十天干两两合化 + 夫妻经本穴配。合化关系口径已对拍参考站 acuherb.xyz/ziwu
+  // （180 天实跑，5/5 一致）。
+  // ⚠️ 历史坑：本机曾用「乙庚 = 行间+二间」，源自讲义 zhenjiu_doc.md L6895 的举例，但那是
+  //    **讲师口误**——同份讲义 L6901 亲口定义「本穴就是与该经属性相同的穴道」，按此定义
+  //    肝经本穴应是井木「大敦」、大肠经本穴应是井金「商阳」（12 经举例中唯这 2 条不符定义）。
+  //    「行间+二间」的真实身份是**乙庚合化金的配穴对**（壮水：金生水），不是夫妻经本穴配。
+  // ⚠️ 同一份数据在下方 UI 表里还有一份**硬编码**（搜「乙庚合化金」），改这里必须同步改那边。
   static const _wuMen = [
-    ('甲', '己', '土', '临泣+太白'), ('乙', '庚', '金', '行间+二间'),
+    ('甲', '己', '土', '临泣+太白'), ('乙', '庚', '金', '大敦+商阳'),
     ('丙', '辛', '水', '阳谷+经渠'), ('丁', '壬', '木', '少府+通谷'),
     ('戊', '癸', '火', '足三里+阴谷'),
   ];
@@ -131,10 +137,13 @@ class _ZiWuLiuZhuScreenState extends State<ZiWuLiuZhuScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('子午流注取穴计算器'),
-        bottom: const TabBar(
+        title: const Text('中医时辰开穴综合计算器'),
+        // controller 必须显式传入：否则 TabBar 自建内部 controller，与
+        // TabBarView 的 _tabController 脱钩——点 Tab 不切页、滑页 Tab 不动。
+        bottom: TabBar(
+          controller: _tabController,
           isScrollable: true,
-          tabs: [
+          tabs: const [
             Tab(text: '纳子法'),
             Tab(text: '纳甲法'),
             Tab(text: '灵龟八法'),
@@ -147,8 +156,6 @@ class _ZiWuLiuZhuScreenState extends State<ZiWuLiuZhuScreen>
         children: [
           _NaZiTab(
             selectedDate: _selectedDate,
-            lateZi: _lateZi,
-            onLateZiChanged: (v) => setState(() => _lateZi = v),
             onPickDate: _pickDate,
             onPickTime: _pickTime,
             onResetNow: () => setState(() => _selectedDate = DateTime.now()),
@@ -162,9 +169,9 @@ class _ZiWuLiuZhuScreenState extends State<ZiWuLiuZhuScreen>
             getDiZhiSong: _getDiZhiSong,
             shichenIndex: _getShichenIndex(_selectedDate),
           ),
-          _NajiaTab(selectedDate: _selectedDate, lateZi: _lateZi),
-          _LingGuiTab(selectedDate: _selectedDate, lateZi: _lateZi),
-          _FeiTengTab(selectedDate: _selectedDate, lateZi: _lateZi),
+          _NajiaTab(selectedDate: _selectedDate),
+          _LingGuiTab(selectedDate: _selectedDate),
+          _FeiTengTab(selectedDate: _selectedDate),
         ],
       ),
     );
@@ -179,8 +186,6 @@ class _ZiWuLiuZhuScreenState extends State<ZiWuLiuZhuScreen>
 
 class _NaZiTab extends StatelessWidget {
   final DateTime selectedDate;
-  final bool lateZi;
-  final ValueChanged<bool> onLateZiChanged;
   final Future<void> Function() onPickDate;
   final Future<void> Function() onPickTime;
   final VoidCallback onResetNow;
@@ -196,8 +201,6 @@ class _NaZiTab extends StatelessWidget {
 
   const _NaZiTab({
     required this.selectedDate,
-    required this.lateZi,
-    required this.onLateZiChanged,
     required this.onPickDate,
     required this.onPickTime,
     required this.onResetNow,
@@ -216,7 +219,7 @@ class _NaZiTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    final gz = eng.calcDayGanZhi(selectedDate, lateZi: lateZi);
+    final gz = eng.calcDayGanZhi(selectedDate);
     final dayGan = tianGan[gz.dayGan];
     final dayOrgan = ganToOrgan[dayGan]!;
     final zhi = diZhi[shichenIndex];
@@ -262,11 +265,6 @@ class _NaZiTab extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TextButton.icon(
-                      onPressed: () => onLateZiChanged(!lateZi),
-                      icon: Icon(lateZi ? Icons.check_box : Icons.check_box_outline_blank, size: 16),
-                      label: const Text('晚子时（23:00后按次日干支）'),
-                    ),
                     TextButton.icon(
                       onPressed: onResetNow,
                       icon: const Icon(Icons.refresh, size: 16),
@@ -424,7 +422,7 @@ class _NaZiTab extends StatelessWidget {
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                      child: Row(children: [Expanded(child: Text('乙庚合化金')), Text('行间+二间')]),
+                      child: Row(children: [Expanded(child: Text('乙庚合化金')), Text('大敦+商阳')]),
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
@@ -453,13 +451,12 @@ class _NaZiTab extends StatelessWidget {
 
 class _NajiaTab extends StatelessWidget {
   final DateTime selectedDate;
-  final bool lateZi;
-  const _NajiaTab({required this.selectedDate, required this.lateZi});
+  const _NajiaTab({required this.selectedDate});
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final gz = eng.calcDayGanZhi(selectedDate, lateZi: lateZi);
+    final gz = eng.calcDayGanZhi(selectedDate);
     final hour = eng.calcHourGanZhi(gz.dayGan, selectedDate.hour, selectedDate.minute);
 
     final open = eng.najiaOpen(gz.dayGan, hour.hourGan, hour.hourZhi);
@@ -537,13 +534,12 @@ class _NajiaTab extends StatelessWidget {
 
 class _LingGuiTab extends StatelessWidget {
   final DateTime selectedDate;
-  final bool lateZi;
-  const _LingGuiTab({required this.selectedDate, required this.lateZi});
+  const _LingGuiTab({required this.selectedDate});
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final gz = eng.calcDayGanZhi(selectedDate, lateZi: lateZi);
+    final gz = eng.calcDayGanZhi(selectedDate);
     final hour = eng.calcHourGanZhi(gz.dayGan, selectedDate.hour, selectedDate.minute);
     final r = eng.lingguiOpen(gz.dayGan, gz.dayZhi, hour.hourGan, hour.hourZhi);
     final gua = r['gua'] as List<String>;
@@ -603,13 +599,12 @@ class _LingGuiTab extends StatelessWidget {
 
 class _FeiTengTab extends StatelessWidget {
   final DateTime selectedDate;
-  final bool lateZi;
-  const _FeiTengTab({required this.selectedDate, required this.lateZi});
+  const _FeiTengTab({required this.selectedDate});
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final gz = eng.calcDayGanZhi(selectedDate, lateZi: lateZi);
+    final gz = eng.calcDayGanZhi(selectedDate);
     final hour = eng.calcHourGanZhi(gz.dayGan, selectedDate.hour, selectedDate.minute);
     final ft = eng.feitengOpen(hour.hourGan);
 

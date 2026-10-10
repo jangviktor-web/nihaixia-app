@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dosage_converter_screen.dart';
 import 'ziwuliuzhu_screen.dart';
+import 'yunqi_screen.dart';
 import 'diagnosis_history_screen.dart';
 import 'ziwei_chart_screen.dart';
 import 'yijing_screen.dart';
@@ -61,12 +62,23 @@ class ToolsScreen extends StatelessWidget {
               const SizedBox(height: 12),
               _ToolCard(
                 icon: Icons.access_time,
-                title: '子午流注取穴计算器',
-                subtitle: '输入时间自动推算开穴',
+                title: '中医时辰开穴综合计算器',
+                subtitle: '纳子 / 纳甲 / 灵龟 / 飞腾四法开穴',
                 color: colorScheme.tertiary,
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const ZiWuLiuZhuScreen()),
+                ),
+              ),
+              const SizedBox(height: 12),
+              _ToolCard(
+                icon: Icons.grain,
+                title: '五运六气推算',
+                subtitle: '岁运 / 司天在泉 / 客气六步 / 客主加临',
+                color: colorScheme.secondary,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const YunQiScreen()),
                 ),
               ),
               const SizedBox(height: 12),

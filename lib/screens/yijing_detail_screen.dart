@@ -53,6 +53,14 @@ class YiJingHexagramDetailScreen extends StatelessWidget {
                     color: colorScheme.onSurfaceVariant,
                   ),
                 ),
+                const SizedBox(height: 12),
+                // 卦象插画：缺图时静默收起，不留白、不报错。
+                Image.asset(
+                  'assets/images/gua/${hex.name}.jpg',
+                  width: 180,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                ),
               ],
             ),
           ),

@@ -11,7 +11,7 @@
 [![Release](https://img.shields.io/github/v/release/jangviktor-web/nihaixia-app?style=for-the-badge&color=green&label=📥%20Download)](https://github.com/jangviktor-web/nihaixia-app/releases/latest)
 [![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev)
-[![Android](https://img.shields.io/badge/Android-6.0+-3DDC84?style=for-the-badge&logo=android&logoColor=white)]()
+[![Android](https://img.shields.io/badge/Android-7.0%2B-3DDC84?style=for-the-badge&logo=android&logoColor=white)]()
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue?style=for-the-badge)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/jangviktor-web/nihaixia-app?style=for-the-badge&color=yellow)](https://github.com/jangviktor-web/nihaixia-app/stargazers)
 
@@ -111,6 +111,16 @@
 
 从左到右：① **知识库新增「伤寒金匮」Tab** —— 伤寒论 380 篇（条文级 + 五经概述）与金匮要略 453 篇两个入口。 ② **伤寒论 · 阅读库** —— 23 大模块拆到条文级逐条排列（太阳·总纲 / 太阳病中风(桂枝汤证) / 太阳病伤寒(麻黄汤证) / 太阳病传经判断 ……）。 ③ **方剂「见于经典」** —— 以桂枝汤为例，分「伤寒论 / 金匮要略」两组列出**专门介绍该方**的条文，点按直达原文。 ④ **金匮要略 · 阅读库** —— 25 篇杂病按条文排列（藏府经络先后病、痉湿暍病、疟病 ……）。正文里的方剂名 / 药材名一点即跳对应详情，经方正文与方剂·药物首次**双向联动**。
 
+**v1.11.25 易经 64 卦卦象插画 · 中医时辰开穴四法 · 五运六气三图**
+
+![v1.11.25 易经 64 卦卦象插画](docs/images/screenshot_v1125_yijing_gua.webp)
+
+![v1.11.25 中医时辰开穴综合计算器](docs/images/screenshot_v1125_ziwuliuzhu.webp)
+
+![v1.11.25 五运六气三图](docs/images/screenshot_v1125_yunqi.webp)
+
+从左到右：① **易经 64 卦卦象插画** —— 每卦详情页卦名下方显示该卦的传统典故版画（乾为天 = 云中取鹿、地天泰 = 梯上取鹿），64 卦全覆盖，与卦名数据一一对应，缺图静默收起不影响页面。 ② **中医时辰开穴综合计算器 · 四法并排** —— 纳子法 / 纳甲法 / 灵龟八法 / 飞腾八法四个 Tab，点选或按「当前时间」即时给出日干支与时干支，并显示开穴（纳甲正开 · 太渊「肺经·输穴」、飞腾八法 · 后溪、灵龟八法 · 照海配列缺），附「返本还原」还原取原穴、干支→脏腑/经络对应歌诀、推算步骤与说明。 ③ **五运六气三图** —— **运气五行图**（十字五宫夹中央，司天/在泉与五行圆形联动）、**五运图**（单环十扇区，主运/客运分色并标出步界日期）、**六气图**（双环）；任选一天（如生日）三图随之重绘，当前步高亮，下方给出岁运（中运）病候、司天/在泉、客气加临与《内经》大论原文。
+
 </div>
 
 ---
@@ -152,12 +162,12 @@
 ## 📱 下载安装
 
 > **汉唐中医 nihaixia‑app**
-> 完全离线｜无需联网｜无需注册｜Android 6.0+
-> 通用版 APK 约 68MB，分架构版 25–28MB
+> 完全离线｜无需联网｜无需注册｜Android 7.0+
+> 通用版 APK 约 69MB，分架构版 27–30MB
 > 自 V1.11.9 起由 GitHub Actions 自动构建发布，推送 `v*` tag 即出包
-> **最后更新：2026-10-03（v1.11.24）**
+> **最后更新：2026-10-10（v1.11.25）**
 
-### 📥 方式一：下载预编译 APK（V1.11.24）
+### 📥 方式一：下载预编译 APK（V1.11.25）
 
 > ### ⚠️ 升级须知：签名密钥已统一，通常可直接覆盖安装
 >
@@ -174,23 +184,24 @@
 
 <div align="left">
 
-[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安装包‑3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.24/app-release.apk)
+[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安装包‑3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.25/app-release.apk)
 &nbsp;&nbsp;
-[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安装包‑0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.24/app-arm64-v8a-release.apk)
+[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安装包‑0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.25/app-arm64-v8a-release.apk)
 &nbsp;&nbsp;
-[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安装包‑9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.24/app-armeabi-v7a-release.apk)
+[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安装包‑9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.25/app-armeabi-v7a-release.apk)
 &nbsp;&nbsp;
-[![📦 x86_64(虚拟机)](https://img.shields.io/badge/📦%20x86_64(虚拟机)-安卓安装包‑1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.24/app-x86_64-release.apk)
+[![📦 x86_64(虚拟机)](https://img.shields.io/badge/📦%20x86_64(虚拟机)-安卓安装包‑1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.25/app-x86_64-release.apk)
 
 </div>
 
 | 安装包 | 大小 | 适用说明 |
 |---|---|---|
-| 通用版 `app-release.apk` | 67.9MB | 全CPU架构，绝大多数安卓设备直接选这个 |
-| arm64‑v8a `app‑arm64‑v8a‑release.apk` | 27.0MB | 新款64位安卓手机，体积更小 |
-| armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | 25.1MB | 老旧32位安卓设备 |
-| x86_64 `app‑x86_64‑release.apk` | 28.4MB | 安卓虚拟机、模拟器使用 |
+| 通用版 `app-release.apk` | 69.5MB | 全CPU架构，绝大多数安卓设备直接选这个 |
+| arm64‑v8a `app‑arm64‑v8a‑release.apk` | 28.2MB | 新款64位安卓手机，体积更小 |
+| armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | 26.4MB | 老旧32位安卓设备 |
+| x86_64 `app‑x86_64‑release.apk` | 29.7MB | 安卓虚拟机、模拟器使用 |
 
+> **V1.11.25 易经 64 卦卦象插画 · 中医时辰开穴四法 · 五运六气三图**：易经每卦详情页新增传统卦象典故插画（64 卦全覆盖，与卦名一一对应，缺图静默收起）；「中医时辰开穴综合计算器」四法并排（纳子法 / 纳甲法 / 灵龟八法 / 飞腾八法），即时给出日干支、时干支与开穴，附返本还原与推算步骤；新增五运六气三张可视化图（运气五行图 / 五运图 / 六气图），任选日期三图重绘、当前步高亮，并带出岁运病候、司天在泉与《内经》大论原文。详见 [Release Notes](release_notes/v1.11.25.md)。
 > **V1.11.24 穴位筛选新增六奇经分组 · 国标穴序**：经络筛选从 15 组扩到 21 组，新增冲脉 / 带脉 / 阴维脉 / 阳维脉 / 阴跷脉 / 阳跷脉；57 条交会穴补齐次键标注，多脉穴忠实出现在所有所属脉分组（公孙同时在「脾经」与「冲脉」），搜「冲脉」可直接命中其交会穴；随版带出十二正经 / 督任组内国标穴序、同名并列次键修复与「子宫」禁链。详见 [Release Notes](release_notes/v1.11.24.md)。
 > **V1.11.23 伤寒论 / 金匮要略 条文级阅读库 · 方剂⇄条文双向联动**：知识库新增「伤寒金匮」Tab，伤寒论 380 篇、金匮要略 453 篇由「一章一个大文件」拆到**条文级**逐条阅读；正文里的方剂名/药材名一点即跳详情，方剂详情「见于经典」反向列出**专门介绍该方**的伤寒论/金匮条文；同时修复 Markdown 阅读页正文链接点击无反应。详见 [Release Notes](release_notes/v1.11.23.md)。
 > **V1.11.22 黄历神诞检索 · 记梦/身兆记录 + 民俗命理工具集**：自 v1.11.19 起三重增强——工具箱入驻「袁天罡称骨 / 受生债查询 / 轩辕黄帝四季歌」三大民俗参考，并按中医/玄学区划清晰分区（修复日期选择器英文回退）；黄历与周公解梦/玉匣灵兆新增「神诞检索 / 记梦 / 身兆记录」随身入口，全部复用 Bookmark 体系、零新表零迁移。详见 [Release Notes](release_notes/v1.11.22.md)。

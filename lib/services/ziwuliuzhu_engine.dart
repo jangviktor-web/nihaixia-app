@@ -12,6 +12,9 @@
 /// 干支约定：甲=0 … 癸=9；子=0 … 亥=11。与 ziwu 同源。
 library;
 
+import 'package:ziwei_core/ziwei_core.dart' show Gender, Location, RatHourMode;
+import 'package:bazi_core/bazi_core.dart' as bazi;
+
 const List<String> _gan = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
 const List<String> _zhi = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
 
@@ -190,19 +193,36 @@ List<String>? feitengOpen(int hourGan) => _feiteng[_mod(hourGan, 10)];
 
 // ───────────────────────── 干支推算 ─────────────────────────
 
-/// 干支锚点：2000-01-01 为庚辰日（日干序 6、日支序 4）。
-/// 与屏幕现有 _baseGanIndex=6 一致，保证日干与既有脏腑/五门十变显示对齐。
-final DateTime _ganzhiBase = DateTime(2000, 1, 1);
-const int _baseGan = 6; // 庚
-const int _baseZhi = 4; // 辰
-
-/// 由日期推算日干支索引。
-/// [lateZi]：是否启用晚子时（23:00 后日干支按次日）；返回"有效日干支"（已推移）。
-({int dayGan, int dayZhi}) calcDayGanZhi(DateTime dt, {bool lateZi = true}) {
-  final dayDiff = (lateZi && (dt.hour >= 23)) ? 1 : 0;
-  final base = dt.add(Duration(days: dayDiff));
-  final diff = base.difference(_ganzhiBase).inDays;
-  return (dayGan: _mod(_baseGan + diff, 10), dayZhi: _mod(_baseZhi + diff, 12));
+/// ⓪ 干支唯一真相源 = App 八字核心 `bazi_core`（与八字排盘/农历/紫微同口径）。
+///
+/// ⛔ 禁止再自维护干支锚点！此处曾硬编码「2000-01-01 = 庚辰日」，
+/// 而真实为**戊午日**（差 22 天）→ 日干支系统性错误 → 纳甲/灵龟/飞腾全盘算错。
+/// 现在统一由 bazi_core 排盘取日柱，口径自动与八字模块对齐。
+///
+/// ⛔ 子时口径固定为「**23:00 换日**」（`RatHourMode.noSplit`），与参考站
+/// acuherb.xyz/ziwu「日以子时（23:00）起算」一致，UI 上不再提供早晚子时开关。
+///
+/// ⚠️ 这与 App **八字排盘**的晚子时口径（23:00 后日柱归当日、时柱借次日）不同，
+/// 是取穴模块的刻意选择：子午流注排十二时辰以子时为一日之始。
+/// 若将来要对齐八字口径，改这里一处即可，勿在 UI 层各 Tab 分散判断。
+///
+/// 真太阳时开启时，由引擎内部保证「先校正真太阳时、再判子时」的顺序。
+({int dayGan, int dayZhi}) calcDayGanZhi(
+  DateTime dt, {
+  double longitude = 120,
+  double latitude = 30,
+  bool useTrueSolarTime = false,
+}) {
+  final chart = bazi.BaziChart.createBySolarDate(
+    clockTime:
+        bazi.AstroDateTime(dt.year, dt.month, dt.day, dt.hour, dt.minute),
+    location: Location(longitude, latitude),
+    ratHourMode: RatHourMode.noSplit,
+    useTrueSolarTime: useTrueSolarTime,
+    gender: Gender.male,
+  );
+  final d = chart.bazi.day;
+  return (dayGan: d.gan.index, dayZhi: d.zhi.index);
 }
 
 /// 由日干支 + 时间推算时干支索引（子时=0）。
