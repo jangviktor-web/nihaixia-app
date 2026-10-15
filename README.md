@@ -8,6 +8,9 @@
 
 离线可用 · 数据全本地 · 无需注册 · 开箱即用
 
+<a href="https://trendshift.io/repositories/108262?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-108262" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/108262/daily?language=HTML" alt="jangviktor-web%2Fnihaixia | Trendshift" width="250" height="55"/></a>
+<a href="https://trendshift.io/repositories/108262?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-108262" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/108262/weekly?language=HTML" alt="jangviktor-web%2Fnihaixia | Trendshift" width="250" height="55"/></a>
+
 [![Release](https://img.shields.io/github/v/release/jangviktor-web/nihaixia-app?style=for-the-badge&color=green&label=📥%20Download)](https://github.com/jangviktor-web/nihaixia-app/releases/latest)
 [![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev)
