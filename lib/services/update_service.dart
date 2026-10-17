@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi' show Abi; // Abi 声明在 dart:ffi；本 SDK 的 dart:io 不导出它
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:crypto/crypto.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import '../data/database_helper.dart';
+
+// 原生文件能力（ABI 检测 / APK 下载落地 / 临时目录清理）经条件导入隔离：
+// Web 平台没有 dart:ffi 与 dart:io，直接 import 会导致编译失败。
+import 'native_files_stub.dart'
+    if (dart.library.io) 'native_files_io.dart';
 
 class UpdateInfo {
   final String version;
@@ -174,20 +175,10 @@ class UpdateService {
 
   /// 期望下载的资产名，按适配度排序：本机 ABI 对应的**分架构包** → **通用包**兜底。
   /// 分架构包约为通用包的一半（28MB vs 68MB），移动网络下差别明显。
+  ///
+  /// ABI 检测在 [androidAbiAssetName]（Web 上恒 null，自动回落通用包）。
   static List<String> preferredApkAssetNames() {
-    String? abiName;
-    try {
-      final abi = Abi.current();
-      if (abi == Abi.androidArm64) {
-        abiName = 'app-arm64-v8a-release.apk';
-      } else if (abi == Abi.androidArm) {
-        abiName = 'app-armeabi-v7a-release.apk';
-      } else if (abi == Abi.androidX64) {
-        abiName = 'app-x86_64-release.apk';
-      }
-    } catch (_) {
-      abiName = null; // 非 Android 平台（桌面 / 测试）没有 android ABI
-    }
+    final String? abiName = androidAbiAssetName();
     return [
       ?abiName, // 非 Android 平台为 null，自动省略
       'app-release.apk',
@@ -278,14 +269,14 @@ class UpdateService {
     );
   }
 
-  /// 下载APK文件。
+  /// 下载APK文件，返回**文件路径**（不再是 `File` 对象，以便 Web 平台编译）。
   /// 安全约束：仅允许本项目官方资产主机（GitHub 主源 + Gitee 镜像备用源），
   /// 禁用任何其他第三方镜像；下载完成后若提供 expectedSize / expectedSha256
   /// 则分别校验体积与哈希，不符即丢弃，杜绝投毒安装。
   ///
   /// [extraApkUrls] 为备用源（按可信度排序）。主源失败 —— 主机不受信任、连接失败、
   /// 非 200 或首字节超时 —— 时按顺序逐个尝试，每个候选都按同一份校验标准核对。
-  static Future<File?> downloadApk(
+  static Future<String?> downloadApk(
     String url,
     void Function(double progress)? onProgress, {
     int expectedSize = 0,
@@ -301,9 +292,9 @@ class UpdateService {
         debugPrint('跳过非受信任下载源: $candidate');
         continue;
       }
-      final f = await _tryDownload(candidate, onProgress,
+      final path = await _tryDownload(candidate, onProgress,
           expectedSize: expectedSize, expectedSha256: expectedSha256);
-      if (f != null) return f;
+      if (path != null) return path;
       debugPrint('下载源失败，尝试下一个: $candidate');
     }
     return null;
@@ -329,96 +320,20 @@ class UpdateService {
         (allowMirror && host == 'ghproxy.net');
   }
 
-  /// 单个下载源尝试：15s 内未收到首字节判定该镜像过慢，返回 null 交由上层切换
-  static Future<File?> _tryDownload(
+  /// 单个下载源尝试：15s 内未收到首字节判定该镜像过慢，返回 null 交由上层切换。
+  ///
+  /// 真正的落盘 / 首字节超时 / 体积与 SHA-256 校验都在 [downloadAndVerifyApk]
+  /// （平台相关实现，Web 上恒返回 null）。此处只做转发，返回**文件路径**。
+  static Future<String?> _tryDownload(
     String url,
     void Function(double progress)? onProgress, {
     int expectedSize = 0,
     String? expectedSha256,
-  }) async {
-    final client = http.Client();
-    File? file;
-    try {
-      final dir = await getTemporaryDirectory();
-      final filePath = '${dir.path}/nihaisha_update.apk';
-      file = File(filePath);
-      if (await file.exists()) await file.delete();
-
-      final request = http.Request('GET', Uri.parse(url));
-      final response = await client.send(request).timeout(
-        const Duration(minutes: 5),
+  }) =>
+      downloadAndVerifyApk(
+        url: url,
+        onProgress: onProgress ?? (_) {},
+        expectedSize: expectedSize,
+        expectedSha256: expectedSha256,
       );
-      if (response.statusCode != 200) {
-        debugPrint('下载失败[HTTP ${response.statusCode}]: $url');
-        return null;
-      }
-
-      final totalBytes = response.contentLength ?? 0;
-      int receivedBytes = 0;
-      final sink = file.openWrite();
-
-      final firstByteCompleter = Completer<void>();
-      late StreamSubscription<List<int>> subscription;
-      Timer? firstByteTimer;
-      var firstByteArrived = false;
-
-      firstByteTimer = Timer(const Duration(seconds: 15), () {
-        if (!firstByteArrived) {
-          debugPrint('镜像首字节超时，切换: $url');
-          firstByteCompleter.completeError(Exception('first_byte_timeout'));
-        }
-      });
-
-      subscription = response.stream.listen(
-        (chunk) {
-          if (!firstByteArrived) {
-            firstByteArrived = true;
-            firstByteTimer?.cancel();
-          }
-          sink.add(chunk);
-          receivedBytes += chunk.length;
-          if (totalBytes > 0 && onProgress != null) {
-            onProgress(receivedBytes / totalBytes);
-          }
-        },
-        onError: (e, _) => firstByteCompleter.completeError(e),
-        onDone: () => firstByteCompleter.complete(),
-        cancelOnError: true,
-      );
-
-      try {
-        await firstByteCompleter.future;
-      } catch (e) {
-        firstByteTimer.cancel();
-        await subscription.cancel();
-        await sink.close();
-        return null;
-      }
-      await sink.flush();
-      await sink.close();
-      if (expectedSize > 0) {
-        final actual = await file.length();
-        if (actual != expectedSize) {
-          debugPrint('APK 体积校验不符：期望 $expectedSize，实际 $actual，已丢弃');
-          await file.delete();
-          return null;
-        }
-      }
-      if (expectedSha256 != null) {
-        final bytes = await file.readAsBytes();
-        final digest = sha256.convert(bytes).toString().toLowerCase();
-        if (digest != expectedSha256.toLowerCase()) {
-          debugPrint('APK SHA-256 校验不符：期望 $expectedSha256，实际 $digest，已丢弃');
-          await file.delete();
-          return null;
-        }
-      }
-      return file;
-    } catch (e) {
-      debugPrint('下载APK失败[$url]: $e');
-      return null;
-    } finally {
-      client.close();
-    }
-  }
 }

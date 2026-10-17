@@ -115,6 +115,15 @@ const Map<String, String> wuXingKeMe = <String, String>{
   '木': '金', '火': '水', '土': '木', '金': '火', '水': '土',
 };
 
+/// 五行相生表（键生值）：木生火、火生土、土生金、金生水、水生木。
+///
+/// **仅用于平气判定**：不及年 `wuXingSheng[司天五行] == 岁运`，
+/// 即「不及之运得司天相生」，为平气（《素问·五常政大论》）。
+/// 请勿与 [wuXingKe] / [wuXingKeMe] 混用。
+const Map<String, String> wuXingSheng = <String, String>{
+  '木': '火', '火': '土', '土': '金', '金': '水', '水': '木',
+};
+
 /// 岁运病候文案（键 = 岁运五行 + 太过/不及）。
 const Map<String, String> yunBing = <String, String>{
   '木太过': '风气流行，脾土受邪：易病飧泄、肠鸣、胁痛、善怒、眩晕',
@@ -273,19 +282,23 @@ class YunQiYearData {
   /// 天符：岁运五行 == 司天五行。
   final bool isTianFu;
 
-  /// 太一天符：天符 + 岁会 + 年干非乙。
+  /// 太一天符：天符 + 岁会同时成立（经典四岁：戊午、乙酉、己丑、己未）。
   final bool isTaiYi;
 
   /// 岁会：岁运五行 == 年支五行，且年支不属于四仲（卯酉子午）。
   final bool isSuiHui;
 
-  /// 同天符：太过年 + 在泉与岁运同五行（相火在泉不计）。
+  /// 同天符：太过年 + 在泉与岁运同五行。
   final bool isTongTianFu;
 
-  /// 同岁会：不及年 + 在泉与岁运同五行（相火在泉不计）。
+  /// 同岁会：不及年 + 在泉与岁运同五行。
+  ///
+  /// 经典定义见「运气与在泉合其气化，阳年曰同天符，阴年曰同岁会」，
+  /// **无君火/相火例外**（2026-10-16 据《素问》体系原文与
+  /// wuyun-liuqi-skills 双源核定，删除了原先误加的「少阴君火在泉不计」）。
   final bool isTongSuiHui;
 
-  /// 平气：太过年「我克者 == 司天」或不及年「岁运 == 司天」。
+  /// 平气：太过年被司天所克、不及年与司天同气、或不及年得司天相生。
   final bool isPingQi;
 
   /// 主运五步（木火土金水，太少先阴后阳，固定）。
@@ -427,14 +440,17 @@ class YunQiEngine {
     final bool isTianFu = yun == siTianWx;
     final bool isSuiHui =
         yun == zhiWuXing[zhi] && !<int>[2, 5, 8, 11].contains(zhi);
-    final bool isTaiYi = isTianFu && isSuiHui && gan != 1;
-    final bool zaiQuanSame =
-        (yun == zaiQuanWx) && !(yun == '火' && zaiQuan == '少阴君火');
+    final bool isTaiYi = isTianFu && isSuiHui;
+    final bool zaiQuanSame = yun == zaiQuanWx;
     final bool isTongTianFu = taiGuo && zaiQuanSame;
     final bool isTongSuiHui = !taiGuo && zaiQuanSame;
-    // 平气：太过年用「克我者」表（参考站 ke 常量），不及年直接比五行。
+    // 平气三途径（《素问·五常政大论》）：
+    //   规则一（太过被抑）：太过年，克我者 == 司天 → 平气；
+    //   规则二A（不及同气）：不及年，岁运 == 司天 → 平气；
+    //   规则二B（不及得生）：不及年，司天五行生岁运 → 平气。
     final bool isPingQi = (taiGuo && wuXingKeMe[yun] == siTianWx) ||
-        (!taiGuo && yun == siTianWx);
+        (!taiGuo &&
+            (yun == siTianWx || wuXingSheng[siTianWx] == yun));
 
     // tags 顺序：太一天符 / 天符 / 岁会 / 同天符 / 同岁会 / 平气
     final List<String> tags = <String>[];

@@ -1,13 +1,13 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:open_filex/open_filex.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
 import '../data/settings_repository.dart';
 import '../data/database_helper.dart';
 import '../data/changelog_repository.dart';
 import '../services/update_service.dart';
+import '../services/native_files_stub.dart'
+    if (dart.library.io) '../services/native_files_io.dart';
 import '../theme/app_colors.dart';
 
 // ==================== 设置对话框 ====================
@@ -243,21 +243,8 @@ Future<void> exportBookmarks(BuildContext context) async {
 
 Future<void> clearAppCache(BuildContext context) async {
   try {
-    final tempDir = await getTemporaryDirectory();
-    int totalSize = 0;
-    if (await tempDir.exists()) {
-      final files = tempDir.listSync(recursive: true);
-      for (final file in files) {
-        if (file is File) {
-          totalSize += await file.length();
-        }
-      }
-      for (final file in files) {
-        try {
-          if (file is File) await file.delete();
-        } catch (_) {}
-      }
-    }
+    // 临时目录枚举与删除在 clearTempCacheBytes（Web 上恒返回 0）。
+    final totalSize = await clearTempCacheBytes();
     if (context.mounted) {
       final sizeMB = (totalSize / 1024 / 1024).toStringAsFixed(1);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -521,7 +508,8 @@ Future<void> downloadAndInstall(BuildContext context, UpdateInfo info) async {
 Future<void> installApk(dynamic file, BuildContext context) async {
   try {
     // 用 open_filex 触发系统安装器（自带 Android FileProvider，APK 位于缓存目录可被授权访问）
-    final result = await OpenFilex.open(file.path);
+    // file 为 downloadApk 返回的**路径字符串**。
+    final result = await OpenFilex.open(file as String);
     if (result.type != ResultType.done) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

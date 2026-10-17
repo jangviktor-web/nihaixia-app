@@ -57,16 +57,16 @@ class _UpdateDialogState extends State<UpdateDialog> {
     if (!mounted) return;
 
     if (file != null) {
-      // 安装APK
+      // 安装APK（file 为 downloadApk 返回的路径字符串）
       try {
         // 使用 MethodChannel 调用 Android 安装
         const channel = MethodChannel('com.nihaisha.app/install');
-        await channel.invokeMethod('installApk', {'path': file.path});
+        await channel.invokeMethod('installApk', {'path': file});
       } on PlatformException catch (e) {
         // 如果没有原生安装通道，提示用户手动安装
         setState(() {
           _isDownloading = false;
-          _downloadError = '下载完成，但无法自动安装: ${e.message}\n文件已保存到: ${file.path}';
+          _downloadError = '下载完成，但无法自动安装: ${e.message}\n文件已保存到: $file';
         });
       }
     } else {

@@ -284,6 +284,43 @@ void _drawCentered(
   tp.dispose();
 }
 
+/// 以 [c] 为圆心、[radius] 为半径、[angle] 为方位角绘制**沿切线方向**的文本。
+///
+/// 为什么必须旋转：六气图每个扇区纵向叠了 3 层字（外环客气 / 内环主气 / 步名），
+/// 若一律水平绘制，只有 12 点与 6 点方向靠纵向位移错开；到了 3 点与 9 点方向，
+/// 各层的半径差会退化成**横向**位移，而水平文字本就沿横向延展 —— 三行必然糊在一起
+/// （真机实测：左右两侧出现「客 少阳相火」压「主 阳明燥金」再压「五之气」）。
+/// 把文字随扇区中线旋转到切线方向后，各层只沿径向分离，永远不会互相叠压。
+void _drawTangential(
+  Canvas canvas,
+  String text,
+  Offset c,
+  double radius,
+  double angle,
+  double fontSize,
+  Color color, {
+  FontWeight weight = FontWeight.normal,
+}) {
+  final TextPainter tp = _tp(text, fontSize, color, weight: weight)..layout();
+  canvas.save();
+  canvas.translate(
+    c.dx + radius * math.cos(angle),
+    c.dy + radius * math.sin(angle),
+  );
+  // 切线方向 = 径向 + 90°；再归一到 (-90°, 90°] 保证文字不上下颠倒。
+  double rot = angle + math.pi / 2;
+  rot = math.atan2(math.sin(rot), math.cos(rot));
+  if (rot > math.pi / 2) {
+    rot -= math.pi;
+  } else if (rot < -math.pi / 2) {
+    rot += math.pi;
+  }
+  canvas.rotate(rot);
+  tp.paint(canvas, Offset(-tp.width / 2, -tp.height / 2));
+  canvas.restore();
+  tp.dispose();
+}
+
 /// 环形扇区（内半径 [rIn] → 外半径 [rOut]，角度 [start] 起顺时针扫 [sweep]）。
 Path _annulusSector(
   Offset c,
@@ -368,10 +405,12 @@ class _WuxingPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final double half = math.min(size.width, size.height) / 2;
-    final double r = half * 0.32; // 宫圆半径
+    // ⛔ 必须满足 2r < d：原参数 0.32 / 0.55 让相邻宫圆互相咬进去 16dp，
+    // 五个圆自己就先糊成一团了（2026-10-17 真机截图确认）。
+    final double r = half * 0.28; // 宫圆半径
     if (r < 6) return;
     final Offset c = Offset(size.width / 2, size.height / 2);
-    final double d = half * 0.55; // 宫心到中心的距离
+    final double d = half * 0.60; // 宫心到中心的距离
     final Brightness b = colors.brightness;
 
     // —— 先画十字连线（五宫关系骨架）——
@@ -387,8 +426,8 @@ class _WuxingPainter extends CustomPainter {
     canvas.drawLine(c + Offset(-d, 0), c + Offset(d, 0), linkPaint);
 
     final List<WuxingBadge> badges = buildWuxingBadges(data);
-    final double badgeFont = _fitFont('客运·太金', r * 2.0, r * 0.30, min: 8.0);
-    final double badgeH = badgeFont + 6.0;
+    // 徽章横向可用宽度 = 宫圆内接宽度：任何一枚都不会伸出本宫去压邻居的圆。
+    final double badgeMaxW = r * 2 * 0.90;
 
     for (int i = 0; i < wuxingPalaces.length; i++) {
       final String wx = wuxingPalaces[i];
@@ -410,28 +449,32 @@ class _WuxingPainter extends CustomPainter {
           ..strokeWidth = 1.6,
       );
 
-      // 宫名（五行大字）
+      // 宫名（五行大字）：上移，把下半圆整块让给徽章。
       _drawCentered(
         canvas,
         wx,
-        pc - Offset(0, r * 0.22),
-        r * 0.72,
+        pc - Offset(0, r * 0.42),
+        r * 0.66,
         _textOn(wxColor),
         weight: FontWeight.bold,
       );
 
-      // 该宫徽章（自宫心下方依次下叠，可溢出宫圆，参考站即如此）
+      // 该宫徽章：在五行字下方依次下叠，字号逐枚按「宫圆内接宽度」收敛。
+      // ⛔ 原来是固定 17.3 号字 + 可无限溢出宫圆，横向能长到 115dp 直接压到隔壁宫；
+      // 现在最多 3 枚（岁运/司天/主运同宫）也全部关在本宫圆内。
       final List<WuxingBadge> mine = <WuxingBadge>[
         for (final WuxingBadge g in badges)
           if (g.wx == wx) g,
       ];
-      double y = pc.dy + r * 0.30;
+      double y = pc.dy + r * 0.02;
       for (final WuxingBadge g in mine) {
-        final TextPainter tp = _tp(g.text, badgeFont, _textOn(wxColor),
-            weight: FontWeight.w600)
-          ..layout();
+        final double bf = _fitFont(g.text, badgeMaxW - 10, 8.5, min: 7.2);
+        final double h = bf + 4.2;
+        final TextPainter tp =
+            _tp(g.text, bf, _textOn(wxColor), weight: FontWeight.w600)
+              ..layout();
         final double w = tp.width + 10;
-        final Rect rect = Rect.fromLTWH(pc.dx - w / 2, y, w, badgeH);
+        final Rect rect = Rect.fromLTWH(pc.dx - w / 2, y, w, h);
         final RRect rr = RRect.fromRectAndRadius(rect, const Radius.circular(4));
         canvas.drawRRect(rr, Paint()..color = wxColor.withValues(alpha: 0.96));
         canvas.drawRRect(
@@ -441,9 +484,9 @@ class _WuxingPainter extends CustomPainter {
             ..style = PaintingStyle.stroke
             ..strokeWidth = 0.8,
         );
-        tp.paint(canvas, Offset(rect.left + 5, y + (badgeH - tp.height) / 2));
+        tp.paint(canvas, Offset(rect.left + 5, y + (h - tp.height) / 2));
         tp.dispose();
-        y += badgeH + 3;
+        y += h + 2.0;
       }
     }
   }
@@ -675,10 +718,12 @@ class _LiuqiPainter extends CustomPainter {
       final String keLabel = '客 $ke';
       final double keFont =
           _fitFont(keLabel, 2 * keR * math.sin(sweep / 2) * 0.92, 10.5);
-      _drawCentered(
+      _drawTangential(
         canvas,
         keLabel,
-        c + Offset(keR * math.cos(mid), keR * math.sin(mid)),
+        c,
+        keR,
+        mid,
         keFont,
         hi ? colors.onPrimaryContainer : _textOn(keWx),
         weight: hi ? FontWeight.bold : FontWeight.w600,
@@ -698,18 +743,22 @@ class _LiuqiPainter extends CustomPainter {
       final String zhuLabel = '主 ${zq.qi}';
       final double zhuFont =
           _fitFont(zhuLabel, 2 * line1R * math.sin(sweep / 2) * 0.92, 10.0);
-      _drawCentered(
+      _drawTangential(
         canvas,
         zhuLabel,
-        c + Offset(line1R * math.cos(mid), line1R * math.sin(mid)),
+        c,
+        line1R,
+        mid,
         zhuFont,
         hi ? colors.onPrimaryContainer : _textOn(zhuWx),
         weight: hi ? FontWeight.bold : FontWeight.w600,
       );
-      _drawCentered(
+      _drawTangential(
         canvas,
         zq.name,
-        c + Offset(line2R * math.cos(mid), line2R * math.sin(mid)),
+        c,
+        line2R,
+        mid,
         8.5,
         hi ? colors.onPrimaryContainer : colors.onSurfaceVariant,
       );

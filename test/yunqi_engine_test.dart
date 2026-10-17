@@ -284,6 +284,9 @@ void main() {
       const Map<String, String> keMe = <String, String>{
         '木': '金', '火': '水', '土': '木', '金': '火', '水': '土',
       };
+      const Map<String, String> sheng = <String, String>{
+        '木': '火', '火': '土', '土': '金', '金': '水', '水': '木',
+      };
       const Map<String, String> qiWx = <String, String>{
         '厥阴风木': '木', '少阴君火': '火', '太阴湿土': '土',
         '少阳相火': '火', '阳明燥金': '金', '太阳寒水': '水',
@@ -298,14 +301,15 @@ void main() {
         final bool isTF = d.yun == stWx;
         final bool isSH =
             d.yun == zhiWx[d.zhi] && !<int>[2, 5, 8, 11].contains(d.zhi);
-        final bool isTY = isTF && isSH && d.gan != 1;
+        final bool isTY = isTF && isSH;
         final String zqWx = qiWx[d.zaiQuan]!;
-        final bool zqSame =
-            (d.yun == zqWx) && !(d.yun == '火' && d.zaiQuan == '少阴君火');
+        // 经典定义「运气与在泉合其气化，阳年同天符、阴年同岁会」，无君火/相火例外
+        // （2026-10-16 双源核定后删除原先误加的「少阴君火在泉不计」）。
+        final bool zqSame = d.yun == zqWx;
         final bool isTTF = tg && zqSame;
         final bool isTSH = !tg && zqSame;
-        final bool isPQ =
-            (tg && keMe[d.yun] == stWx) || (!tg && d.yun == stWx);
+        final bool isPQ = (tg && keMe[d.yun] == stWx) ||
+            (!tg && (d.yun == stWx || sheng[stWx] == d.yun));
 
         expect(d.taiGuo, tg, reason: '$y taiGuo');
         expect(d.isTianFu, isTF, reason: '$y isTianFu');
@@ -326,6 +330,22 @@ void main() {
             tags.isNotEmpty ? tags.join('·') : (tg ? '岁运太过' : '岁运不及');
         expect(d.cat, cat, reason: '$y cat');
       }
+    });
+
+    test('B9 平气规则二B / 太一天符乙酉 回归锁定', () {
+      // 规则二B：不及之运得司天相生（土生金 / 金生水 / 木生火）
+      for (final int y in <int>[1985, 2011, 2013, 2015, 2041, 2043]) {
+        final YunQiYearData d = YunQiEngine.yearGanzhi(y);
+        expect(d.taiGuo, isFalse, reason: '$y 应为不及年');
+        expect(d.isPingQi, isTrue, reason: '$y 应为平气（不及得司天相生）');
+        expect(d.cat, contains('平气'), reason: '$y cat 应含平气');
+      }
+      // 太一天符：乙酉 2005（天符 + 岁会 同时成立）
+      final YunQiYearData d2005 = YunQiEngine.yearGanzhi(2005);
+      expect(d2005.isTianFu && d2005.isSuiHui, isTrue,
+          reason: '2005 应同为天符、岁会');
+      expect(d2005.isTaiYi, isTrue, reason: '2005 乙酉应为太一天符');
+      expect(d2005.cat, '太一天符·天符·岁会·平气', reason: '2005 cat');
     });
   });
 
