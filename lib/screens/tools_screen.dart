@@ -18,6 +18,9 @@ import 'settings_screen.dart';
 import 'chenggu_bone_screen.dart';
 import 'shousheng_debt_screen.dart';
 import 'huangdi_siji_screen.dart';
+import 'sanshan_lingqian_screen.dart';
+import 'xiaoliuren_screen.dart';
+import 'meihua_screen.dart';
 import '../theme/app_colors.dart';
 import '../widgets/zone_section.dart';
 
@@ -199,6 +202,39 @@ class ToolsScreen extends StatelessWidget {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const GuanshaScreen()),
+                ),
+              ),
+              const SizedBox(height: 12),
+              _ToolCard(
+                icon: Icons.auto_awesome_mosaic,
+                title: '三山国王灵签',
+                subtitle: '祖庙 92 签 · 求签/签谱 · 民俗文化参考',
+                color: Theme.of(context).colorScheme.tertiary,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SanshanLingqianScreen()),
+                ),
+              ),
+              const SizedBox(height: 12),
+              _ToolCard(
+                icon: Icons.timelapse,
+                title: '小六壬',
+                subtitle: '时间起课 · 六宫顺数 · 民俗文化参考',
+                color: Theme.of(context).colorScheme.tertiary,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const XiaoliurenScreen()),
+                ),
+              ),
+              const SizedBox(height: 12),
+              _ToolCard(
+                icon: Icons.filter_vintage,
+                title: '梅花易数',
+                subtitle: '时间/数字/随机起卦 · 体用生克 · 民俗文化参考',
+                color: Theme.of(context).colorScheme.tertiary,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const MeihuaScreen()),
                 ),
               ),
               const SizedBox(height: 12),

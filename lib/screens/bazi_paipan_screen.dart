@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:share_plus/share_plus.dart';
+import '../utils/chart_export.dart';
 
 import 'package:nihaisha_app/services/bazi_service.dart';
 import 'package:nihaisha_app/data/settings_repository.dart';
@@ -145,6 +146,53 @@ class _BaZiPaipanScreenState extends State<BaZiPaipanScreen> {
   }
 
   /// 拼接纯文本排盘结果（复制 / 分享共用）。
+  /// 存图 / 分享长图：内容与结果区同源（去掉交互按钮）。
+  void _exportImage() {
+    final r = _result;
+    if (r == null) return;
+    final stamp = '$_year${_month.toString().padLeft(2, '0')}'
+        '${_day.toString().padLeft(2, '0')}';
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChartExportPage(
+          title: '八字排盘',
+          filename: 'bazi_$stamp.png',
+          content: _buildExportContent(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExportContent() {
+    final r = _result!;
+    final cs = Theme.of(context).colorScheme;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('汉唐中医 · 八字排盘',
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 4),
+        Text('出生农历：${r.lunarText}',
+            style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
+        const SizedBox(height: 12),
+        BaZiFourPillarsCard(result: r),
+        const SizedBox(height: 12),
+        if (_fortune != null) BaZiFortuneCard(fortune: _fortune!),
+        if (_fortune != null) const SizedBox(height: 12),
+        BaZiRelationsCard(result: r),
+        const SizedBox(height: 12),
+        BaZiTwelveStagesCard(result: r),
+        const SizedBox(height: 12),
+        BaZiAnalysisCard(analysis: r.analysis),
+        const SizedBox(height: 12),
+        Text('仅供学习参考，非医疗诊断建议',
+            style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant)),
+      ],
+    );
+  }
+
   String _buildShareText() {
     final r = _result!;
     final pillars = [r.bazi.year, r.bazi.month, r.bazi.day, r.bazi.time];
@@ -242,6 +290,11 @@ class _BaZiPaipanScreenState extends State<BaZiPaipanScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('八字排盘'), actions: [
     if (_result != null) ...[
+      IconButton(
+        icon: const Icon(Icons.image_outlined),
+        tooltip: '存图 / 分享长图',
+        onPressed: _exportImage,
+      ),
       IconButton(
         icon: const Icon(Icons.copy_outlined),
         tooltip: '复制排盘文本',

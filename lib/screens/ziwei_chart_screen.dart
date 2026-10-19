@@ -6,6 +6,7 @@ import 'package:nihaisha_app/services/ziwei_interpretation.dart';
 import 'package:nihaisha_app/services/city_location_service.dart';
 import 'ziwei_reference_screen.dart';
 import 'ziwei_doc_screen.dart';
+import '../utils/chart_export.dart';
 import 'ziwei_cases_list_screen.dart';
 import '../data/ziwei_case_data.dart';
 import '../data/saved_chart_repository.dart';
@@ -280,6 +281,12 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
       appBar: AppBar(
         title: const Text('紫微斗数排盘'),
         actions: [
+          if (_chart != null && !_calculating)
+            IconButton(
+              tooltip: '存图 / 分享长图',
+              icon: const Icon(Icons.image_outlined),
+              onPressed: _exportImage,
+            ),
           IconButton(
             tooltip: '十四主星 / 十二宫位 / 倪师论命理',
             icon: const Icon(Icons.menu_book_outlined),
@@ -363,6 +370,46 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
           ],
         ],
       ),
+    );
+  }
+
+  /// 存图 / 分享长图：命盘 + 概览 + 大限表。
+  void _exportImage() {
+    final c = _chart;
+    if (c == null) return;
+    final cs = Theme.of(context).colorScheme;
+    final stamp = DateTime.now().toString().substring(0, 10).replaceAll('-', '');
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChartExportPage(
+          title: '紫微斗数排盘',
+          filename: 'ziwei_$stamp.png',
+          content: _buildExportContent(cs, c),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExportContent(ColorScheme cs, ZiweiChart chart) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('汉唐中医 · 紫微斗数排盘',
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 12),
+        _buildSummaryCard(cs, chart),
+        const SizedBox(height: 12),
+        _buildPlate(cs, chart, _flowMark,
+            flowMonthMingIndex: _flowMonthMark?.mingIndex,
+            flowDayMingIndex: _flowDayMark?.mingIndex),
+        const SizedBox(height: 12),
+        _buildDecadeList(cs, chart),
+        const SizedBox(height: 16),
+        Text('民俗文化参考，非医疗诊断用途',
+            style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant)),
+      ],
     );
   }
 

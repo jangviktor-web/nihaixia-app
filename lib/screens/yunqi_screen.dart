@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../services/yunqi_engine.dart';
 import 'yunqi_charts.dart';
+import '../utils/chart_export.dart';
 
 /// 「五运六气推算」界面。
 ///
@@ -46,6 +47,66 @@ class _YunQiScreenState extends State<YunQiScreen> {
     setState(() => _selectedDate = DateTime.now());
   }
 
+  /// 存图 / 分享长图：年运总览 + 三图 + 关键病候卡。
+  void _exportImage() {
+    final cs = Theme.of(context).colorScheme;
+    final calendarYear = YunQiEngine.calendarYearOf(_selectedDate);
+    final data = YunQiEngine.yearGanzhi(calendarYear);
+    final stamp = '${_selectedDate.year}'
+        '${_selectedDate.month.toString().padLeft(2, '0')}'
+        '${_selectedDate.day.toString().padLeft(2, '0')}';
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChartExportPage(
+          title: '五运六气推算',
+          filename: 'yunqi_$stamp.png',
+          content: _buildExportContent(cs, data),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExportContent(ColorScheme cs, YunQiYearData data) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        Text('汉唐中医 · 五运六气推算',
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 4),
+        Text(
+            '${_selectedDate.year}-${_selectedDate.month.toString().padLeft(2, '0')}'
+            '-${_selectedDate.day.toString().padLeft(2, '0')}',
+            style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
+        const SizedBox(height: 12),
+        _YearSummaryCard(data: data, color: cs),
+        const SizedBox(height: 12),
+        _ChartsTabs(selectedDate: _selectedDate),
+        const SizedBox(height: 12),
+        _InfoCard(
+          icon: Icons.wb_sunny_outlined,
+          title: '岁运（中运）· 病候',
+          content: data.yunBingText.isEmpty
+              ? '${data.yun}运${data.taiGuo ? '太过' : '不及'}（病候文案缺失）'
+              : data.yunBingText,
+          highlight: '${data.yun}运${data.taiGuo ? '太过' : '不及'}',
+          color: cs,
+        ),
+        const SizedBox(height: 12),
+        _InfoCard(
+          icon: Icons.thermostat_outlined,
+          title: '司天 · 病候',
+          content: data.siTianBingText.isEmpty ? '（病候文案缺失）' : data.siTianBingText,
+          color: cs,
+        ),
+        const SizedBox(height: 16),
+        Text('仅供学习参考，非医疗诊断建议',
+            style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant)),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final ColorScheme cs = Theme.of(context).colorScheme;
@@ -66,7 +127,16 @@ class _YunQiScreenState extends State<YunQiScreen> {
     final bool isCurrentYear = calendarYear == nowCalYear;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('五运六气推算')),
+      appBar: AppBar(
+        title: const Text('五运六气推算'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.image_outlined),
+            tooltip: '存图 / 分享长图',
+            onPressed: _exportImage,
+          ),
+        ],
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: <Widget>[
