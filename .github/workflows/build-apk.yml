@@ -111,11 +111,14 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
-      - name: Build APK (universal)
+      # 一次构建即出全部 4 包（1 通用 + 3 分架构）：android/app/build.gradle.kts 里
+      # splits { abi { isEnable = true; isUniversalApk = true } } 已配置，与本机
+      # `flutter build apk --release` 行为一致——四包 versionCode 均等于 pubspec 的 +N。
+      # ⛔ 不要再加 `--split-per-abi`：那会走 Flutter 插件另一条逻辑
+      # （FlutterPlugin.kt: output.versionCodeOverride = abiVersionCode * 1000 + versionCode），
+      # 分架构包被加上 1000/2000/3000 偏移（如 4032→5032/6032/8032），与本地包不一致。
+      - name: Build APK (universal + per-ABI splits)
         run: flutter build apk --release
-
-      - name: Build APK (split per ABI)
-        run: flutter build apk --release --split-per-abi
 
       # 把 4 个包的 SHA-256 追加进 Release 正文。App 内更新按「资产名 → 哈希」校验
       # 下载到的包，这是走第三方镜像 / 代理时唯一的密码学防线。格式：每行 `<hex>  <文件名>`。
