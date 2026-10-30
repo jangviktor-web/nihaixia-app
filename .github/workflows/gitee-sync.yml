@@ -1,20 +1,20 @@
 # 用 H-TWINKLE/sync-action 把 GitHub Release 里缺的 APK 补传到 Gitee 发行版。
 #
-# ⚠️ 实测（2026-10-30）：GitHub 托管 runner 上，Gitee 的 attach_files 上传会挂死——
-#   旧 curl 方案 900s 收到 0 字节、release2gitee 60s 超时、sync-action 20 分钟仍在传；
-#   同一时间 Gitee API 的读/建发行版都正常。结论：Gitee 限制了境外机房的上传，
-#   代码层面无解，只能在「国内网络」里跑。
+# ⚠️ 实测（2026-10-30，GitHub 托管 runner）：Gitee 不拒绝上传，但把境外机房限速到
+#   ~18 KB/s——sync-action 20 分钟只传到 33MB 的 74%；旧 curl 900s 连响应头都没等到。
+#   4 个包共 176MB，按此速率约 2.7 小时，所以本 workflow 的超时放宽到 4 小时，
+#   并允许失败后重跑（已挂上的附件会跳过）。
 #
-# 三种用法：
-#   1. 国内自建 runner：仓库 Settings → Actions → Runners 注册后，设置仓库变量
-#      GITEE_RUNNER=<runner 标签>，再到 Actions 页手动触发本 workflow；
-#   2. 没有自建 runner：在本机 Git Bash 跑 `bash tool/sync_gitee.sh`（release2gitee 单文件）；
-#   3. 本机想用 sync-action 的脚本：见仓库 tool/ 下的说明，效果相同。
+# 想几分钟就传完：在本机 Git Bash 跑 `bash tool/sync_gitee.sh`（release2gitee 单文件，
+# 国内直连 Gitee）。有国内自建 runner 时，设置仓库变量 GITEE_RUNNER=<runner 标签> 即可跑本流程。
 #
-# 手动触发：Actions → Sync Release to Gitee → Run workflow
+# 触发：发版 workflow 成功后自动跑，也可在 Actions 页手动触发。
 name: Sync Release to Gitee
 
 on:
+  workflow_run:
+    workflows: ["Build APK & Release"]
+    types: [completed]
   workflow_dispatch:
 
 permissions:
@@ -28,8 +28,9 @@ jobs:
   sync:
     # 国内自建 runner 请把仓库变量 GITEE_RUNNER 设成它的标签；默认 GitHub 托管 runner
     # 会在上传步骤超时（见文件头说明）。
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ${{ vars.GITEE_RUNNER || 'ubuntu-latest' }}
-    timeout-minutes: 30
+    timeout-minutes: 260
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
@@ -38,7 +39,7 @@ jobs:
 
       - name: sync-action（补传缺失附件）
         id: sync
-        timeout-minutes: 20
+        timeout-minutes: 240
         continue-on-error: true
         uses: H-TWINKLE/sync-action@0d8e95d78481848a0f3f95a737aef45437102269
         with:
