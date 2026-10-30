@@ -82,3 +82,7 @@ apkpure_submission/
 
 # Python 字节码缓存
 __pycache__/
+
+# Gitee 同步（本机）：release2gitee 缓存与令牌
+tool/.bin/
+tool/.gitee.env

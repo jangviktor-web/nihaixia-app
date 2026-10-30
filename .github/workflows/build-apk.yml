@@ -14,8 +14,8 @@
 #   KEY_PASSWORD         : 密钥密码
 #   生成示例：base64 -w0 your.keystore.jks
 #
-# Gitee 同步不在本流程内：Release 发布成功后由 gitee-sync.yml 用 release2gitee 拉取 4 个 APK
-# （在 runner 里直接 curl 上传 Gitee 会挂死，见 gitee-sync.yml 顶部说明）
+# Gitee 同步不在 CI 里：runner 到 Gitee 的附件上传会挂死（API 读写正常）。
+# 发版后在本机 Git Bash 跑 `bash tool/sync_gitee.sh`，用 release2gitee 传 4 个 APK。
 
 name: Build APK & Release
 
