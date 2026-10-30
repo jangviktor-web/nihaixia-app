@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="720" viewBox="0 0 1600 720" role="img" aria-label="汉唐中医 · 六经辨证经方助手">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1a1007"/>
+      <stop offset="0.45" stop-color="#2e1d0d"/>
+      <stop offset="1" stop-color="#4a2e13"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0" r="0.7">
+      <stop offset="0" stop-color="#d69648" stop-opacity="0.38"/>
+      <stop offset="1" stop-color="#d69648" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="1" cy="1" r="0.6">
+      <stop offset="0" stop-color="#8b4513" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#8b4513" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="1.2" fill="#ffffff" fill-opacity="0.05"/>
+    </pattern>
+    <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="1"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <mask id="fadeMask">
+      <rect width="1600" height="720" fill="url(#fade)"/>
+    </mask>
+  </defs>
+
+  <rect width="1600" height="720" fill="url(#bg)"/>
+  <rect width="1600" height="720" fill="url(#dots)" mask="url(#fadeMask)"/>
+  <ellipse cx="800" cy="-40" rx="820" ry="480" fill="url(#glow)"/>
+  <ellipse cx="1600" cy="760" rx="700" ry="460" fill="url(#glow2)"/>
+
+  <!-- 印 -->
+  <rect x="744" y="70" width="112" height="112" rx="28" fill="#2b1a0c" stroke="#c99353" stroke-opacity="0.55"/>
+  <rect x="758" y="84" width="84" height="84" rx="18" fill="none" stroke="#c99353" stroke-opacity="0.35"/>
+  <text x="800" y="151" text-anchor="middle" font-family="'KaiTi','STKaiti','SimSun',serif" font-size="58" fill="#f3c680">汉</text>
+
+  <!-- eyebrow -->
+  <rect x="588" y="212" width="424" height="46" rx="23" fill="#ffffff" fill-opacity="0.04" stroke="#e5c08d" stroke-opacity="0.32"/>
+  <text x="800" y="242" text-anchor="middle" font-family="'Microsoft YaHei','PingFang SC',sans-serif" font-size="19" letter-spacing="5" fill="#e5c08d">基于倪海厦《人纪》体系</text>
+
+  <!-- title -->
+  <text x="800" y="382" text-anchor="middle" font-family="'KaiTi','STKaiti','SimSun',serif" font-size="96" letter-spacing="16" fill="#f7ecdd">汉唐中医</text>
+
+  <line x1="762" y1="418" x2="838" y2="418" stroke="#c99353" stroke-width="2" stroke-opacity="0.7"/>
+
+  <text x="800" y="472" text-anchor="middle" font-family="'Microsoft YaHei','PingFang SC',sans-serif" font-size="26" letter-spacing="3" fill="#dcc7a8">六经辨证 · 经方本草 · 针灸取穴 · 经典原文</text>
+
+  <!-- stats -->
+  <g font-family="'Microsoft YaHei','PingFang SC',sans-serif" text-anchor="middle">
+    <text x="280" y="565" font-size="40" fill="#f3c680">322</text>
+    <text x="280" y="596" font-size="17" letter-spacing="2" fill="#c8b295">经方方剂</text>
+    <text x="540" y="565" font-size="40" fill="#f3c680">465</text>
+    <text x="540" y="596" font-size="17" letter-spacing="2" fill="#c8b295">本草药味</text>
+    <text x="800" y="565" font-size="40" fill="#f3c680">408</text>
+    <text x="800" y="596" font-size="17" letter-spacing="2" fill="#c8b295">针灸穴位</text>
+    <text x="1060" y="565" font-size="40" fill="#f3c680">1257</text>
+    <text x="1060" y="596" font-size="17" letter-spacing="2" fill="#c8b295">倪师医案</text>
+    <text x="1320" y="565" font-size="40" fill="#f3c680">1327</text>
+    <text x="1320" y="596" font-size="17" letter-spacing="2" fill="#c8b295">经典条目</text>
+  </g>
+
+  <text x="800" y="658" text-anchor="middle" font-family="'Microsoft YaHei','PingFang SC',sans-serif" font-size="17" letter-spacing="4" fill="#a8907a">离线可用 · 完全免费 · 无广告 · 数据不出本机</text>
+</svg>

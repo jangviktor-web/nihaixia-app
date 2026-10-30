@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="470" viewBox="0 0 1600 470" role="img" aria-label="汉唐中医核心能力一览">
+  <defs>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#c99353"/>
+      <stop offset="1" stop-color="#8b4513"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1600" height="470" fill="#faf7f1"/>
+
+  <text x="64" y="98" font-family="'KaiTi','STKaiti','SimSun',serif" font-size="44" letter-spacing="6" fill="#241a12">核心能力</text>
+  <text x="1536" y="96" text-anchor="end" font-family="'Microsoft YaHei','PingFang SC',sans-serif" font-size="18" letter-spacing="1" fill="#6b5d4f">问诊 → 辨证 → 开方 → 查证，一条链路都在本机完成</text>
+
+  <!-- card 1 -->
+  <g>
+    <rect x="64" y="150" width="224" height="270" rx="18" fill="#fffdf8" stroke="#e6dccb"/>
+    <rect x="64" y="150" width="224" height="5" rx="2.5" fill="url(#accent)" opacity="0.85"/>
+    <text x="88" y="245" font-family="'Microsoft YaHei',sans-serif" font-size="42" font-weight="700" fill="#8b4513">6</text>
+    <text x="88" y="288" font-family="'Microsoft YaHei',sans-serif" font-size="18" font-weight="600" fill="#241a12">六经辨证</text>
+    <text x="88" y="324" font-family="'Microsoft YaHei',sans-serif" font-size="13" fill="#6b5d4f">引导式问诊自动判经</text>
+    <text x="88" y="348" font-family="'Microsoft YaHei',sans-serif" font-size="13" fill="#6b5d4f">识别合病并病与传变</text>
+  </g>
+
+  <!-- card 2 -->
+  <g>
+    <rect x="308" y="150" width="224" height="270" rx="18" fill="#fffdf8" stroke="#e6dccb"/>
+    <rect x="308" y="150" width="224" height="5" rx="2.5" fill="url(#accent)" opacity="0.85"/>
+    <text x="332" y="245" font-family="'Microsoft YaHei',sans-serif" font-size="42" font-weight="700" fill="#8b4513">322</text>
+    <text x="332" y="288" font-family="'Microsoft YaHei',sans-serif" font-size="18" font-weight="600" fill="#241a12">经方方剂</text>
+    <text x="332" y="324" font-family="'Microsoft YaHei',sans-serif" font-size="13" fill="#6b5d4f">组成 / 剂量 / 煎服 / 禁忌</text>
+    <text x="332" y="348" font-family="'Microsoft YaHei',sans-serif" font-size="13" fill="#6b5d4f">按兼证推荐经方加减</text>
+  </g>
+
+  <!-- card 3 -->
+  <g>
+    <rect x="552" y="150" width="224" height="270" rx="18" fill="#fffdf8" stroke="#e6dccb"/>
+    <rect x="552" y="150" width="224" height="5" rx="2.5" fill="url(#accent)" opacity="0.85"/>
+    <text x="576" y="245" font-family="'Microsoft YaHei',sans-serif" font-size="42" font-weight="700" fill="#8b4513">465</text>
+    <text x="576" y="288" font-family="'Microsoft YaHei',sans-serif" font-size="18" font-weight="600" fill="#241a12">本草药味</text>
+    <text x="576" y="324" font-family="'Microsoft YaHei',sans-serif" font-size="13" fill="#6b5d4f">性味归经检索与别名归一</text>
+    <text x="576" y="348" font-family="'Microsoft YaHei',sans-serif" font-size="13" fill="#6b5d4f">附子按倪师体系生炮分列</text>
+  </g>
+
+  <!-- card 4 -->
+  <g>
+    <rect x="796" y="150" width="224" height="270" rx="18" fill="#fffdf8" stroke="#e6dccb"/>
+    <rect x="796" y="150" width="224" height="5" rx="2.5" fill="url(#accent)" opacity="0.85"/>
+    <text x="820" y="245" font-family="'Microsoft YaHei',sans-serif" font-size="42" font-weight="700" fill="#8b4513">408</text>
+    <text x="820" y="288" font-family="'Microsoft YaHei',sans-serif" font-size="18" font-weight="600" fill="#241a12">针灸穴位</text>
+    <text x="820" y="324" font-family="'Microsoft YaHei',sans-serif" font-size="13" fill="#6b5d4f">十四经 + 经络图 + 取穴四法</text>
+    <text x="820" y="348" font-family="'Microsoft YaHei',sans-serif" font-size="13" fill="#6b5d4f">耳穴国标 93 穴</text>
+  </g>
+
+  <!-- card 5 -->
+  <g>
+    <rect x="1040" y="150" width="224" height="270" rx="18" fill="#fffdf8" stroke="#e6dccb"/>
+    <rect x="1040" y="150" width="224" height="5" rx="2.5" fill="url(#accent)" opacity="0.85"/>
+    <text x="1064" y="245" font-family="'Microsoft YaHei',sans-serif" font-size="42" font-weight="700" fill="#8b4513">1327</text>
+    <text x="1064" y="288" font-family="'Microsoft YaHei',sans-serif" font-size="18" font-weight="600" fill="#241a12">经典条目</text>
+    <text x="1064" y="324" font-family="'Microsoft YaHei',sans-serif" font-size="13" fill="#6b5d4f">伤寒 / 金匮 / 内经讲稿</text>
+    <text x="1064" y="348" font-family="'Microsoft YaHei',sans-serif" font-size="13" fill="#6b5d4f">灵枢 / 针灸大成原文</text>
+  </g>
+
+  <!-- card 6 -->
+  <g>
+    <rect x="1284" y="150" width="224" height="270" rx="18" fill="#fffdf8" stroke="#e6dccb"/>
+    <rect x="1284" y="150" width="224" height="5" rx="2.5" fill="url(#accent)" opacity="0.85"/>
+    <text x="1308" y="245" font-family="'Microsoft YaHei',sans-serif" font-size="42" font-weight="700" fill="#8b4513">1257</text>
+    <text x="1308" y="288" font-family="'Microsoft YaHei',sans-serif" font-size="18" font-weight="600" fill="#241a12">倪师医案</text>
+    <text x="1308" y="324" font-family="'Microsoft YaHei',sans-serif" font-size="13" fill="#6b5d4f">按方剂 / 病名 / 年份筛选</text>
+    <text x="1308" y="348" font-family="'Microsoft YaHei',sans-serif" font-size="13" fill="#6b5d4f">方剂与医案双向联动</text>
+  </g>
+</svg>
