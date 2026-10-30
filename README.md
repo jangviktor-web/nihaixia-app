@@ -159,6 +159,7 @@
 | 🔧 **经方剂量换算** | 古代度量衡（两/升/铢）→ 现代克数 | — |
 | 📖 **黄帝内经** | 脏象 12 卡 + 望诊（五色/眼诊）+ 脉诊（平人/死脉）+ 73 篇阅读库 + 全文搜索；新增「结构化条目检索」52 条 / 10 维度，原文·出处·白话·倪师解读四字段分离，支持六字段搜索 + 维度 + 标签交叉检索 | 73 篇 + 52 条 |
 | 📜 **伤寒论 · 金匮要略 条文库** | 伤寒论 380 篇 + 金匮要略 453 篇拆到条文级逐条阅读；正文方剂/药材名一点即跳详情，方剂详情「见于经典」反向标注出处条文 | 833 条 |
+| 📜 **古籍原文** | 《灵枢》82 章 + 明代《针灸大成》339 章原文，章节目录可搜正文，方剂/药名可点跳；全局搜索「经典」分组贯通讲稿与原文 | 421 章 |
 | 📚 **倪师医案库** | 1257 例检索 + 闭门课重症临床模块，医案 ↔ 方剂双向联动 | 1257 例 |
 | 🎲 **六爻铜钱摇卦** | 三枚铜钱逐爻摇卦，多动爻自动变卦 | 民俗参考 |
 | 📜 **易经六十四卦** | 时间/数字/手选起卦，解本卦·动爻·变卦·互卦，集成人间道 64 卦讲课文稿 | 64 卦 |
@@ -181,11 +182,11 @@
 
 > **汉唐中医 nihaixia‑app**
 > 完全离线｜无需联网｜无需注册｜Android 7.0+
-> 通用版 APK 约 69MB，分架构版 27–30MB
+> 通用版 APK 约 77MB，分架构版 31–35MB
 > 自 V1.11.9 起由 GitHub Actions 自动构建发布，推送 `v*` tag 即出包
-> **最后更新：2026-10-19（v1.11.27）**
+> **最后更新：2026-10-30（v1.11.28）**
 
-### 📥 方式一：下载预编译 APK（V1.11.27）
+### 📥 方式一：下载预编译 APK（V1.11.28）
 
 > ### ⚠️ 升级须知：签名密钥已统一，通常可直接覆盖安装
 >
@@ -202,23 +203,25 @@
 
 <div align="left">
 
-[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安装包‑3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.27/app-release.apk)
+[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安装包‑3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.28/app-release.apk)
 &nbsp;&nbsp;
-[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安装包‑0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.27/app-arm64-v8a-release.apk)
+[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安装包‑0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.28/app-arm64-v8a-release.apk)
 &nbsp;&nbsp;
-[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安装包‑9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.27/app-armeabi-v7a-release.apk)
+[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安装包‑9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.28/app-armeabi-v7a-release.apk)
 &nbsp;&nbsp;
-[![📦 x86_64(虚拟机)](https://img.shields.io/badge/📦%20x86_64(虚拟机)-安卓安装包‑1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.27/app-x86_64-release.apk)
+[![📦 x86_64(虚拟机)](https://img.shields.io/badge/📦%20x86_64(虚拟机)-安卓安装包‑1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.28/app-x86_64-release.apk)
 
 </div>
 
 | 安装包 | 大小 | 适用说明 |
 |---|---|---|
-| 通用版 `app-release.apk` | 69.5MB | 全CPU架构，绝大多数安卓设备直接选这个 |
-| arm64‑v8a `app‑arm64‑v8a‑release.apk` | 28.2MB | 新款64位安卓手机，体积更小 |
-| armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | 26.4MB | 老旧32位安卓设备 |
-| x86_64 `app‑x86_64‑release.apk` | 29.7MB | 安卓虚拟机、模拟器使用 |
+| 通用版 `app-release.apk` | 77.4MB | 全CPU架构，绝大多数安卓设备直接选这个 |
+| arm64‑v8a `app‑arm64‑v8a‑release.apk` | 33.3MB | 新款64位安卓手机，体积更小 |
+| armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | 31.5MB | 老旧32位安卓设备 |
+| x86_64 `app‑x86_64‑release.apk` | 34.8MB | 安卓虚拟机、模拟器使用 |
 
+> **V1.11.28 字号 200% · 古籍原文（灵枢/针灸大成）· 经典全文搜索 · 流畅度优化**：字号上限由 150% 提到 200%，并修复「只有首页跟随字号」——详情页、设置页与弹窗现在都跟随；新增「古籍原文」书库：《灵枢》82 章 + 明·杨继洲《针灸大成》339 章，章节目录可读可搜，正文方剂/药名可点跳详情；全局搜索新增「经典」分组，贯通伤寒/金匮/内经讲稿与古书原文共 1327 条，点击直达篇章；修掉浅色模式下搜索结果标题几乎看不清的对比度问题；知识库切 tab 与长列表滚动做了保活与过滤缓存优化。详见 [Release Notes](release_notes/v1.11.28.md)。
+> 
 > **V1.11.26 十四经循行穴位图 · 耳穴国标库 · 五运六气三图排版修复**：针灸页新增「经络图」——十二正经 + 任督二脉共 14 张循行穴位图，双指放大 6 倍看清穴名；耳穴全面接入 GB/T 13734-2008《耳穴名称与定位》——93 穴国标库（10 分区筛选 + 穴名/拼音/代码搜索，18 条旧称自动归并国标名）+ 附录 A 标准定位图（正面 84 穴 / 背面 9 穴）直接嵌包；针灸处方数据扩容至 384 条（合并倪师 BBXX 病症配穴 +127 条）；五运六气三图排版修复（六气图三层文字切向排布不再叠压、五行图宫圆重新配比）与引擎经典裁决修正 7 年。详见 [Release Notes](release_notes/v1.11.26.md)。
 > 
 > **V1.11.25 易经 64 卦卦象插画 · 中医时辰开穴四法 · 五运六气三图**：易经每卦详情页新增传统卦象典故插画（64 卦全覆盖，与卦名一一对应，缺图静默收起）；「中医时辰开穴综合计算器」四法并排（纳子法 / 纳甲法 / 灵龟八法 / 飞腾八法），即时给出日干支、时干支与开穴，附返本还原与推算步骤；新增五运六气三张可视化图（运气五行图 / 五运图 / 六气图），任选日期三图重绘、当前步高亮，并带出岁运病候、司天在泉与《内经》大论原文。详见 [Release Notes](release_notes/v1.11.25.md)。
@@ -490,7 +493,7 @@ lib/
 诊断历史、收藏等数据全部存储于本机 SQLite，不上传任何服务器，隐私不出设备。
 
 **Q3：应该下载哪个 APK？**
-绝大多数现代手机选 **arm64-v8a**（23.9MB，体积最小）；拿不准就选 **通用版**（64.0MB，兼容所有架构）；老旧 32 位设备选 armeabi-v7a（21.8MB）；模拟器选 x86_64（25.5MB）。
+绝大多数现代手机选 **arm64-v8a**（33.3MB，体积最小）；拿不准就选 **通用版**（77.4MB，兼容所有架构）；老旧 32 位设备选 armeabi-v7a（31.5MB）；模拟器选 x86_64（34.8MB）。
 
 **Q4：安装时提示「应用未安装」/「安装失败」怎么办？**
 多半是**签名不一致**导致的覆盖安装被拒。V1.11.9 的云端构建已与本地 V1.11.8 共用同一套签名（已配置为 GitHub Secrets），正常情况下可直接覆盖安装。若仍被拒绝，通常是您手上的是签名密钥配置完成**之前**下载的早期 V1.11.9 调试签名版——解决办法：**先卸载旧版本，再安装新版本**（卸载前记得在「设置」中导出收藏与诊断历史）。详见上方「⚠️ 升级须知」。
