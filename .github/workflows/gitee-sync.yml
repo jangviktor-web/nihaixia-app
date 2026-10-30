@@ -1,0 +1,124 @@
+# 把 GitHub Release（含 4 个 APK）同步到 Gitee 发行版。
+#
+# 为什么单独一个 workflow：
+#   1. 原方案在 build-apk.yml 里用 curl 传 token 到 query 参数上传，GitHub runner → Gitee
+#      的上传请求会挂死（900s 0 字节），还把整个构建 job 拖到 45 分钟并标红；
+#   2. 改用 hepengju/release2gitee（Authorization: token 头上传、幂等、带进度），
+#      等 Build APK & Release 成功后再跑，避免 Release 还没生成就同步。
+#
+# 手动补传：Actions → Sync Release to Gitee → Run workflow，tag 留空即同步最新版。
+name: Sync Release to Gitee
+
+on:
+  workflow_run:
+    workflows: ["Build APK & Release"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: '要同步的 tag（留空=最新 Release）'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gitee-sync-${{ github.event.workflow_run.head_branch || inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+      GITHUB_OWNER: jangviktor-web
+      GITHUB_REPO: nihaixia-app
+      GITEE_OWNER: jangviktor
+      GITEE_REPO: nihaixia-app
+      API: https://gitee.com/api/v5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 未配置 GITEE_TOKEN 则跳过
+        id: guard
+        run: |
+          if [ -z "$GITEE_TOKEN" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::warning::未配置 GITEE_TOKEN，跳过 Gitee 同步"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 解析 tag
+        if: steps.guard.outputs.skip != 'true'
+        id: tag
+        run: |
+          TAG='${{ inputs.tag }}'
+          if [ -z "$TAG" ]; then TAG='${{ github.event.workflow_run.head_branch }}'; fi
+          if [ -z "$TAG" ]; then TAG=$(gh release view --repo "$GITHUB_OWNER/$GITHUB_REPO" --json tagName -q .tagName); fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+          echo "同步 tag: $TAG"
+
+      - name: 安装 release2gitee
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          gh release download v1.2.2 -R hepengju/release2gitee -p '*linux*' -D /tmp/r2g --clobber
+          tar -xzf /tmp/r2g/*.tar.gz -C /tmp/r2g
+          BIN=$(find /tmp/r2g -type f -name 'release2gitee*' ! -name '*.tar.gz' | head -1)
+          chmod +x "$BIN"
+          echo "R2G_BIN=$BIN" >> "$GITHUB_ENV"
+
+      - name: 清掉同名空发行版（让 release2gitee 重新创建并上传附件）
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          CODE=$(curl -s -o /tmp/rel.json -w '%{http_code}' \
+            -H "Authorization: token $GITEE_TOKEN" \
+            "$API/repos/$GITEE_OWNER/$GITEE_REPO/releases/tags/$TAG?access_token=$GITEE_TOKEN")
+          if [ "$CODE" = "404" ]; then
+            echo "Gitee 上还没有 $TAG，交给 release2gitee 创建"
+            exit 0
+          fi
+          [ "$CODE" = "200" ] || { echo "查询发行版失败 HTTP $CODE"; cat /tmp/rel.json; exit 1; }
+          ID=$(jq -r '.id' /tmp/rel.json)
+          N=$(jq '[.assets[]? | select(.browser_download_url | contains("/releases/download/"))] | length' /tmp/rel.json)
+          echo "现有发行版 id=$ID，已挂 APK 数=$N"
+          if [ "$N" -lt 4 ]; then
+            curl -s -X DELETE -H "Authorization: token $GITEE_TOKEN" \
+              "$API/repos/$GITEE_OWNER/$GITEE_REPO/releases/$ID?access_token=$GITEE_TOKEN" > /dev/null
+            echo "附件不足 4 个，已删除该发行版，稍后重建"
+          else
+            echo "附件已齐全，交给 release2gitee 幂等跳过"
+          fi
+
+      - name: release2gitee 同步
+        if: steps.guard.outputs.skip != 'true'
+        env:
+          GITEE_REPO: nihaixia-app
+          release2gitee__github_latest_release_count: '3'
+          # 999 = 不清理历史版本的附件（默认 3 会删旧 APK）
+          release2gitee__gitee_retain_release_attach_files_count: '999'
+          release2gitee__release_body_url_replace: 'true'
+        run: |
+          "$R2G_BIN" --github-owner "$GITHUB_OWNER" --github-repo "$GITHUB_REPO" \
+            --gitee-owner "$GITEE_OWNER" --gitee-repo "$GITEE_REPO" -v
+
+      - name: 核验 4 个 APK 已挂到 Gitee
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          CODE=$(curl -s -o /tmp/check.json -w '%{http_code}' \
+            -H "Authorization: token $GITEE_TOKEN" \
+            "$API/repos/$GITEE_OWNER/$GITEE_REPO/releases/tags/$TAG?access_token=$GITEE_TOKEN")
+          [ "$CODE" = "200" ] || { echo "发行版不存在 HTTP $CODE"; exit 1; }
+          NAMES=$(jq -r '[.assets[]? | select(.browser_download_url | contains("/releases/download/")) | .name] | sort | join(",")' /tmp/check.json)
+          echo "Gitee 已挂附件：$NAMES"
+          for f in app-release.apk app-arm64-v8a-release.apk app-armeabi-v7a-release.apk app-x86_64-release.apk; do
+            echo "$NAMES" | grep -q "$f" || { echo "::error::缺少 $f"; exit 1; }
+          done
+          echo "✅ 4 个 APK 全部同步完成"

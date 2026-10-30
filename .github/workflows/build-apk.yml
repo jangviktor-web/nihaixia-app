@@ -14,8 +14,8 @@
 #   KEY_PASSWORD         : 密钥密码
 #   生成示例：base64 -w0 your.keystore.jks
 #
-# 可选：配置 GITEE_TOKEN 后，本流程会在 GitHub Release 发布后自动同步到 Gitee
-#       （推 tag/master + 建同名发行版 + 上传同样 4 个 APK，见 .github/scripts/gitee_release.py）
+# Gitee 同步不在本流程内：Release 发布成功后由 gitee-sync.yml 用 release2gitee 拉取 4 个 APK
+# （在 runner 里直接 curl 上传 Gitee 会挂死，见 gitee-sync.yml 顶部说明）
 
 name: Build APK & Release
 
@@ -148,10 +148,3 @@ jobs:
           files: |
             build/app/outputs/flutter-apk/*.apk
 
-      # 同步到 Gitee：推 tag/master + 建或更新同名发行版 + 上传同样 4 个 APK。
-      # 未配置 GITEE_TOKEN 时脚本自行跳过（不会让本次 release 变红）。
-      # 配置：Gitee 私人令牌（勾 projects）→ GitHub 仓库 Settings → Secrets → 新建 GITEE_TOKEN
-      - name: Mirror tag & release to Gitee
-        env:
-          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
-        run: python3 .github/scripts/gitee_release.py
