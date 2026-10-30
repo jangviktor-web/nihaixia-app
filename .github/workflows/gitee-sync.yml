@@ -1,0 +1,55 @@
+# 用 H-TWINKLE/sync-action 把 GitHub Release 的 APK 同步到 Gitee 发行版。
+#
+# 背景：本仓库 runner → Gitee 的 attach_files 上传多次挂死（curl 900s 0 字节、
+# release2gitee 60s 超时），但 API 读写正常。sync-action 用 requests 表单上传、
+# 可续传到「已存在但缺附件」的发行版，先手动跑通验证；跑通后再挂到发版后自动执行。
+#
+# 手动触发：Actions → Sync Release to Gitee → Run workflow
+name: Sync Release to Gitee
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gitee-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: sync-action（上传缺的附件）
+        id: sync
+        timeout-minutes: 20
+        continue-on-error: true
+        uses: H-TWINKLE/sync-action@0d8e95d78481848a0f3f95a737aef45437102269
+        with:
+          gitee_owner: jangviktor
+          gitee_repo: nihaixia-app
+          gitee_token: ${{ secrets.GITEE_TOKEN }}
+          github_owner: jangviktor-web
+          github_repo: nihaixia-app
+          gitee_upload_retry_times: '2'
+          debug: 'true'
+
+      - name: 核验 Gitee 上的 APK
+        if: always()
+        env:
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+        run: |
+          TAG=$(gh release view --repo jangviktor-web/nihaixia-app --json tagName -q .tagName)
+          CODE=$(curl -s -o /tmp/rel.json -w '%{http_code}' \
+            "https://gitee.com/api/v5/repos/jangviktor/nihaixia-app/releases/tags/$TAG?access_token=$GITEE_TOKEN")
+          echo "HTTP $CODE"
+          [ "$CODE" = "200" ] || exit 1
+          jq -r '[.assets[]? | .name] | join(", ")' /tmp/rel.json
+          N=$(jq '[.assets[]? | select(.browser_download_url | contains("/releases/download/"))] | length' /tmp/rel.json)
+          echo "APK 附件数：$N"
+          [ "$N" -ge 4 ] || { echo "::error::附件不足 4 个"; exit 1; }
+          echo "✅ 同步完成"
