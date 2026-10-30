@@ -1,6 +1,8 @@
 <div align="center">
 
-<img width="100%" src="docs/images/readme_banner.svg" alt="汉唐中医 · 六经辨证经方助手">
+<img width="120" src="docs/images/logo.webp" alt="汉唐中医 Logo">
+
+# 汉唐中医 · 倪海厦六经辨证中医诊断助手
 
 **一款离线优先、完全免费的中医经方学习与辅助诊断 App，忠实还原倪海厦人纪体系**
 
