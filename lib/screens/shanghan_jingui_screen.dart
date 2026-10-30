@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../data/classic_lecture_data.dart';
 import 'classic_library_screen.dart';
+import 'guji_library_screen.dart';
 
 /// 《人纪·伤寒论》《人纪·金匮要略》阅读库入口（知识库第 7 个 Tab 内容）。
 /// 两本各一张入口卡 → [ClassicLibraryScreen]（全文阅读 + 方剂/药材自动链接）。
@@ -62,6 +63,12 @@ class ShangHanJinguiScreen extends StatelessWidget {
               lectures: kJinguiLectures,
               footer: '出处：《人纪·金匮要略》倪师讲稿 · 传统文化参考',
             )),
+          ),
+          _BookCard(
+            icon: Icons.auto_stories_outlined,
+            title: '古籍原文',
+            subtitle: '灵枢 · 针灸大成（原文，非讲稿）',
+            onTap: () => _open(context, const GujiLibraryScreen()),
           ),
         ],
       ),

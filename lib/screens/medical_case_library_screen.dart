@@ -177,19 +177,32 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
     return m?.group(0);
   }
 
+  // 过滤结果缓存：1257 例的全量过滤 + 排序原本每次 build 都跑一遍，
+  // 切筛选、输入、收藏刷新时都会卡一下。
+  String? _filterKey;
+  List<MedicalCase> _filterCache = const [];
+
   /// 搜索 + 年份 + 治法(方剂名) + 疾病(西医病名) + 视图（收藏/最近浏览）AND 组合；
   /// 收藏按收藏时间倒序、最近浏览按浏览时间倒序（委托 filterMedicalCases）。
-  List<MedicalCase> get _filtered => filterMedicalCases(
-        _all,
-        query: _query,
-        year: _year,
-        formula: _formula,
-        disease: _disease,
-        view: _view,
-        favSeqs: _favSeqs,
-        recentSeqs: _recentSeqs,
-        yearOf: _yearOf,
-      );
+  List<MedicalCase> get _filtered {
+    final key = '$_query|$_year|$_formula|$_disease|$_view|'
+        '${_favSeqs.join(',')}|${_recentSeqs.join(',')}';
+    if (key == _filterKey) return _filterCache;
+    final list = filterMedicalCases(
+      _all,
+      query: _query,
+      year: _year,
+      formula: _formula,
+      disease: _disease,
+      view: _view,
+      favSeqs: _favSeqs,
+      recentSeqs: _recentSeqs,
+      yearOf: _yearOf,
+    );
+    _filterKey = key;
+    _filterCache = list;
+    return list;
+  }
 
   Future<void> _openInsights() async {
     if (_all.isEmpty) return;

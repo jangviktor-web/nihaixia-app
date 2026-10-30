@@ -30,17 +30,25 @@ String decodeMarkdownHref(String href) {
 /// [HerbDetailScreen]（实现闭门课正文↔方剂/药材双向联动）。
 class MarkdownDocScreen extends StatefulWidget {
   final String title;
+
+  /// 资产路径（从 assets 读取正文）。
   final String asset;
+
+  /// 直接传入的 Markdown 正文（古籍原文按章节解析后走这里，无需一章一个资产）。
+  /// 与 [asset] 二选一，[content] 优先。
+  final String? content;
+
   final String? footer;
   final bool linkFormulas;
 
   const MarkdownDocScreen({
     super.key,
     required this.title,
-    required this.asset,
+    this.asset = '',
+    this.content,
     this.footer,
     this.linkFormulas = false,
-  });
+  }) : assert(asset != '' || content != null, 'asset 与 content 至少要提供一个');
 
   @override
   State<MarkdownDocScreen> createState() => _MarkdownDocScreenState();
@@ -145,7 +153,7 @@ class _MarkdownDocScreenState extends State<MarkdownDocScreen> {
   }
 
   Future<String> _load() async {
-    final raw = await rootBundle.loadString(widget.asset);
+    final raw = widget.content ?? await rootBundle.loadString(widget.asset);
     return widget.linkFormulas ? _injectLinks(raw) : raw;
   }
 
@@ -247,7 +255,7 @@ class _MarkdownDocScreenState extends State<MarkdownDocScreen> {
                   child: Text(
                     widget.footer ?? '倪师《天纪》原文 · 传统文化参考 · 非医疗建议',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 10, color: cs.outline),
+                    style: TextStyle(fontSize: 10, color: cs.onSurfaceVariant),
                   ),
                 ),
               ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../data/neijing_data.dart';
+import '../widgets/keep_alive_tab.dart';
+import 'guji_library_screen.dart';
 import 'neijing_entries_screen.dart';
 import 'neijing_library_screen.dart';
 import 'neijing_search_screen.dart';
@@ -56,6 +58,18 @@ class NeijingKnowledgeScreen extends StatelessWidget {
                 );
               },
             ),
+            IconButton(
+              tooltip: '古籍原文（灵枢 / 针灸大成）',
+              icon: const Icon(Icons.auto_stories_outlined),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const GujiLibraryScreen(),
+                  ),
+                );
+              },
+            ),
           ],
           bottom: const TabBar(
             tabs: [
@@ -67,9 +81,9 @@ class NeijingKnowledgeScreen extends StatelessWidget {
         ),
         body: const TabBarView(
           children: [
-            _ZangFuTab(),
-            _WangZhenTab(),
-            _MaiZhenTab(),
+            KeepAliveTab(child: _ZangFuTab()),
+            KeepAliveTab(child: _WangZhenTab()),
+            KeepAliveTab(child: _MaiZhenTab()),
           ],
         ),
       ),

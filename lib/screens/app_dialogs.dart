@@ -9,6 +9,7 @@ import '../services/update_service.dart';
 import '../services/native_files_stub.dart'
     if (dart.library.io) '../services/native_files_io.dart';
 import '../theme/app_colors.dart';
+import '../widgets/text_scale_slider.dart';
 
 // ==================== 设置对话框 ====================
 // 从 chat_screen.dart 抽离（P2-4）：外观/诊断/数据管理/关于/更新 设置弹窗。
@@ -47,21 +48,9 @@ void showSettingsDialog(
               const SizedBox(height: 16),
               const Text('字体大小', style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              Row(
-                children: [
-                  const Text('小', style: TextStyle(fontSize: 12)),
-                  Expanded(
-                    child: Slider(
-                      value: settings.textScaleFactor,
-                      min: 0.8,
-                      max: 1.5,
-                      divisions: 14,
-                      label: '${(settings.textScaleFactor * 100).round()}%',
-                      onChanged: (v) => settings.setTextScaleFactor(v),
-                    ),
-                  ),
-                  const Text('大', style: TextStyle(fontSize: 16)),
-                ],
+              TextScaleSlider(
+                value: settings.textScaleFactor,
+                onChanged: settings.setTextScaleFactor,
               ),
 
               const Divider(height: 24),

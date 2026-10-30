@@ -9,6 +9,7 @@ import '../models/acupoint_detail.dart';
 import 'acupoint_detail_screen.dart';
 import '../theme/app_colors.dart';
 import '../widgets/ear_points_map.dart';
+import '../widgets/keep_alive_tab.dart';
 import '../widgets/meridian_map.dart';
 
 class _NoteSection {
@@ -58,7 +59,18 @@ class _AcupunctureScreenState extends State<AcupunctureScreen>
     super.dispose();
   }
 
+  // 过滤结果缓存：每次 setState（输入、切筛选项、展开卡片）都会重建整页，
+  // 全表扫描没必要重复跑。
+  String? _entriesKey;
+  List<AcupointEntry> _entriesCache = const [];
+  String? _penetrationKey;
+  List<PenetrationEntry> _penetrationCache = const [];
+  String? _acupointsKey;
+  List<AcupointDetail> _acupointsCache = const [];
+
   List<AcupointEntry> _getEntries() {
+    final key = '$_searchQuery|$_selectedCategory';
+    if (key == _entriesKey) return _entriesCache;
     final List<AcupointEntry> all;
     if (_searchQuery.isNotEmpty) {
       all = AcupunctureRepository.search(_searchQuery);
@@ -66,11 +78,18 @@ class _AcupunctureScreenState extends State<AcupunctureScreen>
       all = AcupunctureRepository.getByCategory(_selectedCategory);
     }
     // 隐藏「有病症名但无穴位内容」的空条目（如尾椎骨痛、牙周病）
-    return all.where((e) => e.acupoints.isNotEmpty).toList();
+    final list = all.where((e) => e.acupoints.isNotEmpty).toList();
+    _entriesKey = key;
+    _entriesCache = list;
+    return list;
   }
 
   List<PenetrationEntry> _getPenetrations() {
-    return AcupunctureRepository.searchPenetrations(_penetrationSearch);
+    if (_penetrationKey == _penetrationSearch) return _penetrationCache;
+    final list = AcupunctureRepository.searchPenetrations(_penetrationSearch);
+    _penetrationKey = _penetrationSearch;
+    _penetrationCache = list;
+    return list;
   }
 
   @override
@@ -93,10 +112,10 @@ class _AcupunctureScreenState extends State<AcupunctureScreen>
           child: TabBarView(
             controller: _tabController,
             children: [
-              _buildEntriesTab(),
-              _buildPenetrationTab(),
-              _buildAcupointBrowseTab(),
-              _buildEarPointsTab(),
+              KeepAliveTab(child: _buildEntriesTab()),
+              KeepAliveTab(child: _buildPenetrationTab()),
+              KeepAliveTab(child: _buildAcupointBrowseTab()),
+              KeepAliveTab(child: _buildEarPointsTab()),
             ],
           ),
         ),
@@ -470,10 +489,14 @@ class _AcupunctureScreenState extends State<AcupunctureScreen>
   }
 
   List<AcupointDetail> _getAcupoints() {
-    if (_acupointSearch.isNotEmpty) {
-      return AcupointRepository.search(_acupointSearch);
-    }
-    return AcupointRepository.getByMeridian(_selectedMeridian);
+    final key = '$_acupointSearch|$_selectedMeridian';
+    if (key == _acupointsKey) return _acupointsCache;
+    final list = _acupointSearch.isNotEmpty
+        ? AcupointRepository.search(_acupointSearch)
+        : AcupointRepository.getByMeridian(_selectedMeridian);
+    _acupointsKey = key;
+    _acupointsCache = list;
+    return list;
   }
 
   Widget _buildAcupointBrowseTab() {

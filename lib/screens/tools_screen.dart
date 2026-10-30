@@ -8,6 +8,7 @@ import 'yijing_screen.dart';
 import 'bazi_paipan_screen.dart';
 import 'critical_illness_list_screen.dart';
 import 'medical_case_library_screen.dart';
+import 'guji_library_screen.dart';
 import 'daily_almanac_screen.dart';
 import 'yuxiaji_omen_screen.dart';
 import 'dream_screen.dart';
@@ -108,6 +109,17 @@ class ToolsScreen extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (_) => const MedicalCaseLibraryScreen(),
                   ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              _ToolCard(
+                icon: Icons.auto_stories_outlined,
+                title: '古籍原文',
+                subtitle: '灵枢 / 针灸大成 · 原文全文阅读',
+                color: Theme.of(context).colorScheme.secondary,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const GujiLibraryScreen()),
                 ),
               ),
               const SizedBox(height: 12),

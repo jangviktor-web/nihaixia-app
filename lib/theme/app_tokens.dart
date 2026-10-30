@@ -39,3 +39,19 @@ class AppType {
   static const double caption = 12;
   static const double micro = 11;
 }
+
+/// 全局字号缩放档位（设置页 / 快捷外观弹窗 / 持久化校验的唯一来源）。
+///
+/// 上限 [max] = 200%：对应 issue #4「设置中字体大小调节调大至百分之二百以上」。
+/// 每档 [step] = 5%，故 [divisions] = (max - min) / step = 24 档。
+class AppTextScale {
+  static const double min = 0.8;
+  static const double max = 2.0;
+  static const double defaultScale = 1.0;
+  static const double step = 0.05;
+  static const int divisions = 24;
+
+  /// 把任意来源的缩放值收敛到合法区间（老版本 DB 遗留值、越界输入都经此兜底）。
+  static double normalize(double value) =>
+      value.clamp(min, max).toDouble();
+}

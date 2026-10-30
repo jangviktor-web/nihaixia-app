@@ -47,18 +47,26 @@ void main() {
     expect(tester.takeException(), isNull);
 
     await openDialog(tester);
+    // 文件夹名带时间戳：测试库是真实文件，重复跑会不断累积记录
+    final folderName = '复验文件夹${DateTime.now().microsecondsSinceEpoch}';
     await tester.enterText(
       find.descendant(
           of: find.byType(AlertDialog), matching: find.byType(TextField)),
-      '复验文件夹',
+      folderName,
     );
-    // _submit 内 await insertFolder（真实 DB IO）后才 nav.pop()，
-    // 在真实事件循环中触发并放行。
+    // _submit 内 await insertFolder（真实 DB IO）后才 nav.pop()。
+    // 首次建库 / 冷启动时固定等 800ms 不够（曾稳定失败），改为限时轮询等弹窗消失。
     await tester.runAsync(() async {
       await tester.tap(find.text('创建'));
       await tester.pump();
-      await Future<void>.delayed(const Duration(milliseconds: 800));
     });
+    for (var i = 0; i < 50; i++) {
+      if (find.byType(AlertDialog).evaluate().isEmpty) break;
+      await tester.runAsync(() async {
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      });
+      await tester.pump();
+    }
     await tester.pumpAndSettle();
 
     expect(find.byType(AlertDialog), findsNothing, reason: '创建后弹窗应关闭');

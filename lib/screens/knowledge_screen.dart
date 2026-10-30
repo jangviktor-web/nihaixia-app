@@ -4,6 +4,7 @@ import '../data/herb_repository.dart';
 import '../engine/diagnostic_rules.dart';
 import '../models/formula.dart';
 import '../models/herb.dart';
+import '../widgets/keep_alive_tab.dart';
 import '../widgets/meridian_icons.dart';
 import '../widgets/solar_term_card.dart';
 import '../theme/app_colors.dart';
@@ -65,13 +66,13 @@ class _KnowledgeScreenState extends State<KnowledgeScreen>
             child: TabBarView(
               controller: _tabController,
               children: [
-                _MeridianTab(),
-                _FormulaTab(),
-                _HerbTab(),
-                const AcupunctureScreen(),
-                const NeijingKnowledgeScreen(),
-                const ShangHanJinguiScreen(),
-                const SearchTab(),
+                KeepAliveTab(child: _MeridianTab()),
+                KeepAliveTab(child: _FormulaTab()),
+                KeepAliveTab(child: _HerbTab()),
+                const KeepAliveTab(child: AcupunctureScreen()),
+                const KeepAliveTab(child: NeijingKnowledgeScreen()),
+                const KeepAliveTab(child: ShangHanJinguiScreen()),
+                const KeepAliveTab(child: SearchTab()),
               ],
             ),
           ),
@@ -252,7 +253,15 @@ class _FormulaTabState extends State<_FormulaTab> {
     '祛风剂', '安神剂', '止血剂', '驱虫剂',
   ];
 
+  // 过滤结果缓存：build 会在主题切换、tab 重入、每次输入时被调用，
+  // 257 首方剂 × 四个字段 toLowerCase 全表扫描没必要反复做。
+  String? _cacheKey;
+  List<Formula> _cachedList = const [];
+
   List<Formula> _getFormulas() {
+    final key = '$_selectedMeridian|$_selectedCategory|$_searchQuery';
+    if (key == _cacheKey) return _cachedList;
+
     var list = FormulaRepository.getAll();
     if (_selectedMeridian != '全部') {
       list = list.where((f) => f.meridian.contains(_selectedMeridian)).toList();
@@ -269,6 +278,8 @@ class _FormulaTabState extends State<_FormulaTab> {
           f.keywords.any((k) => k.toLowerCase().contains(q))
       ).toList();
     }
+    _cacheKey = key;
+    _cachedList = list;
     return list;
   }
 
@@ -414,7 +425,15 @@ class _HerbTabState extends State<_HerbTab> {
     '全部', '肺', '心', '肝', '脾', '肾', '胃', '胆', '大肠', '小肠', '膀胱', '三焦'
   ];
 
+  // 同 _FormulaTab：过滤结果缓存，避免每次 build 重跑全表匹配。
+  String? _cacheKey;
+  List<Herb> _cachedList = const [];
+
   List<Herb> _getHerbs() {
+    final key =
+        '$_selectedCategory|$_selectedNature|$_selectedMeridian|$_searchQuery';
+    if (key == _cacheKey) return _cachedList;
+
     var herbs = HerbRepository.getAll();
     if (_selectedCategory != '全部') {
       herbs = herbs.where((h) => h.category == _selectedCategory).toList();
@@ -431,6 +450,8 @@ class _HerbTabState extends State<_HerbTab> {
       //（例：茈胡 → 应命中柴胡）。禁止改回本地匹配。
       herbs = herbs.where((h) => HerbRepository.matchesQuery(h, _searchQuery)).toList();
     }
+    _cacheKey = key;
+    _cachedList = herbs;
     return herbs;
   }
 

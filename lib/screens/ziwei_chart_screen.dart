@@ -1608,7 +1608,10 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
       ),
       child: RichText(
         text: TextSpan(
-          style: const TextStyle(fontSize: 12),
+          style: TextStyle(
+            fontSize: 12,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
           children: [
             TextSpan(
               text: '$label ',

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../data/settings_repository.dart';
 import '../services/update_service.dart';
+import '../widgets/text_scale_slider.dart';
 import 'app_dialogs.dart';
 
 /// 独立设置页：集中所有「模块级可自定义」设置，并与各排盘页内的开关双向同步。
@@ -98,21 +99,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           const Text('字体大小', style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          Row(
-            children: [
-              const Text('小', style: TextStyle(fontSize: 12)),
-              Expanded(
-                child: Slider(
-                  value: _settings.textScaleFactor,
-                  min: 0.8,
-                  max: 1.5,
-                  divisions: 14,
-                  label: '${(_settings.textScaleFactor * 100).round()}%',
-                  onChanged: (v) => _settings.setTextScaleFactor(v),
-                ),
-              ),
-              const Text('大', style: TextStyle(fontSize: 16)),
-            ],
+          TextScaleSlider(
+            value: _settings.textScaleFactor,
+            onChanged: _settings.setTextScaleFactor,
           ),
         ],
       );

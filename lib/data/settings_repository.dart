@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
+import '../theme/app_tokens.dart';
 import 'database_helper.dart';
 
 class SettingsRepository extends ChangeNotifier {
@@ -50,7 +51,10 @@ class SettingsRepository extends ChangeNotifier {
           );
           break;
         case 'text_scale_factor':
-          _textScaleFactor = double.tryParse(value) ?? 1.0;
+          // 老版本可能存过越界值，统一收敛到 [AppTextScale.min, AppTextScale.max]。
+          _textScaleFactor = AppTextScale.normalize(
+            double.tryParse(value) ?? AppTextScale.defaultScale,
+          );
           break;
         case 'default_gender':
           _defaultGender = value;
@@ -92,9 +96,10 @@ class SettingsRepository extends ChangeNotifier {
   }
 
   Future<void> setTextScaleFactor(double factor) async {
-    _textScaleFactor = factor;
+    final next = AppTextScale.normalize(factor);
+    _textScaleFactor = next;
     notifyListeners();
-    await _save('text_scale_factor', factor.toStringAsFixed(2));
+    await _save('text_scale_factor', next.toStringAsFixed(2));
   }
 
   Future<void> setDefaultGender(String gender) async {

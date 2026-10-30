@@ -4,8 +4,10 @@ import '../widgets/state_view.dart';
 import '../data/acupuncture_repository.dart';
 import '../data/acupoint_repository.dart';
 import '../data/formula_repository.dart';
+import '../data/guji_data.dart';
 import '../data/herb_repository.dart';
 import '../data/search_history_repository.dart';
+import '../services/classic_search_service.dart';
 import '../models/acupuncture.dart';
 import '../models/acupoint_detail.dart';
 import '../models/formula.dart';
@@ -14,7 +16,9 @@ import '../widgets/highlighted_text.dart';
 import '../theme/app_colors.dart';
 import 'acupoint_detail_screen.dart';
 import 'formula_detail_screen.dart';
+import 'guji_library_screen.dart';
 import 'herb_detail_screen.dart';
+import 'markdown_doc_screen.dart';
 
 class SearchTab extends StatefulWidget {
   const SearchTab({super.key});
@@ -33,6 +37,11 @@ class _SearchTabState extends State<SearchTab> {
   String _currentQuery = '';
   _AggregatedResults _results = _AggregatedResults.empty();
   bool _isFocused = false;
+
+  // 经典全文检索（伤寒/金匮/内经讲稿 + 古籍原文），异步加载索引
+  ClassicSearchResult _classicResults = ClassicSearchResult.empty;
+  bool _classicLoading = false;
+  int _classicSeq = 0;
 
   // 搜索历史
   List<String> _searchHistory = [];
@@ -127,7 +136,67 @@ class _SearchTabState extends State<SearchTab> {
       _suggestions = [];
       _results = _performSearch(query);
       _expandedSections.clear();
+      _classicResults = ClassicSearchResult.empty;
     });
+    _runClassicSearch(query);
+  }
+
+  /// 经典检索是异步的（首次要解压 1.8MB 索引）；用 [_classicSeq] 丢弃过期结果，
+  /// 避免快速连续输入时旧结果盖掉新输入。
+  Future<void> _runClassicSearch(String query) async {
+    final seq = ++_classicSeq;
+    if (query.trim().isEmpty) {
+      if (mounted) setState(() => _classicLoading = false);
+      return;
+    }
+    setState(() => _classicLoading = true);
+    try {
+      final result = await ClassicSearchService.search(query);
+      if (!mounted || seq != _classicSeq) return;
+      setState(() {
+        _classicResults = result;
+        _classicLoading = false;
+      });
+    } catch (_) {
+      if (!mounted || seq != _classicSeq) return;
+      setState(() {
+        _classicResults = ClassicSearchResult.empty;
+        _classicLoading = false;
+      });
+    }
+  }
+
+  /// 打开经典命中：讲稿 → 原文阅读页；古籍 → 对应章节。
+  Future<void> _openClassicHit(ClassicHit hit) async {
+    if (hit.source == 'guji') {
+      final book = kGujiBooks.firstWhere(
+        (b) => b.id == hit.bookId,
+        orElse: () => kGujiBooks.first,
+      );
+      final chapters = await GujiRepository.chaptersOf(book);
+      final index = hit.chapterIndex ?? -1;
+      if (!mounted) return;
+      if (index < 0 || index >= chapters.length) return;
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => GujiChapterScreen(book: book, chapter: chapters[index]),
+        ),
+      );
+      return;
+    }
+    final asset = hit.asset;
+    if (asset == null || !mounted) return;
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => MarkdownDocScreen(
+          title: hit.title,
+          asset: asset,
+          linkFormulas: true,
+        ),
+      ),
+    );
   }
 
   void _onSubmitted(String query) {
@@ -268,18 +337,27 @@ class _SearchTabState extends State<SearchTab> {
         if (_showFilters) _buildFilterPanel(cs),
 
         // 结果计数
-        if (_currentQuery.isNotEmpty && _results.totalCount > 0)
+        if (_currentQuery.isNotEmpty &&
+            (_results.totalCount > 0 || _classicResults.total > 0))
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             child: Text(
-              '共 ${_results.totalCount} 条结果'
+              '共 ${_results.totalCount + _classicResults.total} 条结果'
                   '${_results.formulas.isNotEmpty ? " · 方剂 ${_results.formulas.length}" : ""}'
                   '${_results.herbs.isNotEmpty ? " · 本草 ${_results.herbs.length}" : ""}'
                   '${_results.acupunctureEntries.isNotEmpty ? " · 穴位处方 ${_results.acupunctureEntries.length}" : ""}'
                   '${_results.penetrationEntries.isNotEmpty ? " · 透穴 ${_results.penetrationEntries.length}" : ""}'
-                  '${_results.acupointDetails.isNotEmpty ? " · 穴位 ${_results.acupointDetails.length}" : ""}',
+                  '${_results.acupointDetails.isNotEmpty ? " · 穴位 ${_results.acupointDetails.length}" : ""}'
+                  '${_classicResults.total > 0 ? " · 经典 ${_classicResults.total}" : ""}',
               style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
             ),
+          ),
+
+        // 经典索引首次解压中
+        if (_classicLoading)
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12),
+            child: LinearProgressIndicator(minHeight: 2),
           ),
 
         // 联想建议
@@ -459,7 +537,10 @@ class _SearchTabState extends State<SearchTab> {
       );
     }
 
-    if (_results.totalCount == 0) {
+    if (_results.totalCount == 0 && _classicResults.total == 0) {
+      if (_classicLoading) {
+        return const Center(child: CircularProgressIndicator());
+      }
       return Center(child: StateView.empty(title: '未找到匹配结果', fullScreen: false));
     }
 
@@ -476,6 +557,8 @@ class _SearchTabState extends State<SearchTab> {
           _buildPenetrationSection(),
         if (_results.acupointDetails.isNotEmpty)
           _buildAcupointDetailSection(),
+        if (_classicResults.hits.isNotEmpty)
+          _buildClassicSection(),
         const SizedBox(height: 24),
       ],
     );
@@ -851,6 +934,62 @@ class _SearchTabState extends State<SearchTab> {
         )),
         if (!isExpanded && items.length > 15)
           _buildExpandButton('acupoint', items.length),
+      ],
+    );
+  }
+
+  // ── 经典（讲稿 + 古籍原文）──
+  Widget _buildClassicSection() {
+    final items = _classicResults.hits;
+    final isExpanded = _expandedSections['classic'] ?? false;
+    final showItems = isExpanded ? items : items.take(10).toList();
+    final cs = Theme.of(context).colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader('经典 (${_classicResults.total})', Icons.menu_book),
+        ...showItems.map((h) => Card(
+          margin: const EdgeInsets.symmetric(vertical: 3),
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundColor: cs.secondaryContainer,
+              child: Icon(
+                h.source == 'guji' ? Icons.auto_stories : Icons.article,
+                size: 18,
+                color: cs.onSecondaryContainer,
+              ),
+            ),
+            title: HighlightedText(
+              text: h.title,
+              query: _currentQuery,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 2),
+                Text(
+                  h.sourceLabel,
+                  style: TextStyle(fontSize: 11, color: cs.primary),
+                ),
+                if (h.snippet.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: HighlightedText(
+                      text: h.snippet,
+                      query: _currentQuery,
+                      style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
+                    ),
+                  ),
+              ],
+            ),
+            trailing: const Icon(Icons.chevron_right, size: 20),
+            onTap: () => _openClassicHit(h),
+          ),
+        )),
+        if (!isExpanded && items.length > 10)
+          _buildExpandButton('classic', _classicResults.total),
       ],
     );
   }

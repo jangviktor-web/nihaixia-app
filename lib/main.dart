@@ -72,11 +72,15 @@ class NiHaishaApp extends StatelessWidget {
             ),
             extensions: [AppColors.dark],
           ),
-          home: MediaQuery(
+          home: HomeScreen(textScaleFactor: settings.textScaleFactor),
+          // 字号缩放必须放在 builder（包住整个 Navigator）：只包 home 的话，
+          // push 出去的详情页/设置页和弹窗都拿不到用户字号，调到 200% 也只有
+          // 首页四个 tab 变大（issue #4 相关反馈的根因）。
+          builder: (context, child) => MediaQuery(
             data: MediaQuery.of(context).copyWith(
               textScaler: TextScaler.linear(settings.textScaleFactor),
             ),
-            child: HomeScreen(textScaleFactor: settings.textScaleFactor),
+            child: child!,
           ),
           localizationsDelegates: const [
             GlobalMaterialLocalizations.delegate,
