@@ -1,542 +1,441 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>汉唐中医 - 倪海厦六经辨证诊断助手</title>
-  <meta name="description" content="基于倪海厦六经辨证体系的中医诊断助手App v1.5.0，支持智能问诊、完整处方、鉴别诊断、方剂速查、药物速查、子午流注、应用内更新等功能。离线可用，完全免费。">
-  <meta name="keywords" content="中医,倪海厦,六经辨证,伤寒论,经方,中医诊断,Flutter,汉唐中医">
-  <meta property="og:title" content="汉唐中医 - 六经辨证诊断助手">
-  <meta property="og:description" content="基于倪海厦六经辨证体系的中医诊断助手，离线可用，完全免费。">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://jangviktor-web.github.io/nihaixia-app/">
-  <meta property="og:image" content="https://raw.githubusercontent.com/jangviktor-web/nihaixia-app/main/docs/images/logo.jpg">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="汉唐中医 - 六经辨证诊断助手">
-  <meta name="twitter:description" content="基于倪海厦六经辨证体系的中医诊断助手App。">
-  <meta name="twitter:image" content="https://raw.githubusercontent.com/jangviktor-web/nihaixia-app/main/docs/images/logo.jpg">
-  <link rel="canonical" href="https://jangviktor-web.github.io/nihaixia-app/">
-  <link rel="icon" type="image/jpeg" href="images/logo.jpg">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-      color: #2c2c2c;
-      background: #faf8f5;
-      line-height: 1.6;
-      overflow-x: hidden;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>汉唐中医 · 倪海厦六经辨证中医助手</title>
+<meta name="description" content="离线中医经方助手：六经辨证问诊、322 首经方、465 味本草、408 穴针灸、1257 例医案、伤寒金匮内经与针灸大成原文全文检索。完全免费，数据不出本机。">
+<meta name="keywords" content="中医,倪海厦,六经辨证,伤寒论,金匮要略,经方,针灸大成,五运六气,中医诊断,Flutter,汉唐中医">
+<meta name="theme-color" content="#8b4513">
+<meta property="og:title" content="汉唐中医 · 六经辨证中医助手">
+<meta property="og:description" content="离线、免费、无广告：六经辨证问诊 + 经方本草穴位速查 + 经典原文全文检索。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jangviktor-web.github.io/nihaixia-app/">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/jangviktor-web/nihaixia-app@master/docs/images/screenshot_v1127_folk_tools.webp">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://jangviktor-web.github.io/nihaixia-app/">
+<link rel="icon" type="image/webp" href="images/logo.webp">
+<style>
+  :root{
+    --bg:#faf7f1; --card:#fffdf8; --ink:#241a12; --muted:#6b5d4f;
+    --line:#e6dccb; --brand:#8b4513; --brand-soft:#f3e6d5; --accent:#a9551c;
+    --shadow:0 10px 30px rgba(74,49,24,.08);
+    --radius:16px; --maxw:1080px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#141009; --card:#1d1711; --ink:#f3e9db; --muted:#b6a793;
+      --line:#332a1f; --brand:#e0a35c; --brand-soft:#2a2015; --accent:#f0b76e;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
     }
-    a { color: inherit; text-decoration: none; }
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;height:auto;display:block}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .serif{font-family:"Songti SC","STSong","Noto Serif SC",serif}
 
-    /* ===== Hero ===== */
-    .hero {
-      background: linear-gradient(135deg, #1a0f05 0%, #3a2a10 40%, #5b3a1a 70%, #8b6914 100%);
-      color: #fff;
-      text-align: center;
-      padding: 100px 24px 80px;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      right: -20%;
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle, rgba(139,105,20,0.3) 0%, transparent 70%);
-      border-radius: 50%;
-    }
-    .hero-logo {
-      display: block;
-      width: 96px;
-      height: 96px;
-      border-radius: 22px;
-      margin: 0 auto 24px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-    }
-    .hero h1 {
-      font-size: 3em;
-      font-weight: 800;
-      margin-bottom: 12px;
-      letter-spacing: 3px;
-      line-height: 1.2;
-    }
-    .hero .subtitle {
-      font-size: 1.2em;
-      opacity: 0.85;
-      margin-bottom: 20px;
-      line-height: 1.5;
-    }
-    .hero .tagline {
-      display: inline-block;
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.2);
-      padding: 6px 18px;
-      border-radius: 20px;
-      font-size: 0.9em;
-      margin-bottom: 36px;
-      backdrop-filter: blur(4px);
-    }
-    .hero-buttons { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 14px 32px;
-      border-radius: 12px;
-      font-size: 1.05em;
-      font-weight: 600;
-      transition: all 0.2s;
-      cursor: pointer;
-      border: none;
-    }
-    .btn:hover { transform: translateY(-2px); }
-    .btn-primary {
-      background: #fff;
-      color: #3a2a10;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-    }
-    .btn-primary:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
-    .btn-secondary {
-      background: rgba(255,255,255,0.1);
-      color: #fff;
-      border: 1.5px solid rgba(255,255,255,0.35);
-    }
-    .btn-secondary:hover { background: rgba(255,255,255,0.18); }
+  /* nav */
+  .nav{
+    position:sticky;top:0;z-index:20;
+    background:color-mix(in srgb,var(--bg) 86%,transparent);
+    backdrop-filter:blur(10px); border-bottom:1px solid var(--line);
+  }
+  .nav-inner{display:flex;align-items:center;gap:20px;height:60px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.5px}
+  .brand img{width:28px;height:28px;border-radius:8px}
+  .nav-links{margin-left:auto;display:flex;gap:22px;font-size:15px;color:var(--muted)}
+  .nav-links a:hover{color:var(--brand)}
+  .nav-cta{
+    background:var(--brand);color:#fff;padding:8px 16px;border-radius:10px;
+    font-size:14px;font-weight:600;
+  }
+  .nav-cta:hover{background:var(--accent)}
+  @media (max-width:720px){ .nav-links{display:none} }
 
-    /* ===== Stats ===== */
-    .stats {
-      display: flex;
-      justify-content: center;
-      gap: 56px;
-      padding: 40px 20px;
-      background: #fff;
-      border-bottom: 1px solid #ece7df;
-      flex-wrap: wrap;
-    }
-    .stat { text-align: center; }
-    .stat-num {
-      font-size: 2.2em;
-      font-weight: 800;
-      background: linear-gradient(135deg, #8b6914, #a0522d);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .stat-label { font-size: 0.9em; color: #888; margin-top: 4px; }
+  /* hero */
+  .hero{
+    position:relative;overflow:hidden;
+    padding:88px 0 64px;text-align:center;
+    background:
+      radial-gradient(900px 420px at 50% -10%, color-mix(in srgb,var(--brand) 14%,transparent), transparent 70%),
+      var(--bg);
+  }
+  .hero .logo{
+    width:88px;height:88px;border-radius:24px;margin:0 auto 22px;
+    box-shadow:var(--shadow); border:1px solid var(--line);
+  }
+  .eyebrow{
+    display:inline-block;font-size:13px;letter-spacing:2px;color:var(--brand);
+    border:1px solid color-mix(in srgb,var(--brand) 35%,transparent);
+    background:var(--brand-soft);padding:5px 14px;border-radius:999px;margin-bottom:18px;
+  }
+  .hero h1{font-size:clamp(34px,6vw,58px);line-height:1.15;letter-spacing:4px;font-weight:700}
+  .hero .lead{
+    margin:18px auto 0;max-width:640px;color:var(--muted);font-size:clamp(15px,2.2vw,18px);
+  }
+  .hero .lead b{color:var(--ink);font-weight:600}
+  .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:30px}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;padding:13px 26px;border-radius:12px;
+    font-weight:600;font-size:16px;border:1px solid transparent;transition:transform .15s,background .15s,box-shadow .15s;
+  }
+  .btn:hover{transform:translateY(-2px)}
+  .btn-primary{background:linear-gradient(135deg,var(--brand),var(--accent));color:#fff;box-shadow:var(--shadow)}
+  .btn-ghost{border-color:var(--line);color:var(--ink);background:var(--card)}
+  .btn-ghost:hover{border-color:var(--brand)}
+  .hero-meta{margin-top:22px;display:flex;gap:18px;justify-content:center;flex-wrap:wrap;color:var(--muted);font-size:14px}
+  .hero-meta span::before{content:"·";margin-right:18px;color:var(--line)}
+  .hero-meta span:first-child::before{content:none;margin:0}
 
-    /* ===== Features ===== */
-    .features {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 80px 24px;
-    }
-    .section-title {
-      text-align: center;
-      font-size: 2em;
-      font-weight: 700;
-      margin-bottom: 16px;
-      color: #2c2c2c;
-    }
-    .section-desc {
-      text-align: center;
-      color: #888;
-      max-width: 520px;
-      margin: 0 auto 48px;
-      font-size: 1.05em;
-    }
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-    .feature-card {
-      background: #fff;
-      border-radius: 16px;
-      padding: 32px 24px;
-      border: 1px solid #f0ebe3;
-      transition: all 0.25s;
-      position: relative;
-      overflow: hidden;
-    }
-    .feature-card::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, #8b6914, #a0522d);
-      opacity: 0;
-      transition: opacity 0.25s;
-    }
-    .feature-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 32px rgba(90,60,20,0.1);
-      border-color: #d4a853;
-    }
-    .feature-card:hover::after { opacity: 1; }
-    .feature-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5em;
-      margin-bottom: 16px;
-    }
-    .fi-blue { background: #e3f2fd; }
-    .fi-orange { background: #fff3e0; }
-    .fi-green { background: #e8f5e9; }
-    .fi-purple { background: #f3e5f5; }
-    .fi-red { background: #fce4ec; }
-    .fi-teal { background: #e0f2f1; }
-    .feature-card h3 {
-      font-size: 1.1em;
-      margin-bottom: 8px;
-      color: #2c2c2c;
-      font-weight: 600;
-    }
-    .feature-card p { font-size: 0.9em; color: #777; line-height: 1.5; }
+  /* stats */
+  .stats{
+    display:grid;grid-template-columns:repeat(6,1fr);gap:1px;
+    background:var(--line);border-block:1px solid var(--line);margin-top:56px;
+  }
+  .stat{background:var(--card);padding:22px 10px;text-align:center}
+  .stat b{display:block;font-size:clamp(22px,3.4vw,30px);color:var(--brand);font-variant-numeric:tabular-nums}
+  .stat span{font-size:13px;color:var(--muted)}
+  @media (max-width:760px){ .stats{grid-template-columns:repeat(3,1fr)} }
 
-    /* ===== Screenshots ===== */
-    .screenshots {
-      background: #fff;
-      padding: 80px 24px;
-      border-top: 1px solid #ece7df;
-      border-bottom: 1px solid #ece7df;
-    }
-    .screenshot-showcase {
-      max-width: 960px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 48px;
-      align-items: center;
-    }
-    .screenshot-item {
-      width: 100%;
-      max-width: 880px;
-      text-align: center;
-    }
-    .screenshot-item img {
-      width: 100%;
-      border-radius: 16px;
-      box-shadow: 0 8px 40px rgba(90,60,20,0.12), 0 1px 4px rgba(0,0,0,0.06);
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
-    .screenshot-item img:hover {
-      transform: scale(1.01);
-      box-shadow: 0 12px 48px rgba(90,60,20,0.18), 0 2px 8px rgba(0,0,0,0.08);
-    }
-    .screenshot-item p {
-      margin-top: 14px;
-      font-size: 0.95em;
-      color: #999;
-      font-weight: 500;
-    }
+  /* section */
+  section.block{padding:72px 0}
+  .sec-head{max-width:640px;margin:0 auto 40px;text-align:center}
+  .sec-head h2{font-size:clamp(24px,3.6vw,32px);letter-spacing:2px}
+  .sec-head p{margin-top:10px;color:var(--muted);font-size:15px}
 
-    /* ===== Meridian ===== */
-    .meridian-section {
-      padding: 80px 24px;
-      text-align: center;
-    }
-    .meridian-grid {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      flex-wrap: wrap;
-      max-width: 760px;
-      margin: 0 auto;
-    }
-    .meridian-tag {
-      padding: 14px 28px;
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: 1.05em;
-      min-width: 110px;
-      text-align: center;
-      color: #fff;
-      transition: transform 0.2s;
-    }
-    .meridian-tag:hover { transform: scale(1.05); }
-    .m-taiyang { background: linear-gradient(135deg, #FF9800, #F57C00); }
-    .m-yangming { background: linear-gradient(135deg, #F44336, #D32F2F); }
-    .m-shaoyang { background: linear-gradient(135deg, #FF5722, #E64A19); }
-    .m-taiyin { background: linear-gradient(135deg, #2196F3, #1976D2); }
-    .m-shaoyin { background: linear-gradient(135deg, #9C27B0, #7B1FA2); }
-    .m-jueyin { background: linear-gradient(135deg, #607D8B, #455A64); }
+  /* features */
+  .grid{display:grid;gap:16px}
+  .features{grid-template-columns:repeat(3,1fr)}
+  @media (max-width:900px){ .features{grid-template-columns:repeat(2,1fr)} }
+  @media (max-width:600px){ .features{grid-template-columns:1fr} }
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:24px;box-shadow:var(--shadow);
+  }
+  .card .ico{
+    width:44px;height:44px;border-radius:12px;display:grid;place-items:center;
+    background:var(--brand-soft);font-size:22px;margin-bottom:14px;
+  }
+  .card h3{font-size:17px;margin-bottom:8px}
+  .card p{color:var(--muted);font-size:14px}
+  .card p b{color:var(--ink)}
 
-    /* ===== Tech ===== */
-    .tech {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 80px 24px;
-      text-align: center;
-    }
-    .tech-desc {
-      color: #888;
-      max-width: 520px;
-      margin: 0 auto 24px;
-      font-size: 1.05em;
-    }
-    .tech-tags {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 24px;
-    }
-    .tech-tag {
-      padding: 10px 20px;
-      background: #f5f0e8;
-      border-radius: 10px;
-      font-size: 0.95em;
-      color: #5b3a1a;
-      font-weight: 500;
-      transition: background 0.2s;
-    }
-    .tech-tag:hover { background: #ece4d6; }
+  /* classics band */
+  .classics{
+    background:var(--card);border:1px solid var(--line);border-radius:calc(var(--radius) + 6px);
+    padding:32px;box-shadow:var(--shadow);
+  }
+  .classics-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:24px}
+  .book{
+    border:1px solid var(--line);border-radius:12px;padding:16px;text-align:center;background:var(--bg);
+  }
+  .book b{display:block;font-size:15px}
+  .book span{font-size:12px;color:var(--muted)}
+  .classics-note{margin-top:18px;color:var(--muted);font-size:14px;text-align:center}
+  .classics-note b{color:var(--brand)}
+  @media (max-width:820px){ .classics-grid{grid-template-columns:repeat(2,1fr)} }
 
-    /* ===== Download CTA ===== */
-    .download-cta {
-      background: linear-gradient(135deg, #3a2a10, #5b3a1a);
-      color: #fff;
-      text-align: center;
-      padding: 80px 24px;
-    }
-    .download-cta h2 {
-      font-size: 2em;
-      margin-bottom: 16px;
-    }
-    .download-cta p {
-      opacity: 0.8;
-      margin-bottom: 32px;
-      font-size: 1.1em;
-    }
-    .download-cta .btn-primary {
-      font-size: 1.15em;
-      padding: 16px 40px;
-    }
+  /* screenshots */
+  .shots{columns:2;column-gap:20px}
+  @media (max-width:760px){ .shots{columns:1} }
+  figure.shot{margin:0 0 20px;break-inside:avoid}
+  figure.shot .frame{
+    border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
+    background:var(--card);box-shadow:var(--shadow);
+  }
+  figure.shot img{width:100%;height:auto}
+  figcaption{margin-top:10px;color:var(--muted);font-size:13px;text-align:center}
 
-    /* ===== Footer ===== */
-    footer {
-      text-align: center;
-      padding: 40px 24px;
-      background: #1a0f05;
-      color: rgba(255,255,255,0.5);
-      font-size: 0.9em;
-    }
-    footer a { color: #d4a853; }
-    footer a:hover { text-decoration: underline; }
-    footer .quote {
-      font-style: italic;
-      opacity: 0.6;
-      margin-bottom: 16px;
-      font-size: 0.95em;
-    }
+  /* six meridians */
+  .meridians{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:26px}
+  .mer{
+    padding:9px 18px;border-radius:999px;font-size:14px;font-weight:600;color:#fff;
+    letter-spacing:1px;
+  }
+  .m1{background:linear-gradient(135deg,#f2a93b,#d9821f)}
+  .m2{background:linear-gradient(135deg,#e5573f,#c03224)}
+  .m3{background:linear-gradient(135deg,#f07a3c,#d4511c)}
+  .m4{background:linear-gradient(135deg,#4a90d9,#2f6fb3)}
+  .m5{background:linear-gradient(135deg,#8c5bb0,#6d3f92)}
+  .m6{background:linear-gradient(135deg,#68818f,#4d6472)}
 
-    /* ===== Animations ===== */
-    .fade-up {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
-    }
-    .fade-up.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  /* download */
+  .download{
+    background:linear-gradient(150deg,#241708,#3d2810 55%,#5a3a17);
+    color:#f7ede0;padding:64px 0;
+  }
+  .download .sec-head p{color:#cbb99f}
+  .dl-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:900px;margin:0 auto}
+  @media (max-width:820px){ .dl-grid{grid-template-columns:repeat(2,1fr)} }
+  .dl{
+    display:block;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);
+    border-radius:12px;padding:16px;text-align:center;transition:background .15s,transform .15s;
+  }
+  .dl:hover{background:rgba(255,255,255,.12);transform:translateY(-2px)}
+  .dl b{display:block;font-size:15px}
+  .dl span{font-size:12px;color:#cbb99f}
+  .dl .size{display:block;margin-top:6px;font-size:12px;color:#e8d6bd}
+  .dl-note{text-align:center;margin-top:22px;font-size:13px;color:#cbb99f}
+  .dl-note a{color:#f0c98a;text-decoration:underline}
+  .download .btn-primary{background:#f7ede0;color:#3a2410}
+  .download .btn-primary:hover{background:#fff}
 
-    /* ===== Responsive ===== */
-    @media (max-width: 768px) {
-      .hero { padding: 60px 20px 48px; }
-      .hero h1 { font-size: 2em; }
-      .hero-logo { width: 72px; height: 72px; }
-      .feature-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
-      .stats { gap: 32px; }
-      .stat-num { font-size: 1.7em; }
-      .meridian-grid { gap: 10px; }
-      .meridian-tag { min-width: 90px; padding: 10px 18px; font-size: 0.95em; }
-    }
-    @media (max-width: 480px) {
-      .hero h1 { font-size: 1.6em; }
-      .hero-logo { width: 64px; height: 64px; }
-    }
-  </style>
+  /* tech */
+  .tags{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+  .tag{
+    font-size:13px;padding:7px 14px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);border:1px solid color-mix(in srgb,var(--brand) 22%,transparent);
+  }
+
+  footer{border-top:1px solid var(--line);padding:40px 0 48px;text-align:center;color:var(--muted);font-size:13px}
+  footer .quote{font-size:15px;margin-bottom:14px;color:var(--ink)}
+  footer nav{display:flex;gap:18px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+  footer a:hover{color:var(--brand)}
+
+  @media (prefers-reduced-motion: reduce){
+    .btn:hover,.dl:hover{transform:none}
+  }
+</style>
 </head>
 <body>
 
-  <!-- Hero -->
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top"><img src="images/logo.webp" alt="汉唐中医">汉唐中医</a>
+    <nav class="nav-links" aria-label="主导航">
+      <a href="#features">功能</a>
+      <a href="#classics">经典</a>
+      <a href="#shots">截图</a>
+      <a href="#download">下载</a>
+      <a href="https://github.com/jangviktor-web/nihaixia-app">GitHub</a>
+    </nav>
+    <a class="nav-cta" href="#download">下载 APK</a>
+  </div>
+</header>
+
+<main id="top">
+
   <section class="hero">
-    <img class="hero-logo" src="images/logo.jpg" alt="汉唐中医 Logo">
-    <div class="tagline">基于倪海厦《人纪》体系</div>
-    <h1>汉唐中医</h1>
-    <p class="subtitle">六经辨证智能诊断助手<br>离线可用 · 完全免费 · 开箱即用</p>
-    <div class="hero-buttons">
-      <a class="btn btn-primary" href="https://github.com/jangviktor-web/nihaixia-app/releases/latest">
-        📥 下载 APK
-      </a>
-      <a class="btn btn-secondary" href="https://github.com/jangviktor-web/nihaixia-app">
-        GitHub 仓库
-      </a>
+    <div class="wrap">
+      <img class="logo" src="images/logo.webp" alt="汉唐中医 Logo" width="88" height="88">
+      <div class="eyebrow">基于倪海厦《人纪》体系 · v1.11.28</div>
+      <h1 class="serif">汉唐中医</h1>
+      <p class="lead">
+        把六经辨证做成可以随身查、随时问的离线工具。<b>322 首经方、465 味本草、408 穴针灸、1257 例医案</b>，
+        以及伤寒、金匮、内经与《针灸大成》的原文全文检索——不联网，不注册，数据不出本机。
+      </p>
+      <div class="cta">
+        <a class="btn btn-primary" href="#download">📥 下载最新版</a>
+        <a class="btn btn-ghost" href="https://github.com/jangviktor-web/nihaixia-app">查看源码</a>
+      </div>
+      <div class="hero-meta">
+        <span>完全免费</span><span>无广告 · 无内购</span><span>Android 7.0+</span><span>开源 Apache-2.0</span>
+      </div>
     </div>
   </section>
 
-  <!-- Stats -->
-  <div class="stats">
-    <div class="stat fade-up">
-      <div class="stat-num">113</div>
-      <div class="stat-label">经方覆盖</div>
-    </div>
-    <div class="stat fade-up">
-      <div class="stat-num">271</div>
-      <div class="stat-label">经典方剂</div>
-    </div>
-    <div class="stat fade-up">
-      <div class="stat-num">345</div>
-      <div class="stat-label">中药药物</div>
-    </div>
-    <div class="stat fade-up">
-      <div class="stat-num">361</div>
-      <div class="stat-label">针灸穴位</div>
-    </div>
+  <div class="stats" aria-label="数据规模">
+    <div class="stat"><b>322</b><span>经方方剂</span></div>
+    <div class="stat"><b>465</b><span>本草药味</span></div>
+    <div class="stat"><b>408</b><span>针灸穴位</span></div>
+    <div class="stat"><b>1257</b><span>倪师医案</span></div>
+    <div class="stat"><b>1327</b><span>经典检索条目</span></div>
+    <div class="stat"><b>421</b><span>古籍原文篇章</span></div>
   </div>
 
-  <!-- Features -->
-  <section class="features">
-    <h2 class="section-title fade-up">核心功能</h2>
-    <p class="section-desc fade-up">从问诊到开方，一站式中医诊断辅助</p>
-    <div class="feature-grid">
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-blue">🩺</div>
-        <h3>六经辨证诊断</h3>
-        <p>智能问诊引导，自动判断太阳/阳明/少阳/太阴/少阴/厥阴六经归属，给出辨证结果和方剂推荐。</p>
+  <section class="block" id="features">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 class="serif">核心功能</h2>
+        <p>从问诊到开方，从条文到原文，一套完整的经方工作台</p>
       </div>
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-orange">📋</div>
-        <h3>完整处方生成</h3>
-        <p>诊断后自动显示方剂组成、剂量、煎服法、禁忌，并根据兼证推荐经方加减变化。</p>
-      </div>
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-green">🔍</div>
-        <h3>鉴别诊断</h3>
-        <p>26对鉴别场景，自动对比相似证型的关键区别，辅助精准辨证。</p>
-      </div>
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-purple">📚</div>
-        <h3>方剂药物速查</h3>
-        <p>271首经方、345味中药，支持搜索、六经筛选、分类筛选，离线查阅。</p>
-      </div>
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-red">📈</div>
-        <h3>诊断历史趋势</h3>
-        <p>六经传变可视化，自动检测"由表入里"或"由里出表"趋势，追踪健康变化。</p>
-      </div>
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-teal">⏰</div>
-        <h3>子午流注取穴</h3>
-        <p>输入时间自动推算开穴，辅助针灸取穴决策。361穴完整数据。</p>
-      </div>
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-blue">⚙️</div>
-        <h3>智能诊断设置</h3>
-        <p>默认性别跳过重复问诊，诊断详细度可调（简单/详细），自动复制处方到剪贴板。</p>
-      </div>
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-green">💾</div>
-        <h3>数据管理</h3>
-        <p>清除诊断历史、导出收藏为文本分享、清理缓存释放空间，本地数据完全掌控。</p>
-      </div>
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-orange">🔄</div>
-        <h3>应用内更新</h3>
-        <p>设置中一键检测GitHub新版本，直接下载安装，无需手动查找。</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Screenshots -->
-  <section class="screenshots">
-    <h2 class="section-title fade-up">应用截图</h2>
-    <p class="section-desc fade-up">简洁直观的界面设计，专业中医诊断体验</p>
-    <div class="screenshot-showcase">
-      <div class="screenshot-item fade-up">
-        <img src="images/screenshot1.jpg" alt="问诊引导 · 六经速查 · 方剂速查" loading="lazy">
-        <p>问诊引导 · 六经速查 · 方剂速查</p>
-      </div>
-      <div class="screenshot-item fade-up">
-        <img src="images/screenshot2.jpg" alt="本草速查 · 针灸穴位 · 实用工具" loading="lazy">
-        <p>本草速查 · 针灸穴位 · 实用工具</p>
+      <div class="grid features">
+        <article class="card">
+          <div class="ico">🩺</div>
+          <h3>六经辨证问诊</h3>
+          <p>引导式问诊逐项收敛，自动判断太阳 / 阳明 / 少阳 / 太阴 / 少阴 / 厥阴，并识别合病并病与传变趋势。</p>
+        </article>
+        <article class="card">
+          <div class="ico">📋</div>
+          <h3>完整处方与鉴别</h3>
+          <p>给出组成、剂量、煎服法与禁忌，26 对相似证型自动对比关键差异，推荐经方加减。</p>
+        </article>
+        <article class="card">
+          <div class="ico">📚</div>
+          <h3>方剂 · 本草 · 穴位速查</h3>
+          <p><b>322 首经方、465 味本草、408 穴</b>，支持搜索、性味归经与六经筛选；穴位与处方双向跳转。</p>
+        </article>
+        <article class="card">
+          <div class="ico">📜</div>
+          <h3>经典原文与全文检索</h3>
+          <p>伤寒 380 条、金匮 453 条、内经 73 篇讲稿，加《灵枢》《针灸大成》原文；<b>1327 条统一索引</b>，搜到即跳到篇章。</p>
+        </article>
+        <article class="card">
+          <div class="ico">🎯</div>
+          <h3>针灸取穴四法</h3>
+          <p>子午流注、纳甲、灵龟八法、飞腾八法并列计算；十四经经络图、耳穴国标 93 穴、31 组透针方案。</p>
+        </article>
+        <article class="card">
+          <div class="ico">🌿</div>
+          <h3>五运六气</h3>
+          <p>运气五行图、五运图、六气图三图联动，任选日期重绘，带出岁运病候与司天在泉。</p>
+        </article>
+        <article class="card">
+          <div class="ico">☯️</div>
+          <h3>命理与民俗</h3>
+          <p>紫微斗数、八字详批、易经六十四卦、梅花易数、小六壬、三山国王灵签——均标注民俗文化参考。</p>
+        </article>
+        <article class="card">
+          <div class="ico">🔤</div>
+          <h3>字号 0.8–2.0 全 App 生效</h3>
+          <p>长辈也能看清：字号滑到 200%，详情页、设置页与弹窗全部跟随，不只是首页。</p>
+        </article>
+        <article class="card">
+          <div class="ico">📴</div>
+          <h3>离线 · 隐私</h3>
+          <p>全部数据打包在本地，不申请账号、不做追踪；断网也能问诊、查方、读经典。</p>
+        </article>
       </div>
     </div>
   </section>
 
-  <!-- Meridian -->
-  <section class="meridian-section">
-    <h2 class="section-title fade-up">六经辨证体系</h2>
-    <p class="section-desc fade-up">张仲景《伤寒论》核心辨证框架</p>
-    <div class="meridian-grid fade-up">
-      <div class="meridian-tag m-taiyang">☀️ 太阳</div>
-      <div class="meridian-tag m-yangming">🔥 阳明</div>
-      <div class="meridian-tag m-shaoyang">🌅 少阳</div>
-      <div class="meridian-tag m-taiyin">🌙 太阴</div>
-      <div class="meridian-tag m-shaoyin">🌑 少阴</div>
-      <div class="meridian-tag m-jueyin">☯️ 厥阴</div>
+  <section class="block" id="classics">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 class="serif">经典，一条链打通</h2>
+        <p>讲稿与原文并列，方剂、药材、条文互相跳转</p>
+      </div>
+      <div class="classics">
+        <div class="classics-grid">
+          <div class="book"><b>伤寒论</b><span>380 条讲稿</span></div>
+          <div class="book"><b>金匮要略</b><span>453 条讲稿</span></div>
+          <div class="book"><b>黄帝内经</b><span>73 篇讲稿</span></div>
+          <div class="book"><b>灵枢</b><span>82 章原文</span></div>
+          <div class="book"><b>针灸大成</b><span>339 章原文</span></div>
+        </div>
+        <p class="classics-note">搜索 <b>「桂枝汤」「标幽赋」</b> 这类词，结果里直接出现经典分组，点一下就到原文。</p>
+      </div>
     </div>
   </section>
 
-  <!-- Tech -->
-  <section class="tech">
-    <h2 class="section-title fade-up">技术特性</h2>
-    <p class="tech-desc fade-up">完全离线运行，无需联网。数据本地存储，隐私安全。</p>
-    <div class="tech-tags fade-up">
-      <span class="tech-tag">Flutter</span>
-      <span class="tech-tag">SQLite</span>
-      <span class="tech-tag">离线优先</span>
-      <span class="tech-tag">Material 3</span>
-      <span class="tech-tag">Android 6.0+</span>
-      <span class="tech-tag">零联网</span>
+  <section class="block" id="shots">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 class="serif">界面一览</h2>
+        <p>暖棕配色、统一字号阶梯，深色模式同样可读</p>
+      </div>
+      <div class="shots">
+        <figure class="shot">
+          <div class="frame">
+            <img src="images/screenshot_v1127_folk_tools.webp" width="1400" height="605" loading="lazy" decoding="async" alt="民俗工具：三山国王灵签、小六壬、梅花易数">
+          </div>
+          <figcaption>民俗参考：灵签 · 小六壬 · 梅花易数</figcaption>
+        </figure>
+        <figure class="shot">
+          <div class="frame">
+            <img src="images/screenshot_v1126_ear_meridian.webp" width="1200" height="1296" loading="lazy" decoding="async" alt="耳穴国标库与十四经经络图">
+          </div>
+          <figcaption>耳穴国标 93 穴 · 十四经经络图</figcaption>
+        </figure>
+        <figure class="shot">
+          <div class="frame">
+            <img src="images/screenshot_v1125_yunqi.webp" width="1400" height="1008" loading="lazy" decoding="async" alt="五运六气三图：运气五行图、五运图、六气图">
+          </div>
+          <figcaption>五运六气：五行图 · 五运图 · 六气图</figcaption>
+        </figure>
+        <figure class="shot">
+          <div class="frame">
+            <img src="images/screenshot_v1123_shanghan_jingui.webp" width="1400" height="756" loading="lazy" decoding="async" alt="伤寒论与金匮要略条文级阅读库">
+          </div>
+          <figcaption>伤寒 / 金匮：条文级阅读，方药可点跳</figcaption>
+        </figure>
+      </div>
     </div>
   </section>
 
-  <!-- Download CTA -->
-  <section class="download-cta">
-    <h2 class="fade-up">立即体验</h2>
-    <p class="fade-up">下载 APK，离线使用全部功能</p>
-    <a class="btn btn-primary fade-up" href="https://github.com/jangviktor-web/nihaixia-app/releases/latest">
-      📥 下载最新版 v1.5.0
-    </a>
+  <section class="block">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 class="serif">六经辨证</h2>
+        <p>张仲景《伤寒论》的核心框架，也是整个 App 的骨架</p>
+      </div>
+      <div class="meridians" aria-label="六经">
+        <span class="mer m1">太阳</span>
+        <span class="mer m2">阳明</span>
+        <span class="mer m3">少阳</span>
+        <span class="mer m4">太阴</span>
+        <span class="mer m5">少阴</span>
+        <span class="mer m6">厥阴</span>
+      </div>
+    </div>
   </section>
 
-  <!-- Footer -->
-  <footer>
-    <p class="quote">「中医很简单，就是阴阳气血。你搞懂了，一通百通。」—— 倪海厦</p>
-    <p>汉唐中医 v1.11.23 &nbsp;|&nbsp; 基于倪海厦《伤寒论》《金匮要略》教学体系</p>
-    <p style="margin-top:12px;">
+  <section class="download" id="download">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 class="serif">下载安装</h2>
+        <p>最新版 v1.11.28 · 签名与历史版本一致，可直接覆盖安装</p>
+      </div>
+      <div class="dl-grid">
+        <a class="dl" href="https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.28/app-arm64-v8a-release.apk">
+          <b>arm64-v8a</b><span>现代安卓手机 · 推荐</span><span class="size">33.3 MB</span>
+        </a>
+        <a class="dl" href="https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.28/app-armeabi-v7a-release.apk">
+          <b>armeabi-v7a</b><span>老款 32 位设备</span><span class="size">31.5 MB</span>
+        </a>
+        <a class="dl" href="https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.28/app-x86_64-release.apk">
+          <b>x86_64</b><span>模拟器 / 虚拟机</span><span class="size">34.8 MB</span>
+        </a>
+        <a class="dl" href="https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.28/app-release.apk">
+          <b>通用版</b><span>全架构兼容</span><span class="size">77.4 MB</span>
+        </a>
+      </div>
+      <div class="cta">
+        <a class="btn btn-primary" href="https://github.com/jangviktor-web/nihaixia-app/releases/tag/v1.11.28">📄 查看更新说明</a>
+        <a class="btn btn-ghost" style="background:transparent;color:#f7ede0;border-color:rgba(255,255,255,.3)" href="https://github.com/jangviktor-web/nihaixia-app/releases/latest">全部版本</a>
+      </div>
+      <p class="dl-note">国内直连慢？上面按钮已走 ghproxy 镜像；也可直接访问 <a href="https://github.com/jangviktor-web/nihaixia-app/releases/latest">GitHub Releases</a>。</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 class="serif">技术特性</h2>
+        <p>Flutter 构建 · 全本地数据 · 无后台服务</p>
+      </div>
+      <div class="tags">
+        <span class="tag">Flutter 3.x</span>
+        <span class="tag">SQLite 本地库</span>
+        <span class="tag">Material 3</span>
+        <span class="tag">离线优先</span>
+        <span class="tag">零追踪</span>
+        <span class="tag">Android 7.0+</span>
+        <span class="tag">Apache-2.0</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="quote serif">「中医很简单，就是阴阳气血。你搞懂了，一通百通。」—— 倪海厦</p>
+    <p>汉唐中医 v1.11.28 · 基于倪海厦《人纪》教学体系 · 内容仅供学习参考，非医疗建议</p>
+    <nav aria-label="页脚链接">
       <a href="https://github.com/jangviktor-web/nihaixia-app">GitHub</a>
-      &nbsp;&middot;&nbsp;
       <a href="https://github.com/jangviktor-web/nihaixia-app/releases">下载</a>
-      &nbsp;&middot;&nbsp;
       <a href="https://github.com/jangviktor-web/nihaixia-app/issues">反馈</a>
-      &nbsp;&middot;&nbsp;
       <a href="privacy.html">隐私政策</a>
-    </p>
-  </footer>
-
-  <!-- Scroll Animation -->
-  <script>
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        }
-      });
-    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-
-    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-  </script>
+    </nav>
+  </div>
+</footer>
 
 </body>
 </html>
