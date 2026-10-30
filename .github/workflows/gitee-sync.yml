@@ -1,8 +1,15 @@
-# 用 H-TWINKLE/sync-action 把 GitHub Release 的 APK 同步到 Gitee 发行版。
+# 用 H-TWINKLE/sync-action 把 GitHub Release 里缺的 APK 补传到 Gitee 发行版。
 #
-# 背景：本仓库 runner → Gitee 的 attach_files 上传多次挂死（curl 900s 0 字节、
-# release2gitee 60s 超时），但 API 读写正常。sync-action 用 requests 表单上传、
-# 可续传到「已存在但缺附件」的发行版，先手动跑通验证；跑通后再挂到发版后自动执行。
+# ⚠️ 实测（2026-10-30）：GitHub 托管 runner 上，Gitee 的 attach_files 上传会挂死——
+#   旧 curl 方案 900s 收到 0 字节、release2gitee 60s 超时、sync-action 20 分钟仍在传；
+#   同一时间 Gitee API 的读/建发行版都正常。结论：Gitee 限制了境外机房的上传，
+#   代码层面无解，只能在「国内网络」里跑。
+#
+# 三种用法：
+#   1. 国内自建 runner：仓库 Settings → Actions → Runners 注册后，设置仓库变量
+#      GITEE_RUNNER=<runner 标签>，再到 Actions 页手动触发本 workflow；
+#   2. 没有自建 runner：在本机 Git Bash 跑 `bash tool/sync_gitee.sh`（release2gitee 单文件）；
+#   3. 本机想用 sync-action 的脚本：见仓库 tool/ 下的说明，效果相同。
 #
 # 手动触发：Actions → Sync Release to Gitee → Run workflow
 name: Sync Release to Gitee
@@ -19,12 +26,17 @@ concurrency:
 
 jobs:
   sync:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
+    # 国内自建 runner 请把仓库变量 GITEE_RUNNER 设成它的标签；默认 GitHub 托管 runner
+    # 会在上传步骤超时（见文件头说明）。
+    runs-on: ${{ vars.GITEE_RUNNER || 'ubuntu-latest' }}
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: sync-action（上传缺的附件）
+      - name: sync-action（补传缺失附件）
         id: sync
         timeout-minutes: 20
         continue-on-error: true
@@ -40,9 +52,8 @@ jobs:
 
       - name: 核验 Gitee 上的 APK
         if: always()
-        env:
-          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
         run: |
+          set -euo pipefail
           TAG=$(gh release view --repo jangviktor-web/nihaixia-app --json tagName -q .tagName)
           CODE=$(curl -s -o /tmp/rel.json -w '%{http_code}' \
             "https://gitee.com/api/v5/repos/jangviktor/nihaixia-app/releases/tags/$TAG?access_token=$GITEE_TOKEN")
@@ -51,5 +62,5 @@ jobs:
           jq -r '[.assets[]? | .name] | join(", ")' /tmp/rel.json
           N=$(jq '[.assets[]? | select(.browser_download_url | contains("/releases/download/"))] | length' /tmp/rel.json)
           echo "APK 附件数：$N"
-          [ "$N" -ge 4 ] || { echo "::error::附件不足 4 个"; exit 1; }
+          [ "$N" -ge 4 ] || { echo "::error::附件不足 4 个（GitHub 托管 runner 上传会被 Gitee 限流，请用国内 runner 或本机脚本）"; exit 1; }
           echo "✅ 同步完成"
