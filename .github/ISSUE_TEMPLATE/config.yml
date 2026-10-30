@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 📥 下载与更新说明
+    url: https://github.com/jangviktor-web/nihaixia-app/releases
+    about: 最新 APK、历史版本与更新日志
+  - name: 📖 常见问题（README）
+    url: https://github.com/jangviktor-web/nihaixia-app#-常见问题解答faq
+    about: 安装、签名、数据导出、离线使用等问题先看这里
+  - name: 🔐 报告安全问题
+    url: https://github.com/jangviktor-web/nihaixia-app/security/advisories/new
+    about: 请勿公开披露漏洞细节

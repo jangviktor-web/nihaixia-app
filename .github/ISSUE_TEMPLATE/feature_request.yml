@@ -1,0 +1,63 @@
+name: ✨ 功能建议
+description: 想要的新功能、新模块、新书目或体验改进
+title: "[Feature] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        先说一下项目的边界：**完全离线、数据打包在本地**。需要联网或大模型算力的功能（比如拍照识别舌象）短期做不了，
+        其它想法都欢迎提。
+
+  - type: textarea
+    id: scenario
+    attributes:
+      label: 你想解决什么问题
+      description: 描述使用场景，比"加个功能"更能帮助判断怎么做
+      placeholder: 比如「带长辈看病时想快速查方剂的煎服法，但现在的字号还是偏小」
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 期望的做法
+      description: 有具体方案更好；没有也没关系
+    validations:
+      required: false
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: 涉及模块
+      options:
+        - 六经辨证 / 问诊
+        - 方剂
+        - 本草
+        - 针灸 / 穴位 / 耳穴
+        - 医案
+        - 经典阅读 / 古籍原文 / 搜索
+        - 五运六气
+        - 紫微 / 八字 / 易经 / 民俗
+        - 界面 / 字号 / 深色模式
+        - 其它
+    validations:
+      required: true
+
+  - type: dropdown
+    id: contribute
+    attributes:
+      label: 是否愿意自己提 PR
+      options:
+        - 愿意，可以按贡献指南来
+        - 愿意提供资料 / 文本，但不写代码
+        - 只提建议
+    validations:
+      required: false
+
+  - type: textarea
+    id: source
+    attributes:
+      label: 参考资料（可选）
+      description: 如果是加书、加方、加穴位，请附上公版出处或国标编号
+    validations:
+      required: false

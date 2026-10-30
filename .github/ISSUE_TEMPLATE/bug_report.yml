@@ -1,0 +1,73 @@
+name: 🐞 Bug 反馈
+description: 崩溃、闪退、卡顿、显示异常或数据错误
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈。请尽量把「版本 + 机型 + 复现步骤」写全，这三样齐全基本能直接定位。
+        如果涉及医疗内容的准确性（方剂、穴位、条文），也请附上出处。
+
+  - type: input
+    id: version
+    attributes:
+      label: App 版本
+      description: 设置 → 关于，或安装包文件名里的版本，例如 1.11.28+8037
+      placeholder: 1.11.28+8037
+    validations:
+      required: true
+
+  - type: input
+    id: device
+    attributes:
+      label: 设备与系统
+      description: 手机型号 + Android 版本
+      placeholder: 小米 14 / Android 15
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      description: 从打开 App 开始，一步一步写到问题出现
+      placeholder: |
+        1. 打开知识库 → 搜索
+        2. 输入「桂枝汤」
+        3. 下拉到「经典」分组
+        4. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望结果
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际结果
+      description: 有报错栈、日志或录屏可以直接贴/拖进来
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: 截图 / 录屏（可选）
+      description: 直接拖拽图片到这里即可
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: conditions
+    attributes:
+      label: 出现问题的环境（可多选）
+      options:
+        - label: 深色模式
+        - label: 字号调到 150% 以上
+        - label: 完全离线（未联网）
+        - label: 刚升级安装完就出现
