@@ -12,6 +12,7 @@ class SettingsRepository extends ChangeNotifier {
   String _defaultGender = ''; // ''=不设置, 'male', 'female'
   String _diagnosticLevel = 'detailed'; // 'simple' or 'detailed'
   bool _autoCopyPrescription = false;
+  bool _hideSolarTermCard = false; // 知识库顶部节气卡占屏，允许隐藏（issue #4）
   bool _loaded = false;
 
   // ---- 排盘共享设置（紫微 / 八字 同步）----
@@ -29,6 +30,7 @@ class SettingsRepository extends ChangeNotifier {
   String get defaultGender => _defaultGender;
   String get diagnosticLevel => _diagnosticLevel;
   bool get autoCopyPrescription => _autoCopyPrescription;
+  bool get hideSolarTermCard => _hideSolarTermCard;
   bool get isLoaded => _loaded;
   bool get useTrueSolarTime => _useTrueSolarTime;
   bool get distinguishZiShiEnabled => _distinguishZiShiEnabled;
@@ -64,6 +66,9 @@ class SettingsRepository extends ChangeNotifier {
           break;
         case 'auto_copy_prescription':
           _autoCopyPrescription = value == 'true';
+          break;
+        case 'hide_solar_term_card':
+          _hideSolarTermCard = value == 'true';
           break;
         case 'use_true_solar_time':
           _useTrueSolarTime = value == 'true';
@@ -118,6 +123,12 @@ class SettingsRepository extends ChangeNotifier {
     _autoCopyPrescription = value;
     notifyListeners();
     await _save('auto_copy_prescription', value.toString());
+  }
+
+  Future<void> setHideSolarTermCard(bool value) async {
+    _hideSolarTermCard = value;
+    notifyListeners();
+    await _save('hide_solar_term_card', value.toString());
   }
 
   Future<void> setUseTrueSolarTime(bool value) async {

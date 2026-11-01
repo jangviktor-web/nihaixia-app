@@ -1,61 +1,97 @@
-# 用 H-TWINKLE/sync-action 把 GitHub Release 里缺的 APK 补传到 Gitee 发行版。
+# 用 YuZhiYuanOrg/release-sync@v1 把**当次发布**的 GitHub Release 同步到 Gitee。
 #
-# ⚠️ 实测（2026-10-30，GitHub 托管 runner）：Gitee 不拒绝上传，但把境外机房限速到
-#   ~18 KB/s——sync-action 20 分钟只传到 33MB 的 74%；旧 curl 900s 连响应头都没等到。
-#   4 个包共 176MB，按此速率约 2.7 小时，所以本 workflow 的超时放宽到 4 小时，
-#   并允许失败后重跑（已挂上的附件会跳过）。
+# ⛔ 旧版本不同步（2026-11-01 用户定）：本 workflow 只同步触发它的那个 release tag，
+#    不做历史批量补齐（所以弃用 H-TWINKLE/sync-action 的「补传全部缺失附件」模式，
+#    旧实现见 git 历史）。
 #
-# 想几分钟就传完：在本机 Git Bash 跑 `bash tool/sync_gitee.sh`（release2gitee 单文件，
-# 国内直连 Gitee）。有国内自建 runner 时，设置仓库变量 GITEE_RUNNER=<runner 标签> 即可跑本流程。
+# 触发：GitHub Release published（build-apk.yml 出包发布后自动）；也可手动带 tag 触发。
 #
-# 触发：发版 workflow 成功后自动跑，也可在 Actions 页手动触发。
-name: Sync Release to Gitee
+# ⚠️ 实测（2026-10-30）：Gitee 对 GitHub 托管 runner（境外机房）限速 ~18KB/s，
+#   4 包共 ~180MB 约需 2.7 小时——本 workflow 超时放宽 4 小时；失败可直接重跑
+#   （release-sync 幂等：同 tag 复用已有 Release、同名附件覆盖，不产生重复）。
+#   有国内自建 runner 时，设仓库变量 GITEE_RUNNER=<runner 标签> 即可分钟级传完；
+#   嫌慢也可在本机 Git Bash 跑 `bash tool/sync_gitee.sh`（release2gitee，国内直连）。
+#
+# Secrets：GITEE_TOKEN（Gitee PAT，repo 权限）——已配置。
+
+name: Sync Latest Release to Gitee
 
 on:
-  workflow_run:
-    workflows: ["Build APK & Release"]
-    types: [completed]
+  release:
+    types: [published]
   workflow_dispatch:
+    inputs:
+      tag:
+        description: '要同步的 release tag（如 v1.11.29）'
+        required: true
+        type: string
 
 permissions:
   contents: read
 
 concurrency:
-  group: gitee-sync
+  group: gitee-sync-${{ github.event.release.tag_name || inputs.tag }}
   cancel-in-progress: false
 
 jobs:
   sync:
-    # 国内自建 runner 请把仓库变量 GITEE_RUNNER 设成它的标签；默认 GitHub 托管 runner
-    # 会在上传步骤超时（见文件头说明）。
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ${{ vars.GITEE_RUNNER || 'ubuntu-latest' }}
     timeout-minutes: 260
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
     steps:
+      - name: Resolve tag
+        id: tag
+        run: echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+
       - uses: actions/checkout@v4
 
-      - name: sync-action（补传缺失附件）
-        id: sync
+      - name: Download this release's APKs from GitHub
+        run: |
+          mkdir -p dist
+          gh release download "${{ steps.tag.outputs.tag }}" \
+            --repo jangviktor-web/nihaixia-app \
+            --pattern 'app-*.apk' --dir dist
+          ls -la dist/
+
+      - name: Ensure tag exists on Gitee (release creation prerequisite)
+        run: |
+          git remote add gitee \
+            "https://jangviktor:${{ secrets.GITEE_TOKEN }}@gitee.com/jangviktor/nihaixia-app.git" || true
+          git push gitee "refs/tags/${{ steps.tag.outputs.tag }}" --force
+
+      - name: Read release notes
+        id: notes
+        run: |
+          {
+            echo 'body<<EOF_NOTES'
+            cat "release_notes/${{ steps.tag.outputs.tag }}.md"
+            echo 'EOF_NOTES'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Sync release assets to Gitee (this tag only)
         timeout-minutes: 240
-        continue-on-error: true
-        uses: H-TWINKLE/sync-action@0d8e95d78481848a0f3f95a737aef45437102269
+        uses: YuZhiYuanOrg/release-sync@v1
         with:
-          gitee_owner: jangviktor
-          gitee_repo: nihaixia-app
-          gitee_token: ${{ secrets.GITEE_TOKEN }}
-          github_owner: jangviktor-web
-          github_repo: nihaixia-app
-          gitee_upload_retry_times: '2'
-          debug: 'true'
+          platforms: 'gitee'
+          tag: ${{ steps.tag.outputs.tag }}
+          release-name: '汉唐中医 ${{ steps.tag.outputs.tag }}'
+          release-body: ${{ steps.notes.outputs.body }}
+          draft: 'false'
+          prerelease: 'false'
+          gitee-token: ${{ secrets.GITEE_TOKEN }}
+          gitee-owner: 'jangviktor'
+          gitee-repo: 'nihaixia-app'
+          gitee-target-commitish: 'master'
+          asset-files: |
+            dist/app-*.apk
 
       - name: 核验 Gitee 上的 APK
         if: always()
         run: |
           set -euo pipefail
-          TAG=$(gh release view --repo jangviktor-web/nihaixia-app --json tagName -q .tagName)
+          TAG="${{ steps.tag.outputs.tag }}"
           CODE=$(curl -s -o /tmp/rel.json -w '%{http_code}' \
             "https://gitee.com/api/v5/repos/jangviktor/nihaixia-app/releases/tags/$TAG?access_token=$GITEE_TOKEN")
           echo "HTTP $CODE"
@@ -63,5 +99,7 @@ jobs:
           jq -r '[.assets[]? | .name] | join(", ")' /tmp/rel.json
           N=$(jq '[.assets[]? | select(.browser_download_url | contains("/releases/download/"))] | length' /tmp/rel.json)
           echo "APK 附件数：$N"
-          [ "$N" -ge 4 ] || { echo "::error::附件不足 4 个（GitHub 托管 runner 上传会被 Gitee 限流，请用国内 runner 或本机脚本）"; exit 1; }
+          [ "$N" -ge 4 ] || { echo "::error::附件不足 4 个（托管 runner 上传会被 Gitee 限流，重跑即可续传幂等）"; exit 1; }
           echo "✅ 同步完成"
+        env:
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}

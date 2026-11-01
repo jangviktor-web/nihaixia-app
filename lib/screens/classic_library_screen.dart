@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../data/zhenjiu_lecture_index.dart';
 import '../data/classic_lecture_data.dart';
 import 'markdown_doc_screen.dart';
 
@@ -39,6 +40,14 @@ class ClassicLibraryScreen extends StatefulWidget {
 class _ClassicLibraryScreenState extends State<ClassicLibraryScreen> {
   final TextEditingController _controller = TextEditingController();
   String _query = '';
+
+  @override
+  void initState() {
+    super.initState();
+    // 预热讲稿↔穴位索引：正文自动链接的排除名单取 json 单一来源；
+    // 详情页「讲义讲解」也依赖它。失败静默降级（硬编码名单兜底）。
+    ZhenJiuLectureIndex.load();
+  }
 
   @override
   void dispose() {

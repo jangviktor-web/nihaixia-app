@@ -88,6 +88,7 @@ class ClassicSearchService {
     'shanghan': '伤寒论讲稿',
     'jingui': '金匮要略讲稿',
     'neijing': '内经讲稿',
+    'zhenjiu': '针灸讲稿',
   };
 
   static String _labelOf(String source, String? bookId) {

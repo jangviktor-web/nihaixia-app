@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import '../models/acupoint_detail.dart';
 import '../data/acupoint_repository.dart';
 import '../data/acupuncture_repository.dart';
+import '../data/zhenjiu_lecture_index.dart';
 import '../models/acupuncture.dart';
 import '../theme/app_colors.dart';
+import 'markdown_doc_screen.dart';
 
 /// 临床心悟中解析出的处方公式（如「暖宫方：三毛 + 关元 + 气海 + 三阴交」）。
 class _Formula {
@@ -72,7 +74,6 @@ class AcupointDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-
     // 关联数据：临床心悟公式 + 反向关联穴位处方/透针
     final formulas = _parseFormulas(acupoint.clinicalNotes);
     final relatedEntries = AcupunctureRepository.getEntries()
@@ -117,6 +118,9 @@ class AcupointDetailScreen extends StatelessWidget {
           if (acupoint.description.isNotEmpty)
             _buildSection('简介', acupoint.description, colorScheme, context.colors),
 
+          // 讲义讲解：针灸讲稿中提及本穴的篇目（索引无命中则不显示）
+          _buildLectureEntry(colorScheme),
+
           // 位置
           if (acupoint.location.isNotEmpty)
             _buildSection('位置', acupoint.location, colorScheme, context.colors),
@@ -151,6 +155,90 @@ class AcupointDetailScreen extends StatelessWidget {
           if (relatedPens.isNotEmpty)
             _buildRelatedPenetrationSection(context, relatedPens, colorScheme),
         ],
+      ),
+    );
+  }
+
+  /// 讲义讲解：针灸讲稿中提及本穴的篇目入口（索引无命中则不渲染任何内容）。
+  Widget _buildLectureEntry(ColorScheme colorScheme) {
+    return FutureBuilder<ZhenJiuLectureIndex>(
+      future: ZhenJiuLectureIndex.load(),
+      builder: (context, snap) {
+        final hits = snap.data?.hitsFor(acupoint.name) ?? const [];
+        if (hits.isEmpty) return const SizedBox.shrink();
+        return Card(
+          margin: const EdgeInsets.only(bottom: 12),
+          child: ListTile(
+            leading: Icon(Icons.menu_book_outlined, color: colorScheme.primary),
+            title: const Text('讲义讲解', style: TextStyle(fontSize: 15)),
+            subtitle: Text(
+              '倪师针灸讲稿中 ${hits.length} 篇提及本穴',
+              style: const TextStyle(fontSize: 12),
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => _showLectureSheet(context, hits, colorScheme),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showLectureSheet(
+      BuildContext context, List<LectureHit> hits, ColorScheme colorScheme) {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (sheetCtx) => SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+              child: Text(
+                '${acupoint.name} · 讲义提及',
+                style: Theme.of(sheetCtx)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w600),
+              ),
+            ),
+            for (final h in hits)
+              ListTile(
+                dense: true,
+                leading: CircleAvatar(
+                  radius: 14,
+                  backgroundColor: colorScheme.primaryContainer,
+                  child: Text(
+                    '${h.seq + 1}',
+                    style: TextStyle(
+                        fontSize: 11, color: colorScheme.onPrimaryContainer),
+                  ),
+                ),
+                title: Text(
+                  ZhenJiuLectureIndex.nameOf(h.seq),
+                  style: const TextStyle(fontSize: 14),
+                ),
+                trailing: Text(
+                  '提及 ${h.count} 次',
+                  style: TextStyle(
+                      fontSize: 12, color: colorScheme.onSurfaceVariant),
+                ),
+                onTap: () {
+                  Navigator.pop(sheetCtx);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => MarkdownDocScreen(
+                        title: ZhenJiuLectureIndex.nameOf(h.seq),
+                        asset: ZhenJiuLectureIndex.assetOf(h.seq),
+                        linkFormulas: true,
+                      ),
+                    ),
+                  );
+                },
+              ),
+          ],
+        ),
       ),
     );
   }

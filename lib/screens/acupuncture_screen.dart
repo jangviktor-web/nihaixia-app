@@ -7,6 +7,7 @@ import '../data/acupoint_repository.dart';
 import '../models/acupuncture.dart';
 import '../models/acupoint_detail.dart';
 import 'acupoint_detail_screen.dart';
+import 'zhenjiu_library_screen.dart';
 import '../theme/app_colors.dart';
 import '../widgets/ear_points_map.dart';
 import '../widgets/keep_alive_tab.dart';
@@ -566,6 +567,21 @@ class _AcupunctureScreenState extends State<AcupunctureScreen>
                     TextStyle(fontSize: 12, color: context.colors.onSurfaceVariant),
               ),
               const Spacer(),
+              // 针灸讲稿（倪师人纪）：系统学习入口，与讲解 tab 逐穴速查互补。
+              TextButton.icon(
+                style: TextButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                icon: const Icon(Icons.menu_book_outlined, size: 16),
+                label: const Text('讲稿', style: TextStyle(fontSize: 12)),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => const ZhenjiuLibraryScreen()),
+                ),
+              ),
               // 选中具体经络 → 直接开该经的循行图；「全部」→ 开图后在对话框内切换经络。
               TextButton.icon(
                 style: TextButton.styleFrom(

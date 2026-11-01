@@ -5,8 +5,11 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../data/formula_repository.dart';
 import '../data/herb_repository.dart';
+import '../data/acupoint_repository.dart';
+import '../data/zhenjiu_lecture_index.dart';
 import 'formula_detail_screen.dart';
 import 'herb_detail_screen.dart';
+import 'acupoint_detail_screen.dart';
 
 /// 解码 flutter_markdown 传给 `onTapLink` 的 href。
 ///
@@ -161,8 +164,9 @@ class _MarkdownDocScreenState extends State<MarkdownDocScreen> {
     setState(() => _future = _load());
   }
 
-  /// 将正文中的已知方剂名、药材名（含别名）包成链接，点击分别跳方剂/药材详情。
-  /// 方剂 + 药材合并为单一候选集、长度降序、单次非重叠扫描，避免嵌套/二次包裹。
+  /// 将正文中的已知方剂名、药材名（含别名）、穴位名（含排除名单）包成链接，
+  /// 点击分别跳方剂 / 药材 / 穴位详情。
+  /// 三类合并为单一候选集、长度降序、单次非重叠扫描，避免嵌套/二次包裹。
   String _injectLinks(String md) {
     final formulaNames = FormulaRepository.getAll()
         .map((f) => f.name)
@@ -173,13 +177,26 @@ class _MarkdownDocScreenState extends State<MarkdownDocScreen> {
       ...HerbRepository.aliasNames,
     }.where((n) => n.length >= 2).toList();
 
-    // 名称 → 链接类型；方剂优先（同名时 formula 生效，herb 的 putIfAbsent 不覆盖）。
+    // 穴位候选：仓库正名去「穴」后缀 + 短名映射（子宫→子宫穴），
+    // 应用讲稿排除名单（太阳/光明——详见 zhenjiu_lecture_index）。
+    final shortForm = AcupointRepository.kShortNameLinkForm;
+    final excluded = ZhenJiuLectureIndex.cachedExcluded ??
+        ZhenJiuLectureIndex.kFallbackExcluded.toSet();
+    final acupointCandidates = AcupointRepository.allNames
+        .map((n) => shortForm[n] ?? n)
+        .where((n) => n.length >= 2 && !excluded.contains(n.replaceAll('穴', '')))
+        .toList();
+
+    // 名称 → 链接类型；方剂优先（同名时 formula 生效，herb/acupoint 的 putIfAbsent 不覆盖）。
     final targetOf = <String, String>{};
     for (final n in formulaNames) {
       targetOf.putIfAbsent(n, () => 'formula');
     }
     for (final n in herbCandidates) {
       targetOf.putIfAbsent(n, () => 'herb');
+    }
+    for (final n in acupointCandidates) {
+      targetOf.putIfAbsent(n, () => 'acupoint');
     }
     if (targetOf.isEmpty) return md;
 
@@ -203,6 +220,16 @@ class _MarkdownDocScreenState extends State<MarkdownDocScreen> {
           context,
           MaterialPageRoute(
               builder: (_) => FormulaDetailScreen(formula: formula)),
+        );
+      }
+    } else if (href.startsWith('acupoint://')) {
+      final name = decodeMarkdownHref(href.substring('acupoint://'.length));
+      final acupoint = AcupointRepository.findByName(name);
+      if (acupoint != null && mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (_) => AcupointDetailScreen(acupoint: acupoint)),
         );
       }
     } else if (href.startsWith('herb://')) {

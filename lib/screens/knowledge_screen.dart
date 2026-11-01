@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../data/formula_repository.dart';
 import '../data/herb_repository.dart';
+import '../data/settings_repository.dart';
 import '../engine/diagnostic_rules.dart';
 import '../models/formula.dart';
 import '../models/herb.dart';
@@ -61,7 +62,13 @@ class _KnowledgeScreenState extends State<KnowledgeScreen>
       ),
       body: Column(
         children: [
-          const SolarTermCard(),
+          // 节气卡占一屏高度；设置里可关掉（issue #4 反馈占屏比大）
+          ListenableBuilder(
+            listenable: SettingsRepository.instance,
+            builder: (context, _) => SettingsRepository.instance.hideSolarTermCard
+                ? const SizedBox.shrink()
+                : const SolarTermCard(),
+          ),
           Expanded(
             child: TabBarView(
               controller: _tabController,

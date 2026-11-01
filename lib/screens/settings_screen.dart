@@ -40,6 +40,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _sectionTitle('外观'),
             _themeModeTile(),
             _fontScaleTile(),
+            _solarTermTile(cs),
             const Divider(height: 24),
             _sectionTitle('诊断'),
             _genderTile(cs),
@@ -104,6 +105,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onChanged: _settings.setTextScaleFactor,
           ),
         ],
+      );
+
+  Widget _solarTermTile(ColorScheme cs) => SwitchListTile(
+        secondary: const Icon(Icons.spa_outlined),
+        title: const Text('知识库顶部节气卡片'),
+        subtitle: const Text('关闭后知识库首屏更清爽；节气养生仍可在「工具」里进入'),
+        value: !_settings.hideSolarTermCard,
+        onChanged: (v) => _settings.setHideSolarTermCard(!v),
+        contentPadding: EdgeInsets.zero,
       );
 
   Widget _genderTile(ColorScheme cs) => ListTile(
