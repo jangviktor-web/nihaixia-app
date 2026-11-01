@@ -56,6 +56,9 @@ jobs:
           fi
 
       - uses: actions/checkout@v4
+        with:
+          fetch-tags: true
+          fetch-depth: 0
 
       - name: Download this release's APKs from GitHub
         run: |
@@ -66,10 +69,13 @@ jobs:
           ls -la dist/
 
       - name: Ensure tag exists on Gitee (release creation prerequisite)
+        continue-on-error: true
         run: |
+          # checkout 默认不拉 tag，先取回本地再推 Gitee
+          git fetch origin "refs/tags/${{ steps.tag.outputs.tag }}:refs/tags/${{ steps.tag.outputs.tag }}" || true
           git remote add gitee \
             "https://jangviktor:${{ secrets.GITEE_TOKEN }}@gitee.com/jangviktor/nihaixia-app.git" || true
-          git push gitee "refs/tags/${{ steps.tag.outputs.tag }}" --force
+          git push gitee "refs/tags/${{ steps.tag.outputs.tag }}" --force || true
 
       - name: Read release notes
         id: notes
