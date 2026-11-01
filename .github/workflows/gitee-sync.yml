@@ -4,7 +4,9 @@
 #    不做历史批量补齐（所以弃用 H-TWINKLE/sync-action 的「补传全部缺失附件」模式，
 #    旧实现见 git 历史）。
 #
-# 触发：GitHub Release published（build-apk.yml 出包发布后自动）；也可手动带 tag 触发。
+# 触发：build-apk.yml 出包发布完成后自动（workflow_run，绕过 GITHUB_TOKEN 不二次触发
+#    的官方限制——release 由 build-apk 用 GITHUB_TOKEN 发布，故 release:published
+#     事件不会再次拉起本 workflow）；也可手动带 tag 触发（workflow_dispatch）。
 #
 # ⚠️ 实测（2026-10-30）：Gitee 对 GitHub 托管 runner（境外机房）限速 ~18KB/s，
 #   4 包共 ~180MB 约需 2.7 小时——本 workflow 超时放宽 4 小时；失败可直接重跑
@@ -17,8 +19,9 @@
 name: Sync Latest Release to Gitee
 
 on:
-  release:
-    types: [published]
+  workflow_run:
+    workflows: ["Build APK & Release"]
+    types: [completed]
   workflow_dispatch:
     inputs:
       tag:
@@ -30,7 +33,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: gitee-sync-${{ github.event.release.tag_name || inputs.tag }}
+  group: gitee-sync-${{ inputs.tag || 'latest' }}
   cancel-in-progress: false
 
 jobs:
@@ -39,11 +42,18 @@ jobs:
     timeout-minutes: 260
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      TAG: ${{ github.event.release.tag_name || inputs.tag }}
     steps:
       - name: Resolve tag
         id: tag
-        run: echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+        run: |
+          if [ -n "${{ inputs.tag }}" ]; then
+            echo "tag=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+          else
+            # build-apk 刚发布的 release 即最新，取最新 tag 同步
+            TAG=$(gh release list --repo jangviktor-web/nihaixia-app --limit 1 --json tagName --jq '.[0].tagName')
+            echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+            echo "自动解析到 tag: $TAG"
+          fi
 
       - uses: actions/checkout@v4
 
