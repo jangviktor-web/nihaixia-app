@@ -101,7 +101,7 @@ jobs:
           gitee-repo: 'nihaixia-app'
           gitee-target-commitish: 'master'
           asset-files: |
-            dist/app-*.apk
+            dist/app-arm64-v8a-release.apk
 
       - name: 核验 Gitee 上的 APK
         if: always()
