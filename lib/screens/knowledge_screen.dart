@@ -10,6 +10,7 @@ import '../widgets/meridian_icons.dart';
 import '../widgets/solar_term_card.dart';
 import '../theme/app_colors.dart';
 import 'acupuncture_screen.dart';
+import 'bencao_library_screen.dart';
 import 'formula_detail_screen.dart';
 import 'herb_detail_screen.dart';
 import 'meridian_detail_screen.dart';
@@ -560,18 +561,36 @@ class _HerbTabState extends State<_HerbTab> {
             },
           ),
         ),
-        // Count
+        // Count + 讲稿入口
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              '共 ${herbs.length} 味药',
-              style: TextStyle(
-                fontSize: 12,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+          child: Row(
+            children: [
+              Text(
+                '共 ${herbs.length} 味药',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
-            ),
+              const Spacer(),
+              // 本草讲稿（倪师人纪）：系统学习入口，与逐药速查互补。
+              TextButton.icon(
+                style: TextButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                icon: const Icon(Icons.menu_book_outlined, size: 16),
+                label: const Text('讲稿', style: TextStyle(fontSize: 12)),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const BenCaoLibraryScreen(),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         // Herb list

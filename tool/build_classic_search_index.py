@@ -34,6 +34,7 @@ LECTURE_SOURCES = [
     ("jingui", os.path.join(ROOT, "assets", "jingui")),
     ("neijing", os.path.join(ROOT, "assets", "neijing")),
     ("zhenjiu", os.path.join(ROOT, "assets", "zhenjiu_lecture")),
+    ("bencao", os.path.join(ROOT, "assets", "bencao_lecture")),
 ]
 
 GUJI_SOURCES = [
@@ -90,11 +91,14 @@ def build_lecture_entries():
             if not body:
                 # 部分讲稿文件只有一行标题（如单条伤寒条文），标题本身就是全部内容
                 body = title
+            # 资产路径用真实目录名（folder 相对 ROOT），而非逻辑 source。
+            # 否则 zhenjiu/bencao 等 source≠目录名的讲稿会指向不存在的 assets/<src>/ 路径。
+            rel = os.path.relpath(path, ROOT).replace("\\", "/")
             entries.append(
                 {
                     "s": src,
                     "t": title,
-                    "a": "assets/" + src + "/" + name,
+                    "a": rel,
                     "x": body,
                 }
             )

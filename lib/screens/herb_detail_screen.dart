@@ -7,7 +7,9 @@ import '../data/herb_repository.dart';
 import '../data/database_helper.dart';
 import '../data/medical_case_data.dart';
 import '../data/critical_illness_data.dart';
+import '../data/bencao_lecture_index.dart';
 import 'herb_related_screens.dart';
+import 'markdown_doc_screen.dart';
 
 class HerbDetailScreen extends StatefulWidget {
   final Herb herb;
@@ -361,6 +363,9 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
               ),
             ),
 
+          // 讲义讲解：本草讲稿中提及本药的篇目（索引无命中则不显示）
+          _buildLectureEntry(cs),
+
           // 相关内容入口（三级结构第一级：药物页仅放入口按钮，列表/详情各自独立加载）
           Card(
             margin: const EdgeInsets.only(bottom: 12),
@@ -411,6 +416,90 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  /// 讲义讲解：本草讲稿中提及本药的篇目入口（索引无命中则不渲染任何内容）。
+  Widget _buildLectureEntry(ColorScheme colorScheme) {
+    return FutureBuilder<BenCaoLectureIndex>(
+      future: BenCaoLectureIndex.load(),
+      builder: (context, snap) {
+        final hits = snap.data?.hitsFor(widget.herb.name) ?? const [];
+        if (hits.isEmpty) return const SizedBox.shrink();
+        return Card(
+          margin: const EdgeInsets.only(bottom: 12),
+          child: ListTile(
+            leading: Icon(Icons.menu_book_outlined, color: colorScheme.primary),
+            title: const Text('讲义讲解', style: TextStyle(fontSize: 15)),
+            subtitle: Text(
+              '倪师本草讲稿中 ${hits.length} 篇提及本药',
+              style: const TextStyle(fontSize: 12),
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => _showLectureSheet(context, hits, colorScheme),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showLectureSheet(
+      BuildContext context, List<LectureHit> hits, ColorScheme colorScheme) {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (sheetCtx) => SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+              child: Text(
+                '${widget.herb.name} · 讲义提及',
+                style: Theme.of(sheetCtx)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w600),
+              ),
+            ),
+            for (final h in hits)
+              ListTile(
+                dense: true,
+                leading: CircleAvatar(
+                  radius: 14,
+                  backgroundColor: colorScheme.primaryContainer,
+                  child: Text(
+                    '${h.seq + 1}',
+                    style: TextStyle(
+                        fontSize: 11, color: colorScheme.onPrimaryContainer),
+                  ),
+                ),
+                title: Text(
+                  BenCaoLectureIndex.nameOf(h.seq),
+                  style: const TextStyle(fontSize: 14),
+                ),
+                trailing: Text(
+                  '提及 ${h.count} 次',
+                  style: TextStyle(
+                      fontSize: 12, color: colorScheme.onSurfaceVariant),
+                ),
+                onTap: () {
+                  Navigator.pop(sheetCtx);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => MarkdownDocScreen(
+                        title: BenCaoLectureIndex.nameOf(h.seq),
+                        asset: BenCaoLectureIndex.assetOf(h.seq),
+                        linkFormulas: true,
+                      ),
+                    ),
+                  );
+                },
+              ),
+          ],
+        ),
       ),
     );
   }
