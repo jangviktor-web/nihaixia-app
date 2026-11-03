@@ -22,8 +22,8 @@ void main() {
   }
 
   test('伤寒论 阅读库资产全部可加载', () async {
-    // 条文级拆分后：23 篇 → 380 条
-    expect(kShangHanLectures.length, 380);
+    // 条文级拆分后：23 篇 → 380 条（+1 条 nhx 补缺：桂枝去芍药汤/加附子汤）
+    expect(kShangHanLectures.length, 381);
     await expectAllLoadable(kShangHanLectures, '伤寒论');
   });
 

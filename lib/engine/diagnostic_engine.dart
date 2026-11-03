@@ -2561,9 +2561,9 @@ class DiagnosticEngine {
     if (hasHerniaPain) {
       return DiagnosisResult(
         meridian: '少阴',
-        pattern: '寒疝腹痛（乌头煎证）',
+        pattern: '寒疝腹痛（大乌头煎证）',
         patternDetail: '腹痛，绕脐痛，发则白汗出，手足厥冷。',
-        formula: '乌头煎',
+        formula: '大乌头煎',
         explanation: '乌头大热散寒止痛，蜜制缓毒。寒疝剧痛专方。',
         confidence: 0.85,
         matchedSymptoms: _selectedSymptoms,
@@ -3960,13 +3960,13 @@ class DiagnosticEngine {
       );
     }
 
-    // 猪膏髪煎：诸黄
+    // 猪膏发煎：诸黄（2026-11-03 合并「猪膏髪煎」入「猪膏发煎」后统一正名）
     if (_symSelected('诸黄') || _symSelected('黄疸通用')) {
       return DiagnosisResult(
         meridian: '阳明',
-        pattern: '黄疸通治（猪膏髪煎证）',
+        pattern: '黄疸通治（猪膏发煎证）',
         patternDetail: '诸黄，猪膏发煎主之。',
-        formula: '猪膏髪煎',
+        formula: '猪膏发煎',
         explanation: '猪膏润燥，乱发消瘀。黄疸通治方。',
         confidence: 0.7,
         matchedSymptoms: _selectedSymptoms,

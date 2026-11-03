@@ -408,6 +408,7 @@ const List<ClassicLecture> kShangHanLectures = [
   ClassicLecture(seq: 377, name: '六经总结·六经传变规律', asset: 'assets/shanghan/clause_377.md'),
   ClassicLecture(seq: 378, name: '六经总结·六经病欲解时', asset: 'assets/shanghan/clause_378.md'),
   ClassicLecture(seq: 379, name: '六经总结·六经辨证临床要点', asset: 'assets/shanghan/clause_379.md'),
+  ClassicLecture(seq: 380, name: '条文25·桂枝去芍药汤（若微恶寒者加附子）', asset: 'assets/shanghan/clause_380.md'),
 ];
 
 const List<ClassicLecture> kJinguiLectures = [

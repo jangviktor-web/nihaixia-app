@@ -1,60 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../models/formula.dart';
 import '../theme/app_colors.dart';
 import '../models/bookmark.dart';
 import '../data/database_helper.dart';
-import '../data/formula_repository.dart';
+import '../data/formula_mention_index.dart';
 import '../data/herb_repository.dart';
 import '../data/classic_lecture_data.dart';
 import 'herb_detail_screen.dart';
 import 'markdown_doc_screen.dart';
-
-/// 「XX主之」——方名之后紧接主治标记（跳过收尾引号括号）。
-/// 中间档精度：条文原文中**只有「主之」**才算「专门介绍」，
-/// 舍去「宜/与/属/可/当」等弱信号，避免把对比/加减方条文也算进来。
-final RegExp _versePrescribe = RegExp(r'^\s*[」』】\]）)]?\s*主之');
-
-bool _maximalHas(String text, RegExp nameRe, String name) =>
-    nameRe.allMatches(text).any((m) => m.group(0) == name);
-
-/// 一条 伤寒论/金匮 资源是否**专门介绍** [name]（中间档精度）：
-/// 1) 方证标题（首行且为标题行）即该方，如「条文15：桂枝汤证」；
-/// 2) 条文原文（`>` 引文块，不含倪师讲解小标题）中，**方名之后紧接「主之」**。
-///    舍去「宜/与/属/可/当」等弱信号，避免把对比/加减方条文也算进来。
-///
-/// [nameRe] 是「全部方名按长优先拼成的正则」，用于**最长优先**匹配，
-/// 避免「四逆汤」误命中更长的「茯苓四逆汤」「通脉四逆汤」。
-bool clauseIntroducesFormula(String text, RegExp nameRe, String name) {
-  final lines = text.split('\n');
-  // 1) 方证标题（首行且为标题行）即该方，如「### 条文34：四逆汤（救逆第四方）」。
-  if (lines.isNotEmpty &&
-      lines.first.trim().startsWith('#') &&
-      _maximalHas(lines.first, nameRe, name)) {
-    return true;
-  }
-  // 原文区 = `>` 引文块（含硬换行续行）；不含 `#` 讲解小标题。
-  final b = StringBuffer();
-  var inBq = false;
-  for (final ln in lines) {
-    final s = ln.trim();
-    if (s.startsWith('>')) {
-      b.writeln(s);
-      inBq = true;
-    } else if (inBq && s.isNotEmpty && !s.startsWith('#')) {
-      b.writeln(s);
-    } else {
-      inBq = false;
-    }
-  }
-  final region = b.toString();
-  for (final m in nameRe.allMatches(region)) {
-    if (m.group(0) != name) continue;
-    final after = region.substring(m.end, (m.end + 5).clamp(0, region.length));
-    if (_versePrescribe.hasMatch(after)) return true;
-  }
-  return false;
-}
 
 class FormulaDetailScreen extends StatefulWidget {
   final Formula formula;
@@ -70,8 +23,8 @@ class _FormulaDetailScreenState extends State<FormulaDetailScreen> {
   bool _loadingMentions = true;
   List<ClassicLecture> _shanghanHits = [];
   List<ClassicLecture> _jinguiHits = [];
-  static final Map<String, String> _assetTextCache = {};
-  static RegExp? _nameReCache;
+  List<MentionHit> _zhenjiuMentions = [];
+  List<MentionHit> _bencaoMentions = [];
 
   @override
   void initState() {
@@ -124,54 +77,24 @@ class _FormulaDetailScreenState extends State<FormulaDetailScreen> {
         '${f.explanation}';
   }
 
-  /// 「见于经典」：只保留**专门介绍**该方的条文（伤寒论 / 金匮 各自分组）。
-  ///
-  /// 两本书均已按条文拆成单条资源，故每条命中即代表「该条文专门介绍此方」。
-  /// 判定见 [clauseIntroducesFormula]。
+  /// 「见于经典」+ 讲稿提及：查预生成索引（tool/build_formula_index.py 生成，
+  /// 判定与原运行时扫描逐位一致，见脚本 selfcheck）。
+  /// 索引缺失/未命中 → 对应分组不渲染，不崩。
   Future<void> _loadMentions() async {
-    final name = widget.formula.name;
-    final sh = <ClassicLecture>[];
-    final jg = <ClassicLecture>[];
-    if (name.isNotEmpty) {
-      final nameRe = _formulaNameRegExp();
-      // 并行读取（伤寒 380 + 金匮 453 个条文资源；串行会明显拖慢首次打开）
-      final shTexts = await Future.wait(
-          kShangHanLectures.map((l) => _loadAssetText(l.asset)));
-      for (var i = 0; i < kShangHanLectures.length; i++) {
-        if (clauseIntroducesFormula(shTexts[i], nameRe, name)) {
-          sh.add(kShangHanLectures[i]);
-        }
-      }
-      final jgTexts = await Future.wait(
-          kJinguiLectures.map((l) => _loadAssetText(l.asset)));
-      for (var i = 0; i < kJinguiLectures.length; i++) {
-        if (clauseIntroducesFormula(jgTexts[i], nameRe, name)) {
-          jg.add(kJinguiLectures[i]);
-        }
-      }
-    }
+    final idx = await FormulaMentionIndex.load();
+    final hits = idx.hitsFor(widget.formula.name);
     if (!mounted) return;
     setState(() {
-      _shanghanHits = sh;
-      _jinguiHits = jg;
+      _shanghanHits = hits == null
+          ? const []
+          : hits.shanghan.map((i) => kShangHanLectures[i]).toList();
+      _jinguiHits = hits == null
+          ? const []
+          : hits.jingui.map((i) => kJinguiLectures[i]).toList();
+      _zhenjiuMentions = hits?.zhenjiu ?? const [];
+      _bencaoMentions = hits?.bencao ?? const [];
       _loadingMentions = false;
     });
-  }
-
-  Future<String> _loadAssetText(String asset) async =>
-      _assetTextCache[asset] ??= await rootBundle.loadString(asset);
-
-  /// 全部方名（长优先）拼成的正则，用于**最长优先**匹配，
-  /// 避免「四逆汤」误命中「茯苓四逆汤」「通脉四逆汤」等更长方名。
-  static RegExp _formulaNameRegExp() {
-    return _nameReCache ??= () {
-      final names = FormulaRepository.getAll()
-          .map((f) => f.name)
-          .where((n) => n.isNotEmpty)
-          .toList()
-        ..sort((a, b) => b.length.compareTo(a.length));
-      return RegExp(names.map(RegExp.escape).join('|'));
-    }();
   }
 
   Widget _buildClauseCard(ClassicLecture lec) {
@@ -203,6 +126,41 @@ class _FormulaDetailScreenState extends State<FormulaDetailScreen> {
             style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: color)),
       ),
       ...hits.map(_buildClauseCard),
+    ];
+  }
+
+  /// 讲稿提及分组（针灸/本草）：ListTile → MarkdownDocScreen，副标题带提及次数。
+  List<Widget> _buildLectureGroup(
+      String bookName, List<MentionHit> hits, String Function(int) nameOf,
+      String Function(int) assetOf) {
+    final color = Theme.of(context).colorScheme.primary;
+    return [
+      Padding(
+        padding: const EdgeInsets.only(top: 8, bottom: 2),
+        child: Text(bookName,
+            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: color)),
+      ),
+      ...hits.map((h) => Card(
+            margin: const EdgeInsets.symmetric(vertical: 4),
+            child: ListTile(
+              dense: true,
+              title: Text(nameOf(h.seq), style: const TextStyle(fontSize: 13)),
+              trailing: Text('提及 ${h.count} 次',
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: context.colors.onSurfaceVariant)),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => MarkdownDocScreen(
+                    title: nameOf(h.seq),
+                    asset: assetOf(h.seq),
+                    linkFormulas: true,
+                  ),
+                ),
+              ),
+            ),
+          )),
     ];
   }
 
@@ -416,12 +374,21 @@ class _FormulaDetailScreenState extends State<FormulaDetailScreen> {
                 padding: EdgeInsets.symmetric(vertical: 8),
                 child: CircularProgressIndicator(),
               )
-            else if (_shanghanHits.isEmpty && _jinguiHits.isEmpty)
+            else if (_shanghanHits.isEmpty &&
+                _jinguiHits.isEmpty &&
+                _zhenjiuMentions.isEmpty &&
+                _bencaoMentions.isEmpty)
               Text('暂未在该模块经典中找到出处',
                   style: TextStyle(fontSize: 13, color: context.colors.onSurfaceVariant))
             else ...[
               if (_shanghanHits.isNotEmpty) ..._buildBookGroup('伤寒论', _shanghanHits),
               if (_jinguiHits.isNotEmpty) ..._buildBookGroup('金匮要略', _jinguiHits),
+              if (_zhenjiuMentions.isNotEmpty)
+                ..._buildLectureGroup('针灸讲稿', _zhenjiuMentions,
+                    FormulaMentionIndex.zhenjiuNameOf, FormulaMentionIndex.zhenjiuAssetOf),
+              if (_bencaoMentions.isNotEmpty)
+                ..._buildLectureGroup('本草讲稿', _bencaoMentions,
+                    FormulaMentionIndex.bencaoNameOf, FormulaMentionIndex.bencaoAssetOf),
             ],
           ],
         ),
