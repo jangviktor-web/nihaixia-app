@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../data/classic_lecture_data.dart';
+import '../data/jingui_lecture_data.dart';
 import 'classic_library_screen.dart';
 import 'guji_library_screen.dart';
+import 'jingui_book_lecture_screen.dart';
 
 /// 《人纪·伤寒论》《人纪·金匮要略》阅读库入口（知识库第 7 个 Tab 内容）。
 /// 两本各一张入口卡 → [ClassicLibraryScreen]（全文阅读 + 方剂/药材自动链接）。
@@ -63,6 +65,12 @@ class ShangHanJinguiScreen extends StatelessWidget {
               lectures: kJinguiLectures,
               footer: '出处：《人纪·金匮要略》倪师讲稿 · 传统文化参考',
             )),
+          ),
+          _BookCard(
+            icon: Icons.menu_book_outlined,
+            title: '金匮讲稿（书面版）',
+            subtitle: '授课实录书面整理 · ${kJinGuiBookLectures.length} 篇 · 系统通读',
+            onTap: () => _open(context, const JinguiBookLectureScreen()),
           ),
           _BookCard(
             icon: Icons.auto_stories_outlined,
