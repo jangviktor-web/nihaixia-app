@@ -232,10 +232,10 @@
 
 | 安装包 | 大小 | 适用说明 |
 |---|---|---|
-| 通用版 `app-release.apk` | 待发布后回填 | 全CPU架构，绝大多数安卓设备直接选这个 |
-| arm64‑v8a `app‑arm64‑v8a‑release.apk` | 待发布后回填 | 新款64位安卓手机，体积更小 |
-| armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | 待发布后回填 | 老旧32位安卓设备 |
-| x86_64 `app‑x86_64‑release.apk` | 待发布后回填 | 安卓虚拟机、模拟器使用 |
+| 通用版 `app-release.apk` | 85.1MB | 全CPU架构，绝大多数安卓设备直接选这个 |
+| arm64‑v8a `app‑arm64‑v8a‑release.apk` | 38.0MB | 新款64位安卓手机，体积更小 |
+| armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | 35.7MB | 老旧32位安卓设备 |
+| x86_64 `app‑x86_64‑release.apk` | 39.6MB | 安卓虚拟机、模拟器使用 |
 
 > **V1.11.30 条文卡讲解全覆盖 · 繁体显示 · 医案简体化**：伤寒 384 + 金匮 433 共 839 张条文卡全部配有讲解（合并 22 组问答卡）；阅读页/药材详情/方剂详情新增繁体显示开关（OpenCC 词典级）；三处检索支持繁体输入；医案全文简体化 + 药材异名映射 135 条。详见 [Release Notes](release_notes/v1.11.30.md)。
 > 
