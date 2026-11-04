@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import '../models/herb.dart';
+import 'chinese_convert.dart';
 
 class HerbRepository {
   static List<Herb> _herbs = [];
@@ -206,7 +207,8 @@ class HerbRepository {
   /// 导致 103 个异名中 74 / 87 个失效。修复方式是收敛到本方法，而非各处打补丁。
   static bool matchesQuery(Herb h, String query) {
     if (query.isEmpty) return false;
-    final q = query.toLowerCase();
+    // 繁简归一：繁体输入（如「當歸」）亦命中简体药名与正文。
+    final q = toSimplified(query).toLowerCase();
     final cq = canonicalOf(query).toLowerCase();
     return h.name.toLowerCase().contains(q) ||
         h.name.toLowerCase().contains(cq) ||

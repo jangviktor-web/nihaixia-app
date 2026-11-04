@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 
+import '../data/chinese_convert.dart';
 import '../data/guji_data.dart';
 import 'gzip_codec_stub.dart' if (dart.library.io) 'gzip_codec_io.dart';
 
@@ -133,7 +134,9 @@ class ClassicSearchService {
     if (q.isEmpty) return ClassicSearchResult.empty;
     await ensureLoaded();
     final entries = _entries!;
-    final needle = q.toLowerCase();
+    // 繁简归一：繁体输入（如「當歸」「湯」）也能命中简体索引。
+    // 索引正文已在构建期统一为简体，故只需归一查询词。
+    final needle = toSimplified(q).toLowerCase();
 
     final titleHits = <ClassicHit>[];
     final bodyHits = <ClassicHit>[];

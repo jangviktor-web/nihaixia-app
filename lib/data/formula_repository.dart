@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import '../models/formula.dart';
 import '../models/diagnosis.dart';
+import 'chinese_convert.dart';
 
 class FormulaRepository {
   static List<Formula>? _formulas;
@@ -50,7 +51,8 @@ class FormulaRepository {
 
   static List<Formula> search(String query) {
     if (_formulas == null) return [];
-    final q = query.toLowerCase();
+    // 繁简归一：繁体输入（如「麻黃湯」）亦命中简体方名。
+    final q = toSimplified(query).toLowerCase();
     return _formulas!.where((f) {
       return f.name.toLowerCase().contains(q) ||
           f.alias.toLowerCase().contains(q) ||
