@@ -3,11 +3,9 @@ import '../widgets/state_view.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
-import 'package:flutter_open_chinese_convert/flutter_open_chinese_convert.dart';
-
-import '../data/chinese_convert.dart';
 import '../data/formula_repository.dart';
 import '../data/settings_repository.dart';
+import '../data/traditional_display.dart';
 import '../data/herb_repository.dart';
 import '../data/acupoint_repository.dart';
 import '../data/zhenjiu_lecture_index.dart';
@@ -162,30 +160,11 @@ class _MarkdownDocScreenState extends State<MarkdownDocScreen> {
   Future<String> _load() async {
     final raw = widget.content ?? await rootBundle.loadString(widget.asset);
     final md = widget.linkFormulas ? _injectLinks(raw) : raw;
-    return SettingsRepository.instance.traditionalDisplayEnabled
-        ? _toTraditional(md)
-        : md;
+    // 繁简转换在注入链接之后：href 会被 trMarkdown 还原为简体，保证跳转命中。
+    return trMarkdown(md);
   }
 
-  /// 简体 → 繁体（OpenCC 词典级，native 侧后台线程转换）。
-  ///
-  /// 链接目标必须保持简体：`[当归](herb://当归)` 经整体转换会变成
-  /// `[當歸](herb://當歸)`，查库用的是简体正名 → 点击失效。
-  /// 故转换后把每个链接的 href 用 [toSimplified] 还原（锚文本仍为繁体）。
-  static final RegExp _mdLink = RegExp(r'\[([^\]]*)\]\(([^)]*)\)');
-
-  Future<String> _toTraditional(String md) async {
-    try {
-      final converted =
-          await ChineseConverter.convert(md, S2T(), inBackground: true);
-      return converted.replaceAllMapped(
-          _mdLink, (m) => '[${m[1]}](${toSimplified(m[2]!)})');
-    } catch (_) {
-      // 转换失败（插件不可用/极端文本）→ 退回简体，不阻断阅读。
-      return md;
-    }
-  }
-
+  /// 重载正文（切换繁体显示后调用）。
   void _reload() {
     setState(() => _future = _load());
   }
@@ -275,7 +254,28 @@ class _MarkdownDocScreenState extends State<MarkdownDocScreen> {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
+      appBar: AppBar(
+        title: Text(widget.title),
+        actions: [
+          // 繁体显示开关（原在「设置 → 外观」，挪到阅读页更易发现）
+          IconButton(
+            icon: Icon(Icons.translate,
+                color: SettingsRepository.instance.traditionalDisplayEnabled
+                    ? Theme.of(context).colorScheme.primary
+                    : null),
+            tooltip: SettingsRepository.instance.traditionalDisplayEnabled
+                ? '关闭繁体显示'
+                : '繁体显示',
+            onPressed: () async {
+              final next = !SettingsRepository
+                  .instance.traditionalDisplayEnabled;
+              await SettingsRepository.instance
+                  .setTraditionalDisplayEnabled(next);
+              if (mounted) _reload();
+            },
+          ),
+        ],
+      ),
       body: FutureBuilder<String>(
         future: _future,
         builder: (context, snapshot) {

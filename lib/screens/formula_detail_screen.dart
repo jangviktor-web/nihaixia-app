@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/formula.dart';
 import '../theme/app_colors.dart';
 import '../models/bookmark.dart';
+import '../data/traditional_display.dart';
 import '../data/database_helper.dart';
 import '../data/formula_mention_index.dart';
 import '../data/herb_repository.dart';
@@ -19,6 +20,9 @@ class FormulaDetailScreen extends StatefulWidget {
 }
 
 class _FormulaDetailScreenState extends State<FormulaDetailScreen> {
+
+  /// 繁体显示：内容字段进页时一次性转换并缓存（关开关则空表，渲染原样）。
+  Map<String, String> _tc = {};
   bool _isBookmarked = false;
   bool _loadingMentions = true;
   List<ClassicLecture> _shanghanHits = [];
@@ -26,9 +30,22 @@ class _FormulaDetailScreenState extends State<FormulaDetailScreen> {
   List<MentionHit> _zhenjiuMentions = [];
   List<MentionHit> _bencaoMentions = [];
 
+  Future<void> _loadTraditional() async {
+    if (!traditionalDisplayOn) return;
+    final f = widget.formula;
+    final m = await trTexts(<String?>[
+      f.indication, f.contraindication, f.dosage, f.explanation,
+      ...f.components.map((c) => c.role),
+    ]);
+    if (mounted && m.isNotEmpty) setState(() => _tc = m);
+  }
+
+  String _t(String? s) => s == null ? '' : (_tc[s] ?? s);
+
   @override
   void initState() {
     super.initState();
+    _loadTraditional();
     _checkBookmark();
     _loadMentions();
   }
@@ -277,7 +294,7 @@ class _FormulaDetailScreenState extends State<FormulaDetailScreen> {
                                   ),
                                 ),
                                 if (c.dosage.isNotEmpty)
-                                  TextSpan(text: '  ${c.dosage}'),
+                                  TextSpan(text: '  ${_t(c.dosage)}'),
                               ],
                             ),
                           ),
@@ -285,7 +302,7 @@ class _FormulaDetailScreenState extends State<FormulaDetailScreen> {
                         if (c.role.isNotEmpty)
                           Expanded(
                             child: Text(
-                              c.role,
+                              _t(c.role),
                               style: TextStyle(
                                 fontSize: 12,
                                 color: context.colors.onSurfaceVariant,
@@ -304,7 +321,7 @@ class _FormulaDetailScreenState extends State<FormulaDetailScreen> {
             _SectionTitle(title: '适应证'),
             const SizedBox(height: 8),
             Text(
-              f.indication,
+              _t(f.indication),
               style: const TextStyle(fontSize: 14, height: 1.6),
             ),
             const SizedBox(height: 20),
@@ -321,7 +338,7 @@ class _FormulaDetailScreenState extends State<FormulaDetailScreen> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  f.contraindication,
+                  _t(f.contraindication),
                   style: TextStyle(
                     fontSize: 14,
                     color: cs.onErrorContainer,
@@ -337,7 +354,7 @@ class _FormulaDetailScreenState extends State<FormulaDetailScreen> {
               _SectionTitle(title: '煎服法'),
               const SizedBox(height: 8),
               Text(
-                f.dosage,
+                _t(f.dosage),
                 style: const TextStyle(fontSize: 14, height: 1.6),
               ),
               const SizedBox(height: 20),
@@ -355,7 +372,7 @@ class _FormulaDetailScreenState extends State<FormulaDetailScreen> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  f.explanation,
+                  _t(f.explanation),
                   style: TextStyle(
                     fontSize: 14,
                     height: 1.6,

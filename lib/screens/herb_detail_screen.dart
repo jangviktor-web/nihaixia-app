@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/herb.dart';
 import '../theme/app_colors.dart';
 import '../models/bookmark.dart';
+import '../data/traditional_display.dart';
 import '../data/formula_repository.dart';
 import '../data/herb_repository.dart';
 import '../data/database_helper.dart';
@@ -22,6 +23,10 @@ class HerbDetailScreen extends StatefulWidget {
 
 class _HerbDetailScreenState extends State<HerbDetailScreen> {
   bool _isBookmarked = false;
+
+  /// 繁体显示：内容字段进页时一次性转换并缓存（关开关则空表，渲染原样）。
+  /// ponytail: 翻开关后需重进本页生效，与阅读页一致，不做逐帧转换。
+  Map<String, String> _tc = {};
   List<MedicalCase> _relatedCases = const [];
   bool _casesReady = false;
   List<CriticalIllness> _relatedCritical = const [];
@@ -29,9 +34,24 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
   @override
   void initState() {
     super.initState();
+    _loadTraditional();
     _checkBookmark();
     _loadBacklinks();
   }
+
+  Future<void> _loadTraditional() async {
+    if (!traditionalDisplayOn) return;
+    final h = widget.herb;
+    final m = await trTexts(<String?>[
+      h.nature, h.action, h.original, h.niNote, h.rongchuan,
+      h.dosage, h.contraindication, h.clinicalNotes, h.historicalNotes,
+      ...h.herbComparisons,
+    ]);
+    if (mounted && m.isNotEmpty) setState(() => _tc = m);
+  }
+
+  /// 内容文本取繁体（无缓存则原样）。
+  String _t(String? s) => s == null ? '' : (_tc[s] ?? s);
 
   void _checkBookmark() async {
     final db = DatabaseHelper.instance;
@@ -189,24 +209,24 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
           ),
 
           // 性味
-          if (herb.nature != null) _buildSection('性味', herb.nature!, cs),
+          if (herb.nature != null) _buildSection('性味', _t(herb.nature), cs),
 
           // 主治
-          if (herb.action != null) _buildSection('主治', herb.action!, cs),
+          if (herb.action != null) _buildSection('主治', _t(herb.action), cs),
 
           // 本经原文
           if (herb.original != null)
-            _buildSection('本经原文', herb.original!, cs),
+            _buildSection('本经原文', _t(herb.original), cs),
 
           // 倪注
-          if (herb.niNote != null) _buildSection('倪注', herb.niNote!, cs),
+          if (herb.niNote != null) _buildSection('倪注', _t(herb.niNote), cs),
 
           // 容川注
           if (herb.rongchuan != null)
-            _buildSection('容川注', herb.rongchuan!, cs),
+            _buildSection('容川注', _t(herb.rongchuan), cs),
 
           // 用量
-          if (herb.dosage != null) _buildSection('用量', herb.dosage!, cs),
+          if (herb.dosage != null) _buildSection('用量', _t(herb.dosage), cs),
 
           // 禁忌
           if (herb.contraindication != null)
@@ -235,7 +255,7 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      herb.contraindication!,
+                      _t(herb.contraindication),
                       style: TextStyle(
                           fontSize: 14,
                           height: 1.6,
@@ -273,7 +293,7 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      herb.clinicalNotes!,
+                      _t(herb.clinicalNotes),
                       style: TextStyle(
                           fontSize: 14,
                           height: 1.6,
@@ -311,7 +331,7 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      herb.historicalNotes!,
+                      _t(herb.historicalNotes),
                       style: TextStyle(
                           fontSize: 14,
                           height: 1.6,
@@ -351,7 +371,7 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
                     ...herb.herbComparisons.map((c) => Padding(
                       padding: const EdgeInsets.only(bottom: 6),
                       child: Text(
-                        '· $c',
+                        '· ${_t(c)}',
                         style: TextStyle(
                             fontSize: 14,
                             height: 1.5,
