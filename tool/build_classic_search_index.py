@@ -74,7 +74,7 @@ def first_heading(text: str, fallback: str) -> str:
     return fallback
 
 
-def build_lecture_entries():
+def build_lecture_entries(missing_titles=None):
     entries = []
     for src, folder in LECTURE_SOURCES:
         if not os.path.isdir(folder):
@@ -87,6 +87,11 @@ def build_lecture_entries():
             with open(path, encoding="utf-8") as f:
                 raw = f.read()
             title = first_heading(raw, os.path.splitext(name)[0])
+            if title == os.path.splitext(name)[0]:
+                # 没有标题行 → 标题退化成文件名（搜索里会出现「clause_173」这种结果）。
+                # 数据缺标题是根因，这里只报警，不静默。
+                if missing_titles is not None:
+                    missing_titles.append(os.path.relpath(path, ROOT).replace("\\", "/"))
             body = strip_markdown(raw)
             if not body:
                 # 部分讲稿文件只有一行标题（如单条伤寒条文），标题本身就是全部内容
@@ -147,7 +152,8 @@ def build_guji_entries():
 
 
 def main():
-    lecture = build_lecture_entries()
+    missing = []
+    lecture = build_lecture_entries(missing)
     guji = build_guji_entries()
     payload = {"v": 1, "entries": lecture + guji}
     raw = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
@@ -160,6 +166,10 @@ def main():
     print("[OK] entries=%d (lecture=%d, guji=%d)" % (len(lecture + guji), len(lecture), len(guji)))
     print("[OK] raw=%.1fMB gz=%.2fMB chars=%d" % (len(raw) / 1048576.0, os.path.getsize(OUT) / 1048576.0, chars))
     print("[OK] -> " + OUT)
+    if missing:
+        print("[WARN] %d 个讲稿缺标题行，搜索标题退化为文件名（补 #### 标题后重跑）:" % len(missing))
+        for m in missing:
+            print("        " + m)
 
 
 if __name__ == "__main__":

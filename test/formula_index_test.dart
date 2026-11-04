@@ -78,10 +78,23 @@ void main() {
           contains('甘草干姜茯苓白术汤'));
       expect(FormulaRepository.search('肾着汤').map((f) => f.name),
           contains('甘草干姜茯苓白术汤'));
+      // 本轮再并：橘枳生姜汤→橘枳姜汤、厚朴人参汤→厚朴生姜半夏甘草人参汤、
+      // 麻黄连翘赤小豆汤→麻黄连轺赤小豆汤（轺=连翘根），旧名均须可搜
+      expect(FormulaRepository.search('橘枳生姜汤').map((f) => f.name),
+          contains('橘枳姜汤'));
+      expect(FormulaRepository.search('厚朴人参汤').map((f) => f.name),
+          contains('厚朴生姜半夏甘草人参汤'));
+      expect(FormulaRepository.search('连翘赤小豆汤').map((f) => f.name),
+          contains('麻黄连轺赤小豆汤'));
+      // 栀子枳实汤原条目漏「香豉」，已并入枳实栀子豉汤（宋本393 劳复方）
+      expect(FormulaRepository.search('栀子枳实汤').map((f) => f.name),
+          contains('枳实栀子豉汤'));
+      expect(FormulaRepository.search('枳实栀子汤').map((f) => f.name),
+          contains('枳实栀子豉汤'));
       expect(FormulaRepository.search('甘姜苓术汤').map((f) => f.name),
           contains('甘草干姜茯苓白术汤'));
-      // 合并后条目总数 327 → 317，且不再有重名
-      expect(FormulaRepository.getAll().length, 317);
+      // 合并后条目总数 327 → 314（含新增桂苓甘草龙骨牡蛎汤、再并橘枳生姜汤/厚朴人参汤）；且不再有重名
+      expect(FormulaRepository.getAll().length, 314);
       final names = FormulaRepository.getAll().map((f) => f.name).toList();
       expect(names.toSet().length, names.length, reason: '不应有重名方剂');
     });

@@ -22,18 +22,27 @@ void main() {
   }
 
   test('伤寒论 阅读库资产全部可加载', () async {
-    // 条文级拆分后：23 篇 → 380 条（+1 条 nhx 补缺：桂枝去芍药汤/加附子汤）
-    expect(kShangHanLectures.length, 381);
+    // 条文级拆分后：23 篇 → 380 条（+2 条 nhx 补缺：桂枝去芍药汤/加附子汤、桂苓甘草龙骨牡蛎汤）
+    expect(kShangHanLectures.length, 384);
     await expectAllLoadable(kShangHanLectures, '伤寒论');
   });
 
   test('金匮要略 阅读库资产全部可加载', () async {
-    // 条文级拆分后：25 篇 → 453 条
-    expect(kJinguiLectures.length, 453);
+    // 条文级切分后：453 条（+2 nhx 补缺：诃黎勒散、桂辛附汤）；2026-11-04 合并 22 组「问曰+师曰」问答卡 → 433
+    expect(kJinguiLectures.length, 433);
     await expectAllLoadable(kJinguiLectures, '金匮要略');
   });
 
   test('内经 阅读库资产仍可加载（回归）', () async {
     await expectAllLoadable(kNeiJingLectures, '内经');
+  });
+
+  test('每条讲稿首行都是标题行（否则搜索标题会退化成文件名）', () async {
+    // 2026-11-03：18 个伤寒条文卡缺 `#### 标题`，搜索「clause」会命中一堆文件名。
+    for (final l in [...kShangHanLectures, ...kJinguiLectures, ...kNeiJingLectures]) {
+      final first = (await rootBundle.loadString(l.asset)).split('\n').first.trim();
+      expect(first.startsWith('#'), true,
+          reason: '缺标题行: ${l.asset} → $first');
+    }
   });
 }

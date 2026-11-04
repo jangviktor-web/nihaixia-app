@@ -3849,7 +3849,7 @@ class DiagnosticEngine {
       );
     }
 
-    // 甘草干姜附子汤：昼日烦躁夜安静（已在少阴中加，跳过）
+    // 干姜附子汤：昼日烦躁夜安静（已在少阴中加，跳过）
 
     // 麻黄附子细辛汤：少阴始得之反发热脉沉
     if (answers['drowsy'] == true && _answers['fever'] == true && _pulseType == '沉') {
@@ -3903,17 +3903,18 @@ class DiagnosticEngine {
       );
     }
 
-    // 甘草干姜附子汤：昼日烦躁夜安静
-    // FIX-P2-3: 干姜附子汤（少阴，烦躁+昼日烦躁）专属证与甘草干姜附子证同源，
-    // misc 通道先于少阴执行，会把它偷走。加 irritable 排除：烦躁标志归干姜附子汤。
+    // 干姜附子汤（伤寒第61条）：昼日烦躁不得眠，夜而安静
+    // 2026-11-03：「甘草干姜附子汤」经核实非经典方名（宋本与人纪两稿均 0 次），
+    // 其组成三味即四逆汤，已并入四逆汤为别名；本条证（第61条）专属干姜附子汤。
+    // FIX-P2-3: misc 通道先于少阴执行，会把它偷走。加 irritable 排除：烦躁标志归干姜附子汤。
     if (_symSelected('昼日烦躁') && _symSelected('夜安静') &&
         _answers['irritable'] != true) {
       return DiagnosisResult(
         meridian: '少阴',
-        pattern: '阳虚烦躁（甘草干姜附子汤证）',
-        patternDetail: '下之后，复发汗，昼日烦躁不得眠，夜而安静。',
-        formula: '甘草干姜附子汤',
-        explanation: '甘草干姜附子。昼日烦躁夜安静，阳虚阴盛。',
+        pattern: '阳虚烦躁（干姜附子汤证）',
+        patternDetail: '下之后，复发汗，昼日烦躁不得眠，夜而安静，不呕不渴，无表证，脉沉微。',
+        formula: '干姜附子汤',
+        explanation: '干姜、生附子二味。昼日烦躁夜安静，阳虚阴盛，急救回阳。',
         confidence: 0.8,
         matchedSymptoms: _selectedSymptoms,
       );
@@ -4775,14 +4776,16 @@ class DiagnosticEngine {
       );
     }
 
-    // 栀子枳实汤：大下后身热不去心中结痛
+    // 栀子豉汤：大下后身热不去、心中结痛（伤寒条文86「未欲解也，栀子豉汤主之」）
+    // 2026-11-03：原指向「栀子枳实汤」——该条目缺香豉、且此证本就是栀子豉汤，已并入
+    // 「枳实栀子豉汤」（劳复方，三味）作别名；本证归栀子豉汤。
     if (_symSelected('心中结痛') && _answers['fever'] == true) {
       return DiagnosisResult(
         meridian: '阳明',
-        pattern: '热郁胸膈（栀子枳实汤证）',
-        patternDetail: '伤寒，大下后，身热不去，心中结痛。',
-        formula: '栀子枳实汤',
-        explanation: '栀子香豉枳实。清热除烦消痞。大下后热郁。',
+        pattern: '热郁胸膈（栀子豉汤证）',
+        patternDetail: '伤寒五六日，大下之后，身热不去，心中结痛者，未欲解也。',
+        formula: '栀子豉汤',
+        explanation: '栀子、香豉清热除烦。大下后余热未去、心中结痛（此「心」指胃）。',
         confidence: 0.75,
         matchedSymptoms: _selectedSymptoms,
       );

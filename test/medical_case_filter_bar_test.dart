@@ -51,11 +51,11 @@ void main() {
 
       // Baseline count.
       final baseline = tester
-              .widget<Text>(find.textContaining('/ 1113 例'))
+              .widget<Text>(find.textContaining('/ 1089 例'))
               .data ??
           '';
-      expect(baseline.contains('1113 / 1113'), isTrue,
-          reason: 'baseline should be 1113/1113, got: ' + baseline);
+      expect(baseline.contains('1089 / 1089'), isTrue,
+          reason: 'baseline should be 1089/1089, got: ' + baseline);
 
       // Tap formula chip → must reduce but stay > 0.
       await tester.tap(find.text('桂枝汤'));
@@ -63,16 +63,16 @@ void main() {
         await tester.pump(const Duration(milliseconds: 100));
       }
       final afterFormula = tester
-              .widget<Text>(find.textContaining('/ 1113 例'))
+              .widget<Text>(find.textContaining('/ 1089 例'))
               .data ??
           '';
       final mf =
-          RegExp(r'共 (\d+) / 1113 例').firstMatch(afterFormula);
+          RegExp(r'共 (\d+) / 1089 例').firstMatch(afterFormula);
       expect(mf, isNotNull, reason: 'count line: ' + afterFormula);
       final nf = int.parse(mf!.group(1)!);
       expect(nf, greaterThan(0),
           reason: '桂枝汤 tap must yield >0, got $nf');
-      expect(nf, lessThan(1113));
+      expect(nf, lessThan(1089));
 
       // Reset to 全部 (治法), tap disease chip → also must reduce > 0.
       // Scroll filter bar left then tap 治法 row's 全部 chip.
@@ -119,11 +119,11 @@ void main() {
         await tester.pump(const Duration(milliseconds: 100));
       }
       final afterDisease = tester
-              .widget<Text>(find.textContaining('/ 1113 例'))
+              .widget<Text>(find.textContaining('/ 1089 例'))
               .data ??
           '';
       final md =
-          RegExp(r'共 (\d+) / 1113 例').firstMatch(afterDisease);
+          RegExp(r'共 (\d+) / 1089 例').firstMatch(afterDisease);
       expect(md, isNotNull, reason: 'count line: ' + afterDisease);
       final nd = int.parse(md!.group(1)!);
       expect(nd, greaterThan(0),

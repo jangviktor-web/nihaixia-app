@@ -13,7 +13,7 @@ import '../widgets/medical_case_list_card.dart';
 import 'medical_case_detail_screen.dart';
 import 'medical_case_insights_screen.dart';
 
-/// 倪师医案库（1257 例）可搜索浏览。
+/// 倪师医案库（1089 例可用）可搜索浏览。
 /// 运行时解析 assets/medical_cases/cases_table.md，按诊断/方剂/结果/观点全文检索
 /// （简繁归一：繁体原文可被简体关键词命中）。支持 300ms 防抖、关键词高亮、
 /// 年份/治法/收藏/最近浏览筛选、方剂数/药数徽标、数据洞察入口。
@@ -177,7 +177,7 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
     return m?.group(0);
   }
 
-  // 过滤结果缓存：1257 例的全量过滤 + 排序原本每次 build 都跑一遍，
+  // 过滤结果缓存：1089 例的全量过滤 + 排序原本每次 build 都跑一遍，
   // 切筛选、输入、收藏刷新时都会卡一下。
   String? _filterKey;
   List<MedicalCase> _filterCache = const [];
