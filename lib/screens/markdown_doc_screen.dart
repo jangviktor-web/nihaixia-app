@@ -3,8 +3,8 @@ import '../widgets/state_view.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
+import '../widgets/traditional_toggle_button.dart';
 import '../data/formula_repository.dart';
-import '../data/settings_repository.dart';
 import '../data/traditional_display.dart';
 import '../data/herb_repository.dart';
 import '../data/acupoint_repository.dart';
@@ -258,22 +258,7 @@ class _MarkdownDocScreenState extends State<MarkdownDocScreen> {
         title: Text(widget.title),
         actions: [
           // 繁体显示开关（原在「设置 → 外观」，挪到阅读页更易发现）
-          IconButton(
-            icon: Icon(Icons.translate,
-                color: SettingsRepository.instance.traditionalDisplayEnabled
-                    ? Theme.of(context).colorScheme.primary
-                    : null),
-            tooltip: SettingsRepository.instance.traditionalDisplayEnabled
-                ? '关闭繁体显示'
-                : '繁体显示',
-            onPressed: () async {
-              final next = !SettingsRepository
-                  .instance.traditionalDisplayEnabled;
-              await SettingsRepository.instance
-                  .setTraditionalDisplayEnabled(next);
-              if (mounted) _reload();
-            },
-          ),
+          TraditionalToggleButton(onChanged: _reload),
         ],
       ),
       body: FutureBuilder<String>(

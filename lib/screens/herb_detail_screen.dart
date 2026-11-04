@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/herb.dart';
 import '../theme/app_colors.dart';
 import '../models/bookmark.dart';
+import '../widgets/traditional_toggle_button.dart';
 import '../data/traditional_display.dart';
 import '../data/formula_repository.dart';
 import '../data/herb_repository.dart';
@@ -40,7 +41,11 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
   }
 
   Future<void> _loadTraditional() async {
-    if (!traditionalDisplayOn) return;
+    if (!traditionalDisplayOn) {
+      // 关闭：清空缓存表，渲染回落简体。
+      if (_tc.isNotEmpty && mounted) setState(() => _tc = {});
+      return;
+    }
     final h = widget.herb;
     final m = await trTexts(<String?>[
       h.nature, h.action, h.original, h.niNote, h.rongchuan,
@@ -129,6 +134,12 @@ class _HerbDetailScreenState extends State<HerbDetailScreen> {
       appBar: AppBar(
         title: Text(herb.name),
         actions: [
+          TraditionalToggleButton(
+            onChanged: () {
+              _loadTraditional();
+              setState(() {});
+            },
+          ),
           IconButton(
             icon: Icon(
               _isBookmarked ? Icons.bookmark : Icons.bookmark_border,

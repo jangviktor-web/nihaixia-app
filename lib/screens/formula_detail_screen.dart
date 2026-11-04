@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/formula.dart';
 import '../theme/app_colors.dart';
 import '../models/bookmark.dart';
+import '../widgets/traditional_toggle_button.dart';
 import '../data/traditional_display.dart';
 import '../data/database_helper.dart';
 import '../data/formula_mention_index.dart';
@@ -31,7 +32,10 @@ class _FormulaDetailScreenState extends State<FormulaDetailScreen> {
   List<MentionHit> _bencaoMentions = [];
 
   Future<void> _loadTraditional() async {
-    if (!traditionalDisplayOn) return;
+    if (!traditionalDisplayOn) {
+      if (_tc.isNotEmpty && mounted) setState(() => _tc = {});
+      return;
+    }
     final f = widget.formula;
     final m = await trTexts(<String?>[
       f.indication, f.contraindication, f.dosage, f.explanation,
@@ -190,6 +194,12 @@ class _FormulaDetailScreenState extends State<FormulaDetailScreen> {
       appBar: AppBar(
         title: Text(f.name),
         actions: [
+          TraditionalToggleButton(
+            onChanged: () {
+              _loadTraditional();
+              setState(() {});
+            },
+          ),
           IconButton(
             icon: Icon(
               _isBookmarked ? Icons.bookmark : Icons.bookmark_border,
