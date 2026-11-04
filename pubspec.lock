@@ -147,6 +147,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.7+1"
+  flutter_open_chinese_convert:
+    dependency: "direct main"
+    description:
+      name: flutter_open_chinese_convert
+      sha256: "9978626e8a512a1f834ff6d9f3858721e893ff27d363f1b84f788cbce0062ae7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter

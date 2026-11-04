@@ -19,6 +19,7 @@ class SettingsRepository extends ChangeNotifier {
   bool _useTrueSolarTime = true; // 紫微真太阳时校准（默认开启）
   bool _distinguishZiShiEnabled = false; // 区分早晚子时开关（true=开启：23:00–01:00 按晚子时/早子时精确区分；默认关=子时归自然日）
   bool _fireEarthSame = true; // 长生十二神起长生口径（true=火土同宫，现代子平主流）
+  bool _traditionalDisplayEnabled = false; // 阅读页繁体显示（OpenCC 简→繁；默认关）
 
   // ---- 最近出生地点（真太阳时校正用，紫微/八字共用；null=未设置）----
   String? _lastCityName;
@@ -35,6 +36,8 @@ class SettingsRepository extends ChangeNotifier {
   bool get useTrueSolarTime => _useTrueSolarTime;
   bool get distinguishZiShiEnabled => _distinguishZiShiEnabled;
   bool get fireEarthSame => _fireEarthSame;
+  /// 阅读页（条文卡/讲稿/古籍）是否以繁体显示。默认关，关时零开销。
+  bool get traditionalDisplayEnabled => _traditionalDisplayEnabled;
   String? get lastCityName => _lastCityName;
   double? get lastLng => _lastLng;
   double? get lastLat => _lastLat;
@@ -78,6 +81,9 @@ class SettingsRepository extends ChangeNotifier {
           break;
         case 'fire_earth_same':
           _fireEarthSame = value == 'true';
+          break;
+        case 'traditional_display_enabled':
+          _traditionalDisplayEnabled = value == 'true';
           break;
         case 'last_city_name':
           _lastCityName = value.isEmpty ? null : value;
@@ -141,6 +147,12 @@ class SettingsRepository extends ChangeNotifier {
     _distinguishZiShiEnabled = value;
     notifyListeners();
     await _save('distinguish_zi_shi_enabled', value.toString());
+  }
+
+  Future<void> setTraditionalDisplayEnabled(bool value) async {
+    _traditionalDisplayEnabled = value;
+    notifyListeners();
+    await _save('traditional_display_enabled', value.toString());
   }
 
   Future<void> setFireEarthSame(bool value) async {

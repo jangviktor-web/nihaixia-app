@@ -3,7 +3,11 @@ import '../widgets/state_view.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
+import 'package:flutter_open_chinese_convert/flutter_open_chinese_convert.dart';
+
+import '../data/chinese_convert.dart';
 import '../data/formula_repository.dart';
+import '../data/settings_repository.dart';
 import '../data/herb_repository.dart';
 import '../data/acupoint_repository.dart';
 import '../data/zhenjiu_lecture_index.dart';
@@ -157,7 +161,29 @@ class _MarkdownDocScreenState extends State<MarkdownDocScreen> {
 
   Future<String> _load() async {
     final raw = widget.content ?? await rootBundle.loadString(widget.asset);
-    return widget.linkFormulas ? _injectLinks(raw) : raw;
+    final md = widget.linkFormulas ? _injectLinks(raw) : raw;
+    return SettingsRepository.instance.traditionalDisplayEnabled
+        ? _toTraditional(md)
+        : md;
+  }
+
+  /// 简体 → 繁体（OpenCC 词典级，native 侧后台线程转换）。
+  ///
+  /// 链接目标必须保持简体：`[当归](herb://当归)` 经整体转换会变成
+  /// `[當歸](herb://當歸)`，查库用的是简体正名 → 点击失效。
+  /// 故转换后把每个链接的 href 用 [toSimplified] 还原（锚文本仍为繁体）。
+  static final RegExp _mdLink = RegExp(r'\[([^\]]*)\]\(([^)]*)\)');
+
+  Future<String> _toTraditional(String md) async {
+    try {
+      final converted =
+          await ChineseConverter.convert(md, S2T(), inBackground: true);
+      return converted.replaceAllMapped(
+          _mdLink, (m) => '[${m[1]}](${toSimplified(m[2]!)})');
+    } catch (_) {
+      // 转换失败（插件不可用/极端文本）→ 退回简体，不阻断阅读。
+      return md;
+    }
   }
 
   void _reload() {

@@ -41,6 +41,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _themeModeTile(),
             _fontScaleTile(),
             _solarTermTile(cs),
+            _traditionalDisplayTile(),
             const Divider(height: 24),
             _sectionTitle('诊断'),
             _genderTile(cs),
@@ -105,6 +106,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onChanged: _settings.setTextScaleFactor,
           ),
         ],
+      );
+
+  /// 阅读页繁体显示：开关打开后，条文卡/讲稿/古籍以 OpenCC 转为繁体渲染。
+  /// 仅影响显示，不改资产、不影响搜索（搜索仍用简体索引 + 查询词归一）。
+  Widget _traditionalDisplayTile() => SwitchListTile(
+        secondary: const Icon(Icons.translate),
+        title: const Text('繁体显示'),
+        subtitle: const Text('条文卡、讲稿、古籍以繁体显示（OpenCC 词典级转换，'
+            '「干姜→乾薑」等词组正确）；搜索不受影响'),
+        value: _settings.traditionalDisplayEnabled,
+        onChanged: (v) => _settings.setTraditionalDisplayEnabled(v),
+        contentPadding: EdgeInsets.zero,
       );
 
   Widget _solarTermTile(ColorScheme cs) => SwitchListTile(
