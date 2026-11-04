@@ -55,9 +55,14 @@
 
 <div align="center">
 
-**v1.11.29 针灸讲稿阅读库（72 篇）· 讲稿⇄穴位双向联动 · 全局搜索接入讲稿 · 节气卡可隐藏**
+**v1.11.30 条文卡讲解全覆盖（839 张）· 繁体显示开关 · 繁体输入可搜 · 医案简体化**
 
-![v1.11.29 针灸讲稿阅读库](docs/images/screenshot_v1129_zhenjiu_lecture.webp)
+- **条文卡讲解覆盖 100%**：伤寒 384 + 金匮 433 共 839 张条文卡全部配有讲解正文（合并 22 组「问曰/师曰」问答卡，金匮 455→433 条）
+- **繁体显示**：阅读页 / 药材详情 / 方剂详情右上角 `translate` 图标一键切换，OpenCC 词典级转换（干姜→乾薑、郁金→鬱金），链接仍可点跳
+- **繁体输入可搜**：搜「當歸」「麻黃湯」不再空结果（三处检索入口繁简归一）
+- **医案库整备**：全文简体化、药材异名映射 135 条、处方药材解析率 94.1%
+- 新增药材「石菖蒲（九节菖蒲）」；方剂 327→314 条（净合并 13 组同方异名）
+
 
 从左到右：① **针灸讲稿入口** —— 知识库「针灸」页穴位筛选行新增「讲稿」按钮，与「经络图」并列。 ② **针灸讲稿 · 篇目录** —— 《人纪·针灸》72 篇按章节排列（针灸使用时机 / 针刺深浅 / 十二经络与奇经八脉 / 针刺手法 / 从头到脚治症系列），篇名即时搜索。 ③ **讲稿正文阅读** —— 书面整理版排版，正文中的穴位名（头维 / 本神 / 神庭）、方剂名、药材名自动成链，一点直达详情。 ④ **穴位详情 ·「讲义讲解」卡** —— 穴位详情页新增讲义卡，显示讲稿中提及本穴的篇数（如神庭 7 篇提及），无命中自动隐藏。 ⑤ **神庭 · 讲义提及列表** —— 底部弹层按提及次数排序列出各篇（督脉经穴篇 7 次 / 足太阳膀胱经 6 次 / 治鼻病 2 次……），点按直达该篇。 ⑥ **节气卡可隐藏** —— 设置 → 外观新增「知识库顶部节气卡片」开关，关闭后知识库首屏更清爽，节气养生仍可从「工具」进入。
 
@@ -196,9 +201,9 @@
 > 完全离线｜无需联网｜无需注册｜Android 7.0+
 > 通用版 APK 约 77MB，分架构版 31–35MB
 > 自 V1.11.9 起由 GitHub Actions 自动构建发布，推送 `v*` tag 即出包
-> **最后更新：2026-10-30（v1.11.28）**
+> **最后更新：2026-11-04（v1.11.30）**
 
-### 📥 方式一：下载预编译 APK（V1.11.28）
+### 📥 方式一：下载预编译 APK（V1.11.30）
 
 > ### ⚠️ 升级须知：签名密钥已统一，通常可直接覆盖安装
 >
@@ -215,23 +220,25 @@
 
 <div align="left">
 
-[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安装包‑3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.28/app-release.apk)
+[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安装包‑3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.30/app-release.apk)
 &nbsp;&nbsp;
-[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安装包‑0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.28/app-arm64-v8a-release.apk)
+[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安装包‑0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.30/app-arm64-v8a-release.apk)
 &nbsp;&nbsp;
-[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安装包‑9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.28/app-armeabi-v7a-release.apk)
+[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安装包‑9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.30/app-armeabi-v7a-release.apk)
 &nbsp;&nbsp;
-[![📦 x86_64(虚拟机)](https://img.shields.io/badge/📦%20x86_64(虚拟机)-安卓安装包‑1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.28/app-x86_64-release.apk)
+[![📦 x86_64(虚拟机)](https://img.shields.io/badge/📦%20x86_64(虚拟机)-安卓安装包‑1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.30/app-x86_64-release.apk)
 
 </div>
 
 | 安装包 | 大小 | 适用说明 |
 |---|---|---|
-| 通用版 `app-release.apk` | 77.4MB | 全CPU架构，绝大多数安卓设备直接选这个 |
-| arm64‑v8a `app‑arm64‑v8a‑release.apk` | 33.3MB | 新款64位安卓手机，体积更小 |
-| armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | 31.5MB | 老旧32位安卓设备 |
-| x86_64 `app‑x86_64‑release.apk` | 34.8MB | 安卓虚拟机、模拟器使用 |
+| 通用版 `app-release.apk` | 待发布后回填 | 全CPU架构，绝大多数安卓设备直接选这个 |
+| arm64‑v8a `app‑arm64‑v8a‑release.apk` | 待发布后回填 | 新款64位安卓手机，体积更小 |
+| armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | 待发布后回填 | 老旧32位安卓设备 |
+| x86_64 `app‑x86_64‑release.apk` | 待发布后回填 | 安卓虚拟机、模拟器使用 |
 
+> **V1.11.30 条文卡讲解全覆盖 · 繁体显示 · 医案简体化**：伤寒 384 + 金匮 433 共 839 张条文卡全部配有讲解（合并 22 组问答卡）；阅读页/药材详情/方剂详情新增繁体显示开关（OpenCC 词典级）；三处检索支持繁体输入；医案全文简体化 + 药材异名映射 135 条。详见 [Release Notes](release_notes/v1.11.30.md)。
+> 
 > **V1.11.28 字号 200% · 古籍原文（灵枢/针灸大成）· 经典全文搜索 · 流畅度优化**：字号上限由 150% 提到 200%，并修复「只有首页跟随字号」——详情页、设置页与弹窗现在都跟随；新增「古籍原文」书库：《灵枢》82 章 + 明·杨继洲《针灸大成》339 章，章节目录可读可搜，正文方剂/药名可点跳详情；全局搜索新增「经典」分组，贯通伤寒/金匮/内经讲稿与古书原文共 1327 条，点击直达篇章；修掉浅色模式下搜索结果标题几乎看不清的对比度问题；知识库切 tab 与长列表滚动做了保活与过滤缓存优化。详见 [Release Notes](release_notes/v1.11.28.md)。
 > 
 > **V1.11.26 十四经循行穴位图 · 耳穴国标库 · 五运六气三图排版修复**：针灸页新增「经络图」——十二正经 + 任督二脉共 14 张循行穴位图，双指放大 6 倍看清穴名；耳穴全面接入 GB/T 13734-2008《耳穴名称与定位》——93 穴国标库（10 分区筛选 + 穴名/拼音/代码搜索，18 条旧称自动归并国标名）+ 附录 A 标准定位图（正面 84 穴 / 背面 9 穴）直接嵌包；针灸处方数据扩容至 384 条（合并倪师 BBXX 病症配穴 +127 条）；五运六气三图排版修复（六气图三层文字切向排布不再叠压、五行图宫圆重新配比）与引擎经典裁决修正 7 年。详见 [Release Notes](release_notes/v1.11.26.md)。
@@ -241,6 +248,12 @@
 <details>
 <summary><b>历史更新日志</b></summary>
 
+> **v1.11.29 针灸讲稿阅读库（72 篇）· 讲稿⇄穴位双向联动 · 全局搜索接入讲稿 · 节气卡可隐藏**
+> 
+> ![v1.11.29 针灸讲稿阅读库](docs/images/screenshot_v1129_zhenjiu_lecture.webp)
+> 
+> 从左到右：① 针灸讲稿入口 ② 篇目录 ③ 讲稿正文阅读（穴位/方剂/药材自动成链） ④ 穴位详情「讲义讲解」卡 ⑤ 讲义提及列表 ⑥ 节气卡可隐藏。详见 [Release Notes](release_notes/v1.11.29.md)。
+> 
 > **V1.11.24 穴位筛选新增六奇经分组 · 国标穴序**：经络筛选从 15 组扩到 21 组，新增冲脉 / 带脉 / 阴维脉 / 阳维脉 / 阴跷脉 / 阳跷脉；57 条交会穴补齐次键标注，多脉穴忠实出现在所有所属脉分组（公孙同时在「脾经」与「冲脉」），搜「冲脉」可直接命中其交会穴；随版带出十二正经 / 督任组内国标穴序、同名并列次键修复与「子宫」禁链。详见 [Release Notes](release_notes/v1.11.24.md)。
 > 
 > **V1.11.23 伤寒论 / 金匮要略 条文级阅读库 · 方剂⇄条文双向联动**：知识库新增「伤寒金匮」Tab，伤寒论 380 篇、金匮要略 453 篇由「一章一个大文件」拆到**条文级**逐条阅读；正文里的方剂名/药材名一点即跳详情，方剂详情「见于经典」反向列出**专门介绍该方**的伤寒论/金匮条文；同时修复 Markdown 阅读页正文链接点击无反应。详见 [Release Notes](release_notes/v1.11.23.md)。
