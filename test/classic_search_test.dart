@@ -47,4 +47,30 @@ void main() {
     expect(r.hits.length, lessThanOrEqualTo(ClassicSearchService.maxHits));
     expect(r.total, greaterThanOrEqualTo(r.hits.length));
   });
+
+  // ── 阅读库列表搜索回归（2026-11-05）──
+  // 列表原先只匹配 ClassicLecture.name，而伤寒 395 条里仅 5 条 name 含
+  // 「条文N」（如 clause_181 的 name 是「太阳·结胸痞·一百九十一」），
+  // 于是搜「条文191」搜不到。改为同时命中讲稿索引的标题+正文。
+  group('matchAssets（列表筛选用，不截断）', () {
+    test('「条文191」精确命中宋本176那条卡', () async {
+      final r = await ClassicSearchService.matchAssets('条文191');
+      expect(r, contains('assets/shanghan/clause_181.md'));
+    });
+
+    test('繁体输入可命中（繁简归一）', () async {
+      final r = await ClassicSearchService.matchAssets('條文191');
+      expect(r, contains('assets/shanghan/clause_181.md'));
+    });
+
+    test('不套 40 条截断，否则列表会丢结果', () async {
+      final r = await ClassicSearchService.matchAssets('太阳');
+      expect(r.length, greaterThan(ClassicSearchService.maxHits));
+    });
+
+    test('空查询返回空集合', () async {
+      final r = await ClassicSearchService.matchAssets('   ');
+      expect(r, isEmpty);
+    });
+  });
 }

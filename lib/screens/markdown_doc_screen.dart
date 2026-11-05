@@ -284,6 +284,26 @@ class _MarkdownDocScreenState extends State<MarkdownDocScreen> {
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                   selectable: true,
                   onTapLink: (text, href, title) => _onTapLink(href),
+                  // 本地资产图（如倪师板书照片）默认不会被 flutter_markdown 渲染，
+                  // 必须显式映射到 Image.asset；http(s) 仍走网络图。
+                  sizedImageBuilder: (config) {
+                    final src = Uri.decodeComponent(config.uri.toString());
+                    if (src.startsWith('assets/')) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Image.asset(
+                          src,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, _, _) => Text(
+                            '（图片未能加载：$src）',
+                            style: TextStyle(
+                                fontSize: 12, color: cs.onSurfaceVariant),
+                          ),
+                        ),
+                      );
+                    }
+                    return Image.network(src);
+                  },
                   styleSheet: MarkdownDocScreen.buildStyleSheet(context),
                 ),
               ),

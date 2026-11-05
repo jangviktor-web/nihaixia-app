@@ -412,6 +412,17 @@ const List<ClassicLecture> kShangHanLectures = [
   ClassicLecture(seq: 381, name: '桂苓甘草龙骨牡蛎汤（讲稿「一三二」≈宋本118）', asset: 'assets/shanghan/clause_381.md'),
   ClassicLecture(seq: 382, name: '栀子干姜汤（宋本80·原典补录）', asset: 'assets/shanghan/clause_382.md'),
   ClassicLecture(seq: 383, name: '桂枝甘草龙骨牡蛎汤（宋本118·原典补录，四味无茯苓）', asset: 'assets/shanghan/clause_383.md'),
+  ClassicLecture(seq: 384, name: '桂枝加附子汤（宋本20，讲稿「二四」）', asset: 'assets/shanghan/clause_384.md'),
+  ClassicLecture(seq: 385, name: '桂枝麻黄各半汤（宋本23，讲稿「二六」）', asset: 'assets/shanghan/clause_385.md'),
+  ClassicLecture(seq: 386, name: '栀子厚朴汤（宋本79，讲稿「八七」）', asset: 'assets/shanghan/clause_386.md'),
+  ClassicLecture(seq: 387, name: '桂枝加桂汤（宋本117，讲稿「一三一」）', asset: 'assets/shanghan/clause_387.md'),
+  ClassicLecture(seq: 388, name: '宋本119·加温针必惊（讲稿「一三三」）', asset: 'assets/shanghan/clause_388.md'),
+  ClassicLecture(seq: 389, name: '宋本120·误吐之过（讲稿「一三四」）', asset: 'assets/shanghan/clause_389.md'),
+  ClassicLecture(seq: 390, name: '宋本121·吐之内烦（讲稿「一三五」）', asset: 'assets/shanghan/clause_390.md'),
+  ClassicLecture(seq: 391, name: '宋本122·脉数为客热（讲稿「一三六」）', asset: 'assets/shanghan/clause_391.md'),
+  ClassicLecture(seq: 392, name: '调胃承气汤（宋本123，讲稿「一三七」）', asset: 'assets/shanghan/clause_392.md'),
+  ClassicLecture(seq: 393, name: '宋本326·厥阴之为病（讲稿「三四〇」，厥阴篇总纲）', asset: 'assets/shanghan/clause_393.md'),
+  ClassicLecture(seq: 394, name: '宋本206·阳明病面合色赤不可攻（讲稿「二二二」）', asset: 'assets/shanghan/clause_394.md'),
 ];
 
 const List<ClassicLecture> kJinguiLectures = [

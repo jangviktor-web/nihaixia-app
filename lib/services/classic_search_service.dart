@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 
-import '../data/chinese_convert.dart';
 import '../data/guji_data.dart';
+import '../data/traditional_display.dart';
 import 'gzip_codec_stub.dart' if (dart.library.io) 'gzip_codec_io.dart';
 
 /// 经典（讲稿 + 古籍原文）全文检索。
@@ -136,7 +136,7 @@ class ClassicSearchService {
     final entries = _entries!;
     // 繁简归一：繁体输入（如「當歸」「湯」）也能命中简体索引。
     // 索引正文已在构建期统一为简体，故只需归一查询词。
-    final needle = toSimplified(q).toLowerCase();
+    final needle = (await normalizeQuery(q)).toLowerCase();
 
     final titleHits = <ClassicHit>[];
     final bodyHits = <ClassicHit>[];
@@ -168,6 +168,27 @@ class ClassicSearchService {
       total: total,
       hits: [...titleHits, ...bodyHits],
     );
+  }
+
+  /// 返回所有命中条目的 asset 集合（**不截断**，供阅读库列表筛选使用）。
+  ///
+  /// 与 [search] 共用同一份索引和同一套繁简归一规则，区别是不套 [maxHits]
+  /// ——列表筛选若被截断到 40 条，超出部分会「明明存在却搜不到」。
+  static Future<Set<String>> matchAssets(String query) async {
+    final q = query.trim();
+    if (q.isEmpty) return const <String>{};
+    await ensureLoaded();
+    final needle = (await normalizeQuery(q)).toLowerCase();
+    final out = <String>{};
+    for (final e in _entries!) {
+      final a = e.asset;
+      if (a == null) continue;
+      if (e.title.toLowerCase().contains(needle) ||
+          e.text.toLowerCase().contains(needle)) {
+        out.add(a);
+      }
+    }
+    return out;
   }
 
   /// 取命中位置前后各 32 字做摘要；[idx] < 0 表示只在标题命中，取正文开头。
