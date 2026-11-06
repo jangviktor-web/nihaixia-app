@@ -212,6 +212,8 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 > Since V1.11.9, builds and releases are automated by GitHub Actions; pushing a `v*` tag produces the packages
 > **Last updated: 2026-11-06 (v1.11.31)**
 
+> 💡 **Don't want to download manually each time?** Add this project's URL `https://github.com/jangviktor-web/nihaixia-app` to the open-source updater [Obtainium](https://github.com/ImranR98/Obtainium) and set the APK filter to `arm64-v8a`; it will then notify you of and install each new release automatically — no more checking the Releases page.
+
 ### 📥 Method 1: Download Prebuilt APK (V1.11.31)
 
 > ### ⚠️ Upgrade Notice: Signing Key Unified, Direct Over-Install Usually Works

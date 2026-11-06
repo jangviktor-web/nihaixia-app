@@ -90,3 +90,6 @@ tool/.gitee.env
 # 本地备份/交付物，不入库
 backups/
 deliverables/
+
+# 商店上架素材：大图不入库，仅保留说明文档
+store_assets/**/*.png

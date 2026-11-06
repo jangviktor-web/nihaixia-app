@@ -212,6 +212,8 @@
 > 自 V1.11.9 起由 GitHub Actions 自動構建釋出，推送 `v*` tag 即出包
 > **最後更新：2026-11-06（v1.11.31）**
 
+> 💡 **不想每次手動下載？** 用開源更新工具 [Obtainium](https://github.com/ImranR98/Obtainium) 訂閱本專案位址 `https://github.com/jangviktor-web/nihaixia-app`，APK 篩選填 `arm64-v8a`，之後每個新版本它會自動提示並安裝，不必再回來翻 Release 頁。
+
 ### 📥 方式一：下載預編譯 APK（V1.11.31）
 
 > ### ⚠️ 升級須知：簽名金鑰已統一，通常可直接覆蓋安裝
