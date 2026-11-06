@@ -22,9 +22,20 @@ void main() {
   }
 
   test('伤寒论 阅读库资产全部可加载', () async {
-    // 条文级拆分后：23 篇 → 380 条（+2 条 nhx 补缺：桂枝去芍药汤/加附子汤、桂苓甘草龙骨牡蛎汤）
-    expect(kShangHanLectures.length, 395);
+    // 2026-11-06 切换 shanghan_unified：文件名即宋本条号，
+    // 390 篇正文（宋本 1–390）+ 4 篇六经附录 = 394 条；宋本 391–398 见金匮模块。
+    expect(kShangHanLectures.length, 394);
     await expectAllLoadable(kShangHanLectures, '伤寒论');
+  });
+
+  test('宋本条号可在列表 name 中按阿拉伯数字检索', () async {
+    // 正文标题是中文序号「一七六、」，列表 name 必须补「宋本N·」
+    // 才能让用户输 176 / 宋本176 命中。
+    final hit = kShangHanLectures
+        .where((l) => l.asset == 'assets/shanghan/clause_176.md')
+        .toList();
+    expect(hit, hasLength(1));
+    expect(hit.single.name, contains('宋本176'));
   });
 
   test('金匮要略 阅读库资产全部可加载', () async {

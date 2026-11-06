@@ -2,7 +2,9 @@
 // 判定逻辑本体（clauseIntroducesFormula 移植版）由
 // `python tool/build_formula_index.py --selfcheck` 重放旧 Dart 测试断言验证，
 // 此处只验索引资产与抽样命中。
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:nihaisha_app/data/classic_lecture_data.dart';
 import 'package:nihaisha_app/data/formula_mention_index.dart';
 import 'package:nihaisha_app/data/formula_repository.dart';
 
@@ -10,6 +12,22 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('方剂提及预索引', () {
+    test('回归：方名 → seq → 卡片正文确实含该方名（shanghan_unified 切换）', () async {
+      // 2026-11-06：旧 formula_index 的 s 是旧资产排序序，切换后全体静默错位，
+      // 而范围检查全绿。这条检查的是「内容对不对」，不是「下标越不越界」。
+      final idx = await FormulaMentionIndex.load();
+      for (final name in const ['白虎汤', '桂枝汤', '小青龙汤']) {
+        final m = idx.hitsFor(name);
+        expect(m, isNotNull, reason: '$name 应有伤寒出处');
+        for (final s in m!.shanghan) {
+          final lecture = kShangHanLectures[s];
+          final body = await rootBundle.loadString(lecture.asset);
+          expect(body.contains(name), isTrue,
+              reason: '$name seq=$s 指向 ${lecture.asset}，但该卡正文不含此方名');
+        }
+      }
+    });
+
     test('可加载且命中方剂数合理', () async {
       final idx = await FormulaMentionIndex.load();
       final hitCount = [for (final f in const ['四逆汤', '桂枝汤', '小柴胡汤'])
@@ -22,7 +40,8 @@ void main() {
       final m = idx.hitsFor('四逆汤')!;
       expect(m.shanghan, isNotEmpty);
       for (final s in m.shanghan) {
-        expect(s, inInclusiveRange(0, 379), reason: '伤寒 seq 越界');
+        expect(s, inInclusiveRange(0, kShangHanLectures.length - 1),
+            reason: '伤寒 seq 越界');
       }
       for (final s in m.jingui) {
         expect(s, inInclusiveRange(0, 452), reason: '金匮 seq 越界');

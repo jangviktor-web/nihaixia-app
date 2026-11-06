@@ -47,7 +47,7 @@ class ShangHanJinguiScreen extends StatelessWidget {
           _BookCard(
             icon: Icons.account_tree_outlined,
             title: '伤寒论',
-            subtitle: '六经辨证 · ${kShangHanLectures.length} 篇（条文级 + 五经概述）',
+            subtitle: '六经辨证 · ${kShangHanLectures.length} 篇（宋本条文 + 六经附录）',
             onTap: () => _open(context, const ClassicLibraryScreen(
               title: '伤寒论 · 阅读库',
               lectures: kShangHanLectures,

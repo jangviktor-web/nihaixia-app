@@ -32,15 +32,6 @@ BAD_PUNCT = {',': '半角逗号', '(': '半角括号', ')': '半角括号', ':':
 # 条文句式（用于「裸行原文」判定）
 VERSE_TAIL = re.compile(r'(主之。|是名霍乱|属阳明也|当愈。|小和之。|利之即愈。)')
 
-# I7 白名单：讲稿「逐句复述」行——倪师原话逐句重念，形似条文但属讲解
-I7_ALLOW = {
-    'clause_375.md': {
-        '这个，讲，可见。霍乱',
-        '寒多，不用水者，理中丸主之。',
-    },
-}
-
-
 def load_conv():
     src = open(os.path.join(ROOT, 'lib/data/chinese_convert.dart'), encoding='utf-8').read()
     return set(re.findall(r"'([^'])'\s*:\s*'[^']'", src))
@@ -190,8 +181,6 @@ def check(path):
         if not s or s.startswith('#') or s.startswith('>') or s.startswith('- ') or s.startswith('* '):
             continue
         if len(s) <= 90 and VERSE_TAIL.search(s) and not ORAL.search(s):
-            if any(s.startswith(p) for p in I7_ALLOW.get(name, ())):
-                continue
             err(i, 'I7', '裸行条文（应放进 `>` 原文块）：%s' % s[:40])
 
     # I11 孤儿残片：裸行只剩序号字符（如「二0」「二〇」），是截断/清洗残留
