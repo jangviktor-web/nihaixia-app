@@ -8,6 +8,8 @@
 
 离线可用 · 数据全本地 · 无需注册 · 开箱即用
 
+**简体中文** · [繁體中文](README.zh-Hant.md) · [English](README.en.md)
+
 <a href="https://trendshift.io/repositories/108262?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-108262" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/108262/daily?language=HTML" alt="jangviktor-web%2Fnihaixia | Trendshift" width="250" height="55"/></a>
 <a href="https://trendshift.io/repositories/108262?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-108262" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/108262/weekly?language=HTML" alt="jangviktor-web%2Fnihaixia | Trendshift" width="250" height="55"/></a>
 
@@ -182,7 +184,7 @@
 | ⏰ **子午流注取穴** | 输入时间自动推算开穴 | 361 穴 |
 | 🔧 **经方剂量换算** | 古代度量衡（两/升/铢）→ 现代克数 | — |
 | 📖 **黄帝内经** | 脏象 12 卡 + 望诊（五色/眼诊）+ 脉诊（平人/死脉）+ 73 篇阅读库 + 全文搜索；新增「结构化条目检索」52 条 / 10 维度，原文·出处·白话·倪师解读四字段分离，支持六字段搜索 + 维度 + 标签交叉检索 | 73 篇 + 52 条 |
-| 📜 **伤寒论 · 金匮要略 条文库** | 伤寒论 380 篇 + 金匮要略 453 篇拆到条文级逐条阅读；正文方剂/药材名一点即跳详情，方剂详情「见于经典」反向标注出处条文 | 833 条 |
+| 📜 **伤寒论 · 金匮要略 条文库** | 伤寒论 394 篇（390 条文 + 4 附录）+ 金匮要略 433 篇拆到条文级逐条阅读；正文方剂/药材名一点即跳详情，方剂详情「见于经典」反向标注出处条文 | 827 条 |
 | 📜 **古籍原文** | 《灵枢》82 章 + 明代《针灸大成》339 章原文，章节目录可搜正文，方剂/药名可点跳；全局搜索「经典」分组贯通讲稿与原文 | 421 章 |
 | 📚 **倪师医案库** | 1257 例检索 + 闭门课重症临床模块，医案 ↔ 方剂双向联动 | 1257 例 |
 | 🎲 **六爻铜钱摇卦** | 三枚铜钱逐爻摇卦，多动爻自动变卦 | 民俗参考 |
@@ -206,11 +208,11 @@
 
 > **汉唐中医 nihaixia‑app**
 > 完全离线｜无需联网｜无需注册｜Android 7.0+
-> 通用版 APK 约 77MB，分架构版 31–35MB
+> 通用版 APK 约 86MB，分架构版 36–40MB
 > 自 V1.11.9 起由 GitHub Actions 自动构建发布，推送 `v*` tag 即出包
 > **最后更新：2026-11-06（v1.11.31）**
 
-### 📥 方式一：下载预编译 APK（V1.11.30）
+### 📥 方式一：下载预编译 APK（V1.11.31）
 
 > ### ⚠️ 升级须知：签名密钥已统一，通常可直接覆盖安装
 >
@@ -467,7 +469,7 @@ flowchart LR
   DATA --> H["本草 465"]
   DATA --> A["穴位 408"]
   DATA --> M["医案 1257"]
-  DATA --> C["经典索引 1327 条"]
+  DATA --> C["经典索引 1728 条"]
   ENG --> F
 ```
 
@@ -539,7 +541,7 @@ flowchart LR
 诊断历史、收藏等数据全部存储于本机 SQLite，不上传任何服务器，隐私不出设备。
 
 **Q3：应该下载哪个 APK？**
-绝大多数现代手机选 **arm64-v8a**（33.3MB，体积最小）；拿不准就选 **通用版**（77.4MB，兼容所有架构）；老旧 32 位设备选 armeabi-v7a（31.5MB）；模拟器选 x86_64（34.8MB）。
+绝大多数现代手机选 **arm64-v8a**（38.0MB，体积较小）；拿不准就选 **通用版**（85.1MB，兼容所有架构）；老旧 32 位设备选 armeabi-v7a（35.7MB）；模拟器选 x86_64（39.6MB）。
 
 **Q4：安装时提示「应用未安装」/「安装失败」怎么办？**
 多半是**签名不一致**导致的覆盖安装被拒。V1.11.9 的云端构建已与本地 V1.11.8 共用同一套签名（已配置为 GitHub Secrets），正常情况下可直接覆盖安装。若仍被拒绝，通常是您手上的是签名密钥配置完成**之前**下载的早期 V1.11.9 调试签名版——解决办法：**先卸载旧版本，再安装新版本**（卸载前记得在「设置」中导出收藏与诊断历史）。详见上方「⚠️ 升级须知」。
