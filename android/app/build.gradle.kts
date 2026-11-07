@@ -66,9 +66,23 @@ android {
 
     // ABI 分包：生成 armeabi-v7a / arm64-v8a / x86_64 独立 APK + 通用包，
     // 单架构 APK 体积约减半（原 52MB 通用包），便于 GitHub 直发与 Play 上架。
+    //
+    // 本地测试包只出 arm64（2026-11-07 用户定）：本地只用于发钉钉自测，现代安卓机
+    // 清一色 arm64，另外 3 个包从来没人装，白烧一倍构建时间。
+    // 本地用法：LOCAL_ARM64_ONLY=1 flutter build apk --release --target-platform android-arm64
+    //
+    // ⚠️ 三条都试过、只有这条成立：
+    //   1) 只加 `--target-platform android-arm64` → 拦不住 splits，照样出 4 包、耗时不变
+    //   2) 只把 include 收窄成 arm64 → Gradle 直接报冲突：
+    //      "Conflicting configuration : 'armeabi-v7a,arm64-v8a,x86_64' in ndk abiFilters
+    //       cannot be present when splits abi filters are set : arm64-v8a"
+    //      （Flutter plugin 会把 ndk.abiFilters 设成全量常量，项目侧改不动）
+    //   3) 关掉 splits + --target-platform android-arm64 → 只出 1 个 app-release.apk ✓
+    // CI 不设该环境变量，行为完全不变，仍出 4 包。
+    val localArm64Only = System.getenv("LOCAL_ARM64_ONLY") == "1"
     splits {
         abi {
-            isEnable = true
+            isEnable = !localArm64Only
             reset()
             include("armeabi-v7a", "arm64-v8a", "x86_64")
             isUniversalApk = true
