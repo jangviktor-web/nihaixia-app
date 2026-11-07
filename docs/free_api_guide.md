@@ -114,7 +114,7 @@
 
 同前两个方案。书生是国内域名，无需代理。
 
-> 免费模型一览：`Atria-Dawn`（纯文本 LLM，512K，问答推荐）、`Sage-A1.5`（多模态，512K）、`Agents-A1`（多模态，256K）。问倪师AI 以文本问答为主，选 `Atria-Dawn` 即可。
+> 免费模型一览：`Atria-Dawn`（纯文本 LLM，512K，问答推荐）、`intern-s2`、`Sage-A1.5`（多模态，512K）、`Agents-A1`（多模态，256K）。问倪师AI 以文本问答为主，选 `Atria-Dawn` 即可。
 
 ---
 
@@ -124,7 +124,7 @@
 |:---|:---|:---|:---|
 | 费用 | 暂时免费（政策可能调整） | 免费模型不限量（付费模型另计） | 免费 |
 | 网络 | 新加坡，部分网络需代理 | 国内直连，速度快 | 国内直连 |
-| 模型 | agnes-3.0-flash / agnes-2.5-flash | GLM-4.7-Flash / GLM-Z1-Flash | Atria-Dawn / Sage-A1.5 / Agents-A1 |
+| 模型 | agnes-3.0-flash / agnes-2.5-flash | GLM-4.7-Flash / GLM-Z1-Flash | Atria-Dawn / intern-s2 / Sage-A1.5 / Agents-A1 |
 | 适合 | 想要"注册即用、随便用" | 国内网络、想要更多模型选择 | 国内直连；Token 6 个月有效期 |
 | **国内直连、长期挂着不想管** → 书生 InternLM（注意 6 个月后换 Token） |
 

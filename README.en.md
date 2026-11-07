@@ -414,7 +414,7 @@ No budget for an API? Two free options, 5 minutes to set up —
 |:---|:---|:---|
 | Cost | Free for now | Free models, unlimited | Free |
 | Endpoint | `https://api.agnes-ai.cn/v1` | `https://open.bigmodel.cn/api/paas/v4` | `https://discovery-api.intern-ai.org.cn/v1` |
-| Model | `agnes-3.0-flash` / `agnes-2.5-flash` | `GLM-4.7-Flash` / `GLM-Z1-Flash` | `Atria-Dawn` / `Sage-A1.5` / `Agents-A1` |
+| Model | `agnes-3.0-flash` / `agnes-2.5-flash` | `GLM-4.7-Flash` / `GLM-Z1-Flash` | `Atria-Dawn` / `intern-s2` / `Sage-A1.5` / `Agents-A1` |
 | Network | Singapore; may need a proxy | Direct connection in mainland China | Direct connection in mainland China |
 | Best for | Sign up and just use it | Mainland users, more model choices | Mainland direct; token expires in 6 months |
 
