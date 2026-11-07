@@ -16,6 +16,7 @@ import 'meridian_detail_screen.dart';
 import '../models/formula.dart';
 import '../widgets/oral_hint_card.dart';
 import 'settings_screen.dart';
+import 'symptom_check_screen.dart';
 
 /// 高危禁忌关键词（用于结果卡红色强提示）
 const Set<String> _highRiskKeywords = {
@@ -327,18 +328,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   // ==================== v1.11.8 ③ 寒热真假八维法（选填） ====================
 
-  static const Map<String, String> _zhenJiaClueKeys = {
-    '面红如妆（两颧鲜红界限分明）': 'face_flush',
-    '口渴欲冷饮，饮入即消': 'drink_immediate',
-    '渴不欲饮或喜热饮': 'thirst_no_drink',
-    '小便清长、尿色淡白': 'urine_clear',
-    '小便短赤、尿色深黄': 'urine_short',
-    '胸腹久按不蒸手（初按似热久按不热）': 'abdomen_cool',
-    '胸腹久按蒸蒸有热气（四肢虽寒）': 'abdomen_hot',
-    '大便稀溏无灼热': 'stool_loose',
-    '大便硬结/肛门灼热': 'stool_burning',
-  };
-  final List<String> _zhenJiaSelected = [];
+  // 线索表已归位到 DiagnosticRules，两处问诊共用一份
+  static const Map<String, String> _zhenJiaClueKeys =
+      DiagnosticRules.zhenJiaClueKeys;  final List<String> _zhenJiaSelected = [];
 
   void _showZhenJiaOptions() {
     _addBotMessage('进阶鉴别（选填）：请逐条勾选符合你的「寒热真假」线索（可多选），'
@@ -945,6 +937,15 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
         title: const Text('六经辨证'),
         actions: [
+          // 一页式症状自查：与聊天式问诊共用同一套引擎，只是交互不同
+          IconButton(
+            icon: const Icon(Icons.checklist_rtl),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SymptomCheckScreen()),
+            ),
+            tooltip: '症状自查（一页勾选）',
+          ),
           if (_canGoBack)
             IconButton(
               icon: const Icon(Icons.arrow_back),
