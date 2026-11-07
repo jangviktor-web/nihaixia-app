@@ -178,12 +178,17 @@ def quote_region(text):
 
 
 def normalize(text):
-    """还原讲稿的 [方名] 标注标记（MarkdownDocScreen 的链接写法）。
+    """还原讲稿里被标记拆开的方名。
 
-    讲稿正文把方名写成 [半夏散]及[汤]，方名被括号拆开 → 判定前去掉方括号
-    （保留内容），使「[半夏散]及[汤]主之」还原为「半夏散及汤主之」。
+    讲稿里方名有三种拆法，判定前都要还原（只删标记字符，保留内容）：
+      1. Markdown 链接写法 `[半夏散]及[汤]` → `半夏散及汤`
+      2. 书名号拆词 `甘草「附子汤」` → `甘草附子汤`（宋本175 就是这种，
+         旧版只还原了第 1 种，导致它被误挂到「附子汤」名下）
+      3. 直角/方头引号同样处理
     """
-    return re.sub(r"\[([^\]]*)\]", lambda m: m.group(1), text)
+    text = re.sub(r"\[([^\]]*)\]", lambda m: m.group(1), text)
+    text = re.sub(r"[「」『』]", "", text)
+    return text
 
 
 def file_hits(text, name_re, back):
