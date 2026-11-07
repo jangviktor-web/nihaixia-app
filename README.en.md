@@ -61,7 +61,15 @@ Offline-first · All data on-device · No sign-up · Ready out of the box (optio
 
 ![v1.11.32 Ask Master Ni AI and symptom self-check](docs/images/screenshot_v1131_llm_ask.webp)
 
-From left to right: ① **Knowledge base entry** — "Ask Master Ni AI" in the top-right corner; the button does not appear when the feature is off. ② **Settings → AI Lecture Q&A** — endpoint / API key / model name are all yours to fill in, and the switch is **off by default**; when off, the app makes no network requests at all. ③ **Answer view** — local lecture passages are fed to the model first, and answers follow "key symptoms table → pattern conclusion → formula reasoning", with a fixed disclaimer at the bottom; formula, herb and acupoint names in the answer are all tappable. ④ **Symptom self-check entry** — the checklist icon in the top-right of the "Diagnosis" tab. ⑤ **Symptom self-check** — cold/heat overview (required) → advanced clues (optional) → eleven questions; pick three items and the conclusion appears, and formulas remain tappable through to detail pages.
+① **Knowledge base entry** — "Ask Master Ni AI" in the top-right corner; the button does not appear when the feature is off.
+
+② **Settings → AI Lecture Q&A** — endpoint / API key / model name are all yours to fill in, and the switch is **off by default**; when off, the app makes no network requests at all.
+
+③ **Answer view** — local lecture passages are fed to the model first, and answers follow "key symptoms table → pattern conclusion → formula reasoning", with a fixed disclaimer at the bottom; formula, herb and acupoint names in the answer are all tappable.
+
+④ **Symptom self-check entry** — the checklist icon in the top-right of the "Diagnosis" tab.
+
+⑤ **Symptom self-check** — cold/heat overview (required) → advanced clues (optional) → eleven questions; pick three items and the conclusion appears, and formulas remain tappable through to detail pages.
 
 <details>
 <summary><b>📁 Historical screenshots (v1.11.31 → v1.11.0, newest to oldest) · Click to expand</b></summary>
