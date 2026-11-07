@@ -57,14 +57,20 @@ Offline-first · All data on-device · No sign-up · Ready out of the box (optio
 
 <div align="center">
 
+**v1.11.32 Ask Master Ni AI · Symptom self-check — local lecture retrieval + your own endpoint + one-page triage**
+
+![v1.11.32 Ask Master Ni AI and symptom self-check](docs/images/screenshot_v1131_llm_ask.webp)
+
+From left to right: ① **Knowledge base entry** — "Ask Master Ni AI" in the top-right corner; the button does not appear when the feature is off. ② **Settings → AI Lecture Q&A** — endpoint / API key / model name are all yours to fill in, and the switch is **off by default**; when off, the app makes no network requests at all. ③ **Answer view** — local lecture passages are fed to the model first, and answers follow "key symptoms table → pattern conclusion → formula reasoning", with a fixed disclaimer at the bottom; formula, herb and acupoint names in the answer are all tappable. ④ **Symptom self-check entry** — the checklist icon in the top-right of the "Diagnosis" tab. ⑤ **Symptom self-check** — cold/heat overview (required) → advanced clues (optional) → eleven questions; pick three items and the conclusion appears, and formulas remain tappable through to detail pages.
+
+<details>
+<summary><b>📁 Historical screenshots (v1.11.31 → v1.11.0, newest to oldest) · Click to expand</b></summary>
+
 **v1.11.31 Shang Han Lun module layout update · Full Song-edition Shang Han Lun ordering · Simplified/Traditional Chinese toggle**
 
 ![v1.11.31 Shang Han Lun module layout and Simplified/Traditional Chinese toggle](docs/images/screenshot_v1131_shanghan_layout.webp)
 
 From left to right: ① **Shang Han Lun reading library** — all clauses are ordered by the Song edition 1–390, list names are unified as "Song edition N ·", and chapter names / clauses / main text are searchable. ② **Song edition 1 clause card** — the original-text block plus "Ni Haixia's Interpretation", with tables such as pulse-method Yin-Yang fully rendered and a Simplified/Traditional Chinese toggle in the top-right corner. ③ **Guizhi Jia Houpo Xingren Tang formula detail page** — composition / indications / contraindications / decoction and administration / Ni Haixia's Interpretation and a "Found in the Classics" group at the bottom, with Traditional Chinese display taking effect in sync. ④ **Song edition 54 clause card** — the original text and interpretation layout in Traditional Chinese mode.
-
-<details>
-<summary><b>📁 Historical screenshots (v1.11.30 → v1.11.0, newest to oldest) · Click to expand</b></summary>
 
 **v1.11.30 Full clause-card commentary coverage (839 cards) · Traditional Chinese display toggle · Traditional Chinese input searchable · Case records simplified**
 
@@ -215,7 +221,7 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 
 > 💡 **Don't want to download manually each time?** Add this project's URL `https://github.com/jangviktor-web/nihaixia-app` to the open-source updater [Obtainium](https://github.com/ImranR98/Obtainium) and set the APK filter to `arm64-v8a`; it will then notify you of and install each new release automatically — no more checking the Releases page.
 
-### 📥 Method 1: Download Prebuilt APK (V1.11.31)
+### 📥 Method 1: Download Prebuilt APK (V1.11.32)
 
 > ### ⚠️ Upgrade Notice: Signing Key Unified, Direct Over-Install Usually Works
 >
@@ -248,6 +254,26 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 | arm64‑v8a `app‑arm64‑v8a‑release.apk` | 38.0MB | Newer 64-bit Android phones, smaller size |
 | armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | 35.7MB | Older 32-bit Android devices |
 | x86_64 `app‑x86_64‑release.apk` | 39.6MB | Android virtual machines and emulators |
+
+<details open>
+<summary><b>Changelog (v1.11.32 Ask Master Ni AI · Symptom self-check · Three interaction upgrades)</b></summary>
+
+> **V1.11.32 Ask Master Ni AI (local lecture retrieval + bring-your-own endpoint) · Symptom self-check · In-answer linking · Formula contraindications in context**
+>
+> ![v1.11.32 Ask Master Ni AI and symptom self-check](docs/images/screenshot_v1131_llm_ask.webp)
+>
+> **1. Ask Master Ni AI**: a question is first retrieved against the offline lecture library (394 Shang Han Lun clauses / Jin Gui / 72 acupuncture lectures / 335 materia-medica lectures / 1,257 case records / 48 ancient-modern disease-name pairs / 408 acupoints / 314 formulas). The matched original passages are fed to the model **together with their sources**, and the persona hard-constrains it to answer only from those passages — if the lectures do not cover something it must say so, rather than invent clause numbers or formulas. **The endpoint is yours** (OpenAI-compatible base URL / API key / model name, with one-tap model listing) and is **off by default**; when off, the app makes no network requests, and the key is stored only in the local SQLite database. Conversations persist locally (DB v6) and survive leaving the page or killing the app; a session drawer groups history into today / yesterday / last 7 days / earlier, with switch, rename and delete. Any formula mentioned in an answer that appears in neither the passages nor the case records is flagged as "N formula names not found in the lecture passages". Contraindications and key points for all 314 formulas are also placed in context, so the model can answer "when must this formula NOT be used".
+>
+> **2. Symptom self-check**: the "Diagnosis" tab gains a one-page triage — cold/heat overview (required) → advanced clues (optional, multi-select) → eleven questions; three selections are enough for a conclusion. Results show the six-meridian assignment, pattern, confidence, matched symptoms and reasoning, with formulas tappable through to detail pages. If all six of Master Ni's health baselines are met, it says so directly instead of forcing a formula. Positioned as fast triage; for complex presentations the chat-style interview is still recommended.
+>
+> **3. In-answer linking**: formula, herb and acupoint names in answers automatically become tappable links to their detail pages (longest-match first, formulas take precedence, acupoints carry an exclusion list so short names like "Taiyang" or "Guangming" are not mis-linked). Every entry under "N local lecture passages referenced" can be opened as the original text, so you can check whether the answer actually follows the lectures.
+>
+> **4. Fixes and engineering**: fixed a name collision between the extra "Xiaoke" acupoint and the disease name "Xiaoke", which made "how to differentiate Xiaoke" be misrouted as an acupuncture query and pushed the Jueyin chapter out of context; fixed a title-mark split in the "Found in the Classics" index (Song 175 Gancao Fuzi Tang was missed and Fuzi Tang mis-linked, with Song 177 and 112 corrected as well); added regression tests (symptom→formula reachability 7/8, link injection 5, session persistence 3, source audit 3, formula contraindications 5); full `flutter test` 868 passed / 2 failed (both pre-existing baseline failures).
+>
+> See [Release Notes](release_notes/v1.11.32.md).
+>
+
+</details>
 
 > **V1.11.31 Unified Song-edition Shang Han Lun · Fixed "Found in the Classics" on formulas · Standardized layout**: Shang Han Lun assets were switched wholesale to Song-edition clause numbering (390 clauses + 4 appendices = 394 chapters), with list names unified as "Song edition N ·"; the classics index (1728 entries) and formula index (279 entries) were rebuilt and aligned; "Found in the Classics" jumps were completed for 8 formulas and the mistaken "Xingzi Tang" link was removed; clause-card layout was standardized and R1 was cleared. See [Release Notes](release_notes/v1.11.31.md).
 > 
