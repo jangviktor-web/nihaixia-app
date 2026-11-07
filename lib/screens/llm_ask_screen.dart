@@ -35,6 +35,11 @@ class _Turn {
   /// 不持久化：重进页面时上下文已丢弃，重算会把全部方名误判为「无据」。
   List<String> unverified = [];
 
+  /// 渲染用：方剂/药材/穴位名已包成内部链接。
+  /// 懒算一次并缓存——列表滚动会反复 build，不缓存就是每帧重扫一千多个候选名。
+  String? _linkedAnswer;
+  String get linkedAnswer => _linkedAnswer ??= injectInternalLinks(answer ?? '');
+
   _Turn(this.question);
 
   bool get busy => answer == null && error == null;
@@ -390,7 +395,8 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
               _sourcesTile(t.sources),
               const SizedBox(height: 8),
               MarkdownBody(
-                data: t.answer!,
+                data: t.linkedAnswer,
+                onTapLink: (_, href, _) => openInternalLink(context, href),
                 selectable: true,
                 styleSheet: MarkdownDocScreen.styleSheetFor(Theme.of(context)),
               ),
@@ -543,6 +549,21 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(fontSize: 12),
             ),
+            trailing: h.asset == null
+                ? null
+                : const Icon(Icons.chevron_right, size: 16),
+            // 素材片段带 asset：点开就是该条原文，便于核对回答是否照讲义讲。
+            onTap: h.asset == null
+                ? null
+                : () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => MarkdownDocScreen(
+                          title: '${h.sourceLabel}·${h.title}',
+                          asset: h.asset!,
+                        ),
+                      ),
+                    ),
           ),
       ],
     );

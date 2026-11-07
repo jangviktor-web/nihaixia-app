@@ -27,6 +27,102 @@ String decodeMarkdownHref(String href) {
   }
 }
 
+/// 文本内链接索引：候选名 → 链接类型。运行期不重建（仓库数据只加载一次）。
+///
+/// ⚠️ 仓库未就绪（候选集为空）时**不写缓存** —— 否则会像 allNames 那样
+/// 把空表永久缓存住，之后加载完也永远注入不出链接。
+({RegExp re, Map<String, String> target})? _linkIndexCache;
+
+({RegExp re, Map<String, String> target})? _buildLinkIndex() {
+  final cached = _linkIndexCache;
+  if (cached != null) return cached;
+
+  final formulaNames = FormulaRepository.getAll()
+      .map((f) => f.name)
+      .where((n) => n.length >= 2)
+      .toList();
+  final herbCandidates = <String>{
+    ...HerbRepository.getAll().map((h) => h.name),
+    ...HerbRepository.aliasNames,
+  }.where((n) => n.length >= 2).toList();
+
+  // 穴位候选：仓库正名去「穴」后缀 + 短名映射（子宫→子宫穴 / 消渴→消渴穴），
+  // 应用讲稿排除名单（太阳/光明——详见 zhenjiu_lecture_index）。
+  final shortForm = AcupointRepository.kShortNameLinkForm;
+  final excluded = ZhenJiuLectureIndex.cachedExcluded ??
+      ZhenJiuLectureIndex.kFallbackExcluded.toSet();
+  final acupointCandidates = AcupointRepository.allNames
+      .map((n) => shortForm[n] ?? n)
+      .where((n) => n.length >= 2 && !excluded.contains(n.replaceAll('穴', '')))
+      .toList();
+
+  // 名称 → 链接类型；方剂优先（同名时 formula 生效）。
+  final targetOf = <String, String>{};
+  for (final n in formulaNames) {
+    targetOf.putIfAbsent(n, () => 'formula');
+  }
+  for (final n in herbCandidates) {
+    targetOf.putIfAbsent(n, () => 'herb');
+  }
+  for (final n in acupointCandidates) {
+    targetOf.putIfAbsent(n, () => 'acupoint');
+  }
+  if (targetOf.isEmpty) return null;
+
+  final sorted = targetOf.keys.toList()
+    ..sort((a, b) => b.length.compareTo(a.length));
+  final re = RegExp(sorted.map(RegExp.escape).join('|'));
+  return _linkIndexCache = (re: re, target: targetOf);
+}
+
+/// 把正文中的已知方剂名 / 药材名 / 穴位名包成内部链接。
+///
+/// 三类合并为单一候选集、长度降序、单次非重叠扫描（replaceAllMapped 最左优先），
+/// 避免嵌套与二次包裹；点击由 [openInternalLink] 处理。
+String injectInternalLinks(String md) {
+  final index = _buildLinkIndex();
+  if (index == null) return md;
+  return md.replaceAllMapped(index.re, (m) {
+    final name = m.group(0)!;
+    return '[$name](${index.target[name]}://$name)';
+  });
+}
+
+/// 处理内部链接跳转：formula:// → 方剂详情，herb:// → 药材详情，
+/// acupoint:// → 穴位详情。未知 scheme 由调用方自行忽略。
+void openInternalLink(BuildContext context, String? href) {
+  if (href == null) return;
+  if (href.startsWith('formula://')) {
+    final name = decodeMarkdownHref(href.substring('formula://'.length));
+    final formula = FormulaRepository.getByName(name);
+    if (formula != null && context.mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => FormulaDetailScreen(formula: formula)),
+      );
+    }
+  } else if (href.startsWith('acupoint://')) {
+    final name = decodeMarkdownHref(href.substring('acupoint://'.length));
+    final acupoint = AcupointRepository.findByName(name);
+    if (acupoint != null && context.mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => AcupointDetailScreen(acupoint: acupoint)),
+      );
+    }
+  } else if (href.startsWith('herb://')) {
+    final name = decodeMarkdownHref(href.substring('herb://'.length));
+    // 精确 + 别名归一（无模糊兜底），避免「柴胡」误跳到含柴胡的方剂。
+    final herb = HerbRepository.getExactByName(name);
+    if (herb != null && context.mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => HerbDetailScreen(herb: herb)),
+      );
+    }
+  }
+}
+
 /// 通用 Markdown 原文阅读页（加载 assets 资源渲染）。
 /// 用于倪师《天纪》讲义/案例等原文展示，内容属传统文化参考。
 ///
@@ -169,86 +265,9 @@ class _MarkdownDocScreenState extends State<MarkdownDocScreen> {
     setState(() => _future = _load());
   }
 
-  /// 将正文中的已知方剂名、药材名（含别名）、穴位名（含排除名单）包成链接，
-  /// 点击分别跳方剂 / 药材 / 穴位详情。
-  /// 三类合并为单一候选集、长度降序、单次非重叠扫描，避免嵌套/二次包裹。
-  String _injectLinks(String md) {
-    final formulaNames = FormulaRepository.getAll()
-        .map((f) => f.name)
-        .where((n) => n.length >= 2)
-        .toList();
-    final herbCandidates = <String>{
-      ...HerbRepository.getAll().map((h) => h.name),
-      ...HerbRepository.aliasNames,
-    }.where((n) => n.length >= 2).toList();
+  String _injectLinks(String md) => injectInternalLinks(md);
 
-    // 穴位候选：仓库正名去「穴」后缀 + 短名映射（子宫→子宫穴），
-    // 应用讲稿排除名单（太阳/光明——详见 zhenjiu_lecture_index）。
-    final shortForm = AcupointRepository.kShortNameLinkForm;
-    final excluded = ZhenJiuLectureIndex.cachedExcluded ??
-        ZhenJiuLectureIndex.kFallbackExcluded.toSet();
-    final acupointCandidates = AcupointRepository.allNames
-        .map((n) => shortForm[n] ?? n)
-        .where((n) => n.length >= 2 && !excluded.contains(n.replaceAll('穴', '')))
-        .toList();
-
-    // 名称 → 链接类型；方剂优先（同名时 formula 生效，herb/acupoint 的 putIfAbsent 不覆盖）。
-    final targetOf = <String, String>{};
-    for (final n in formulaNames) {
-      targetOf.putIfAbsent(n, () => 'formula');
-    }
-    for (final n in herbCandidates) {
-      targetOf.putIfAbsent(n, () => 'herb');
-    }
-    for (final n in acupointCandidates) {
-      targetOf.putIfAbsent(n, () => 'acupoint');
-    }
-    if (targetOf.isEmpty) return md;
-
-    final sorted = targetOf.keys.toList()
-      ..sort((a, b) => b.length.compareTo(a.length));
-    final re = RegExp(sorted.map(RegExp.escape).join('|'));
-    return md.replaceAllMapped(re, (m) {
-      final name = m.group(0)!;
-      final type = targetOf[name]!;
-      return '[$name]($type://$name)';
-    });
-  }
-
-  void _onTapLink(String? href) {
-    if (href == null) return;
-    if (href.startsWith('formula://')) {
-      final name = decodeMarkdownHref(href.substring('formula://'.length));
-      final formula = FormulaRepository.getByName(name);
-      if (formula != null && mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (_) => FormulaDetailScreen(formula: formula)),
-        );
-      }
-    } else if (href.startsWith('acupoint://')) {
-      final name = decodeMarkdownHref(href.substring('acupoint://'.length));
-      final acupoint = AcupointRepository.findByName(name);
-      if (acupoint != null && mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (_) => AcupointDetailScreen(acupoint: acupoint)),
-        );
-      }
-    } else if (href.startsWith('herb://')) {
-      final name = decodeMarkdownHref(href.substring('herb://'.length));
-      // 精确 + 别名归一（无模糊兜底），避免「柴胡」误跳到含柴胡的方剂。
-      final herb = HerbRepository.getExactByName(name);
-      if (herb != null && mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => HerbDetailScreen(herb: herb)),
-        );
-      }
-    }
-  }
+  void _onTapLink(String? href) => openInternalLink(context, href);
 
   @override
   Widget build(BuildContext context) {

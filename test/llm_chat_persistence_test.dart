@@ -10,8 +10,10 @@ void main() {
 
   setUpAll(() async {
     databaseFactory = databaseFactoryFfi;
-    // 独立 DB 文件：全量并发跑时不与其它测试的共享库互相锁/清库
-    DatabaseHelper.testDbName = 'llm_chat_test.db';
+    // 独立 DB 文件 + 每次运行唯一名：全量顺序跑时，前序测试留下的连接/残留
+    // 会让固定文件名的库偶尔锁住（trim 的 DELETE 失效 → 断言假红）。
+    DatabaseHelper.testDbName =
+        'llm_chat_test_${DateTime.now().microsecondsSinceEpoch}.db';
     DatabaseHelper.resetForTest();
     await LlmChatRepository.clearAll();
   });

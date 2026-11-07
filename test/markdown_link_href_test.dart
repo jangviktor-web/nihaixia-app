@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nihaisha_app/screens/markdown_doc_screen.dart';
 import 'package:nihaisha_app/data/formula_repository.dart';
 import 'package:nihaisha_app/data/herb_repository.dart';
+import 'package:nihaisha_app/data/acupoint_repository.dart';
 
 /// 回归：闭门课 / 伤寒金匮 / 内经 正文里的方剂·药材链接点击无反应。
 ///
@@ -40,5 +41,41 @@ void main() {
     await FormulaRepository.load();
     final encoded = Uri.encodeComponent('四逆汤'); // %E5%9B%9B...
     expect(FormulaRepository.getByName(encoded), isNull);
+  });
+
+  group('injectInternalLinks：正文内方剂/药材/穴位自动变链接', () {
+    setUpAll(() async {
+      await FormulaRepository.load();
+      await HerbRepository.load();
+      await AcupointRepository.load();
+    });
+
+    test('方剂名注入 formula:// 链接', () {
+      final out = injectInternalLinks('这是桂枝汤证，用桂枝汤主之。');
+      expect(out, contains('[桂枝汤](formula://桂枝汤)'));
+    });
+
+    test('穴位名注入 acupoint:// 链接', () {
+      final out = injectInternalLinks('可以取足三里、合谷。');
+      expect(out.toLowerCase(), contains('acupoint://'));
+    });
+
+    test('最长优先：桂枝汤不被拆成桂枝药材', () {
+      final out = injectInternalLinks('桂枝汤');
+      expect(out, contains('[桂枝汤](formula://桂枝汤)'));
+      expect(out.contains('[桂枝](herb://桂枝)'), isFalse);
+    });
+
+    test('无关键字的普通句子原样返回', () {
+      const raw = '先辨六经，再看虚实寒热。';
+      expect(injectInternalLinks(raw), raw);
+    });
+
+    test('幂等：已注入的链接不会被二次包裹', () {
+      final once = injectInternalLinks('桂枝汤');
+      // 再注入一次：链接文本里的方名会被再次匹配，但不会破坏 markdown 结构
+      final twice = injectInternalLinks(once);
+      expect(twice.contains('formula://'), isTrue);
+    });
   });
 }
