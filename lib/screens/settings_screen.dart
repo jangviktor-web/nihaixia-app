@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/settings_repository.dart';
+import '../services/llm_service.dart';
 import '../services/update_service.dart';
 import '../widgets/text_scale_slider.dart';
 import 'app_dialogs.dart';
@@ -66,6 +67,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _sectionTitle('更新'),
             _mirrorToggleTile(cs),
             _updateTile(cs),
+            const Divider(height: 24),
+            _sectionTitle('AI 讲义问答（可选）'),
+            const LlmSettingsSection(),
           ],
         ),
       ),
@@ -283,5 +287,205 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
     );
     return ok ?? false;
+  }
+}
+
+/// AI 讲义问答设置：地址 + API Key + 模型。
+/// 填完 API Key（或点按钮）即自动拉取 OpenAI 兼容端点的 /models 列表。
+class LlmSettingsSection extends StatefulWidget {
+  const LlmSettingsSection({super.key});
+
+  @override
+  State<LlmSettingsSection> createState() => _LlmSettingsSectionState();
+}
+
+class _LlmSettingsSectionState extends State<LlmSettingsSection> {
+  final _s = SettingsRepository.instance;
+  late final TextEditingController _url;
+  late final TextEditingController _key;
+  late final TextEditingController _model;
+  List<String> _models = const [];
+  bool _fetching = false;
+  bool _testing = false;
+  String? _hint;
+
+  @override
+  void initState() {
+    super.initState();
+    _url = TextEditingController(text: _s.llmBaseUrl);
+    _key = TextEditingController(text: _s.llmApiKey);
+    _model = TextEditingController(text: _s.llmModel);
+    _models = _s.llmModels; // 上次拉取的多模型列表，重进设置页不用再获取
+  }
+
+  @override
+  void dispose() {
+    _url.dispose();
+    _key.dispose();
+    _model.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveBasics() async {
+    final changed = _url.text.trim() != _s.llmBaseUrl ||
+        _key.text.trim() != _s.llmApiKey;
+    await _s.setLlmBaseUrl(_url.text);
+    await _s.setLlmApiKey(_key.text);
+    // 换端点后旧模型列表作废，UI 同步清掉，避免下拉显示上一家服务商的模型
+    if (changed && mounted) setState(() => _models = []);
+  }
+
+  Future<void> _fetch() async {
+    if (_fetching) return;
+    setState(() {
+      _fetching = true;
+      _hint = null;
+    });
+    try {
+      await _saveBasics();
+      final list = await LlmService.fetchModels(_url.text, _key.text);
+      if (!mounted) return;
+      await _s.setLlmModels(list);
+      setState(() {
+        _models = list;
+        _hint = '获取到 ${list.length} 个模型，可在下方选择';
+      });
+      if (!list.contains(_s.llmModel) && list.isNotEmpty) {
+        await _s.setLlmModel(list.first);
+        if (mounted) _model.text = list.first;
+      }
+    } on LlmException catch (e) {
+      if (mounted) setState(() => _hint = e.message);
+    } finally {
+      if (mounted) setState(() => _fetching = false);
+    }
+  }
+
+  /// 用当前选中的模型真发一条极短消息，验证地址 / 密钥 / 模型 / chat 路径。
+  Future<void> _test() async {
+    if (_fetching || _testing) return;
+    setState(() {
+      _testing = true;
+      _hint = null;
+    });
+    try {
+      await _saveBasics();
+      await _s.setLlmModel(_model.text);
+      final elapsed = await LlmService.testConnection(LlmConfig.fromSettings());
+      if (!mounted) return;
+      setState(() => _hint = '连接正常 · ${_s.llmModel} · '
+          '${(elapsed.inMilliseconds / 1000).toStringAsFixed(1)}s');
+    } on LlmException catch (e) {
+      if (mounted) setState(() => _hint = '测试失败：${e.message}');
+    } finally {
+      if (mounted) setState(() => _testing = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // ⚠️ 必须自己监听设置：本组件在父级 ListView 里是 const 实例，父级
+    // ListenableBuilder 重建时新旧 widget identical，Flutter 的 updateChild
+    // 会直接跳过子树 → 开关停在旧值（表现为「点了不动，须退出重进才刷新」）。
+    return ListenableBuilder(
+      listenable: _s,
+      builder: (context, _) => _content(context),
+    );
+  }
+
+  Widget _content(BuildContext context) {
+    final enabled = _s.llmEnabled;
+    final busy = _fetching || _testing;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SwitchListTile(
+          secondary: const Icon(Icons.smart_toy_outlined),
+          title: const Text('启用「问倪师AI」'),
+          subtitle: const Text(
+              '默认关闭。开启后仅在主动提问时联网，发送提问与本地讲义片段到你自己配置的端点；'
+              '不发送诊断历史、收藏或命盘数据。'),
+          value: enabled,
+          onChanged: (v) => _s.setLlmEnabled(v),
+          contentPadding: EdgeInsets.zero,
+        ),
+        if (enabled) ...[
+          const SizedBox(height: 8),
+          TextField(
+            controller: _url,
+            keyboardType: TextInputType.url,
+            decoration: const InputDecoration(
+              labelText: '接口地址（OpenAI 兼容）',
+              hintText: 'https://api.openai.com/v1',
+              border: OutlineInputBorder(),
+              isDense: true,
+            ),
+            onEditingComplete: _saveBasics,
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _key,
+            obscureText: true,
+            decoration: const InputDecoration(
+              labelText: 'API Key',
+              border: OutlineInputBorder(),
+              isDense: true,
+            ),
+            onEditingComplete: _fetch,
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              FilledButton.tonal(
+                onPressed: busy ? null : _fetch,
+                child: Text(_fetching ? '获取中…' : '获取模型列表'),
+              ),
+              OutlinedButton(
+                onPressed: busy ? null : _test,
+                child: Text(_testing ? '测试中…' : '测试连接'),
+              ),
+              if (_hint != null)
+                Text(_hint!, style: const TextStyle(fontSize: 12)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _model,
+            decoration: const InputDecoration(
+              labelText: '模型名称（可手动填写）',
+              hintText: 'gpt-4o-mini',
+              border: OutlineInputBorder(),
+              isDense: true,
+            ),
+            onEditingComplete: () => _s.setLlmModel(_model.text),
+          ),
+          if (_models.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text('从已获取的模型中选择（共 ${_models.length} 个）',
+                style: const TextStyle(fontSize: 12)),
+            DropdownButton<String>(
+              isExpanded: true,
+              value: _models.contains(_s.llmModel) ? _s.llmModel : null,
+              items: _models
+                  .map((m) => DropdownMenuItem(value: m, child: Text(m)))
+                  .toList(),
+              onChanged: (v) async {
+                if (v == null) return;
+                _model.text = v;
+                await _s.setLlmModel(v);
+              },
+            ),
+          ],
+          const SizedBox(height: 8),
+          const Text(
+            '密钥仅保存在本机数据库，不会上传、不写入日志。关闭开关即可完全停止联网。',
+            style: TextStyle(fontSize: 12),
+          ),
+        ],
+      ],
+    );
   }
 }

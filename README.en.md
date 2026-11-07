@@ -6,7 +6,7 @@
 
 **An offline-first, completely free app for learning TCM classical formulas and assisted diagnosis, faithfully recreating Ni Haixia's Renji lecture series system**
 
-Works offline · All data on-device · No sign-up · Ready out of the box
+Offline-first · All data on-device · No sign-up · Ready out of the box (optional AI Q&A uses your own endpoint, off by default)
 
 [简体中文](README.md) · [繁體中文](README.zh-Hant.md) · **English**
 
@@ -199,6 +199,7 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 | 🔔 **In-app updates** | One-tap check for new GitHub releases in Settings, with download and install support | — |
 | ⚙️ **Diagnosis settings** | Default gender / diagnosis detail level / auto-copy prescription, for a personalized intake experience | 3 items |
 | 💾 **Data management** | Clear history / export favorites / clear cache, full control over local data | — |
+| 🤖 **Ask Master Ni AI (optional)** | Answers from locally retrieved lecture excerpts using your own OpenAI-compatible endpoint and API key; **off by default**, zero network traffic when disabled | — |
 
 > **Special note**: The Zi Wei Dou Shu, Yi Jing, Four Pillars, and Six-Yao modules are **traditional Chinese folk-culture references**, not for medical diagnosis, and are clearly separated from the classical-formula medical modules in both UI and wording.
 
@@ -537,7 +538,7 @@ flowchart LR
 ## ❓ Frequently Asked Questions
 
 **Q1: Does the app need an internet connection?**
-No. All knowledge bases (formulas, materia medica, acupoints, case records, classic texts) are bundled locally and work offline. Only the "in-app update check" needs internet access to reach GitHub.
+No. All knowledge bases (formulas, materia medica, acupoints, case records, classic texts) are bundled locally and work offline. By default only the "in-app update check" reaches GitHub; the optional "Ask Master Ni AI" connects only when you ask a question and have configured your own endpoint — it is off by default.
 
 **Q2: Is my diagnosis data safe?**
 Diagnosis history, favorites, and other data are all stored in the local SQLite database, never uploaded to any server, so private data never leaves the device.

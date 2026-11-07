@@ -129,7 +129,20 @@ class ClassicSearchService {
   }
 
   /// 检索：标题命中优先，其次正文命中；正文命中给出关键词上下文摘要。
-  static Future<ClassicSearchResult> search(String query) async {
+  ///
+  /// [snippetSpan] 摘要窗口半径（默认 ±32 字，供列表展示）；问答需要成段原文
+  /// 时传更大的值（见 [LlmService.contextSnippetSpan]），否则一个片段里只能
+  /// 看到一个方名，模型便会「只答第一个方剂」。
+  /// [maxResults] 返回条数上限（默认 [maxHits]）；[total] 始终是未截断命中数。
+  /// [onlySources] 限定来源（如问针灸时只要 `zhenjiu`）。不加限定时针灸讲稿
+  /// 会被伤寒条文挤掉 —— 索引里伤寒 394 条、针灸只有 72 条，全源检索前几条
+  /// 轮不到针灸。
+  static Future<ClassicSearchResult> search(
+    String query, {
+    int snippetSpan = 32,
+    int maxResults = maxHits,
+    Set<String>? onlySources,
+  }) async {
     final q = query.trim();
     if (q.isEmpty) return ClassicSearchResult.empty;
     await ensureLoaded();
@@ -143,11 +156,12 @@ class ClassicSearchService {
     var total = 0;
 
     for (final e in entries) {
+      if (onlySources != null && !onlySources.contains(e.source)) continue;
       final inTitle = e.title.toLowerCase().contains(needle);
       final idx = e.text.toLowerCase().indexOf(needle);
       if (!inTitle && idx < 0) continue;
       total++;
-      if (titleHits.length + bodyHits.length >= maxHits) continue;
+      if (titleHits.length + bodyHits.length >= maxResults) continue;
       final hit = ClassicHit(
         source: e.source,
         sourceLabel: _labelOf(e.source, e.bookId),
@@ -155,7 +169,7 @@ class ClassicSearchService {
         asset: e.asset,
         bookId: e.bookId,
         chapterIndex: e.chapterIndex,
-        snippet: _snippet(e.text, inTitle ? -1 : idx, q.length),
+        snippet: _snippet(e.text, inTitle ? -1 : idx, q.length, snippetSpan),
       );
       if (inTitle) {
         titleHits.add(hit);
@@ -191,9 +205,8 @@ class ClassicSearchService {
     return out;
   }
 
-  /// 取命中位置前后各 32 字做摘要；[idx] < 0 表示只在标题命中，取正文开头。
-  static String _snippet(String text, int idx, int queryLength) {
-    const span = 32;
+  /// 取命中位置前后各 [span] 字做摘要；[idx] < 0 表示只在标题命中，取正文开头。
+  static String _snippet(String text, int idx, int queryLength, [int span = 32]) {
     if (text.isEmpty) return '';
     final start = idx < 0 ? 0 : (idx - span).clamp(0, text.length);
     final end = idx < 0

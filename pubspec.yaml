@@ -38,7 +38,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/SKILL.md
+    - assets/llm/persona.md
     - assets/data/formulas.json
     - assets/data/formula_oral_hints.json
     - assets/data/herbs.json
@@ -48,6 +48,7 @@ flutter:
     - assets/data/changelog.json
     - assets/data/prescriptions.json
     - assets/data/formula_index.json
+    - assets/data/disease_alias_index.json
     - assets/data/ziwei_rules.json
     - assets/data/china_cities.json
     - assets/data/world_cities.json

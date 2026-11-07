@@ -104,7 +104,14 @@ class AcupointRepository {
   };
 
   /// 全部穴位名（去掉"穴"后缀），按长度降序，供详情页解析临床心悟中的处方组成。
-  static List<String> get allNames => _allNamesCache ??= _buildAllNames();
+  /// 全部穴位可匹配名（正名去「穴」字 + 短名归一），按长度降序。
+  ///
+  /// ⚠️ 未加载时返回空**且不写缓存**：否则任何早于 [load] 的调用会把空表
+  /// 永久缓存下来，之后 load 完成也取不到名字（问诊的穴位识别就是这么全空的）。
+  static List<String> get allNames {
+    if (!_loaded) return const [];
+    return _allNamesCache ??= _buildAllNames();
+  }
 
   static List<String>? _allNamesCache;
 

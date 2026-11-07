@@ -11,6 +11,7 @@ import '../widgets/solar_term_card.dart';
 import '../theme/app_colors.dart';
 import 'acupuncture_screen.dart';
 import 'bencao_library_screen.dart';
+import 'llm_ask_screen.dart';
 import 'formula_detail_screen.dart';
 import 'herb_detail_screen.dart';
 import 'meridian_detail_screen.dart';
@@ -48,6 +49,29 @@ class _KnowledgeScreenState extends State<KnowledgeScreen>
     return Scaffold(
       appBar: AppBar(
         title: const Text('知识库'),
+        actions: [
+          ListenableBuilder(
+            listenable: SettingsRepository.instance,
+            builder: (context, _) {
+              final s = SettingsRepository.instance;
+              if (!s.llmEnabled) return const SizedBox.shrink();
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: TextButton.icon(
+                  style: TextButton.styleFrom(
+                    foregroundColor: Theme.of(context).colorScheme.onSurface,
+                  ),
+                  icon: const Icon(Icons.smart_toy_outlined, size: 18),
+                  label: const Text('问倪师AI'),
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const LlmAskScreen()),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
         bottom: TabBar(
           controller: _tabController,
           tabs: const [

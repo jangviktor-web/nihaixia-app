@@ -47,6 +47,20 @@ class FormulaMentionIndex {
     return FormulaMentionIndex._(map);
   }
 
+  /// 某个字段下有记录的方剂数（去重方剂名计数）。
+  ///
+  /// 供「金匮有多少方剂」这类计数提问给出确定性数字：'j' = 金匮要略讲稿、
+  /// 's' = 伤寒论讲稿、'z' = 针灸讲稿、'b' = 本草讲稿。
+  int countWith(String key) {
+    var n = 0;
+    for (final v in _map.values) {
+      if (v is! Map) continue;
+      final list = v[key];
+      if (list is List && list.isNotEmpty) n++;
+    }
+    return n;
+  }
+
   /// 方剂名 → 提及结构（未命中返回 null，调用方不渲染任何分组）。
   FormulaMentions? hitsFor(String name) {
     final v = _map[name];

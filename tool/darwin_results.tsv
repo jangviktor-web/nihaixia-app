@@ -1,0 +1,3 @@
+﻿timestamp	commit	skill	old_score	new_score	status	dimension	note	eval_mode
+2026-11-07T01:18	baseline	llm-persona	-	-	baseline	dim5	基线锚点 persona_baseline_20261107.md 10098B；悬空引用 5 处	full_test
+2026-11-07T01:25	paired	llm-persona	-	3-0 better clear (原始 3 judge 全回；替补 judge-d 亦判 B，合计 4/4)	keep	dim5	judge-a / judge-b / judge-c 原始三票一致 B better clear；替补 judge-d 额外确认；悬空引用 5→0；非辨证问答量化为 1-2 句；full_test: 闲聊 144字/17.5s → 25字/4.8s，辨证题表格/条文卡片/原文引用未退化；体积 10098→9957B；未动 git，走快照锚点	paired

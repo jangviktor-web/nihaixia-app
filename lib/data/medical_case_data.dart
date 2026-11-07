@@ -14,6 +14,7 @@ library;
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter/services.dart';
 
+import 'acupoint_repository.dart';
 import 'chinese_convert.dart';
 import 'disease_repository.dart';
 import 'formula_repository.dart';
@@ -24,6 +25,7 @@ import 'herb_repository.dart';
 final Map<String, List<String>> _formulaNameCache = {};
 final Map<String, List<String>> _herbNameCache = {};
 final Map<String, List<String>> _diseaseNameCache = {};
+final Map<String, List<String>> _acupointNameCache = {};
 
 /// 从方剂字段提取已知方剂名（简繁归一 + 箭头分段 + 噪声清洗 + 长度降序 + 去重）。
 /// 返回命中的方剂名（FormulaRepository 正名）。按原文 memo 缓存，返回不可变列表。
@@ -50,6 +52,26 @@ List<String> extractHerbNames(String formula) {
         formula,
         candidates,
         resolve: (c) => HerbRepository.getExactByName(c)?.name,
+      ),
+    );
+  });
+}
+
+/// 从「针灸方案」字段抽取已知穴位名（归一为正名，如「合谷」→「合谷穴」）。
+///
+/// ⚠️ 依赖 [AcupointRepository] 已 load：未加载时 allNames 为空，会抽出空列表
+/// 并被 memo 缓存住。调用方（问诊 prepare）必须先 await load。
+List<String> extractAcupointNames(String text) {
+  return _acupointNameCache.putIfAbsent(text, () {
+    final candidates = AcupointRepository.allNames;
+    if (candidates.isEmpty) return const <String>[];
+    return List.unmodifiable(
+      extractKnownNames(
+        text,
+        candidates.toList(),
+        resolve: (c) =>
+            AcupointRepository.findByName(c)?.name ??
+            AcupointRepository.findByName(AcupointRepository.canonicalOf(c))?.name,
       ),
     );
   });
@@ -281,6 +303,12 @@ class MedicalCase {
   /// 药材索引：命中 HerbRepository 的药材正名（精确+别名归一、去重、保持出现顺序）。
   late final List<String> herbNames = extractHerbNames(formula);
 
+  /// 仅「主要诊断」字段的归一索引：问诊召回时它比病机/结果命中值钱得多。
+  late final String diagnosisNorm = toSimplified(diagnosis).toLowerCase();
+
+  /// 穴位索引：命中 AcupointRepository 正名的穴位（供「症状 → 穴位 → 医案」第三跳）。
+  late final List<String> acupointNames = extractAcupointNames(acupuncture);
+
   /// 西医病名索引：合并抽取 [diagnosis] / [western] 中命中的西医病名
   /// （简繁归一、别名归一、去重、保持出现顺序）。空列表表示该医案未明确西医病名。
   late final List<String> diseaseNames = _mergeDiseaseNames(
@@ -307,6 +335,11 @@ class MedicalCase {
     final qn = toSimplified(q).toLowerCase();
     return qn.isEmpty || _searchNorm.contains(qn);
   }
+
+  /// 已归一（简体+小写）的查询词直接命中，跳过逐次归一化。
+  /// 批量检索（问诊一次要拿 10+ 个词扫 1089 例）用它避免重复转换开销。
+  bool matchesNormalized(String lowerSimplified) =>
+      lowerSimplified.isEmpty || _searchNorm.contains(lowerSimplified);
 
   /// 医案展示名：优先「主要诊断」，缺失时回退「中医病机」，再缺失显「（未命名）」。
   String get displayName {

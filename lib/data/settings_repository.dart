@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import '../theme/app_tokens.dart';
@@ -21,6 +23,13 @@ class SettingsRepository extends ChangeNotifier {
   bool _fireEarthSame = true; // 长生十二神起长生口径（true=火土同宫，现代子平主流）
   bool _traditionalDisplayEnabled = false; // 阅读页繁体显示（OpenCC 简→繁；默认关）
 
+  // ---- AI 讲义问答（可选联网功能，默认全关）----
+  bool _llmEnabled = false;
+  String _llmBaseUrl = '';
+  String _llmApiKey = '';
+  String _llmModel = '';
+  List<String> _llmModels = []; // 上次从 /models 拉取到的可选模型（换端点即清空）
+
   // ---- 最近出生地点（真太阳时校正用，紫微/八字共用；null=未设置）----
   String? _lastCityName;
   double? _lastLng;
@@ -38,6 +47,14 @@ class SettingsRepository extends ChangeNotifier {
   bool get fireEarthSame => _fireEarthSame;
   /// 阅读页（条文卡/讲稿/古籍）是否以繁体显示。默认关，关时零开销。
   bool get traditionalDisplayEnabled => _traditionalDisplayEnabled;
+  bool get llmEnabled => _llmEnabled;
+  String get llmBaseUrl => _llmBaseUrl;
+  String get llmApiKey => _llmApiKey;
+  String get llmModel => _llmModel;
+  List<String> get llmModels => _llmModels;
+  /// 是否可用：开关已开且地址/密钥/模型三项齐全。
+  bool get llmReady => _llmEnabled &&
+      _llmBaseUrl.isNotEmpty && _llmApiKey.isNotEmpty && _llmModel.isNotEmpty;
   String? get lastCityName => _lastCityName;
   double? get lastLng => _lastLng;
   double? get lastLat => _lastLat;
@@ -84,6 +101,21 @@ class SettingsRepository extends ChangeNotifier {
           break;
         case 'traditional_display_enabled':
           _traditionalDisplayEnabled = value == 'true';
+          break;
+        case 'llm_enabled':
+          _llmEnabled = value == 'true';
+          break;
+        case 'llm_base_url':
+          _llmBaseUrl = value;
+          break;
+        case 'llm_api_key':
+          _llmApiKey = value;
+          break;
+        case 'llm_model':
+          _llmModel = value;
+          break;
+        case 'llm_models':
+          _llmModels = _decodeList(value);
           break;
         case 'last_city_name':
           _lastCityName = value.isEmpty ? null : value;
@@ -161,6 +193,44 @@ class SettingsRepository extends ChangeNotifier {
     await _save('fire_earth_same', value.toString());
   }
 
+  Future<void> setLlmEnabled(bool value) async {
+    _llmEnabled = value;
+    notifyListeners();
+    await _save('llm_enabled', value.toString());
+  }
+
+  Future<void> setLlmBaseUrl(String value) async {
+    final next = value.trim();
+    if (next == _llmBaseUrl) return; // 值没变就别清掉已拉取的模型列表
+    _llmBaseUrl = next;
+    _llmModels = [];
+    notifyListeners();
+    await _save('llm_base_url', next);
+    await _save('llm_models', '[]');
+  }
+
+  Future<void> setLlmApiKey(String value) async {
+    final next = value.trim();
+    if (next == _llmApiKey) return;
+    _llmApiKey = next;
+    _llmModels = [];
+    notifyListeners();
+    await _save('llm_api_key', next);
+    await _save('llm_models', '[]');
+  }
+
+  Future<void> setLlmModels(List<String> value) async {
+    _llmModels = List<String>.from(value);
+    notifyListeners();
+    await _save('llm_models', jsonEncode(_llmModels));
+  }
+
+  Future<void> setLlmModel(String value) async {
+    _llmModel = value.trim();
+    notifyListeners();
+    await _save('llm_model', _llmModel);
+  }
+
   /// 记录最近出生地点（紫微选城市 / 八字选城市时写入，两处共用）。
   Future<void> setLastLocation(String? cityName, double? lng, double? lat) async {
     _lastCityName = (cityName == null || cityName.isEmpty) ? null : cityName;
@@ -170,6 +240,16 @@ class SettingsRepository extends ChangeNotifier {
     await _save('last_city_name', _lastCityName ?? '');
     await _save('last_lng', (lng ?? 120).toStringAsFixed(4));
     await _save('last_lat', (lat ?? 30).toStringAsFixed(4));
+  }
+
+  static List<String> _decodeList(String raw) {
+    try {
+      final d = jsonDecode(raw);
+      if (d is List) return d.whereType<String>().toList();
+    } catch (_) {
+      // 旧版本或脏数据：当空列表处理
+    }
+    return [];
   }
 
   Future<void> _save(String key, String value) async {
