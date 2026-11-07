@@ -413,7 +413,7 @@ flutter analyze
 |:---|:---|:---|
 | 費用 | 暫時免費 | 免費模型不限量 |
 | 介面位址 | `https://api.agnes-ai.cn/v1` | `https://open.bigmodel.cn/api/paas/v4` |
-| 模型名 | `agnes-3.0-flash` / `agnes-2.5-flash` | `glm-4-flash` 系列（以官方免費列表為準）|
+| 模型名 | `agnes-3.0-flash` / `agnes-2.5-flash` | `GLM-4.7-Flash` / `GLM-Z1-Flash`（均免費）|
 | 網路 | 新加坡，部分網路需代理 | 國內直連 |
 | 適合 | 註冊即用、隨便用 | 國內網路、模型選擇多 |
 
