@@ -213,7 +213,8 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 | 🔔 **In-app updates** | One-tap check for new GitHub releases in Settings, with download and install support | — |
 | ⚙️ **Diagnosis settings** | Default gender / diagnosis detail level / auto-copy prescription, for a personalized intake experience | 3 items |
 | 💾 **Data management** | Clear history / export favorites / clear cache, full control over local data | — |
-| 🤖 **Ask Master Ni AI (optional)** | Answers from locally retrieved lecture excerpts using your own OpenAI-compatible endpoint and API key; **off by default**, zero network traffic when disabled | — |
+| 🤖 **Ask Master Ni AI (optional)** | Retrieves from the local lecture library first (Shang Han Lun / Jin Gui / acupuncture / materia medica / cases / disease-name pairs) and hands the matched passages plus their sources to the model; endpoint and key are yours, **off by default** with zero network traffic when off; formulas, herbs and acupoints in answers are tappable, and every referenced passage opens as original text | 394 lectures |
+| 📝 **Symptom self-check** | One-page triage in the Diagnosis tab: cold/heat overview (required) → advanced clues (optional) → eleven questions; three selections produce a conclusion with six-meridian assignment, pattern, confidence and matched symptoms, and formulas remain tappable; says so directly when all six health baselines are met | 11 questions |
 
 > **Special note**: The Zi Wei Dou Shu, Yi Jing, Four Pillars, and Six-Yao modules are **traditional Chinese folk-culture references**, not for medical diagnosis, and are clearly separated from the classical-formula medical modules in both UI and wording.
 
@@ -222,10 +223,11 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 ## 📱 Download and Install
 
 > **Hantang TCM nihaixia‑app**
-> Fully offline ｜ No internet required ｜ No sign-up ｜ Android 7.0+
-> Universal APK about 86MB, per-architecture builds 36–40MB
+> Core features fully offline ｜ No sign-up ｜ Android 7.0+
+> "Ask Master Ni AI" is **optional**: you supply the endpoint and key yourself, it is **off by default**, and when off the app makes no network requests (see [PRIVACY.md](PRIVACY.md))
+> Universal APK about 82MB, per-architecture builds 34–38MB
 > Since V1.11.9, builds and releases are automated by GitHub Actions; pushing a `v*` tag produces the packages
-> **Last updated: 2026-11-06 (v1.11.31)**
+> **Last updated: 2026-11-07 (v1.11.32)**
 
 > 💡 **Don't want to download manually each time?** Add this project's URL `https://github.com/jangviktor-web/nihaixia-app` to the open-source updater [Obtainium](https://github.com/ImranR98/Obtainium) and set the APK filter to `arm64-v8a`; it will then notify you of and install each new release automatically — no more checking the Releases page.
 
