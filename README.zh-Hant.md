@@ -411,9 +411,9 @@ flutter analyze
 
 | | 方案一：Agnes AI | 方案二：智譜 AI |
 |:---|:---|:---|
-| 費用 | 免費、不限量 | 免費模型不限量 |
-| 介面位址 | `https://apihub.agnes-ai.com/v1` | `https://open.bigmodel.cn/api/paas/v4` |
-| 模型名 | `agnes-2.0-flash` | `glm-4-flash` 系列（以官方免費列表為準）|
+| 費用 | 暫時免費 | 免費模型不限量 |
+| 介面位址 | `https://api.agnes-ai.cn/v1` | `https://open.bigmodel.cn/api/paas/v4` |
+| 模型名 | `agnes-3.0-flash` / `agnes-2.5-flash` | `glm-4-flash` 系列（以官方免費列表為準）|
 | 網路 | 新加坡，部分網路需代理 | 國內直連 |
 | 適合 | 註冊即用、隨便用 | 國內網路、模型選擇多 |
 

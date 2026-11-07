@@ -412,9 +412,9 @@ No budget for an API? Two free options, 5 minutes to set up —
 
 | | Option 1: Agnes AI | Option 2: Zhipu AI |
 |:---|:---|:---|
-| Cost | Free, unlimited | Free models, unlimited |
-| Endpoint | `https://apihub.agnes-ai.com/v1` | `https://open.bigmodel.cn/api/paas/v4` |
-| Model | `agnes-2.0-flash` | `glm-4-flash` series (see the official free list) |
+| Cost | Free for now | Free models, unlimited |
+| Endpoint | `https://api.agnes-ai.cn/v1` | `https://open.bigmodel.cn/api/paas/v4` |
+| Model | `agnes-3.0-flash` / `agnes-2.5-flash` | `glm-4-flash` series (see the official free list) |
 | Network | Singapore; may need a proxy | Direct connection in mainland China |
 | Best for | Sign up and just use it | Mainland users, more model choices |
 
