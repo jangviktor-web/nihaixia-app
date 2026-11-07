@@ -4,6 +4,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
 import '../data/settings_repository.dart';
 import '../data/database_helper.dart';
+import '../data/llm_chat_repository.dart';
 import '../data/changelog_repository.dart';
 import '../services/update_service.dart';
 import '../services/native_files_stub.dart'
@@ -511,4 +512,33 @@ Future<void> installApk(dynamic file, BuildContext context) async {
       SnackBar(content: Text('安装失败：$e')),
     );
   }
+}
+
+
+void confirmClearLlmChat(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('清除问倪师AI 对话记录'),
+      content: const Text('确定要删除全部会话及其对话内容吗？此操作不可恢复。'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('取消'),
+        ),
+        FilledButton(
+          onPressed: () async {
+            await LlmChatRepository.clearAll();
+            if (context.mounted) {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('问倪师AI 对话记录已清除')),
+              );
+            }
+          },
+          child: const Text('清除'),
+        ),
+      ],
+    ),
+  );
 }

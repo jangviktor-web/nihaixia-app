@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../data/disease_alias_index.dart';
+import '../data/llm_chat_repository.dart';
 import '../data/medical_case_data.dart';
 import '../data/settings_repository.dart';
 import '../services/classic_search_service.dart';
@@ -33,6 +34,15 @@ class _Turn {
   _Turn(this.question);
 
   bool get busy => answer == null && error == null;
+
+  /// 从持久化记录恢复（医案按 seq 反查，查不到的静默跳过）。
+  factory _Turn.fromDb(LlmChatTurn t, Map<int, MedicalCase> bySeq) {
+    final turn = _Turn(t.question)..answer = t.answer;
+    turn.cases = [
+      for (final seq in t.caseSeqs) if (bySeq[seq] != null) bySeq[seq]!,
+    ];
+    return turn;
+  }
 }
 
 /// 「问倪师AI」：本地讲义检索片段 + 用户自配的 OpenAI 兼容端点。
@@ -53,6 +63,61 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
   bool _busy = false;
   final List<_Turn> _turns = [];
 
+  /// 当前会话。null 表示「尚未落库的新会话」——首条回答写入时才建。
+  int? _sessionId;
+
+  /// 历史是否加载完成：加载完成前禁用发送，避免加载与提问竞态。
+  bool _historyReady = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _restoreHistory();
+  }
+
+  Future<void> _restoreHistory() async {
+    try {
+      final session = await LlmChatRepository.latestSession();
+      if (session == null) {
+        if (mounted) setState(() => _historyReady = true);
+        return;
+      }
+      _sessionId = session.id;
+      final turns = await LlmChatRepository.loadTurns(session.id);
+      final all = await getAllMedicalCases();
+      final bySeq = {for (final c in all) c.seq: c};
+      if (!mounted) return;
+      setState(() {
+        _turns
+          ..clear()
+          ..addAll([for (final t in turns) _Turn.fromDb(t, bySeq)]);
+        _historyReady = true;
+      });
+      if (turns.isNotEmpty) _scrollToBottom();
+    } catch (_) {
+      if (mounted) setState(() => _historyReady = true);
+    }
+  }
+
+  /// 回答落库。失败静默：记录是附属功能，不能因为它打断回答展示。
+  Future<void> _persistTurn(_Turn turn) async {
+    final answer = turn.answer;
+    if (answer == null) return; // 失败轮不落库
+    try {
+      _sessionId ??= await LlmChatRepository.createSession(
+        turn.question.length > 20
+            ? turn.question.substring(0, 20)
+            : turn.question,
+      );
+      await LlmChatRepository.appendTurn(
+        _sessionId!,
+        question: turn.question,
+        answer: answer,
+        caseSeqs: [for (final c in turn.cases) c.seq],
+      );
+    } catch (_) {}
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -68,7 +133,7 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
   }
 
   Future<void> _ask() async {
-    if (_busy) return;
+    if (_busy || !_historyReady) return;
     final q = _controller.text.trim();
     if (q.isEmpty) return;
     FocusScope.of(context).unfocus();
@@ -107,6 +172,7 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
         turn.cases = r.cases;
         turn.diseases = r.diseases;
       });
+      await _persistTurn(turn);
     } on LlmException catch (e) {
       if (!mounted) return;
       setState(() => turn.error = e.message);
@@ -132,12 +198,59 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
     _ask();
   }
 
-  /// 新对话 = 清空历史，等同回到一问一答，无需模式开关。
+  /// 新对话：清空当前视图，旧会话保留在历史里（下次可从列表切回）。
   void _newChat() {
     if (_busy) return;
-    setState(() => _turns.clear());
+    setState(() {
+      _sessionId = null;
+      _turns.clear();
+    });
     _controller.clear();
     FocusScope.of(context).unfocus();
+  }
+
+  /// 切换到指定会话。
+  Future<void> _switchTo(LlmChatSession session) async {
+    if (_busy || _sessionId == session.id) return;
+    FocusScope.of(context).unfocus();
+    setState(() => _busy = true);
+    try {
+      final turns = await LlmChatRepository.loadTurns(session.id);
+      final all = await getAllMedicalCases();
+      final bySeq = {for (final c in all) c.seq: c};
+      if (!mounted) return;
+      setState(() {
+        _sessionId = session.id;
+        _turns
+          ..clear()
+          ..addAll([for (final t in turns) _Turn.fromDb(t, bySeq)]);
+      });
+      if (turns.isNotEmpty) _scrollToBottom();
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  void _openSessionList() {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) => _SessionsSheet(
+        currentId: _sessionId,
+        onPick: _switchTo,
+        onDeleted: (deletedId) {
+          if (deletedId == _sessionId) {
+            setState(() {
+              _sessionId = null;
+              _turns.clear();
+            });
+          }
+        },
+      ),
+    );
   }
 
   @override
@@ -149,6 +262,11 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
       appBar: AppBar(
         title: const Text('问倪师AI'),
         actions: [
+          IconButton(
+            tooltip: '历史会话',
+            icon: const Icon(Icons.history),
+            onPressed: _historyReady ? _openSessionList : null,
+          ),
           if (_turns.isNotEmpty)
             TextButton(
               onPressed: _busy ? null : _newChat,
@@ -405,8 +523,8 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
                 icon: Icons.chat_bubble_outline,
                 title: '问一个中医问题',
                 hint: 'App 先在本地讲义检索，再把片段交给模型作答。\n'
-                    '可连续追问，最近 3 轮会带上；点「新对话」可清空。\n'
-                    '未配置或关闭时不会产生任何网络请求。',
+                    '对话只保存在本机，可连续追问、跨页面续接；\n'
+                    '右上角时钟图标可切换历史会话。未配置或关闭时不联网。',
               ),
               const SizedBox(height: 16),
               Wrap(
@@ -456,4 +574,215 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
           ],
         ),
       );
+}
+
+
+/// 历史会话列表（底部抽屉）：切换 / 重命名 / 删除。
+class _SessionsSheet extends StatefulWidget {
+  final int? currentId;
+  final Future<void> Function(LlmChatSession) onPick;
+  final void Function(int) onDeleted;
+
+  const _SessionsSheet({
+    required this.currentId,
+    required this.onPick,
+    required this.onDeleted,
+  });
+
+  @override
+  State<_SessionsSheet> createState() => _SessionsSheetState();
+}
+
+class _SessionsSheetState extends State<_SessionsSheet> {
+  List<LlmChatSession> _sessions = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _reload();
+  }
+
+  Future<void> _reload() async {
+    final list = await LlmChatRepository.listSessions();
+    if (!mounted) return;
+    setState(() {
+      _sessions = list;
+      _loading = false;
+    });
+  }
+
+  /// 按 updated_at 分组：今天 / 昨天 / 7 天内 / 更早。
+  Map<String, List<LlmChatSession>> get _grouped {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final out = <String, List<LlmChatSession>>{};
+    for (final s in _sessions) {
+      final d = DateTime.tryParse(s.updatedAt);
+      final day = d == null ? null : DateTime(d.year, d.month, d.day);
+      final label = day == null
+          ? '更早'
+          : day == today
+              ? '今天'
+              : day == today.subtract(const Duration(days: 1))
+                  ? '昨天'
+                  : today.difference(day).inDays <= 7
+                      ? '7 天内'
+                      : '更早';
+      (out[label] ??= []).add(s);
+    }
+    return out;
+  }
+
+  static const _groupOrder = ['今天', '昨天', '7 天内', '更早'];
+
+  Future<void> _rename(LlmChatSession s) async {
+    final controller = TextEditingController(text: s.title);
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (c) => AlertDialog(
+        title: const Text('重命名会话'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          maxLength: 40,
+          decoration: const InputDecoration(border: OutlineInputBorder()),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('取消')),
+          FilledButton(onPressed: () => Navigator.pop(c, true), child: const Text('确定')),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    final title = controller.text.trim();
+    if (title.isEmpty) return;
+    await LlmChatRepository.renameSession(s.id, title);
+    await _reload();
+  }
+
+  Future<void> _delete(LlmChatSession s) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (c) => AlertDialog(
+        title: const Text('删除会话'),
+        content: Text('删除「${s.title}」及其全部对话记录？此操作不可恢复。'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('取消')),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
+            onPressed: () => Navigator.pop(c, true),
+            child: const Text('删除'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    await LlmChatRepository.deleteSession(s.id);
+    widget.onDeleted(s.id);
+    await _reload();
+  }
+
+  String _fmtTime(String iso) {
+    final d = DateTime.tryParse(iso);
+    if (d == null) return '';
+    final now = DateTime.now();
+    final sameDay = d.year == now.year && d.month == now.month && d.day == now.day;
+    final hh = d.hour.toString().padLeft(2, '0');
+    final mm = d.minute.toString().padLeft(2, '0');
+    return sameDay ? '$hh:$mm' : '${d.month}/${d.day} $hh:$mm';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return SafeArea(
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.75,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 8, 4),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text('历史会话',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold)),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('关闭'),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1),
+            Expanded(
+              child: _loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _sessions.isEmpty
+                      ? const Center(
+                          child: Text('还没有历史会话',
+                              style: TextStyle(color: Colors.grey)))
+                      : ListView(
+                          children: [
+                            for (final g in _groupOrder)
+                              if (_grouped[g] != null) ...[
+                                Padding(
+                                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                                  child: Text(g,
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: cs.primary)),
+                                ),
+                                for (final s in _grouped[g]!)
+                                  ListTile(
+                                    dense: true,
+                                    leading: Icon(
+                                      s.id == widget.currentId
+                                          ? Icons.chat_bubble
+                                          : Icons.chat_bubble_outline,
+                                      size: 20,
+                                      color: s.id == widget.currentId
+                                          ? cs.primary
+                                          : null,
+                                    ),
+                                    title: Text(s.title,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(fontSize: 14)),
+                                    subtitle: Text(_fmtTime(s.updatedAt),
+                                        style: const TextStyle(fontSize: 11)),
+                                    trailing: PopupMenuButton<String>(
+                                      onSelected: (v) {
+                                        if (v == 'rename') _rename(s);
+                                        if (v == 'delete') _delete(s);
+                                      },
+                                      itemBuilder: (_) => const [
+                                        PopupMenuItem(
+                                            value: 'rename',
+                                            child: Text('重命名')),
+                                        PopupMenuItem(
+                                            value: 'delete',
+                                            child: Text('删除')),
+                                      ],
+                                    ),
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      widget.onPick(s);
+                                    },
+                                  ),
+                              ],
+                          ],
+                        ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

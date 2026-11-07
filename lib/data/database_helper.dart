@@ -20,10 +20,10 @@ class DatabaseHelper {
 
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
-    final path = join(dbPath, filePath);
+    final path = join(dbPath, testDbName ?? filePath);
     return await openDatabase(
       path,
-      version: 5,
+      version: 6,
       onCreate: _createDB,
       onUpgrade: _upgradeDB,
     );
@@ -34,6 +34,11 @@ class DatabaseHelper {
   static void resetForTest() {
     _database = null;
   }
+
+  /// 仅供测试：覆盖数据库文件名。全量并发跑测试时，多个测试共用同一个
+  /// SQLite 文件会互相锁与清库，各自指定独立文件名即可隔离。
+  @visibleForTesting
+  static String? testDbName;
 
   Future<void> _createDB(Database db, int version) async {
     await db.execute('''
@@ -121,6 +126,24 @@ class DatabaseHelper {
         created_at INTEGER NOT NULL
       )
     ''');
+    await db.execute('''
+      CREATE TABLE llm_sessions(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )
+    ''');
+    await db.execute('''
+      CREATE TABLE llm_turns(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        session_id INTEGER NOT NULL,
+        question TEXT NOT NULL,
+        answer TEXT NOT NULL,
+        meta TEXT NOT NULL DEFAULT '',
+        created_at TEXT NOT NULL
+      )
+    ''');
   }
 
   Future<void> _upgradeDB(Database db, int oldVersion, int newVersion) async {
@@ -189,6 +212,27 @@ class DatabaseHelper {
           lat REAL,
           city_name TEXT,
           created_at INTEGER NOT NULL
+        )
+      ''');
+    }
+    if (oldVersion < 6) {
+      // 问倪师AI 对话持久化（多会话）
+      await db.execute('''
+        CREATE TABLE llm_sessions(
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          title TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL
+        )
+      ''');
+      await db.execute('''
+        CREATE TABLE llm_turns(
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          session_id INTEGER NOT NULL,
+          question TEXT NOT NULL,
+          answer TEXT NOT NULL,
+          meta TEXT NOT NULL DEFAULT '',
+          created_at TEXT NOT NULL
         )
       ''');
     }

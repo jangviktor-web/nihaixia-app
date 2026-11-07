@@ -59,6 +59,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const Divider(height: 24),
             _sectionTitle('数据管理'),
             _clearHistoryTile(cs),
+            _clearLlmChatTile(cs),
             _exportTile(cs),
             _clearCacheTile(cs),
             const Divider(height: 24),
@@ -209,6 +210,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
         subtitle: const Text('删除所有诊断记录'),
         contentPadding: EdgeInsets.zero,
         onTap: () => confirmClearHistory(context),
+      );
+
+  Widget _clearLlmChatTile(ColorScheme cs) => ListTile(
+        leading: Icon(Icons.forum_outlined, color: cs.error),
+        title: const Text('清除问倪师AI 对话记录'),
+        subtitle: const Text('删除全部会话及对话内容'),
+        contentPadding: EdgeInsets.zero,
+        onTap: () => confirmClearLlmChat(context),
       );
 
   Widget _exportTile(ColorScheme cs) => ListTile(
