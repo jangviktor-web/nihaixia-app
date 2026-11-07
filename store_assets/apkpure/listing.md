@@ -35,9 +35,9 @@ Offline TCM study reference: Shang Han Lun, Jin Gui Yao Lue, materia medica, acu
 
 ## 长描述（中文）
 
-汉唐中医是一款**完全离线、完全免费**的中医经方学习与辨证参考工具，忠实还原倪海厦先生「人纪」教学体系。
+汉唐中医是一款**离线优先、完全免费**的中医经方学习与辨证参考工具，忠实还原倪海厦先生「人纪」教学体系。
 
-不需要注册，不需要联网，所有内容都在手机本地运行。
+不需要注册，核心内容全部在手机本地运行，断网也能用。另有一个可选的「问倪师AI」：需要你自己填写 API 端点与 Key 才会启用，默认关闭，关闭时不产生任何网络请求。
 
 【经典原文】
 · 伤寒论 394 篇（宋本 390 条 + 4 篇附录），按宋本条号逐条排列
@@ -75,9 +75,9 @@ Offline TCM study reference: Shang Han Lun, Jin Gui Yao Lue, materia medica, acu
 
 ## 长描述（English）
 
-Hantang TCM is a **completely offline, completely free** study and reference companion for classical Chinese herbal medicine, faithfully recreating Master Ni Haixia's Renji teaching system.
+Hantang TCM is an **offline-first, completely free** study and reference companion for classical Chinese herbal medicine, faithfully recreating Master Ni Haixia's Renji teaching system.
 
-No sign-up. No internet required. Everything runs locally on your phone.
+No sign-up. Core content runs entirely on your phone and works with no connection. There is also an optional "Ask Master Ni AI" feature: it stays off until you enter your own API endpoint and key, and produces no network traffic while off.
 
 **Classical texts**
 - Shang Han Lun: 394 chapters (390 Song-edition clauses + 4 appendices), ordered by Song-edition clause number
