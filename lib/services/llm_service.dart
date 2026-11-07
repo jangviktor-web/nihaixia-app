@@ -821,6 +821,29 @@ $persona
     return list;
   }
 
+  /// 回答里提到、但本轮上下文没有任何支撑的方名（超出讲义范围的引用）。
+  ///
+  /// 用途：模型可能拿自己的中医知识补片段没有的方。答对了是运气，答错了就是
+  /// 幻觉且无从发现 —— 这里把「无据方名」挑出来，交由 UI 标注为「未在讲义
+  /// 片段中出现」，让用户自己判断可信度，不改写、不拦截回答。
+  ///
+  /// 支撑面 = 【讲义片段里出现的方】∪【命中片段的方剂清单】∪【医案用方】。
+  /// ⛔ 已知天花板：只能识别 `formulas.json` 里有的方名（314 首）。模型自造
+  /// 的、或库外冷门方的名字抽不出来 —— 漏报但不误报，升级方向是扩充方剂库。
+  static List<String> unverifiedFormulas(String answer, LlmRetrieval r) {
+    final cited = extractFormulaNames(answer);
+    if (cited.isEmpty) return const [];
+    final supported = <String>{
+      ...r.formulas,
+      for (final c in r.cases) ...c.formulaNames,
+      for (final hit in r.classics) ...extractFormulaNames(hit.snippet),
+    };
+    return [
+      for (final f in cited)
+        if (!supported.contains(f)) f,
+    ];
+  }
+
   /// 提问。[retrieval] 为 null 时现场组装（[prepare]）。
   static Future<String> ask(
     String question,

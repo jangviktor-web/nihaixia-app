@@ -31,6 +31,10 @@ class _Turn {
   /// 本轮命中的古今 / 中西医病名对照（让用户看得见「消渴 = 糖尿病」的依据）。
   List<DiseaseAlias> diseases = [];
 
+  /// 回答里提到、但讲义片段与医案里都没有的方名（超出讲义范围的引用）。
+  /// 不持久化：重进页面时上下文已丢弃，重算会把全部方名误判为「无据」。
+  List<String> unverified = [];
+
   _Turn(this.question);
 
   bool get busy => answer == null && error == null;
@@ -171,6 +175,7 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
         turn.sources = r.classics;
         turn.cases = r.cases;
         turn.diseases = r.diseases;
+        turn.unverified = LlmService.unverifiedFormulas(text, r);
       });
       await _persistTurn(turn);
     } on LlmException catch (e) {
@@ -379,6 +384,7 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
                 onRetry: _retry,
               )
             else ...[
+              _auditTile(t.unverified),
               _diseaseTile(t.diseases),
               _casesTile(t.cases),
               _sourcesTile(t.sources),
@@ -409,6 +415,36 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
           ],
         ),
       );
+
+  /// 出处审计：把「回答里有、讲义片段里没有」的方名挑出来标注。
+  /// 不改写回答，只交底 —— 用户自己判断这条是讲义原话还是模型自带知识。
+  Widget _auditTile(List<String> unverified) {
+    if (unverified.isEmpty) return const SizedBox.shrink();
+    final cs = Theme.of(context).colorScheme;
+    return ExpansionTile(
+      tilePadding: EdgeInsets.zero,
+      childrenPadding: const EdgeInsets.only(bottom: 8),
+      leading: Icon(Icons.fact_check_outlined, size: 18, color: cs.tertiary),
+      title: Text(
+        '${unverified.length} 处方名未在讲义片段中出现',
+        style: TextStyle(fontSize: 13, color: cs.tertiary),
+      ),
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              '${unverified.join('、')}\n\n'
+              '本次检索的讲义片段与倪师医案里都没有提到这些方名，可能是模型的'
+              '自身知识补充。涉及用药时请以讲义原文为准，不要当作倪师原话。',
+              style: TextStyle(fontSize: 12, height: 1.5, color: cs.onSurfaceVariant),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
   /// 病名对照：可展开看到「古名 ⇒ 今名」及倪师讲稿原话，答案对名有据可查。
   Widget _diseaseTile(List<DiseaseAlias> list) {

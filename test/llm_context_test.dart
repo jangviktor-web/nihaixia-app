@@ -208,4 +208,50 @@ void main() {
     expect(s.contains('expression_style.md'), isFalse);
     expect(s.contains('App 运行约束'), isTrue);
   });
+
+  group('出处审计（P2）：回答里超出讲义范围的方名', () {
+    ClassicHit hit(String title, String snippet) => ClassicHit(
+          source: 'shanghan',
+          sourceLabel: '伤寒论讲稿',
+          title: title,
+          snippet: snippet,
+          asset: 'assets/shanghan/clause_001.md',
+        );
+
+    test('讲义里有的方名不报，没有的报出来', () {
+      final r = LlmRetrieval(
+        classics: [hit('一二、「太阳中风」', '桂枝汤主之。')],
+        formulas: ['桂枝汤'],
+      );
+      final out = LlmService.unverifiedFormulas(
+        '这是桂枝汤证。若兼项强可用葛根汤，另有小续命汤可考虑。',
+        r,
+      );
+      expect(out, contains('葛根汤'));
+      expect(out, contains('小续命汤'));
+      expect(out, isNot(contains('桂枝汤')), reason: '片段里有桂枝汤，属有据');
+    });
+
+    test('医案用方也算有据', () {
+      final r = LlmRetrieval(
+        classics: const [],
+        formulas: const [],
+        cases: [
+          MedicalCase(
+            seq: 8,
+            diagnosis: '大肠癌',
+            mechanism: '停在少阳与阳明之间',
+            formula: '大柴胡汤',
+            result: '愈',
+          ),
+        ],
+      );
+      expect(LlmService.unverifiedFormulas('用大柴胡汤。', r), isEmpty);
+    });
+
+    test('回答里没有方名时返回空，不误报', () {
+      final r = LlmRetrieval(classics: const []);
+      expect(LlmService.unverifiedFormulas('先辨六经，再看虚实。', r), isEmpty);
+    });
+  });
 }
