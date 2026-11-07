@@ -410,13 +410,13 @@ Adjustable in the app's "Settings":
 No budget for an API? Two free options, 5 minutes to set up —
 **step-by-step guide: [Free model configuration guide](docs/free_api_guide.md)**:
 
-| | Option 1: Agnes AI | Option 2: Zhipu AI |
+| | Option 1: Agnes AI | Option 2: Zhipu AI | Option 3: InternLM |
 |:---|:---|:---|
-| Cost | Free for now | Free models, unlimited |
-| Endpoint | `https://api.agnes-ai.cn/v1` | `https://open.bigmodel.cn/api/paas/v4` |
-| Model | `agnes-3.0-flash` / `agnes-2.5-flash` | `GLM-4.7-Flash` / `GLM-Z1-Flash` (both free) |
-| Network | Singapore; may need a proxy | Direct connection in mainland China |
-| Best for | Sign up and just use it | Mainland users, more model choices |
+| Cost | Free for now | Free models, unlimited | Free |
+| Endpoint | `https://api.agnes-ai.cn/v1` | `https://open.bigmodel.cn/api/paas/v4` | `https://chat.intern-ai.org.cn/api/v1` |
+| Model | `agnes-3.0-flash` / `agnes-2.5-flash` | `GLM-4.7-Flash` / `GLM-Z1-Flash` | `intern-latest` |
+| Network | Singapore; may need a proxy | Direct connection in mainland China | Direct connection in mainland China |
+| Best for | Sign up and just use it | Mainland users, more model choices | Mainland direct; token expires in 6 months |
 
 > Both are third-party services; their free policies are subject to their own
 > terms. Your API key is stored locally only. On the App side the requests are
