@@ -61,6 +61,8 @@ Offline-first · All data on-device · No sign-up · Ready out of the box (optio
 
 ![v1.11.32 Ask Master Ni AI and symptom self-check](docs/images/screenshot_v1131_llm_ask.webp)
 
+</div>
+
 ① **Knowledge base entry** — "Ask Master Ni AI" in the top-right corner; the button does not appear when the feature is off.
 
 ② **Settings → AI Lecture Q&A** — endpoint / API key / model name are all yours to fill in, and the switch is **off by default**; when off, the app makes no network requests at all.
@@ -74,13 +76,21 @@ Offline-first · All data on-device · No sign-up · Ready out of the box (optio
 <details>
 <summary><b>📁 Historical screenshots (v1.11.31 → v1.11.0, newest to oldest) · Click to expand</b></summary>
 
+<div align="center">
+
 **v1.11.31 Shang Han Lun module layout update · Full Song-edition Shang Han Lun ordering · Simplified/Traditional Chinese toggle**
 
 ![v1.11.31 Shang Han Lun module layout and Simplified/Traditional Chinese toggle](docs/images/screenshot_v1131_shanghan_layout.webp)
 
+</div>
+
 From left to right: ① **Shang Han Lun reading library** — all clauses are ordered by the Song edition 1–390, list names are unified as "Song edition N ·", and chapter names / clauses / main text are searchable. ② **Song edition 1 clause card** — the original-text block plus "Ni Haixia's Interpretation", with tables such as pulse-method Yin-Yang fully rendered and a Simplified/Traditional Chinese toggle in the top-right corner. ③ **Guizhi Jia Houpo Xingren Tang formula detail page** — composition / indications / contraindications / decoction and administration / Ni Haixia's Interpretation and a "Found in the Classics" group at the bottom, with Traditional Chinese display taking effect in sync. ④ **Song edition 54 clause card** — the original text and interpretation layout in Traditional Chinese mode.
 
+<div align="center">
+
 **v1.11.30 Full clause-card commentary coverage (839 cards) · Traditional Chinese display toggle · Traditional Chinese input searchable · Case records simplified**
+
+</div>
 
 - **100% clause-card commentary coverage**: all 839 clause cards (384 from Shang Han Lun + 433 from Jin Gui Yao Lue) now have commentary text (22 groups of "Question / Master says" Q&A cards merged; Jin Gui Yao Lue 455→433 clauses)
 - **Traditional Chinese display**: a one-tap `translate` icon in the top-right corner of reading pages / herb detail pages / formula detail pages, with OpenCC dictionary-level conversion (干姜→乾薑, 郁金→鬱金); links remain clickable
@@ -90,15 +100,25 @@ From left to right: ① **Shang Han Lun reading library** — all clauses are or
 
 **v1.11.29 Acupuncture lecture-transcript reading library (72 chapters) · Bidirectional lecture-transcript ⇄ acupoint linking** (Latest screenshots)
 
+<div align="center">
+
 ![v1.11.29 Acupuncture lecture-transcript reading library](docs/images/screenshot_v1129_zhenjiu_lecture.webp)
 
+</div>
+
 From left to right: ① **Acupuncture lecture-transcript entry** — the "Acupuncture" page in the knowledge base adds a "Lecture Transcripts" button alongside "Meridian Charts" in the acupoint filter row. ② **Acupuncture lecture transcripts · Chapter list** — the 72 chapters of the Renji lecture series · Acupuncture are arranged by section (when to use acupuncture / needling depth / the twelve regular meridians and the eight extraordinary vessels / needling techniques / the head-to-toe treatment series), with instant chapter-title search. ③ **Lecture transcript reading** — a written, edited layout where acupoint names (Touwei / Benshen / Shenting), formula names, and herb names in the text are automatically linked, one tap to the detail page. ④ **Acupoint detail · "Lecture Notes" card** — a new lecture card on the acupoint detail page shows how many transcript chapters mention this acupoint (e.g. Shenting is mentioned in 7 chapters) and hides itself when there are no hits. ⑤ **Shenting · Lecture mention list** — a bottom sheet lists the chapters sorted by mention count (Du Meridian acupoints chapter 7 times / Foot Taiyang Bladder Meridian 6 times / Treating nasal disease 2 times…), tap to jump to that chapter. ⑥ **Hideable solar-term card** — Settings → Appearance adds a "Solar-term card at the top of the knowledge base" switch; once off, the knowledge base home screen is cleaner, and solar-term wellness is still reachable from "Tools".
+
+<div align="center">
 
 **v1.11.27 Sanshan Guowang oracle slips · Xiao Liu Ren · Mei Hua Yi Shu · Save chart as image / share long image · Shake to cast a hexagram**
 
 ![v1.11.27 Three folk modules and saved chart images](docs/images/screenshot_v1127_folk_tools.webp)
 
+</div>
+
 From left to right: ① **Sanshan Guowang oracle slips · Drawing a slip** — 92 slips handed down from the ancestral Sanshan Guowang temple in Jiexi, Guangdong; each slip has a number / title / original oracle poem / fortune grade; silently state your question, then shake to draw a slip, and you may draw again as often as you like. ② **Mei Hua Yi Shu · Chart result** — a random cast yields "Ze Shan Xian"; changing lines, the hexagram text, changing-line texts, and the Body/Use generation-restraint derivation are all visible on one screen; the AppBar image entry opens a long-image preview page with two exits, "Save image" (stored locally, **no storage permission needed**) and "Share long image" (opens the system share sheet, save to Photos / Files / WeChat). ③ **Mei Hua Yi Shu · Shake to cast** — the "Shake for random cast" switch in the input area is on by default; shaking the phone automatically switches to random casting and recasts a hexagram (without altering the entered time / numbers), confirmed by haptic feedback; one shake yields only one hexagram, and slow tilting is not mis-triggered. ④ **Xiao Liu Ren** — time-based divination: count forward through the month / day / hour palaces to settle on Da An / Liu Lian / Su Xi / Chi Kou / Xiao Ji / Kong Wang, with the six presiding spirits and their rhymes; since the art itself disagrees on "which palace the first day of the month falls in", **the "common palm formula" and the Duoneng Bishi are presented side by side as two conventions** for the user to choose, with the full calculation shown. ⑤ **Sanshan Guowang oracle slips · Slip index** — the full list of 92 slips, filterable by fortune (upper 42 / middle 31 / lower 17 / neutral 2) plus full-text search over titles and oracle poems; tap to pop up the complete slip text. All three modules carry a folk-culture reference Disclaimer and are clearly separated from the classical-formula medical modules; saved and shared long images also work on the Ba Zi chart / Zi Wei Dou Shu / Five Movements and Six Qi result pages.
+
+<div align="center">
 
 **v1.11.26 National-standard ear acupoint location charts · Fourteen-meridian circulation acupoint charts · Five Movements and Six Qi three-chart layout fix**
 
@@ -106,7 +126,11 @@ From left to right: ① **Sanshan Guowang oracle slips · Drawing a slip** — 9
 
 ![v1.11.26 Five Movements and Six Qi three charts](docs/images/screenshot_v1126_yunqi.webp)
 
+</div>
+
 From left to right: ① **National-standard ear acupoint location charts** — the ear map embeds the Annex A standard chart of GB/T 13734-2008 "Nomenclature and Location of Auricular Points", with two tabs "front 84 points / back 9 points", pinch to zoom in on point names, and an on-page note "For study reference only"; the companion "Ear Acupoints" library holds 93 points filterable by national-standard zones (HX/SF/AH/CO…), searchable by point name / pinyin / code. ② **Fourteen-meridian circulation acupoint charts** — the acupoint guide adds a "Meridian Charts" entry with 14 circulation charts for the twelve regular meridians plus the Ren and Du vessels; meridian pathways, their acupoints, and each meridian's "diseases prevented and treated" are all visible in one chart, with 6× pinch zoom to read point names. ③–⑤ **Five Movements and Six Qi three-chart layout fix** — in the **Yun Qi Five Elements chart** the five palaces' radii and spacing are rebalanced so badges no longer overlap the text; the **Five Movements chart** colors the host and guest movements separately with clear step-boundary dates; in the **Six Qi chart** the three text layers "outer ring guest Qi / inner ring host Qi / step name" are laid out along the sector tangents so the 3 o'clock and 9 o'clock directions no longer collide; pick any date and all three charts redraw instantly with the current step highlighted (shown for the 2026 Bingwu year).
+
+<div align="center">
 
 **v1.11.25 Yi Jing 64-hexagram illustrations · Four TCM time-based acupoint-opening methods · Five Movements and Six Qi three charts**
 
@@ -116,36 +140,60 @@ From left to right: ① **National-standard ear acupoint location charts** — t
 
 ![v1.11.25 Five Movements and Six Qi three charts](docs/images/screenshot_v1125_yunqi.webp)
 
+</div>
+
 From left to right: ① **Yi Jing 64-hexagram illustrations** — below the hexagram name on each detail page is a traditional allegorical woodcut for that hexagram (Qian as Heaven = taking a deer from the clouds, Earth over Heaven Tai = taking a deer on a ladder); all 64 hexagrams are covered and mapped one-to-one to the hexagram-name data, and a missing image is silently hidden without affecting the page. ② **TCM time-based acupoint-opening calculator · Four methods side by side** — four tabs for Na Zi Fa / Na Jia Fa / Ling Gui Ba Fa / Fei Teng Ba Fa; tap or press "Current time" to instantly get the day and hour stems-branches and see the open acupoints (Na Jia main opening · Taiyuan "Lung Meridian · Shu point", Fei Teng Ba Fa · Houxi, Ling Gui Ba Fa · Zhaohai paired with Lieque), plus "Return to the source" for reverting to the Yuan point, stem-branch → organ/meridian correspondence rhymes, calculation steps and notes. ③ **Five Movements and Six Qi three charts** — the **Yun Qi Five Elements chart** (a cross of five palaces around the center, with Si Tian / Zai Quan linked to the five-element circle), the **Five Movements chart** (a single ring of ten sectors, host and guest movements color-coded with step-boundary dates marked), and the **Six Qi chart** (double ring); pick any day (e.g. a birthday) and all three redraw with the current step highlighted, while below are given the year-movement (central movement) disease signs, Si Tian / Zai Quan, guest-Qi superimposition, and the original text of the Neijing great treatises.
+
+<div align="center">
 
 **v1.11.24 Six extraordinary-meridian groups added to acupoint filtering · National-standard acupoint order**
 <img width="1000" alt="1000199874" src="https://github.com/user-attachments/assets/c1ae60b2-4ff8-4f04-9dfd-3dac9d32f333" />
 
+</div>
+
 The meridian filter in the acupoint guide grows from 15 groups to **21 groups**: beyond the twelve regular meridians plus Du and Ren, six extraordinary-meridian groups are added — **Chong Mai / Dai Mai / Yin Wei Mai / Yang Wei Mai / Yin Qiao Mai / Yang Qiao Mai**; 57 crossing points now carry their meridian labels, and multi-meridian points faithfully appear in every group they belong to (e.g. Gongsun appears in both "Spleen Meridian" and "Chong Mai"), so searching "Chong Mai" directly hits its crossing points. Also shipped in this version: national-standard acupoint ordering within the twelve regular meridians / Du and Ren groups, a secondary-key fix for same-named parallel points, and link suppression for "Uterus" in anatomical contexts.
+
+<div align="center">
 
 **v1.11.23 Shang Han Lun / Jin Gui Yao Lue clause-level reading library · Bidirectional formula ⇄ clause linking**
 
 ![v1.11.23 Shang Han Lun and Jin Gui Yao Lue clause-level reading library](docs/images/screenshot_v1123_shanghan_jingui.webp)
 
+</div>
+
 From left to right: ① **New "Shang Han Lun / Jin Gui Yao Lue" tab in the knowledge base** — two entries: 380 Shang Han Lun chapters (clause level + five-meridian overviews) and 453 Jin Gui Yao Lue chapters. ② **Shang Han Lun · Reading library** — 23 major modules broken down to clause level and listed one by one (Taiyang · General Principles / Taiyang disease with wind stroke (Guizhi Tang pattern) / Taiyang disease with cold damage (Mahuang Tang pattern) / judging Taiyang disease transmission …). ③ **"Found in the Classics" on formulas** — taking Guizhi Tang as an example, clauses **specifically introducing that formula** are listed in two groups, "Shang Han Lun / Jin Gui Yao Lue"; tap to jump to the original text. ④ **Jin Gui Yao Lue · Reading library** — 25 miscellaneous-disease chapters arranged by clause (Zang-Fu meridian sequence of diseases, convulsive / dampness / summerheat diseases, malaria …). Formula names and herb names in the text jump to their detail pages with one tap — the first **bidirectional linking** between classical-formula texts and formulas · herbs.
+
+<div align="center">
 
 **v1.11.19 Neijing structured entry search · Solar-term wellness**
 
 ![v1.11.19 Neijing structured entry search](docs/images/screenshot_v1119_neijing_entries.webp)
 
+</div>
+
 From left to right: ① **Knowledge base home** — six entries at the top, "Six Meridians / Formulas / Materia Medica / Acupuncture / Neijing / Search"; the "Current solar term" card directly shows the solar-term name, days until the next solar term, solar longitude, and the three pentads, with the "Huangdi Neijing · Quick Reference" entries for Zang-Xiang / inspection / pulse diagnosis listed below. ② **Neijing entries · Ten dimensions** — 52 structured entries searchable across 10 dimensions (Zang-Xiang / inspection / pulse diagnosis / etiology and pathogenesis / meridian circulation / Qi, Blood and Body Fluids / pattern-differentiation system / treatment principles and formulas / disease examples / erroneous treatment do's and don'ts), with six-field search (title / original text / source / vernacular / Master Ni's interpretation), chapter-title search, and cross-filtering by tags; each card explicitly marks its chapter source (e.g. Su Wen · Ling Lan Mi Dian Lun, section one). ③ **Solar-term wellness detail** — each of the 24 solar terms gives five kinds of wellness tips (climate / daily routine / diet / acupoints / discomforts), plus a "Master Ni's Analysis" card; anything not a direct quote from the original is uniformly marked [Inferred], so "classic original vs interpretation" is clear at a glance.
+
+<div align="center">
 
 **v1.11.17 Zhou Gong dream interpretation · Childhood Guan Sha · Zi Wei early/late Zi hour correction**
 
 ![v1.11.17 Zhou Gong dream interpretation and childhood Guan Sha](docs/images/screenshot_v1117_guansha_dream.webp)
 
+</div>
+
 Added the "Zhou Gong Dream Interpretation" module (412 folk dream interpretations, keyword/category search, fortune annotations); added the "Childhood Guan Sha" module (36 guan + 18 extended sha, with calculation and encyclopedic search, plus a folk-culture reference Disclaimer); the Zi Wei chart's early/late Zi hour correction was refactored, with the original birth time read-only and the lunar-calendar display following the corrected stems-branches.
+
+<div align="center">
 
 **v1.11.13 Daily Chinese almanac · Zodiac clash / Yu Xia Ji deity festivals + Chaoshan folk customs / Yu Xia Ling Zhao module**
 
 ![v1.11.13 Chinese almanac three cards and Yu Xia Ling Zhao](docs/images/screenshot_v1113_almanac_omen.webp)
 
+</div>
+
 From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's clashing zodiac sign is derived from the day's earthly branch via the six clashes (e.g. a Zi day clashes with Horse), clear at a glance. ② **Daily Chinese almanac · Yu Xia Ji deity festivals + Chaoshan folk customs** — Yu Xia Ji collects the Three Yuan and Five La birthdays of deities (114 entries), the Ten Yama Kings (10 entries), and fast days, 125 lunar-calendar days in total; Chaoshan local entries are listed separately (e.g. "Si Ming Di Jun", "Zao Gong Sheng") and are de-duplicated at runtime against existing traditional festivals without overriding them. ③ **Yu Xia Ling Zhao · Face-heat divination** and ④ **Yu Xia Ling Zhao · Eyelid-twitch divination** — body-omen divination from Yu Xia Ji, with a reading for each of the twelve double-hours, the current double-hour highlighted automatically, and an expandable twelve-double-hour table (left eye twitching means money, right eye means a woman thinking of you, etc.); a new entry is added on the Tools page, with a folk-culture reference Disclaimer.
+
+<div align="center">
 
 **Master Ni's case-record library · Closed-door course severe-case clinical records · Six-Yao coin casting · Practical tools**
 
@@ -173,11 +221,12 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 
 <img width="2400"  alt="20260819232328_35_182_compressed" src="https://github.com/user-attachments/assets/79d35c8f-519b-47bf-a4ac-84f61c38566b" />
 
-
 **Added the daily Chinese almanac and solar-term wellness modules ·  Improved the Zi Wei Dou Shu chart's major-luck and annual/monthly detailed readings and the automatic place-name matching for the "True Solar Time" selection**
 <img width="3000"  src="https://github.com/user-attachments/assets/9d4f9320-c7c3-438a-8c96-a2cfe92add92" />
 
 <img width="6000"  src="https://github.com/user-attachments/assets/cb1f78e8-3864-4290-bc30-14095812e94b" />
+
+</div>
 
 </details>
 
@@ -225,7 +274,7 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 > **Hantang TCM nihaixia‑app**
 > Core features fully offline ｜ No sign-up ｜ Android 7.0+
 > "Ask Master Ni AI" is **optional**: you supply the endpoint and key yourself, it is **off by default**, and when off the app makes no network requests (see [PRIVACY.md](PRIVACY.md))
-> 💡 Not sure how to get an API? Two free options, 5 minutes: **[Free model configuration guide](docs/free_api_guide.md)**
+> 💡 Not sure how to get an API? Three free options, 5 minutes: **[Free model configuration guide](docs/free_api_guide.md)**
 > Universal APK about 82MB, per-architecture builds 34–38MB
 > Since V1.11.9, builds and releases are automated by GitHub Actions; pushing a `v*` tag produces the packages
 > **Last updated: 2026-11-07 (v1.11.32)**
@@ -247,8 +296,6 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 >
 > **Recommendation**: whichever method you use, you can export your favorites and diagnosis history from the app's "Settings" before upgrading, just in case.
 
-<div align="left">
-
 [![📦 Universal APK](https://img.shields.io/badge/📦%20Universal%20APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.32/app-release.apk)
 &nbsp;&nbsp;
 [![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a%20APK-0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.32/app-arm64-v8a-release.apk)
@@ -257,15 +304,12 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 &nbsp;&nbsp;
 [![📦 x86_64 Emulator APK](https://img.shields.io/badge/📦%20x86_64%20Emulator%20APK-1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.32/app-x86_64-release.apk)
 
-</div>
-
 | Package | Size | Recommended for |
 |---|---|---|
 | Universal `app-release.apk` | 85.1MB | All CPU architectures; the right choice for most Android devices |
 | arm64‑v8a `app‑arm64‑v8a‑release.apk` | 38.0MB | Newer 64-bit Android phones, smaller size |
 | armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | 35.7MB | Older 32-bit Android devices |
 | x86_64 `app‑x86_64‑release.apk` | 39.6MB | Android virtual machines and emulators |
-
 
 > **V1.11.32 Ask Master Ni AI (local lecture retrieval + bring-your-own endpoint) · Symptom self-check · In-answer linking · Formula contraindications in context**
 >
@@ -294,7 +338,6 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 > **V1.11.26 Fourteen-meridian circulation acupoint charts · National-standard ear acupoint library · Five Movements and Six Qi three-chart layout fix**: the acupuncture page adds "Meridian Charts" — 14 circulation acupoint charts for the twelve regular meridians plus the Ren and Du vessels, with 6× pinch zoom to read point names; ear acupoints are fully integrated with GB/T 13734-2008 "Nomenclature and Location of Auricular Points" — a 93-point national-standard library (10 zone filters + point-name / pinyin / code search, 18 old names automatically merged into national-standard names) and the Annex A standard location chart (front 84 points / back 9 points) bundled directly; acupuncture prescription data expanded to 384 entries (merging Master Ni's BBXX disease point pairings, +127 entries); the Five Movements and Six Qi three-chart layout was fixed (the Six Qi chart's three text layers now run along tangents without overlap, and the Five Elements chart's palace circles were rebalanced) plus a 7-year engine classics-arbitration correction. See [Release Notes](release_notes/v1.11.26.md).
 > 
 > **V1.11.25 Yi Jing 64-hexagram illustrations · Four TCM time-based acupoint-opening methods · Five Movements and Six Qi three charts**: each Yi Jing hexagram detail page adds a traditional allegorical illustration (all 64 hexagrams, one-to-one with hexagram names, silently hidden if missing); the "TCM time-based acupoint-opening calculator" shows four methods side by side (Na Zi Fa / Na Jia Fa / Ling Gui Ba Fa / Fei Teng Ba Fa), instantly giving the day and hour stems-branches and open acupoints, with return-to-source and calculation steps; three new Five Movements and Six Qi visualizations (Yun Qi Five Elements chart / Five Movements chart / Six Qi chart) redraw for any chosen date with the current step highlighted, and bring in year-movement disease signs, Si Tian / Zai Quan, and the original text of the Neijing great treatises. See [Release Notes](release_notes/v1.11.25.md).
-
 
 > **v1.11.29 Acupuncture lecture-transcript reading library (72 chapters) · Bidirectional lecture-transcript ⇄ acupoint linking · Lecture transcripts in global search · Hideable solar-term card**
 > 
@@ -407,11 +450,11 @@ Adjustable in the app's "Settings":
 (base URL + API Key + model name) in **Settings → AI Lecture Q&A**. It is
 **off by default** and makes no network requests while off.
 
-No budget for an API? Two free options, 5 minutes to set up —
+No budget for an API? Three free options, 5 minutes to set up —
 **step-by-step guide: [Free model configuration guide](docs/free_api_guide.md)**:
 
 | | Option 1: Agnes AI | Option 2: Zhipu AI | Option 3: InternLM |
-|:---|:---|:---|
+|:---|:---|:---|:---|
 | Cost | Free for now | Free models, unlimited | Free |
 | Endpoint | `https://api.agnes-ai.cn/v1` | `https://open.bigmodel.cn/api/paas/v4` | `https://discovery-api.intern-ai.org.cn/v1` |
 | Model | `agnes-3.0-flash` / `agnes-2.5-flash` | `GLM-4.7-Flash` / `GLM-Z1-Flash` | `Atria-Dawn` / `intern-s2` / `Sage-A1.5` / `Agents-A1` |
@@ -550,8 +593,6 @@ flowchart LR
 
 ## 📜 Six-Meridian Pattern Differentiation System
 
-<div align="center">
-
 | Meridian | Chief signs | Principal formula | Key points |
 |:---:|:---|:---|:---|
 | **Taiyang** | Floating pulse, stiff neck and headache, aversion to cold | Guizhi Tang / Mahuang Tang | The first gate of exterior patterns |
@@ -560,8 +601,6 @@ flowchart LR
 | **Taiyin** | Abdominal fullness, vomiting and diarrhea, inability to eat | Lizhong Tang / Sini Tang | Spleen deficiency with cold-dampness |
 | **Shaoyin** | Faint thready pulse, constant desire to sleep | Sini Tang / Zhenwu Tang | Heart-Kidney Yang deficiency, warm urgently |
 | **Jueyin** | Wasting thirst, Qi rushing upward to the heart, mixed cold and heat | Wumei Wan / Danggui Sini Tang | The end of Yin, with cold and heat bound together |
-
-</div>
 
 ---
 
