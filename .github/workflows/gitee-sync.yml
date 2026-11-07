@@ -115,7 +115,9 @@ jobs:
           jq -r '[.assets[]? | .name] | join(", ")' /tmp/rel.json
           N=$(jq '[.assets[]? | select(.browser_download_url | contains("/releases/download/"))] | length' /tmp/rel.json)
           echo "APK 附件数：$N"
-          [ "$N" -ge 4 ] || { echo "::error::附件不足 4 个（托管 runner 上传会被 Gitee 限流，重跑即可续传幂等）"; exit 1; }
+          # 只同步 arm64 单包（用户规定 Gitee 只传 arm64），阈值必须与 asset-files 一致；
+          # 旧版写死 -ge 4 是在传四包时代留下的，会导致每次同步都判失败。
+          [ "$N" -ge 1 ] || { echo "::error::附件为空（托管 runner 上传会被 Gitee 限流，重跑即可续传幂等）"; exit 1; }
           echo "✅ 同步完成"
         env:
           GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
