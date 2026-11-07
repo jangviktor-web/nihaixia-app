@@ -225,6 +225,7 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 > **Hantang TCM nihaixia‑app**
 > Core features fully offline ｜ No sign-up ｜ Android 7.0+
 > "Ask Master Ni AI" is **optional**: you supply the endpoint and key yourself, it is **off by default**, and when off the app makes no network requests (see [PRIVACY.md](PRIVACY.md))
+> 💡 Not sure how to get an API? Two free options, 5 minutes: **[Free model configuration guide](docs/free_api_guide.md)**
 > Universal APK about 82MB, per-architecture builds 34–38MB
 > Since V1.11.9, builds and releases are automated by GitHub Actions; pushing a `v*` tag produces the packages
 > **Last updated: 2026-11-07 (v1.11.32)**
@@ -403,7 +404,29 @@ Adjustable in the app's "Settings":
 | Dark mode | Follow the system or switch manually; the six Six-Meridian colors and status colors adapt to light / dark automatically |
 | Font size | Adjust the reading font size |
 
-### 2. Project Configuration (Developer Side)
+### 2. AI Lecture Q&A configuration (Ask Master Ni AI · user side)
+
+"Ask Master Ni AI" requires you to configure an **OpenAI-compatible endpoint**
+(base URL + API Key + model name) in **Settings → AI Lecture Q&A**. It is
+**off by default** and makes no network requests while off.
+
+No budget for an API? Two free options, 5 minutes to set up —
+**step-by-step guide: [Free model configuration guide](docs/free_api_guide.md)**:
+
+| | Option 1: Agnes AI | Option 2: Zhipu AI |
+|:---|:---|:---|
+| Cost | Free, unlimited | Free models, unlimited |
+| Endpoint | `https://apihub.agnes-ai.com/v1` | `https://open.bigmodel.cn/api/paas/v4` |
+| Model | `agnes-2.0-flash` | `glm-4-flash` series (see the official free list) |
+| Network | Singapore; may need a proxy | Direct connection in mainland China |
+| Best for | Sign up and just use it | Mainland users, more model choices |
+
+> Both are third-party services; their free policies are subject to their own
+> terms. Your API key is stored locally only. On the App side the requests are
+> plain OpenAI-compatible calls (`{base}/chat/completions` and `{base}/models`),
+> so any compatible endpoint (OpenRouter, a local Ollama, etc.) works too.
+
+### 3. Project Configuration (Developer Side)
 
 | File | Purpose |
 |:---|:---|
