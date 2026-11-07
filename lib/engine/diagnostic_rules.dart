@@ -94,6 +94,20 @@ class CareAdvice {
 
 class DiagnosticRules {
   // ==================== 症状权重表 ====================
+  /// 寒热真假八维线索（v1.11.8）：疑似寒热错杂时用来纠正少阴/厥阴方向。
+  /// 聊天式问诊与症状自查共用这一份；原来写死在 ChatScreen 私有字段里。
+  static const Map<String, String> zhenJiaClueKeys = {
+    '面红如妆（两颧鲜红界限分明）': 'face_flush',
+    '口渴欲冷饮，饮入即消': 'drink_immediate',
+    '渴不欲饮或喜热饮': 'thirst_no_drink',
+    '小便清长、尿色淡白': 'urine_clear',
+    '小便短赤、尿色深黄': 'urine_short',
+    '胸腹久按不蒸手（初按似热久按不热）': 'abdomen_cool',
+    '胸腹久按蒸蒸有热气（四肢虽寒）': 'abdomen_hot',
+    '大便稀溏无灼热': 'stool_loose',
+    '大便硬结/肛门灼热': 'stool_burning',
+  };
+
   static const Map<String, double> symptomWeights = {
     // 太阳病核心（高权重）
     'pulse_float': 0.9,
