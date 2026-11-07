@@ -266,8 +266,6 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 | armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | 35.7MB | Older 32-bit Android devices |
 | x86_64 `app‑x86_64‑release.apk` | 39.6MB | Android virtual machines and emulators |
 
-<details open>
-<summary><b>Changelog (v1.11.32 Ask Master Ni AI · Symptom self-check · Three interaction upgrades)</b></summary>
 
 > **V1.11.32 Ask Master Ni AI (local lecture retrieval + bring-your-own endpoint) · Symptom self-check · In-answer linking · Formula contraindications in context**
 >
@@ -284,7 +282,8 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 > See [Release Notes](release_notes/v1.11.32.md).
 >
 
-</details>
+<details>
+<summary><b>Historical changelog (v1.11.31 and earlier)</b></summary>
 
 > **V1.11.31 Unified Song-edition Shang Han Lun · Fixed "Found in the Classics" on formulas · Standardized layout**: Shang Han Lun assets were switched wholesale to Song-edition clause numbering (390 clauses + 4 appendices = 394 chapters), with list names unified as "Song edition N ·"; the classics index (1728 entries) and formula index (279 entries) were rebuilt and aligned; "Found in the Classics" jumps were completed for 8 formulas and the mistaken "Xingzi Tang" link was removed; clause-card layout was standardized and R1 was cleared. See [Release Notes](release_notes/v1.11.31.md).
 > 
@@ -296,8 +295,6 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 > 
 > **V1.11.25 Yi Jing 64-hexagram illustrations · Four TCM time-based acupoint-opening methods · Five Movements and Six Qi three charts**: each Yi Jing hexagram detail page adds a traditional allegorical illustration (all 64 hexagrams, one-to-one with hexagram names, silently hidden if missing); the "TCM time-based acupoint-opening calculator" shows four methods side by side (Na Zi Fa / Na Jia Fa / Ling Gui Ba Fa / Fei Teng Ba Fa), instantly giving the day and hour stems-branches and open acupoints, with return-to-source and calculation steps; three new Five Movements and Six Qi visualizations (Yun Qi Five Elements chart / Five Movements chart / Six Qi chart) redraw for any chosen date with the current step highlighted, and bring in year-movement disease signs, Si Tian / Zai Quan, and the original text of the Neijing great treatises. See [Release Notes](release_notes/v1.11.25.md).
 
-<details>
-<summary><b>Historical Changelog</b></summary>
 
 > **v1.11.29 Acupuncture lecture-transcript reading library (72 chapters) · Bidirectional lecture-transcript ⇄ acupoint linking · Lecture transcripts in global search · Hideable solar-term card**
 > 
