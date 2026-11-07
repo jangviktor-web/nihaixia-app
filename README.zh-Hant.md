@@ -412,8 +412,8 @@ flutter analyze
 | | 方案一：Agnes AI | 方案二：智譜 AI | 方案三：書生 InternLM |
 |:---|:---|:---|
 | 費用 | 暫時免費 | 免費模型不限量 | 免費 |
-| 介面位址 | `https://api.agnes-ai.cn/v1` | `https://open.bigmodel.cn/api/paas/v4` | `https://chat.intern-ai.org.cn/api/v1` |
-| 模型名 | `agnes-3.0-flash` / `agnes-2.5-flash` | `GLM-4.7-Flash` / `GLM-Z1-Flash` | `intern-latest` |
+| 介面位址 | `https://api.agnes-ai.cn/v1` | `https://open.bigmodel.cn/api/paas/v4` | `https://discovery-api.intern-ai.org.cn/v1` |
+| 模型名 | `agnes-3.0-flash` / `agnes-2.5-flash` | `GLM-4.7-Flash` / `GLM-Z1-Flash` | `Atria-Dawn`（推荐）/ `Sage-A1.5` / `Agents-A1` |
 | 網路 | 新加坡，部分網路需代理 | 國內直連 | 國內直連 |
 | 適合 | 註冊即用、隨便用 | 國內網路、模型選擇多 | 國內直連；Token 6 個月有效期 |
 

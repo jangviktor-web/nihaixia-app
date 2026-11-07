@@ -427,8 +427,8 @@ flutter analyze
 | | 方案一：Agnes AI | 方案二：智谱 AI |
 |:---|:---|:---|
 | 费用 | 暂时免费 | 免费模型不限量 | 免费 |
-| 接口地址 | `https://api.agnes-ai.cn/v1` | `https://open.bigmodel.cn/api/paas/v4` | `https://chat.intern-ai.org.cn/api/v1` |
-| 模型名 | `agnes-3.0-flash` / `agnes-2.5-flash` | `GLM-4.7-Flash` / `GLM-Z1-Flash` | `intern-latest` |
+| 接口地址 | `https://api.agnes-ai.cn/v1` | `https://open.bigmodel.cn/api/paas/v4` | `https://discovery-api.intern-ai.org.cn/v1` |
+| 模型名 | `agnes-3.0-flash` / `agnes-2.5-flash` | `GLM-4.7-Flash` / `GLM-Z1-Flash` | `Atria-Dawn`（推荐）/ `Sage-A1.5` / `Agents-A1` |
 | 网络 | 新加坡，部分网络需代理 | 国内直连 | 国内直连 |
 | 适合 | 注册即用、随便用 | 国内网络、模型选择多 | 国内直连；Token 6 个月有效期 |
 
