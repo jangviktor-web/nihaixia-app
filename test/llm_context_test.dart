@@ -254,4 +254,62 @@ void main() {
       expect(LlmService.unverifiedFormulas('先辨六经，再看虚实。', r), isEmpty);
     });
   });
+
+  group('方剂库摘要（P3）：给模型「什么情况不能用」的反证', () {
+    setUpAll(() async {
+      await FormulaRepository.load();
+    });
+
+    test('命中方剂带上禁忌与要点', () async {
+      final r = await LlmService.prepare('桂枝汤证的辨证要点是什么？');
+      final gui = r.formulaBriefs.where((b) => b.name == '桂枝汤').toList();
+      expect(gui, isNotEmpty, reason: '命中桂枝汤却没取到库摘要');
+      expect(gui.first.caution, isNotEmpty, reason: '禁忌是鉴别的核心，不能空');
+    });
+
+    test('上下文里有方剂摘要块，且明确标注非讲稿原文', () {
+      final c = LlmService.buildContext(
+        const [],
+        '桂枝汤证',
+        formulas: const ['桂枝汤'],
+        formulaBriefs: const [
+          (name: '桂枝汤', caution: '脉浮紧，发热，汗不出者不可与。', gist: '群方之魁'),
+        ],
+      );
+      expect(c, contains('【方剂库摘要】'));
+      expect(c, contains('非讲稿原文'), reason: '二手整理数据必须标注来源，否则会被当倪师原话');
+      expect(c, contains('汗不出者不可与'), reason: '禁忌没渲染出来就等于没接');
+    });
+
+    test('易混方的鉴别点可达（麻黄汤 vs 桂枝汤）', () async {
+      final r = await LlmService.prepare('麻黄汤证和桂枝汤证怎么区分？');
+      final briefs = {for (final b in r.formulaBriefs) b.name: b};
+      expect(briefs.keys, containsAll(<String>['麻黄汤', '桂枝汤']));
+      final joined = briefs.values.map((b) => '${b.caution}${b.gist}').join();
+      expect(joined.contains('无汗') || joined.contains('汗出'),
+          isTrue, reason: '两方的鉴别眼目就是有汗/无汗，必须可达');
+    });
+
+    test('persona 规定方剂库不能冒充倪师原话', () {
+      final s = File('assets/llm/persona.md').readAsStringSync();
+      expect(s, contains('【方剂库摘要】'));
+      expect(s, contains('不是倪师原话'));
+    });
+
+    test('方剂摘要不得挤掉医案块（同为附加素材，预算共享）', () {
+      final c = LlmService.buildContext(
+        const [],
+        '桂枝汤证',
+        formulas: const ['桂枝汤'],
+        formulaBriefs: const [
+          (name: '桂枝汤', caution: '汗不出者不可与。', gist: '群方之魁'),
+        ],
+        cases: [
+          MedicalCase(seq: 8, diagnosis: '大肠癌', formula: '大柴胡汤'),
+        ],
+      );
+      expect(c, contains('【方剂库摘要】'));
+      expect(c, contains('【倪师医案】'), reason: '加素材块不能把医案挤没');
+    });
+  });
 }

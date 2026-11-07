@@ -61,6 +61,14 @@ class LlmRetrieval {
   /// 从命中医案反推出来的方剂（「二跳」检索用：医保案里的方 → 回讲稿找该方的条文）。
   final List<String> caseFormulas;
 
+  /// 命中方剂的本地库摘要（禁忌 + 要点）。
+  ///
+  /// 检索天然只召回「这个方治什么」（正向适应证），而辨证的难点在**排除**——
+  /// 「为什么不是那个方、什么情况会把它用错」。禁忌就是排除依据，缺了它模型
+  /// 只能拿自己的记忆做鉴别，且无从审计。数据来自 formulas.json（结构化整理，
+  /// 非讲稿原文，渲染时会明确标注）。
+  final List<({String name, String caution, String gist})> formulaBriefs;
+
   /// 本条提问命中的穴位（问「足三里主治什么」「失眠扎什么穴」时给出定位/手法/禁忌）。
   final List<AcupointDetail> acupoints;
 
@@ -76,6 +84,7 @@ class LlmRetrieval {
     this.formulas = const [],
     this.cases = const [],
     this.caseFormulas = const [],
+    this.formulaBriefs = const [],
     this.acupoints = const [],
     this.diseases = const [],
     this.stats = '',
@@ -102,7 +111,7 @@ class LlmService {
   static const int maxContextChars = 3600;
 
   /// 方剂清单 / 医案 / 统计等附加块的独立预算（不挤占讲义片段预算）。
-  static const int maxExtraChars = 1800;
+  static const int maxExtraChars = 2400;
   static const int maxFormulaList = 12;
   static const int maxCases = 3;
 
@@ -378,10 +387,24 @@ class LlmService {
       }
     }
 
+    // 方剂库摘要：把禁忌与要点带上，让模型能给出「有据的反证」。
+    final briefs = <({String name, String caution, String gist})>[];
+    for (final name in formulas) {
+      if (briefs.length >= maxFormulaList) break;
+      final d = FormulaRepository.getByName(name);
+      if (d == null) continue;
+      briefs.add((
+        name: d.name,
+        caution: d.contraindication.trim(),
+        gist: d.explanation.trim(),
+      ));
+    }
+
     return LlmRetrieval(
       classics: res.hits,
       matchedArticles: res.total,
       formulas: formulas,
+      formulaBriefs: briefs,
       cases: cases,
       caseFormulas: caseFormulas,
       acupoints: acupoints,
@@ -657,7 +680,7 @@ $persona
 
 ---
 【本轮运行时铁律 · 优先级最高】
-只依据下方【讲义片段】【古今·中西医病名对照】【命中片段中出现的方剂】【倪师医案】【本地统计】作答。后四块也是应用从本地数据确定性抽取的事实，其中统计数字可直接引用并说明口径。
+只依据下方【讲义片段】【古今·中西医病名对照】【命中片段中出现的方剂】【方剂库摘要】【倪师医案】【本地统计】作答。后五块也是应用从本地数据确定性抽取的事实，其中统计数字可直接引用并说明口径。
 以上都未涉及就明确说「讲义里没有涉及这个话题，我不能替倪师乱讲」，绝不编造、不引用外部知识、不虚构条文号或方剂。
 不要输出资产路径、行号或模块编号。不要写免责声明与安全话术——应用会在回答下方固定渲染免责框。
 ''';
@@ -670,6 +693,7 @@ $persona
     List<ClassicHit> hits,
     String question, {
     List<String> formulas = const [],
+    List<({String name, String caution, String gist})> formulaBriefs = const [],
     List<MedicalCase> cases = const [],
     List<AcupointDetail> acupoints = const [],
     String diseaseBrief = '',
@@ -714,6 +738,21 @@ $persona
     if (formulas.isNotEmpty) {
       extra.writeln('【命中片段中出现的方剂】（从上述原文确定性抽取，可全部列出）');
       extra.writeln(formulas.take(maxFormulaList).join('、'));
+      extra.writeln();
+    }
+    if (formulaBriefs.isNotEmpty) {
+      // 标题与括注必须保留「非讲稿原文」字样：这是二手整理数据，
+      // 不标注就会被模型当成倪师原话讲出去。
+      extra.writeln('【方剂库摘要】（本地结构化整理，非讲稿原文；'
+          '用来讲「什么情况不能用」）');
+      for (final b in formulaBriefs) {
+        final parts = <String>[
+          if (b.caution.isNotEmpty) '禁忌 ${_clip(b.caution, 46)}',
+          if (b.gist.isNotEmpty) '要点 ${_clip(b.gist, 40)}',
+        ];
+        if (parts.isEmpty) continue;
+        extra.writeln('· ${b.name}：${parts.join('｜')}');
+      }
       extra.writeln();
     }
     if (cases.isNotEmpty) {
@@ -865,6 +904,7 @@ $persona
           r.classics,
           q,
           formulas: r.formulas,
+          formulaBriefs: r.formulaBriefs,
           cases: r.cases,
           acupoints: r.acupoints,
           diseaseBrief: r.diseaseBrief,
