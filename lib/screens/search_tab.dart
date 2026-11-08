@@ -4,6 +4,7 @@ import '../widgets/state_view.dart';
 import '../data/acupuncture_repository.dart';
 import '../data/acupoint_repository.dart';
 import '../data/formula_repository.dart';
+import '../data/chinese_convert.dart';
 import '../data/guji_data.dart';
 import '../data/herb_repository.dart';
 import '../data/search_history_repository.dart';
@@ -123,8 +124,14 @@ class _SearchTabState extends State<SearchTab> {
         .where((h) => HerbRepository.matchesQuery(h, query))
         .map((h) => h.name)
         .take(4);
+    // 与 FormulaRepository.search 共用同一套方名归一（繁简 + alias 旧名），
+    // 但只匹配方名/别名：若改用完整 search()，输入「大黄」时组成含大黄的
+    // 「大承气汤」等会挤掉四个正经大黄方，联想相关性反而下降。
+    final nq = toSimplified(query).toLowerCase();
     final formulaNames = FormulaRepository.getAll()
-        .where((f) => f.name.contains(query))
+        .where((f) =>
+            f.name.toLowerCase().contains(nq) ||
+            f.alias.toLowerCase().contains(nq))
         .map((f) => f.name)
         .take(4);
     setState(() => _suggestions = [...herbNames, ...formulaNames].take(8).toList());

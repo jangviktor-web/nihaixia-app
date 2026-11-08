@@ -34,6 +34,15 @@ void main() {
         reason: '灵枢应能搜到九针相关章节');
   });
 
+  test('回归：讲稿勘误后全文索引已重建（大黄蛰虫丸 → 金匮 clause_111）', () async {
+    // 2026-11-08：clause_111.md 讲解句「大黄虫丸主之」勘误为「大黄蛰虫丸主之」。
+    // classic_index.json.gz 是预生成索引，讲稿改动后忘了重跑 build_classic_search_index.py
+    // 就会让 App 仍搜到旧文本。此断言把该流程约束钉死。
+    final r = await ClassicSearchService.search('大黄蛰虫丸');
+    expect(r.hits.any((h) => h.asset == 'assets/jingui/clause_111.md'), isTrue,
+        reason: '勘误后的金匮条文应已写入预生成全文索引');
+  });
+
   test('命中带来源标签与摘要，标题命中排在正文命中之前', () async {
     final r = await ClassicSearchService.search('上古天真论');
     expect(r.hits, isNotEmpty);

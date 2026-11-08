@@ -117,5 +117,30 @@ void main() {
       final names = FormulaRepository.getAll().map((f) => f.name).toList();
       expect(names.toSet().length, names.length, reason: '不应有重名方剂');
     });
+
+    test('回归：大黄蟅虫丸异写可搜到正名（蛰/蟅/䗪 是异体字，不是繁简）', () async {
+      await FormulaRepository.load();
+      const canon = '大黄蟅虫丸';
+      // 蟅 = 金匮讲稿正名；蛰 = 伤寒讲义写法；䗪 = 诊断引擎 formula_rules 正名；
+      // 大黄虫丸 = 金匮讲稿掉字写法。四者同指金匮「内有干血…大黄蟅虫丸主之」。
+      // 异体字不走 toSimplified（繁简表只处理 蟄→蛰），故由 alias 显式登记。
+      for (final q in const [
+        '大黄蛰虫丸',
+        '大黄䗪虫丸',
+        '大黄虫丸',
+        '大黃蟄蟲丸',
+        '蟅虫丸'
+      ]) {
+        expect(FormulaRepository.search(q).map((f) => f.name), contains(canon),
+            reason: '$q 应命中正名 $canon');
+      }
+      // 诊断引擎产出的「大黄䗪虫丸」经 alias 兜底可跳方剂详情
+      expect(FormulaRepository.resolveFormula('大黄䗪虫丸')?.name, canon);
+      // getByName 的 12 个调用方（chat / 书签 / 讲义 / LLM 服务…）也要认别名
+      for (final q in const ['大黄蛰虫丸', '大黄䗪虫丸', '大黄虫丸']) {
+        expect(FormulaRepository.getByName(q)?.name, canon,
+            reason: '$q 应能按 alias 打开方剂详情');
+      }
+    });
   });
 }

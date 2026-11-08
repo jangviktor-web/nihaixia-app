@@ -40,7 +40,16 @@ class FormulaRepository {
     for (final f in _formulas!) {
       if (f.name == name) return f;
     }
-    // 2. 模糊包含兜底
+    // 2. 别名精确匹配：异体字/旧名（如「大黄蛰虫丸」）登记在 alias 字段，
+    //    resolveFormula 早已支持，此处补齐 getByName 的 12 个调用方
+    //    （chat / 书签 / 讲义详情 / LLM 服务 / 症状自查…），避免点开落空。
+    for (final f in _formulas!) {
+      if (f.alias.isEmpty) continue;
+      for (final a in f.alias.split(',').map((e) => e.trim())) {
+        if (a.isNotEmpty && a == name) return f;
+      }
+    }
+    // 3. 模糊包含兜底
     for (final f in _formulas!) {
       if (name.contains(f.name) || f.name.contains(name)) {
         return f;
