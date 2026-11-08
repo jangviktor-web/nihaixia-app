@@ -351,19 +351,6 @@
 
 ### 📥 方式一：下載預編譯 APK（V1.11.32）
 
-> ### ⚠️ 升級須知：簽名金鑰已統一，通常可直接覆蓋安裝
->
-> **自 V1.11.9 起，APK 改由 GitHub Actions 雲端構建；但我們已經把釋出簽名金鑰（`release-key.jks`，別名 `nihaisha`）配置為 GitHub Secrets，因此雲端構建與您本機的 V1.11.8 及更早版本使用同一套簽名。升級時可直接覆蓋安裝，一般無需解除安裝舊版本。**
->
-> | 版本範圍 | 構建環境 | 簽名來源 |
-> |:---|:---|:---|
-> | V1.11.8 及更早 | 開發者本地機器 | 本地正式簽名（`release-key.jks`，別名 `nihaisha`） |
-> | V1.11.9 及以後 | GitHub Actions 雲端 | 同一套正式簽名（已作為 GitHub Secrets 配置，與本地完全一致） |
->
-> **唯一例外**：如果您在簽名金鑰配置完成**之前**就下載過 V1.11.9 的早期版本（那批用的是雲端臨時除錯簽名），由於與當前正式簽名不同，覆蓋安裝會被系統拒絕並提示「應用未安裝」。解決辦法：先解除安裝該早期版本，再安裝當前最新版即可。
->
-> **建議**：無論採用哪種方式，升級前都可在 App「設定」中匯出收藏與診斷歷史，以防萬一。
-
 [![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安裝包‑3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.32/app-release.apk)
 &nbsp;&nbsp;
 [![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安裝包‑0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.32/app-arm64-v8a-release.apk)
@@ -708,7 +695,7 @@ flowchart LR
 絕大多數現代手機選 **arm64-v8a**（38.0MB，體積較小）；拿不準就選 **通用版**（85.1MB，相容所有架構）；老舊 32 位裝置選 armeabi-v7a（35.7MB）；模擬器選 x86_64（39.6MB）。
 
 **Q4：安裝時提示「應用未安裝」/「安裝失敗」怎麼辦？**
-多半是**簽名不一致**導致的覆蓋安裝被拒。V1.11.9 的雲端構建已與本地 V1.11.8 共用同一套簽名（已配置為 GitHub Secrets），正常情況下可直接覆蓋安裝。若仍被拒絕，通常是您手上的是簽名金鑰配置完成**之前**下載的早期 V1.11.9 除錯簽名版——解決辦法：**先解除安裝舊版本，再安裝新版本**（解除安裝前記得在「設定」中匯出收藏與診斷歷史）。詳見上方「⚠️ 升級須知」。
+多半是**簽名不一致**或安裝包損壞導致的覆蓋安裝被拒。解決辦法：**先解除安裝舊版本，再安裝新版本**（解除安裝前記得在「設定」中匯出收藏與診斷歷史）；若仍失敗，改用通用版 APK 重試。
 
 **Q5：紫微/易經/四柱模組是醫療功能嗎？**
 不是。這些模組為**中國傳統民俗文化參考**，與經方醫療模組在介面與文案上明確分隔，不構成任何醫療診斷或建議。

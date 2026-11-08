@@ -357,19 +357,6 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 
 ### 📥 Method 1: Download Prebuilt APK (V1.11.32)
 
-> ### ⚠️ Upgrade Notice: Signing Key Unified, Direct Over-Install Usually Works
->
-> **Since V1.11.9, APKs are built in the cloud by GitHub Actions; however, we have configured the release signing key (`release-key.jks`, alias `nihaisha`) as GitHub Secrets, so cloud builds use the very same signature as the V1.11.8 and earlier versions on your machine. You can normally install the upgrade directly over the old version without uninstalling it first.**
->
-> | Version range | Build environment | Signature source |
-> |:---|:---|:---|
-> | V1.11.8 and earlier | Developer's local machine | Local release signature (`release-key.jks`, alias `nihaisha`) |
-> | V1.11.9 and later | GitHub Actions cloud | The same release signature (configured as GitHub Secrets, identical to the local one) |
->
-> **The only exception**: if you downloaded an early V1.11.9 build **before** the signing key was configured (that batch used a temporary cloud debug signature), its signature differs from the current release signature, so the system will reject the over-install with an "App not installed" message. Fix: uninstall that early version first, then install the current latest version.
->
-> **Recommendation**: whichever method you use, you can export your favorites and diagnosis history from the app's "Settings" before upgrading, just in case.
-
 [![📦 Universal APK](https://img.shields.io/badge/📦%20Universal%20APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.32/app-release.apk)
 &nbsp;&nbsp;
 [![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a%20APK-0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.32/app-arm64-v8a-release.apk)
@@ -716,7 +703,7 @@ Diagnosis history, favorites, and other data are all stored in the local SQLite 
 For most modern phones choose **arm64-v8a** (38.0MB, the smaller per-architecture build); if unsure, choose **Universal** (85.1MB, compatible with all architectures); for older 32-bit devices choose armeabi-v7a (35.7MB); for emulators choose x86_64 (39.6MB).
 
 **Q4: What if installation says "App not installed" / "Installation failed"?**
-It is most likely an over-install rejected because of a **signature mismatch**. The V1.11.9 cloud build already shares the same signature as the local V1.11.8 (configured as GitHub Secrets), so a direct over-install normally works. If it is still rejected, you most likely have an early debug-signed V1.11.9 downloaded **before** the signing key was configured — the fix: **uninstall the old version first, then install the new one** (remember to export your favorites and diagnosis history from "Settings" before uninstalling). See the "⚠️ Upgrade Notice" above.
+Most likely an over-install rejected because of a **signature mismatch** or a corrupted package. Fix: **uninstall the old version first, then install the new one** (export your favorites and diagnosis history from "Settings" before uninstalling); if it still fails, try the universal APK instead.
 
 **Q5: Are the Zi Wei / Yi Jing / Four Pillars modules medical features?**
 No. These modules are **traditional Chinese folk-culture references**, clearly separated from the classical-formula medical modules in both UI and wording, and do not constitute any medical diagnosis or advice.
