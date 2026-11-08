@@ -22,7 +22,7 @@ Offline-first · All data on-device · No sign-up · Ready out of the box (optio
 
 <br/>
 
-**[📥 Download APK](#-download-and-install)** · **[📖 Quick Start](#-quick-start)** · **[🏗️ Technical Architecture](#️-technical-architecture)** · **[🗺️ Roadmap](#️-roadmap)** · **[🤝 Contributing](#️-contributing)** · **[📄 Open Source License](#-open-source-license)**
+**[🤖 Ask Master Ni AI · Free API](#ask-nishi-ai)** · **[📥 Download APK](#-download-and-install)** · **[📖 Quick Start](#-quick-start)** · **[🏗️ Technical Architecture](#️-technical-architecture)** · **[🗺️ Roadmap](#️-roadmap)** · **[🤝 Contributing](#️-contributing)** · **[📄 Open Source License](#-open-source-license)**
 
 </div>
 
@@ -50,6 +50,75 @@ Offline-first · All data on-device · No sign-up · Ready out of the box (optio
 | 🧪 **Guarded by tests** | Key pattern-differentiation paths and filtering logic all have regression tests; every fix ships with a test to prevent regressions |
 
 <img width="100%" src="docs/images/readme_features.svg" alt="Core capabilities: Six-Meridian pattern differentiation, 322 classical formulas, 465 materia medica, 408 acupoints, 1327 classic entries, 1257 case records">
+
+---
+
+<a name="ask-nishi-ai"></a>
+
+## 🤖 Ask Master Ni AI: your lecture library, your model
+
+"Ask Master Ni AI" is the app's **only optional online feature**. It does not just
+hand your question to a general-purpose chatbot. It **searches the on-device lecture
+library first, then sends the matched passages together with their sources to the
+model you configure yourself**. If the lectures do not cover something, it says so
+instead of inventing an answer on Master Ni's behalf.
+
+> [!TIP]
+> **💰 Start for free: three free APIs, ready in 5 minutes**
+> The app ships no endpoint and charges nothing. All three providers below expose
+> OpenAI-compatible free models — sign up for a key and fill it in at
+> **Settings → AI Lecture Q&A**. **Start with Zhipu `GLM-4.7-Flash`**: direct
+> connection in mainland China, free and fast, the best all-round choice for text Q&A.
+> Field-by-field instructions and troubleshooting: **[Free model configuration guide](docs/free_api_guide.md)**.
+
+| Priority | Provider | Endpoint | Model | Notes |
+|:---|:---|:---|:---|:---|
+| 1. First choice | Zhipu AI | `https://open.bigmodel.cn/api/paas/v4` | `GLM-4.7-Flash` | Direct in mainland China, free unlimited models, fast; `GLM-Z1-Flash` adds reasoning but is noticeably slower — not recommended for daily use |
+| 2. Alternative | InternLM | `https://discovery-api.intern-ai.org.cn/v1` | `Atria-Dawn` (recommended) / `intern-s2` / `Sage-A1.5` / `Agents-A1` | 512K context, strong for pure-text Q&A; **the token is shown only once and expires in 6 months** — create a new one when it lapses |
+| 3. Fallback | Agnes AI | `https://api.agnes-ai.cn/v1` | `agnes-3.0-flash` / `agnes-2.5-flash` | Sign up and go; Singapore node, some networks need a proxy |
+
+### How this differs from asking a general AI
+
+| | General AI chat | Ask Master Ni AI |
+|:---|:---|:---|
+| Basis | The model's parametric memory, which easily mixes up classical formulas | Passages retrieved on-device: 394 Shang Han Lun clauses / Jin Gui / acupuncture / materia medica / 1257 case records / 48 disease-name pairs |
+| Sources | Usually unavailable | Passages go into context with their sources; every referenced passage opens as original text |
+| Drift control | Left to the model | Formula names absent from both passages and case records are flagged: "N formula names not found in the retrieved passages" |
+| Endpoint | Fixed by the vendor | You supply any OpenAI-compatible endpoint; switching models means editing three fields |
+| Network | Online by default | **Off by default**, zero network requests while off |
+
+### What happens on a single question
+
+1. **On-device retrieval**: three-tier priority — classical/modern and Chinese/Western disease names, formula names, then the raw keywords.
+2. **Context assembly**: matched passages + sources + disease-name pairs + contraindications of related formulas are handed to the model.
+3. **Structured answer**: "chief-sign table → pattern conclusion → formula reasoning", with a pinned disclaimer; formula, herb and acupoint names all open their detail pages.
+4. **Source audit**: formula names in the answer are checked against the retrieved passages, and missing ones are listed so model-invented knowledge is not mistaken for Master Ni's words.
+
+### What is included
+
+- **Multiple sessions and resume**: conversations live in local SQLite and survive closing the page or killing the app; history is grouped by Today / Yesterday / Last 7 days / Older, with switch, rename and delete
+- **Contraindications in context**: when a formula is identified, its cautions are supplied too, so it can answer "when should this formula *not* be used"
+- **Disease-name mapping injected**: classical/modern and Chinese/Western equivalents enter context; the answer has an expandable list of matched pairs
+- **Links inside answers**: formulas, herbs, acupoints and referenced passages all open their detail pages
+- **One-tap model list**: settings can fetch the endpoint's model list, no typing model names
+- **Any compatible endpoint**: OpenRouter, a local Ollama, or any other OpenAI-compatible service works too
+
+### Three steps to enable
+
+1. Pick one free provider above, sign up and create an API key
+2. In **Settings → AI Lecture Q&A**, enter **base URL / API key / model name** (model list can be fetched)
+3. Turn the switch on, go back to the knowledge base and tap "Ask Master Ni AI" in the top right
+
+> [!IMPORTANT]
+> **Privacy boundary**: this feature is **off by default** and the app makes no network
+> requests while it is off. Once enabled, it connects only when you actively ask a
+> question, sending the retrieved lecture passages plus your question — **no medical
+> history and no diagnosis records are uploaded**; the API key stays in local SQLite.
+> No pattern-differentiation result or formula suggestion can replace diagnosis and
+> treatment by a licensed physician.
+
+Full configuration: [⚙️ Detailed Configuration, section 2](#️-detailed-configuration).
+Key signup paths, screenshots and common errors: [Free model configuration guide](docs/free_api_guide.md).
 
 ---
 
@@ -262,7 +331,7 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 | 🔔 **In-app updates** | One-tap check for new GitHub releases in Settings, with download and install support | — |
 | ⚙️ **Diagnosis settings** | Default gender / diagnosis detail level / auto-copy prescription, for a personalized intake experience | 3 items |
 | 💾 **Data management** | Clear history / export favorites / clear cache, full control over local data | — |
-| 🤖 **Ask Master Ni AI (optional)** | Retrieves from the local lecture library first (Shang Han Lun / Jin Gui / acupuncture / materia medica / cases / disease-name pairs) and hands the matched passages plus their sources to the model; endpoint and key are yours, **off by default** with zero network traffic when off; formulas, herbs and acupoints in answers are tappable, and every referenced passage opens as original text | 394 lectures |
+| 🤖 **[Ask Master Ni AI (optional)](#ask-nishi-ai)** | Retrieves from the local lecture library first (Shang Han Lun / Jin Gui / acupuncture / materia medica / cases / disease-name pairs) and hands the matched passages plus their sources to the model; endpoint and key are yours, **off by default** with zero network traffic when off; formulas, herbs and acupoints in answers are tappable, and every referenced passage opens as original text | 394 lectures |
 | 📝 **Symptom self-check** | One-page triage in the Diagnosis tab: cold/heat overview (required) → advanced clues (optional) → eleven questions; three selections produce a conclusion with six-meridian assignment, pattern, confidence and matched symptoms, and formulas remain tappable; says so directly when all six health baselines are met | 11 questions |
 
 > **Special note**: The Zi Wei Dou Shu, Yi Jing, Four Pillars, and Six-Yao modules are **traditional Chinese folk-culture references**, not for medical diagnosis, and are clearly separated from the classical-formula medical modules in both UI and wording.
@@ -274,10 +343,15 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 > **Hantang TCM nihaixia‑app**
 > Core features fully offline ｜ No sign-up ｜ Android 7.0+
 > "Ask Master Ni AI" is **optional**: you supply the endpoint and key yourself, it is **off by default**, and when off the app makes no network requests (see [PRIVACY.md](PRIVACY.md))
-> 💡 Not sure how to get an API? Three free options, 5 minutes: **[Free model configuration guide](docs/free_api_guide.md)**
 > Universal APK about 82MB, per-architecture builds 34–38MB
 > Since V1.11.9, builds and releases are automated by GitHub Actions; pushing a `v*` tag produces the packages
 > **Last updated: 2026-11-07 (v1.11.32)**
+
+> [!TIP]
+> **💰 Free API · enable "Ask Master Ni AI" in 5 minutes**
+> Zhipu, InternLM and Agnes all offer free models — pick one and pay nothing.
+> Recommended order and field-by-field steps: **[Free model configuration guide](docs/free_api_guide.md)**.
+> How it works and its privacy boundary: **[🤖 Ask Master Ni AI](#ask-nishi-ai)**.
 
 > 💡 **Don't want to download manually each time?** Add this project's URL `https://github.com/jangviktor-web/nihaixia-app` to the open-source updater [Obtainium](https://github.com/ImranR98/Obtainium) and set the APK filter to `arm64-v8a`; it will then notify you of and install each new release automatically — no more checking the Releases page.
 
@@ -461,7 +535,7 @@ No budget for an API? Three free options, 5 minutes to set up —
 | Network | Singapore; may need a proxy | Direct connection in mainland China | Direct connection in mainland China |
 | Best for | Sign up and just use it | Mainland users, more model choices | Mainland direct; token expires in 6 months |
 
-> Both are third-party services; their free policies are subject to their own
+> All three are third-party services; their free policies are subject to their own
 > terms. Your API key is stored locally only. On the App side the requests are
 > plain OpenAI-compatible calls (`{base}/chat/completions` and `{base}/models`),
 > so any compatible endpoint (OpenRouter, a local Ollama, etc.) works too.
@@ -658,6 +732,14 @@ It is a "colloquial profile" this app adds to 170 classical formulas — transla
 
 **Q9: How can I contribute?**
 Issues and Pull Requests are welcome. See [Contributing](#️-contributing).
+
+**Q10: Does "Ask Master Ni AI" cost money, and does it upload my medical history?**
+No. Zhipu `GLM-4.7-Flash`, InternLM `Atria-Dawn` and Agnes `agnes-3.0-flash` are all free
+models; sign up for a key and enter it in Settings (see **[Free model configuration guide](docs/free_api_guide.md)**).
+On privacy: the feature is off by default with zero network traffic while off; once enabled
+it sends only the retrieved lecture passages plus your question, when you actively ask —
+no medical history or diagnosis records, and the API key stays in local SQLite. See
+[🤖 Ask Master Ni AI](#ask-nishi-ai).
 
 ---
 
