@@ -2,11 +2,13 @@
 
 <img width="120" src="docs/images/logo.webp" alt="Hantang TCM Logo">
 
-# Hantang TCM · Ni Haixia Six-Meridian Pattern Differentiation Diagnosis Assistant
+# Hantang TCM · Ni Haixia Six-Meridian Pattern Differentiation · AI Diagnosis Assistant
 
 **An offline-first, completely free app for learning TCM classical formulas and assisted diagnosis, faithfully recreating Ni Haixia's Renji lecture series system**
 
-Offline-first · All data on-device · No sign-up · Ready out of the box (optional AI Q&A uses your own endpoint, off by default)
+**🤖 Ask Master Ni AI (optional) | on-device lecture retrieval + your own model, so the lectures can answer back**
+
+Offline-first · All data on-device · No sign-up · Ready out of the box (fully offline unless AI is enabled)
 
 [简体中文](README.md) · [繁體中文](README.zh-Hant.md) · **English**
 
