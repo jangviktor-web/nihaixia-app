@@ -353,12 +353,12 @@
 &nbsp;&nbsp;
 [![📦 x86_64(虚拟机)](https://img.shields.io/badge/📦%20x86_64(虚拟机)-安卓安装包‑1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.32/app-x86_64-release.apk)
 
-| 安装包 | 大小 | 适用说明 |
-|---|---|---|
-| 通用版 `app-release.apk` | 85.1MB | 全CPU架构，绝大多数安卓设备直接选这个 |
-| arm64‑v8a `app‑arm64‑v8a‑release.apk` | 38.0MB | 新款64位安卓手机，体积更小 |
-| armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | 35.7MB | 老旧32位安卓设备 |
-| x86_64 `app‑x86_64‑release.apk` | 39.6MB | 安卓虚拟机、模拟器使用 |
+| 安装包 | 适用设备 |
+|:---|:---|
+| 通用版 | 全架构，拿不准就选这个 |
+| arm64‑v8a | 新款 64 位手机，体积更小 |
+| armeabi‑v7a | 老旧 32 位设备 |
+| x86_64 | 安卓模拟器 / 虚拟机 |
 
 > **V1.11.32 问倪师AI（本地讲义检索 + 自配端点）· 症状自查 · 回答内跳转 · 类方禁忌进上下文**（2026-11-07 发布）
 >

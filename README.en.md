@@ -359,12 +359,12 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 &nbsp;&nbsp;
 [![📦 x86_64 Emulator APK](https://img.shields.io/badge/📦%20x86_64%20Emulator%20APK-1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.32/app-x86_64-release.apk)
 
-| Package | Size | Recommended for |
-|---|---|---|
-| Universal `app-release.apk` | 85.1MB | All CPU architectures; the right choice for most Android devices |
-| arm64‑v8a `app‑arm64‑v8a‑release.apk` | 38.0MB | Newer 64-bit Android phones, smaller size |
-| armeabi‑v7a `app‑armeabi‑v7a‑release.apk` | 35.7MB | Older 32-bit Android devices |
-| x86_64 `app‑x86_64‑release.apk` | 39.6MB | Android virtual machines and emulators |
+| Package | Recommended for |
+|:---|:---|
+| Universal | All architectures; pick this if unsure |
+| arm64‑v8a | Newer 64-bit phones, smaller |
+| armeabi‑v7a | Older 32-bit devices |
+| x86_64 | Emulators / virtual machines |
 
 > **V1.11.32 Ask Master Ni AI (local lecture retrieval + bring-your-own endpoint) · Symptom self-check · In-answer linking · Formula contraindications in context**
 >
