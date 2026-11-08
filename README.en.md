@@ -212,7 +212,7 @@ From left to right: ① **Yi Jing 64-hexagram illustrations** — below the hexa
 <div align="center">
 
 **v1.11.24 Six extraordinary-meridian groups added to acupoint filtering · National-standard acupoint order**
-<img width="1000" alt="1000199874" src="https://github.com/user-attachments/assets/c1ae60b2-4ff8-4f04-9dfd-3dac9d32f333" />
+<img width="720" alt="1000199874" src="https://github.com/user-attachments/assets/c1ae60b2-4ff8-4f04-9dfd-3dac9d32f333" />
 
 </div>
 
@@ -284,12 +284,12 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 
 **Master Ni's closed-door course content · Master Ni's selected case records**
 
-<img width="2400"  alt="20260819232328_35_182_compressed" src="https://github.com/user-attachments/assets/79d35c8f-519b-47bf-a4ac-84f61c38566b" />
+<img width="720"  alt="20260819232328_35_182_compressed" src="https://github.com/user-attachments/assets/79d35c8f-519b-47bf-a4ac-84f61c38566b" />
 
 **Added the daily Chinese almanac and solar-term wellness modules ·  Improved the Zi Wei Dou Shu chart's major-luck and annual/monthly detailed readings and the automatic place-name matching for the "True Solar Time" selection**
-<img width="3000"  src="https://github.com/user-attachments/assets/9d4f9320-c7c3-438a-8c96-a2cfe92add92" />
+<img width="720"  src="https://github.com/user-attachments/assets/9d4f9320-c7c3-438a-8c96-a2cfe92add92" />
 
-<img width="6000"  src="https://github.com/user-attachments/assets/cb1f78e8-3864-4290-bc30-14095812e94b" />
+<img width="720"  src="https://github.com/user-attachments/assets/cb1f78e8-3864-4290-bc30-14095812e94b" />
 
 </div>
 
@@ -302,7 +302,7 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 | Feature | Description | Data Scale |
 |:---|:---|:---:|
 | 🩺 **Six-Meridian pattern differentiation diagnosis** | Smart guided intake automatically determines Taiyang / Yangming / Shaoyang / Taiyin / Shaoyin / Jueyin and supports combined and concurrent diseases | 6 meridians |
-| 💬 **Patient colloquial profiles** | The result page shows "What the patient would say" — plain-language chief complaint + differentiation indicators + treatment + original clause, checkable line by line; it also lets modern symptom words like "aversion to cold / aversion to wind" recall classical formulas (enhancement cap < 1, so the original correct ordering is never disrupted) | 170 formulas |
+| 💬 **Patient colloquial profiles** | Classical clauses rendered as plain-language chief complaints, checkable line by line; modern symptom words also recall classical formulas | 170 formulas |
 | 📋 **Complete prescription generation** | Automatically shows composition, dosage, decoction and administration, and contraindications, and recommends classical-formula modifications | 23 rules |
 | 🔍 **Differential diagnosis** | Automatically compares the key differences between similar patterns to support precise pattern differentiation | 26 pairs |
 | 📚 **Formula quick reference** | Search + Six-Meridian filter + category filter, available offline | 322 formulas |
@@ -311,8 +311,8 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 | 💉 **Acupoint prescriptions · Through-needling** | 14 categories of acupuncture prescriptions (257 entries) + 31 through-needling point pairs; component acupoints are tappable | 14 categories |
 | ⏰ **Zi Wu Liu Zhu acupoint selection** | Enter a time to automatically compute the open acupoint | 361 acupoints |
 | 🔧 **Classical-formula dosage conversion** | Ancient units (liang / sheng / zhu) → modern grams | — |
-| 📖 **Huangdi Neijing** | 12 Zang-Xiang cards + inspection (five colors / eye diagnosis) + pulse diagnosis (healthy / fatal pulses) + a 73-chapter reading library + full-text search; new "structured entry search" with 52 entries / 10 dimensions, four separated fields (original text · source · vernacular · Master Ni's interpretation), six-field search + dimension + tag cross-filtering | 73 chapters + 52 entries |
-| 📜 **Shang Han Lun · Jin Gui Yao Lue clause library** | 394 Shang Han Lun chapters (390 clauses + 4 appendices) + 433 Jin Gui Yao Lue chapters broken down to clause level for clause-by-clause reading; formula / herb names in the text jump to detail pages in one tap, and "Found in the Classics" on formula detail pages marks the source clauses in reverse | 827 clauses |
+| 📖 **Huangdi Neijing** | Zang-Xiang cards + inspection / pulse diagnosis + 73-chapter reading library; 52 structured entries / 10 dimensions with six-field and tag cross-filtering | 73 chapters + 52 entries |
+| 📜 **Shang Han Lun · Jin Gui Yao Lue clause library** | 394 + 433 chapters broken down to clause level; formula / herb names jump to detail pages, and formula pages link back to source clauses | 827 clauses |
 | 📜 **Original classic texts** | 82 chapters of the Ling Shu + 339 chapters of the Ming-dynasty Zhenjiu Dacheng, with a searchable chapter table of contents, tappable formula / herb names, and a "Classics" group in global search that spans lecture transcripts and original texts | 421 chapters |
 | 📚 **Master Ni's case-record library** | 1257 searchable cases + a closed-door-course severe-case clinical module, with bidirectional case-record ↔ formula links | 1257 cases |
 | 🎲 **Six-Yao coin casting** | Cast three coins line by line; multiple changing lines automatically produce the transformed hexagram | Folk reference |
@@ -327,8 +327,8 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 | 🔔 **In-app updates** | One-tap check for new GitHub releases in Settings, with download and install support | — |
 | ⚙️ **Diagnosis settings** | Default gender / diagnosis detail level / auto-copy prescription, for a personalized intake experience | 3 items |
 | 💾 **Data management** | Clear history / export favorites / clear cache, full control over local data | — |
-| 🤖 **[Ask Master Ni AI (optional)](#user-content-ask-nishi-ai)** | Retrieves from the local lecture library first (Shang Han Lun / Jin Gui / acupuncture / materia medica / cases / disease-name pairs) and hands the matched passages plus their sources to the model; endpoint and key are yours, **off by default** with zero network traffic when off; formulas, herbs and acupoints in answers are tappable, and every referenced passage opens as original text | 394 lectures |
-| 📝 **Symptom self-check** | One-page triage in the Diagnosis tab: cold/heat overview (required) → advanced clues (optional) → eleven questions; three selections produce a conclusion with six-meridian assignment, pattern, confidence and matched symptoms, and formulas remain tappable; says so directly when all six health baselines are met | 11 questions |
+| 🤖 **[Ask Master Ni AI (optional)](#user-content-ask-nishi-ai)** | On-device lecture retrieval, matched passages with sources sent to a model you configure; **off by default**, zero network traffic when off | 394 lectures |
+| 📝 **Symptom self-check** | One-page triage: cold/heat overview → advanced clues → eleven questions; three selections give a six-meridian / pattern / confidence conclusion | 11 questions |
 
 > **Special note**: The Zi Wei Dou Shu, Yi Jing, Four Pillars, and Six-Yao modules are **traditional Chinese folk-culture references**, not for medical diagnosis, and are clearly separated from the classical-formula medical modules in both UI and wording.
 
