@@ -347,8 +347,6 @@
 > 推薦順序與逐項步驟見 **[免費模型配置指南](docs/free_api_guide.md)**，
 > 功能原理與隱私邊界見 **[🤖 問倪師AI](#user-content-ask-nishi-ai)**。
 
-> 💡 **不想每次手動下載？** 用開源更新工具 [Obtainium](https://github.com/ImranR98/Obtainium) 訂閱本專案位址 `https://github.com/jangviktor-web/nihaixia-app`，APK 篩選填 `arm64-v8a`，之後每個新版本它會自動提示並安裝，不必再回來翻 Release 頁。
-
 ### 📥 方式一：下載預編譯 APK（V1.11.32）
 
 > ### ⚠️ 升級須知：簽名金鑰已統一，通常可直接覆蓋安裝
