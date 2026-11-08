@@ -142,5 +142,24 @@ void main() {
             reason: '$q 应能按 alias 打开方剂详情');
       }
     });
+
+    test('回归：抵当汤 / 抵挡汤 是方言异写，四路索引归到正名', () async {
+      await FormulaRepository.load();
+      // 倪师原话：伤寒 237「抵当就是抵挡」；本草冬葵子「山东话抵挡…把它写成抵挡汤」。
+      // 讲稿有意保留方言写法，故只在索引层归并，不改文本。
+      expect(FormulaRepository.search('抵挡汤').map((f) => f.name),
+          contains('抵当汤'));
+      expect(FormulaRepository.getByName('抵挡汤')?.name, '抵当汤');
+      expect(FormulaRepository.resolveFormula('抵挡汤')?.name, '抵当汤');
+
+      final idx = await FormulaMentionIndex.load();
+      final m = idx.hitsFor('抵当汤');
+      expect(m, isNotNull, reason: '抵当汤应有提及索引');
+      // 伤寒（宋本条号-1）、金匮 seq
+      expect(m!.shanghan, containsAll(<int>[123, 124, 236, 256]));
+      expect(m.jingui, contains(414));
+      // 本草讲稿：29 牛膝 / 92 淮木 / 126 冬葵子 / 210 石龙子 均由「抵挡汤」写法新增
+      expect(m.bencao.map((e) => e.seq), containsAll(<int>[29, 92, 126, 210]));
+    });
   });
 }
