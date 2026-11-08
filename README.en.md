@@ -66,18 +66,12 @@ model you configure yourself**. If the lectures do not cover something, it says 
 instead of inventing an answer on Master Ni's behalf.
 
 > [!TIP]
-> **💰 Start for free: three free APIs, ready in 5 minutes**
-> The app ships no endpoint and charges nothing. All three providers below expose
-> OpenAI-compatible free models — sign up for a key and fill it in at
-> **Settings → AI Lecture Q&A**. **Start with Zhipu `GLM-4.7-Flash`**: direct
-> connection in mainland China, free and fast, the best all-round choice for text Q&A.
-> Field-by-field instructions and troubleshooting: **[Free model configuration guide](docs/free_api_guide.md)**.
-
-| Priority | Provider | Endpoint | Model | Notes |
-|:---|:---|:---|:---|:---|
-| 1. First choice | Zhipu AI | `https://open.bigmodel.cn/api/paas/v4` | `GLM-4.7-Flash` | Direct in mainland China, free unlimited models, fast; `GLM-Z1-Flash` adds reasoning but is noticeably slower — not recommended for daily use |
-| 2. Alternative | InternLM | `https://discovery-api.intern-ai.org.cn/v1` | `Atria-Dawn` (recommended) / `intern-s2` / `Sage-A1.5` / `Agents-A1` | 512K context, strong for pure-text Q&A; **the token is shown only once and expires in 6 months** — create a new one when it lapses |
-| 3. Fallback | Agnes AI | `https://api.agnes-ai.cn/v1` | `agnes-3.0-flash` / `agnes-2.5-flash` | Sign up and go; Singapore node, some networks need a proxy |
+> **💰 Start for free: free APIs, ready in 5 minutes**
+> The app ships no endpoint and charges nothing. Sign up for a free key from any
+> OpenAI-compatible provider and fill it in at **Settings → AI Lecture Q&A**.
+> **Start with Zhipu `GLM-4.7-Flash`**: direct connection in mainland China,
+> free and fast, the best all-round choice for text Q&A. Endpoints, model names,
+> caveats and field-by-field steps for all three providers: **[Free model configuration guide](docs/free_api_guide.md)**.
 
 ### How this differs from asking a general AI
 
@@ -107,7 +101,7 @@ instead of inventing an answer on Master Ni's behalf.
 
 ### Three steps to enable
 
-1. Pick one free provider above, sign up and create an API key
+1. Pick one free provider from the [Free model configuration guide](docs/free_api_guide.md), sign up and create an API key
 2. In **Settings → AI Lecture Q&A**, enter **base URL / API key / model name** (model list can be fetched)
 3. Turn the switch on, go back to the knowledge base and tap "Ask Master Ni AI" in the top right
 
