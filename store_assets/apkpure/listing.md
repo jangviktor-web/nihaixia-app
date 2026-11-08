@@ -2,24 +2,30 @@
 
 > 用途：APKPure Developer Console 提交表单逐项复制。分类建议 **Books & Reference**（而非 Medical，避开医疗类资质审核）。
 
+**上架状态：✅ 已上架**（2026-11-08 由用户手动提交，上传包为 GitHub Release v1.11.32）
+
 ## 基本信息
 
 | 字段 | 值 |
 |---|---|
 | App name | 汉唐中医 · 倪海厦经方 |
 | Package name | com.nihaisha.nihaisha_app |
-| Version | 1.11.31 |
-| Version code | 8044 |
+| Version | 1.11.32 |
+| Version code | 8045 |
 | Category | Books & Reference |
 | Content rating | Everyone |
 | Price | Free |
-| Privacy policy URL | https://github.com/jangviktor-web/nihaixia-app/blob/master/PRIVACY.md |
+| Privacy policy URL | https://github.com/jangviktor-web/nihaixia-app/blob/main/PRIVACY.md |
 | Developer name | jangviktor-web |
 | Website | https://github.com/jangviktor-web/nihaixia-app |
 | Support email | 见 README 联系方式 |
-| APK | store_assets/apkpure/app-release.apk（通用包） |
+| APK | 从 Release v1.11.32 重新下载（见下方「素材包版本须知」） |
 | Icon | store_assets/apkpure/icon_512.png（512×512 PNG） |
 | Screenshots | store_assets/apkpure/screenshots/ 共 6 张 |
+
+> ⚠️ **素材包版本须知**：`store_assets/apkpure/app-release.apk` 与 `app-arm64-v8a-release.apk` 这两份本地副本实测仍是 **1.11.31 / versionCode 8044**（aapt2 读取确认），不是当前最新版。下次给 Amazon / 华为等渠道提交前，务必从 [Release v1.11.32](https://github.com/jangviktor-web/nihaixia-app/releases/tag/v1.11.32) 重新下载并覆盖，否则会把旧版传上去。
+>
+> 隐私政策链接已从 `blob/master` 改为 `blob/main`：`master` 分支自 2026-11-07 起仅作历史/回滚保留，不再更新，`main` 才是默认分支。
 
 ---
 
@@ -121,10 +127,19 @@ Source code: https://github.com/jangviktor-web/nihaixia-app
 
 ## 提交前核对清单
 
-- [ ] APK 为 release 签名（非 debug），versionCode 8044
-- [ ] 图标 512×512 PNG
-- [ ] 截图 ≥3 张（已备 6 张）
-- [ ] 隐私政策 URL 可公开访问
-- [ ] 分类选 Books & Reference
-- [ ] 描述中不含疗效承诺、不含"治愈/根治"等绝对化表述
-- [ ] 勾选已阅读开发者协议
+- [x] APK 为 release 签名（非 debug），versionCode 8045
+- [x] 图标 512×512 PNG
+- [x] 截图 ≥3 张（已备 6 张）
+- [x] 隐私政策 URL 可公开访问
+- [x] 分类选 Books & Reference
+- [x] 描述中不含疗效承诺、不含"治愈/根治"等绝对化表述
+- [x] 勾选已阅读开发者协议
+
+---
+
+## 后续更新流程（每次发版后）
+
+1. CI 出包后从 Release 下载 `app-arm64-v8a-release.apk`（或通用包）覆盖本地副本
+2. 把本文件「基本信息」的 Version / Version code 改成新版本
+3. 控制台「Upload new version」上传，versionCode 必须大于 8045
+4. 长描述如涉及数据规模变化（方剂数 / 条文数 / 索引条数）一并同步

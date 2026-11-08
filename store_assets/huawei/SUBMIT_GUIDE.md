@@ -89,7 +89,7 @@
 ### 隐私政策 URL
 
 ```
-https://github.com/jangviktor-web/nihaixia-app/blob/master/PRIVACY.md
+https://github.com/jangviktor-web/nihaixia-app/blob/main/PRIVACY.md
 ```
 
 华为要求**必须可访问**，且建议在应用内也能打开。目前 App 内没有隐私政策页——如果审核卡这条，需要加一个设置项入口。

@@ -113,7 +113,7 @@ TCM, Chinese medicine, Shang Han Lun, classical formulas, materia medica, acupun
 ### 隐私政策 URL
 
 ```
-https://github.com/jangviktor-web/nihaixia-app/blob/master/PRIVACY.md
+https://github.com/jangviktor-web/nihaixia-app/blob/main/PRIVACY.md
 ```
 
 （已新建 `PRIVACY.md`，中英双语，需先 push 到 GitHub 才能生效）
