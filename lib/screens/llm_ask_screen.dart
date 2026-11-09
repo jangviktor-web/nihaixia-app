@@ -5,9 +5,11 @@ import '../data/disease_alias_index.dart';
 import '../data/llm_chat_repository.dart';
 import '../data/medical_case_data.dart';
 import '../data/settings_repository.dart';
+import '../data/traditional_display.dart';
 import '../services/classic_search_service.dart';
 import '../services/llm_service.dart';
 import '../widgets/state_view.dart';
+import '../widgets/traditional_toggle_button.dart';
 import 'markdown_doc_screen.dart';
 import 'medical_case_detail_screen.dart';
 import 'settings_screen.dart';
@@ -71,6 +73,9 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
 
   bool _busy = false;
   final List<_Turn> _turns = [];
+
+  /// 繁体正文缓存（按轮次）。切换开关时清空，避免拿到旧字形的 Future。
+  final Map<_Turn, Future<String>> _traditionalMd = {};
 
   /// 当前会话。null 表示「尚未落库的新会话」——首条回答写入时才建。
   int? _sessionId;
@@ -272,6 +277,10 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
       appBar: AppBar(
         title: const Text('问倪师AI'),
         actions: [
+          // 繁体开关：只转回答正文，界面文案保持简体（与其他内容页一致）。
+          TraditionalToggleButton(
+            onChanged: () => setState(_traditionalMd.clear),
+          ),
           IconButton(
             tooltip: '历史会话',
             icon: const Icon(Icons.history),
@@ -345,6 +354,14 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
         ),
       );
 
+  /// 回答正文渲染（简体 / 繁体共用一套样式与点击处理）。
+  Widget _answerMarkdown(String md) => MarkdownBody(
+        data: md,
+        onTapLink: (_, href, _) => openInternalLink(context, href),
+        selectable: true,
+        styleSheet: MarkdownDocScreen.styleSheetFor(Theme.of(context)),
+      );
+
   Widget _body(ColorScheme cs) {
     if (_turns.isEmpty) return _emptyView(cs);
     // 窗口固定 3 轮，用 Column 即可，无需 ListView.builder 的滚动/高度管理。
@@ -394,12 +411,17 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
               _casesTile(t.cases),
               _sourcesTile(t.sources),
               const SizedBox(height: 8),
-              MarkdownBody(
-                data: t.linkedAnswer,
-                onTapLink: (_, href, _) => openInternalLink(context, href),
-                selectable: true,
-                styleSheet: MarkdownDocScreen.styleSheetFor(Theme.of(context)),
-              ),
+              // 繁体转换必须在 injectInternalLinks 之后：trMarkdown 会用占位符
+              // 保护 href，转繁后还原成简体名，点击才能命中方剂/药材/穴位。
+              if (!traditionalDisplayOn)
+                _answerMarkdown(t.linkedAnswer)
+              else
+                FutureBuilder<String>(
+                  future: _traditionalMd.putIfAbsent(
+                      t, () => trMarkdown(t.linkedAnswer)),
+                  builder: (_, snap) =>
+                      _answerMarkdown(snap.data ?? t.linkedAnswer),
+                ),
             ],
           ],
         ),
