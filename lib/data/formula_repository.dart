@@ -48,9 +48,10 @@ class FormulaRepository {
       if (f.alias.isEmpty) continue;
       for (final raw in f.alias.split(',')) {
         final a = raw.trim();
-        if (a.length < 3) continue;
+        if (a.isEmpty) continue;
         final forced = _linkWhitelist.contains(a);
-        // 剂型字与括注规则可被白名单绕过；长度、重复、前缀规则另判。
+        // 长度、剂型字、括注三条规则可被白名单绕过；重复与前缀规则另判。
+        if (!forced && a.length < 3) continue;
         if (!forced && !suffix.hasMatch(a)) continue;
         if (!forced && (a.contains('（') || a.contains('(') || a.contains('/'))) {
           continue;
@@ -63,7 +64,7 @@ class FormulaRepository {
     return out.toList();
   }
 
-  /// 必须成链的例外别名，可绕过「剂型字结尾」与「不以正名开头」两条规则。
+  /// 必须成链的例外别名，可绕过「长度 ≥3」「剂型字结尾」「不以正名开头」三条规则。
   ///
   /// ① 加减方名（以正名开头，但仍是同一方）：
   ///    「木防己汤去石膏加茯苓芒硝汤」内含正名「木防己汤」，不放行则讲稿
@@ -73,6 +74,11 @@ class FormulaRepository {
   ///    「白通汤加猪胆汁」——clause_315:9、clause_315:15、clause_346:8 等处
   ///    不接「汤」字，不放行则这 3 处点不开（「白通汤加猪胆汁汤」已由正名
   ///    覆盖，长串优先，不会互相截断）。
+  /// ③ 2 字简称：「白散」= 三物小白散（伤寒 141「白散亦可服」「白散方」）。
+  ///    长度门槛 3 字本来是为了拦称号（如乌梅丸的「虫剂」），把这条真方名一起
+  ///    挡了。已知代价：jingui/clause_084「张氏白散」是调侃侯氏黑散的戏称，
+  ///    会误链到三物小白散 —— 1 处误链换 3 处正文可点，认了。
+  ///    「鸡矢白散」「三物小白散」等更长写法由最长优先保证不被截断。
   ///
   /// ⛔ 不要把「蜜煎导」加进来：它是「导法」外治之名，不是方名
   ///    （方是蜜煎方，见伤寒 233 条「宜蜜煎导而通之」）。让它在正文里点开
@@ -84,6 +90,7 @@ class FormulaRepository {
     '白通汤加猪胆汁汤',
     '白通汤加猪胆汁',
     '桂枝汤去芍药方中加附子汤',
+    '白散',
   };
 
   static Formula? getById(String id) {
