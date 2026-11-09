@@ -176,5 +176,13 @@ void main() {
       // （列举提及，靠 build_formula_index.py 的 FORCED 人工登记挂上）
       expect(m!.shanghan, containsAll(<int>[314, 345]));
     });
+
+    test('回归：苦酒汤语料写法「耆芍桂酒汤」仍索引到金匮 253', () async {
+      await FormulaRepository.load();
+      // ALIASES 登记的是整串「耆芍桂酒汤」（旧值为子串「芍桂酒汤」）。
+      // clause_269 三处原文均为「宜耆芍桂酒汤主之」，改动后索引结果必须不变。
+      final idx = await FormulaMentionIndex.load();
+      expect(idx.hitsFor('黄芪芍药桂枝苦酒汤')?.jingui, contains(253));
+    });
   });
 }
