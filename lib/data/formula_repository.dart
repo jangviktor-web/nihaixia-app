@@ -26,6 +26,34 @@ class FormulaRepository {
     return _formulas ?? [];
   }
 
+  /// 可作为正文自动成链候选的方剂别名（异名、旧名、简称）。
+  ///
+  /// alias 字段混装了两类内容：真正的方名异写（白虎人参汤、抵挡汤、大黄蛰虫丸）
+  /// 和称号/合方描述（虫剂、群方之魁、回阳救逆第一方、苇茎汤加大承气汤）。
+  /// 后者一旦进入候选词表，讲稿正文会被误链，故按下列规则过滤：
+  /// ≥3 字、以剂型字（汤丸散膏丹煎）结尾、无括注/斜杠、不以其它正名开头、
+  /// 不与任何正名重复（重复者已由正名候选覆盖）。
+  static List<String> get aliasNames {
+    final all = _formulas;
+    if (all == null) return const [];
+    final names = {for (final f in all) f.name};
+    final suffix = RegExp(r'[汤丸散膏丹煎]$');
+    final out = <String>{};
+    for (final f in all) {
+      if (f.alias.isEmpty) continue;
+      for (final raw in f.alias.split(',')) {
+        final a = raw.trim();
+        if (a.length < 3) continue;
+        if (!suffix.hasMatch(a)) continue;
+        if (a.contains('（') || a.contains('(') || a.contains('/')) continue;
+        if (names.contains(a)) continue;
+        if (names.any(a.startsWith)) continue;
+        out.add(a);
+      }
+    }
+    return out.toList();
+  }
+
   static Formula? getById(String id) {
     try {
       return _formulas!.firstWhere((f) => f.id == id);

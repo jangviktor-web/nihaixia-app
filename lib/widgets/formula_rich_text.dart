@@ -76,6 +76,10 @@ class _FormulaRichTextState extends State<FormulaRichText> {
     final candidates = <({String name, bool isFormula})>[
       for (final f in FormulaRepository.getAll())
         if (f.name.length >= 2) (name: f.name, isFormula: true),
+      // 方剂别名同样可点：讲稿口语常写「白虎人参汤」「抵挡汤」等异名，
+      // 只放正名时这些正文不会成链。称号类已由 aliasNames 过滤掉。
+      for (final a in FormulaRepository.aliasNames)
+        if (a.length >= 2) (name: a, isFormula: true),
       for (final h in HerbRepository.getAll())
         if (h.name.length >= 2) (name: h.name, isFormula: false),
       for (final a in HerbRepository.aliasNames)
