@@ -161,5 +161,20 @@ void main() {
       // 本草讲稿：29 牛膝 / 92 淮木 / 126 冬葵子 / 210 石龙子 均由「抵挡汤」写法新增
       expect(m.bencao.map((e) => e.seq), containsAll(<int>[29, 92, 126, 210]));
     });
+
+    test('回归：白通加猪胆汁汤 见于经典含 314（专条）与 345（列举提及）', () async {
+      await FormulaRepository.load();
+      // 口语异写「白通汤加猪胆汁」按 alias 归到正名，正文不改（倪师原话）。
+      expect(FormulaRepository.search('白通汤加猪胆汁').map((f) => f.name),
+          contains('白通加猪胆汁汤'));
+      expect(FormulaRepository.getByName('白通汤加猪胆汁')?.name, '白通加猪胆汁汤');
+
+      final idx = await FormulaMentionIndex.load();
+      final m = idx.hitsFor('白通加猪胆汁汤');
+      expect(m, isNotNull, reason: '白通加猪胆汁汤应有提及索引');
+      // 314 = 宋本315 专条（自动判定）；345 = 宋本346 讲 345 条时举作救逆手段
+      // （列举提及，靠 build_formula_index.py 的 FORCED 人工登记挂上）
+      expect(m!.shanghan, containsAll(<int>[314, 345]));
+    });
   });
 }

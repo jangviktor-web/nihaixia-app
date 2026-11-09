@@ -37,10 +37,12 @@ String decodeMarkdownHref(String href) {
   final cached = _linkIndexCache;
   if (cached != null) return cached;
 
-  final formulaNames = FormulaRepository.getAll()
-      .map((f) => f.name)
-      .where((n) => n.length >= 2)
-      .toList();
+  final formulaNames = <String>{
+    ...FormulaRepository.getAll().map((f) => f.name),
+    // 异写/简称同池：AI 回答与讲义正文常写「防己黄耆汤」「麻仁丸」，
+    // 只放正名时这些写法不成链（title 类与合方描述已由 aliasNames 过滤）。
+    ...FormulaRepository.aliasNames,
+  }.where((n) => n.length >= 2).toList();
   final herbCandidates = <String>{
     ...HerbRepository.getAll().map((h) => h.name),
     ...HerbRepository.aliasNames,

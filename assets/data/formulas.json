@@ -1826,7 +1826,7 @@
     {
       "id": "xuanfu_daizhe_shi_tang",
       "name": "旋覆代赭石汤",
-      "alias": "",
+      "alias": "旋复花代赭石汤",
       "meridian": "阳明/胃",
       "category": "理气剂",
       "components": [
@@ -2504,7 +2504,7 @@
     {
       "id": "guizhi_houpo_xingren_tang",
       "name": "桂枝加厚朴杏仁汤",
-      "alias": "",
+      "alias": "桂枝加厚朴杏子汤",
       "meridian": "太阳",
       "category": "解表剂",
       "components": [
@@ -2701,7 +2701,7 @@
     {
       "id": "guizhi_jia_longgu_muli_tang",
       "name": "桂枝加龙骨牡蛎汤",
-      "alias": "",
+      "alias": "桂枝龙骨牡蛎汤",
       "meridian": "太阳/少阴",
       "category": "解表剂",
       "components": [
@@ -4013,7 +4013,7 @@
     {
       "id": "baihe_jinzi_shigao_tang",
       "name": "百合鸡子黄汤",
-      "alias": "",
+      "alias": "百合鸡子汤",
       "meridian": "少阴/太阴",
       "category": "补益剂",
       "components": [
@@ -4139,7 +4139,7 @@
     {
       "id": "zhiling_wan",
       "name": "肾气丸",
-      "alias": "桂附八味丸/金匮肾气丸",
+      "alias": "桂附八味丸,金匮肾气丸,八味肾气丸",
       "meridian": "少阴",
       "category": "补益剂",
       "components": [
@@ -5167,7 +5167,7 @@
     {
       "id": "fangji_huangqi_tang_jj",
       "name": "防己黄芪汤",
-      "alias": "",
+      "alias": "防己黄耆汤",
       "meridian": "太阴",
       "category": "补益剂",
       "components": [
@@ -5500,7 +5500,7 @@
     {
       "id": "mahuang_xingren_shigao_gancao_tang",
       "name": "麻杏甘石汤",
-      "alias": "麻黄杏仁石膏甘草汤",
+      "alias": "麻黄杏仁石膏甘草汤,麻黄杏仁甘草石膏汤,麻黄杏子甘草石膏汤",
       "meridian": "太阳/肺",
       "category": "清热剂",
       "components": [
@@ -5889,7 +5889,7 @@
     {
       "id": "huangqi_guizhi_wuwu_tang",
       "name": "黄芪桂枝五物汤",
-      "alias": "",
+      "alias": "黄耆桂枝五物汤",
       "meridian": "太阳/血分",
       "category": "补益剂",
       "components": [
@@ -6039,7 +6039,7 @@
     },
     {
       "name": "麻子仁丸",
-      "alias": "脾约麻仁丸",
+      "alias": "脾约麻仁丸,麻仁丸",
       "meridian": "阳明",
       "category": "泻下剂",
       "components": [
@@ -6767,7 +6767,7 @@
     },
     {
       "name": "旋覆花汤",
-      "alias": "",
+      "alias": "旋复花汤",
       "meridian": "厥阴/阳明",
       "category": "化痰剂",
       "components": [
@@ -6842,7 +6842,7 @@
     },
     {
       "name": "木防己去石膏加茯苓芒硝汤",
-      "alias": "",
+      "alias": "木防己汤去石膏加茯苓芒硝汤",
       "meridian": "太阳/太阴",
       "category": "化痰剂",
       "components": [
@@ -7422,7 +7422,7 @@
     },
     {
       "name": "桂枝加黄芪汤",
-      "alias": "",
+      "alias": "桂枝加黄耆汤",
       "meridian": "太阳",
       "category": "解表剂",
       "components": [
@@ -7573,7 +7573,7 @@
     },
     {
       "name": "赤豆当归散",
-      "alias": "",
+      "alias": "赤小豆当归散",
       "meridian": "厥阴/肝",
       "category": "清热剂",
       "components": [
@@ -7658,7 +7658,7 @@
     },
     {
       "name": "橘皮汤",
-      "alias": "",
+      "alias": "桔皮汤",
       "meridian": "太阴/胃",
       "category": "理气剂",
       "components": [
@@ -9298,7 +9298,7 @@
     },
     {
       "name": "黄芪建中汤",
-      "alias": "",
+      "alias": "黄耆建中汤",
       "meridian": "太阴",
       "category": "补益剂",
       "components": [
@@ -12403,7 +12403,7 @@
     {
       "id": "guizhi_qu_shaoyao_jia_fuzi_tang",
       "name": "桂枝去芍药加附子汤",
-      "alias": "",
+      "alias": "桂枝汤去芍药方中加附子汤",
       "meridian": "太阳",
       "category": "解表剂",
       "components": [
@@ -12629,7 +12629,7 @@
     {
       "id": "mijian_fang",
       "name": "蜜煎方",
-      "alias": "蜜煎导方",
+      "alias": "蜜煎导方,蜜煎导",
       "meridian": "阳明",
       "category": "泻下剂",
       "components": [
@@ -12719,7 +12719,7 @@
     {
       "id": "baitong_jia_zhudanzhi_tang",
       "name": "白通加猪胆汁汤",
-      "alias": "",
+      "alias": "白通汤加猪胆汁汤,白通汤加猪胆汁",
       "meridian": "少阴",
       "category": "温里剂",
       "components": [
@@ -13905,7 +13905,7 @@
     },
     {
       "name": "甘草干姜茯苓白术汤",
-      "alias": "肾著汤,肾着汤,甘姜苓术汤,干姜苓术汤",
+      "alias": "肾著汤,肾着汤,甘姜苓术汤,干姜苓术汤,甘草干姜苓术汤",
       "meridian": "太阴",
       "category": "金匮·五脏风寒",
       "components": [
