@@ -29,11 +29,22 @@ final Map<String, List<String>> _acupointNameCache = {};
 
 /// 从方剂字段提取已知方剂名（简繁归一 + 箭头分段 + 噪声清洗 + 长度降序 + 去重）。
 /// 返回命中的方剂名（FormulaRepository 正名）。按原文 memo 缓存，返回不可变列表。
+///
+/// 别名同池（与药材侧 [extractHerbNames] 对称）：医案与模型回答常写
+/// 「黄耆建中汤」「麻仁丸」「白虎人参汤」，只放正名会**漏抽**；
+/// 且短正名会截胡长异写（「白虎人参汤」→「人参汤」），故 resolve 统一归一到正名。
 List<String> extractFormulaNames(String formula) {
   return _formulaNameCache.putIfAbsent(formula, () {
-    final candidates = FormulaRepository.getAll().map((f) => f.name).toList();
+    final candidates = <String>{
+      ...FormulaRepository.getAll().map((f) => f.name),
+      ...FormulaRepository.aliasNames,
+    }.toList();
     return List.unmodifiable(
-      extractKnownNames(formula, candidates, resolve: (c) => c),
+      extractKnownNames(
+        formula,
+        candidates,
+        resolve: (c) => FormulaRepository.getByName(c)?.name,
+      ),
     );
   });
 }

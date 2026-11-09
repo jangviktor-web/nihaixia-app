@@ -36,12 +36,18 @@ class _MedicalCaseInsightsScreenState extends State<MedicalCaseInsightsScreen> {
     // 候选名单在主 isolate 取出（仓库已加载），连同数据传给 isolate 纯函数，
     // isolate 内不依赖静态仓库。
     final all = widget.all;
-    final fc = FormulaRepository.getAll().map((f) => f.name).toList();
+    // 候选 → 正名 映射：异写必须与正名归一到同一个键，否则「黄耆建中汤」
+    // 和「黄芪建中汤」会在 TOP 榜上各占一行、频次被拆散。
+    final fmap = <String, String>{
+      for (final f in FormulaRepository.getAll()) f.name: f.name,
+      for (final a in FormulaRepository.aliasNames)
+        a: FormulaRepository.getByName(a)?.name ?? a,
+    };
     final hc = <String>{
       ...HerbRepository.getAll().map((h) => h.name),
       ...HerbRepository.aliasNames,
     }.toList();
-    final stats = await compute(_computeInsightsJob, (all, fc, hc));
+    final stats = await compute(_computeInsightsJob, (all, fmap, hc));
     if (!mounted) return;
     setState(() {
       _stats = stats;
@@ -51,12 +57,12 @@ class _MedicalCaseInsightsScreenState extends State<MedicalCaseInsightsScreen> {
 
   /// isolate 入口：compute 需要单位置参数的纯函数，这里把 record 解包后转调。
   static MedicalCaseInsightStats _computeInsightsJob(
-    (List<MedicalCase>, List<String>, List<String>) job,
+    (List<MedicalCase>, Map<String, String>, List<String>) job,
   ) {
-    final (all, fc, hc) = job;
+    final (all, fmap, hc) = job;
     return computeMedicalCaseInsights(
       all,
-      formulaCandidates: fc,
+      formulaCandidates: fmap,
       herbCandidates: hc,
     );
   }
@@ -228,14 +234,18 @@ class MedicalCaseInsightStats {
 /// （按频次降序，同频按名称升序）。
 ///
 /// 主 isolate 调用可不传候选（走 [MedicalCase.formulaNames]/[herbNames]，
-/// 依赖已加载的仓库）；isolate 内调用必须传 [formulaCandidates]/[herbCandidates]，
-/// 以纯提取替代静态仓库访问。
+/// 依赖已加载的仓库）；isolate 内调用必须传 [formulaCandidates]（候选 → 正名
+/// 映射）/[herbCandidates]，以纯提取替代静态仓库访问。
+///
+/// [formulaCandidates] 用 Map 而非 List：isolate 内拿不到仓库，无法把别名
+/// 归一，只有键值对才能让异写与正名计到同一个方剂上。
 MedicalCaseInsightStats computeMedicalCaseInsights(
   List<MedicalCase> all, {
-  List<String>? formulaCandidates,
+  Map<String, String>? formulaCandidates,
   List<String>? herbCandidates,
 }) {
   final useRepo = formulaCandidates == null || herbCandidates == null;
+  final formulaCandList = formulaCandidates?.keys.toList();
   final formulaFreq = <String, int>{};
   final diagFreq = <String, int>{};
   var withFormula = 0;
@@ -247,7 +257,11 @@ MedicalCaseInsightStats computeMedicalCaseInsights(
       fn = c.formulaNames;
       hasHerb = c.herbNames.isNotEmpty;
     } else {
-      fn = extractKnownNames(c.formula, formulaCandidates, resolve: (c) => c);
+      fn = extractKnownNames(
+        c.formula,
+        formulaCandList!,
+        resolve: (cand) => formulaCandidates[cand],
+      );
       hasHerb = extractKnownNames(c.formula, herbCandidates, resolve: (c) => c)
           .isNotEmpty;
     }
