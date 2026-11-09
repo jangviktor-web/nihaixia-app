@@ -76,4 +76,27 @@ void main() {
       expect(FormulaRepository.search(q), isNotEmpty, reason: '$q 应有结果');
     }
   });
+
+  // 模型可能用繁体作答（prompt 未约束语体）。候选集是简体，故 injectInternalLinks
+  // 在「转简文本」上定位、用原文切片做锚文本：繁体也能成链，且字形不被改写。
+  test('模型以繁体作答时同样成链，锚文本保留繁体', () async {
+    await FormulaRepository.load();
+    const cases = <String, String>{
+      '黃耆建中湯': '黄芪建中汤',
+      '防己黃耆湯': '防己黄芪汤',
+      '桂枝龍骨牡蠣湯': '桂枝加龙骨牡蛎汤',
+      '麻黃杏仁甘草石膏湯': '麻杏甘石汤',
+      '赤小豆當歸散': '赤豆当归散',
+      '旋復花代赭石湯': '旋覆代赭石汤',
+    };
+    for (final e in cases.entries) {
+      final md = injectInternalLinks('倪師說，${e.key}主之。');
+      expect(md, contains('[${e.key}](formula://'), reason: '${e.key} 应成链且锚文本保留繁体');
+      final targets = RegExp(r'\(formula://([^)]+)\)')
+          .allMatches(md)
+          .map((m) => FormulaRepository.getByName(decodeMarkdownHref(m.group(1)!))?.name)
+          .toList();
+      expect(targets, contains(e.value), reason: '${e.key} 应链到 ${e.value}，实际 $targets');
+    }
+  });
 }

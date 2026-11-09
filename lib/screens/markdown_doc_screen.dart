@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../widgets/traditional_toggle_button.dart';
+import '../data/chinese_convert.dart' show toSimplified;
 import '../data/formula_repository.dart';
 import '../data/traditional_display.dart';
 import '../data/herb_repository.dart';
@@ -79,15 +80,28 @@ String decodeMarkdownHref(String href) {
 
 /// 把正文中的已知方剂名 / 药材名 / 穴位名包成内部链接。
 ///
-/// 三类合并为单一候选集、长度降序、单次非重叠扫描（replaceAllMapped 最左优先），
+/// 三类合并为单一候选集、长度降序、单次非重叠扫描（最左优先），
 /// 避免嵌套与二次包裹；点击由 [openInternalLink] 处理。
+///
+/// 归一后匹配：候选集是简体，模型/原文可能是繁体（如「黃耆建中湯」）。
+/// [toSimplified] 是逐字 1:1（`chinese_convert.dart` 有明文保证），
+/// 故用转简文本定位、用**原文**切片做锚文本 —— 繁体作答也能成链，
+/// 且锚文本保留用户看到的字形，href 用简体名保证 [openInternalLink] 命中。
 String injectInternalLinks(String md) {
   final index = _buildLinkIndex();
   if (index == null) return md;
-  return md.replaceAllMapped(index.re, (m) {
-    final name = m.group(0)!;
-    return '[$name](${index.target[name]}://$name)';
-  });
+  final simp = toSimplified(md);
+  final buf = StringBuffer();
+  var last = 0;
+  for (final m in index.re.allMatches(simp)) {
+    final name = simp.substring(m.start, m.end);
+    buf
+      ..write(md.substring(last, m.start))
+      ..write('[${md.substring(m.start, m.end)}](${index.target[name]}://$name)');
+    last = m.end;
+  }
+  if (last == 0) return md;
+  return (buf..write(md.substring(last))).toString();
 }
 
 /// 处理内部链接跳转：formula:// → 方剂详情，herb:// → 药材详情，
