@@ -14,6 +14,9 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_markdown: ^0.7.0
   sqflite: ^2.4.2
+  # Web 没有 SQLite 原生插件：sqflite 的 Web 实现依赖 sqflite_common_ffi_web
+  # （SQLite 编译成 WASM 跑在 Worker 里），浏览器上同一套 sqflite API 照常工作。
+  sqflite_common_ffi_web: ^1.1.1
   path_provider: ^2.1.5
   path: ^1.9.1
   share_plus: ^10.1.4
@@ -37,6 +40,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
   assets:
     - assets/llm/persona.md
     - assets/data/formulas.json
