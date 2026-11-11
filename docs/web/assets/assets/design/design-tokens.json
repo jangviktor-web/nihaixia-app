@@ -1,0 +1,50 @@
+{
+  "version": "1.0.0",
+  "source": "lib/theme/app_colors.dart (颜色) + lib/theme/app_tokens.dart (间距/圆角/字号)",
+  "note": "本文件为设计 Token 单一来源文档，与代码中的 AppColors / AppSpacing / AppRadius / AppType 对齐。Step 2+ 改造禁止在页面内写裸魔法值。",
+  "color": {
+    "light": {
+      "primary": "#8B4513",
+      "onPrimary": "#FFFFFF",
+      "primaryContainer": "#F5D7BC",
+      "onPrimaryContainer": "#2B1A00",
+      "background": "#FAF7F2",
+      "surface": "#FFFFFF",
+      "surfaceContainerHighest": "#EFE8DF",
+      "onSurface": "#201B15",
+      "onSurfaceVariant": "#6F675C",
+      "outline": "#857C71",
+      "danger": "#C62828",
+      "warning": "#9A5B00",
+      "success": "#2E7D32",
+      "info": "#1565C0"
+    },
+    "dark": {
+      "primary": "#E0A878",
+      "onPrimary": "#4A2A08",
+      "primaryContainer": "#5C3A10",
+      "onPrimaryContainer": "#F5D7BC",
+      "background": "#191512",
+      "surface": "#221D18",
+      "surfaceContainerHighest": "#2C2620",
+      "onSurface": "#EFE9E2",
+      "onSurfaceVariant": "#C4BBB0",
+      "outline": "#8F867A",
+      "danger": "#FFB4AB",
+      "warning": "#FFB950",
+      "success": "#81C784",
+      "info": "#90CAF9"
+    }
+  },
+  "spacing": { "xs": 4, "sm": 8, "md": 12, "lg": 16, "xl": 24, "xxl": 32 },
+  "radius": { "sm": 8, "md": 12, "lg": 16, "xl": 24 },
+  "type": {
+    "display": 24,
+    "headline": 20,
+    "subhead": 18,
+    "title": 16,
+    "body": 14,
+    "caption": 12,
+    "micro": 11
+  }
+}

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <base href="/nihaixia-app/web/">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="description" content="汉唐中医 · 倪海厦六经辨证中医诊断助手：经方方剂、药材、针灸、古籍讲稿与辨证推演，纯离线，仅供学习参考。">
+  <meta name="theme-color" content="#8B4513">
+
+  <!-- 移动端全屏 + 状态栏配色 -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="汉唐中医">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>汉唐中医 · 倪海厦六经辨证</title>
+  <link rel="manifest" href="manifest.json">
+
+  <!--
+    首屏加载提示：Flutter 主包（+ 首次要解析的 1.3MB 内经数据）在弱网下要等几秒，
+    空白页容易被当成挂了。canvasKit 起来后由下面的脚本移除。
+  -->
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; background: #FDFBF7; }
+    #boot {
+      position: fixed; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 14px;
+      font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: #8B4513; background: #FDFBF7; z-index: 9999;
+      transition: opacity .3s ease;
+    }
+    #boot .ring {
+      width: 34px; height: 34px; border: 3px solid #E8DCCB;
+      border-top-color: #8B4513; border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+    #boot .t { font-size: 15px; letter-spacing: 2px; }
+    #boot .s { font-size: 12px; color: #A08A72; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    body.booted #boot { opacity: 0; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <div id="boot">
+    <div class="ring"></div>
+    <div class="t">汉唐中医</div>
+    <div class="s">正在加载经方与讲稿资源…</div>
+  </div>
+
+  <script src="flutter_bootstrap.js" async></script>
+  <script>
+    // Flutter 首帧后收掉启动遮罩。flutter_bootstrap 的 onEntrypointLoaded
+    // 回调仍被 Flutter 自己用着，这里用「引擎画布出现」作为更稳的信号。
+    (function () {
+      var done = false;
+      function hide() {
+        if (done) return;
+        done = true;
+        document.body.classList.add('booted');
+        var el = document.getElementById('boot');
+        if (el) setTimeout(function () { el.remove(); }, 350);
+      }
+      var timer = setInterval(function () {
+        if (document.querySelector('flt-glass-pane')) { clearInterval(timer); hide(); }
+      }, 120);
+      // 兜底：无论如何 20s 后不再挡着页面（真失败时用户能看到 Flutter 自己的错误层）
+      setTimeout(function () { clearInterval(timer); hide(); }, 20000);
+    })();
+  </script>
+</body>
+</html>

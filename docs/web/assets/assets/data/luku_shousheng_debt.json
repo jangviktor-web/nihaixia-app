@@ -1,0 +1,83 @@
+{
+  "schema_name": "灵宝天尊说禄库受生经·受生债查询体系",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-09-11",
+  "meta": {
+    "title": "《灵宝天尊说禄库受生经》查询体系（十二库曹官 + 十二本命元辰）",
+    "origin": "《灵宝天尊说禄库受生经》，撰人不详，约出于隋唐，收入《正统道藏》洞玄部本文类，一卷",
+    "core_doctrine": "十方一切众生，命属天曹，身系地府，当得人身之日，曾于地府所属冥司借贷禄库受生钱财。每人欠两笔：一为历劫积欠冥府的【禄库受生钱】（按生肖分属十二库，各有曹官主掌）；二为得人身时所许【本命元辰钱】（各有元辰姓名钱数）",
+    "disclaimer": "本数据仅作道教文献研究、民俗文化与程序演示用途，不构成任何科学依据或生活决策建议",
+    "text_basis": "以《正统道藏》洞玄部原文为准（经萧登福《由道佛两教〈受生经〉看民间纸钱寄库思想》学术论文引录、古文之家道藏校对版、香港青松观藏本等多源互证）；流传本差异见 verification.discrepancies",
+    "key_sources": [
+      "http://enlight.lib.ntu.edu.tw/FULLTEXT/JR-MISC/87262.pdf",
+      "https://www.cngwzj.com/gushi/WeiZhi/96792/",
+      "https://www.daoist.org/BookSearch(test)/list010/a10-018.pdf",
+      "https://upload.wikimedia.org/wikipedia/commons/f/f0/NLC892-411999005947-6494_%E9%81%93%E8%97%8F_%E7%AC%AC788%E5%86%8C.pdf"
+    ]
+  },
+  "rules": {
+    "query_basis": "按出生年的生肖（十二地支）查询，每个生肖对应固定库序、曹官姓氏、历劫积欠钱数，及本命元辰姓名、所许钱数",
+    "debt_structure": [
+      { "type": "禄库受生钱", "meaning": "历劫积欠地府冥司之钱，按生肖分属十二库，各库有曹官主掌，金额以‘贯’计", "query_table": "tables.twelve_warehouses" },
+      { "type": "本命元辰钱", "meaning": "得人身时所许所属元辰之钱，各有本命元辰姓名与所许贯数", "query_table": "tables.twelve_yuanchen" }
+    ],
+    "unit": "贯：古代钱币计量单位，一贯为一千文。经文原数见 label 字段，数值见 guan 字段",
+    "redemption_method": "建立道场、严备香花灯烛、供养三宝大道、六时行道十遍转经、修斋设醮，将‘所欠受生钱数及许元辰之财，一一明具合同疏牒，烧还本属库分’",
+    "reward": "烧还本属库分者，即得见世获福、荣贵果报、来生永无苦难；不信前缘、返生恶业者一堕九泉"
+  },
+  "tables": {
+    "twelve_warehouses": {
+      "子": { "zodiac": "子", "zodiac_name": "鼠", "ku_no": 1, "official_surname": "李", "guan": 13000, "label": "欠钱一万三千贯，属第一库，曹官姓李" },
+      "丑": { "zodiac": "丑", "zodiac_name": "牛", "ku_no": 2, "official_surname": "田", "guan": 280000, "label": "欠钱二十八万贯，属第二库，曹官姓田" },
+      "寅": { "zodiac": "寅", "zodiac_name": "虎", "ku_no": 3, "official_surname": "雷", "guan": 80000, "label": "欠钱八万贯，属第三库，曹官姓雷" },
+      "卯": { "zodiac": "卯", "zodiac_name": "兔", "ku_no": 4, "official_surname": "柳", "guan": 80000, "label": "欠钱八万贯，属第四库，曹官姓柳" },
+      "辰": { "zodiac": "辰", "zodiac_name": "龙", "ku_no": 5, "official_surname": "袁", "guan": 50000, "label": "欠钱五万贯，属第五库，曹官姓袁" },
+      "巳": { "zodiac": "巳", "zodiac_name": "蛇", "ku_no": 6, "official_surname": "纪", "guan": 70000, "label": "欠钱七万贯，属第六库，曹官姓纪" },
+      "午": { "zodiac": "午", "zodiac_name": "马", "ku_no": 7, "official_surname": "许", "guan": 260000, "label": "欠钱二十六万贯，属第七库，曹官姓许" },
+      "未": { "zodiac": "未", "zodiac_name": "羊", "ku_no": 8, "official_surname": "朱", "guan": 100000, "label": "欠钱十万贯，属第八库，曹官姓朱" },
+      "申": { "zodiac": "申", "zodiac_name": "猴", "ku_no": 9, "official_surname": "车", "guan": 40000, "label": "欠钱四万贯，属第九库，曹官姓车" },
+      "酉": { "zodiac": "酉", "zodiac_name": "鸡", "ku_no": 10, "official_surname": "郑", "guan": 50000, "label": "欠钱五万贯，属第十库，曹官姓郑" },
+      "戌": { "zodiac": "戌", "zodiac_name": "狗", "ku_no": 11, "official_surname": "成", "guan": 25000, "label": "欠钱二万五千贯，属第十一库，曹官姓成" },
+      "亥": { "zodiac": "亥", "zodiac_name": "猪", "ku_no": 12, "official_surname": "亢", "guan": 9000, "label": "欠钱九千贯，属第十二库，曹官姓亢" }
+    },
+    "twelve_yuanchen": {
+      "子": { "zodiac": "子", "zodiac_name": "鼠", "yuanchen": "刘文真", "guan": 7000, "label": "本命元辰刘文真，许钱七千贯" },
+      "丑": { "zodiac": "丑", "zodiac_name": "牛", "yuanchen": "孟候", "guan": 9000, "label": "本命元辰孟候，许钱九千贯" },
+      "寅": { "zodiac": "寅", "zodiac_name": "虎", "yuanchen": "钟元", "guan": 6000, "label": "本命元辰钟元，许钱六千贯" },
+      "卯": { "zodiac": "卯", "zodiac_name": "兔", "yuanchen": "郝元", "guan": 10000, "label": "本命元辰郝元，许钱一万贯" },
+      "辰": { "zodiac": "辰", "zodiac_name": "龙", "yuanchen": "李文亮", "guan": 6400, "label": "本命元辰李文亮，许钱六千四百贯" },
+      "巳": { "zodiac": "巳", "zodiac_name": "蛇", "yuanchen": "曹交", "guan": 1000, "label": "本命元辰曹交，许钱一千贯" },
+      "午": { "zodiac": "午", "zodiac_name": "马", "yuanchen": "张巳", "guan": 9000, "label": "本命元辰张巳，许钱九千贯" },
+      "未": { "zodiac": "未", "zodiac_name": "羊", "yuanchen": "孙恭", "guan": 4000, "label": "本命元辰孙恭，许钱四千贯" },
+      "申": { "zodiac": "申", "zodiac_name": "猴", "yuanchen": "杜准", "guan": 8000, "label": "本命元辰杜准，许钱八千贯" },
+      "酉": { "zodiac": "酉", "zodiac_name": "鸡", "yuanchen": "田交佑", "guan": 5000, "label": "本命元辰田交佑，许钱五千贯" },
+      "戌": { "zodiac": "戌", "zodiac_name": "狗", "yuanchen": "崔渐进", "guan": 5000, "label": "本命元辰崔渐进，许钱五千贯" },
+      "亥": { "zodiac": "亥", "zodiac_name": "猪", "yuanchen": "王爽", "guan": 6000, "label": "本命元辰王爽，许钱六千贯" }
+    }
+  },
+  "verification": {
+    "cross_source_check": [
+      { "item": "十二库曹官（生肖→库序/曹官姓/欠钱贯数，12项）", "sources_consistent": 6, "result": "通过", "note": "道藏原文、古文之家、道客巴巴、青松观藏本、道藏788册PDF、台大论文（萧登福）六源逐项一致" },
+      { "item": "十二本命元辰（姓名+所许钱数，12项）", "sources_consistent": 4, "result": "通过", "note": "道藏原文、古文之家、青松观、台大论文一致；道音文化等流传本部分钱数有出入，见 discrepancies" }
+    ],
+    "discrepancies": [
+      "曹官姓氏：流传本（道音文化）作‘申-杜、酉-曲、亥-危’，道藏原文作‘申-车、酉-郑、亥-亢’，以道藏原文为准（六源互证）",
+      "本命元辰钱数：流传本（道音文化）作‘丑6千、寅1千、午许真6千、戌6千、亥7千’，道藏原文作‘丑9千、寅6千、午张巳9千、戌5千、亥6千’，以道藏原文为准",
+      "两经（《禄库受生经》与《五斗金章受生经》）撰于同代而互不通晓，故各自所述欠钱体系不同，属正常文献现象（萧登福考）"
+    ],
+    "test_cases": [
+      { "case": "子年生人（鼠）", "warehouse": "第一库·曹官姓李·欠一万三千贯", "yuanchen": "刘文真·许七千贯", "match": true },
+      { "case": "午年生人（马）", "warehouse": "第七库·曹官姓许·欠二十六万贯", "yuanchen": "张巳·许九千贯", "match": true },
+      { "case": "亥年生人（猪）", "warehouse": "第十二库·曹官姓亢·欠九千贯", "yuanchen": "王爽·许六千贯", "match": true }
+    ],
+    "coverage": {
+      "warehouse_count": 12,
+      "yuanchen_count": 12,
+      "debt_min_guan": 9000,
+      "debt_max_guan": 280000,
+      "yuanchen_min_guan": 1000,
+      "yuanchen_max_guan": 10000,
+      "note": "每人两项欠账需分别填还：库钱按生肖属库烧还本属库分，元辰钱一并明具疏牒"
+    }
+  }
+}

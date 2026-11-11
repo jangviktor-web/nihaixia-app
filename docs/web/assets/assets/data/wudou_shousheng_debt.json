@@ -1,0 +1,79 @@
+{
+  "schema_name": "太上老君说五斗金章受生经·受生债查询体系",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-09-11",
+  "meta": {
+    "title": "《太上老君说五斗金章受生经》查询体系（五斗本命钱 + 十二库神）",
+    "origin": "《太上老君说五斗金章受生经》，撰人不详，约出于唐宋间，收入《正统道藏》洞神部本文类，一卷",
+    "core_doctrine": "人生下土，命系上天。人之生也各有五行正气、五斗所管、本命元辰十二相属：甲乙生人东斗注生、丙丁南斗、戊己中斗、庚辛西斗、壬癸北斗。当生之时，天曹地府愿许本命钱。每人欠账分两维：一为【五斗本命钱】（按天干归斗定本命银钱）；二为【十二库神】所属财禄命库（按地支定库序）",
+    "disclaimer": "本数据仅作道教文献研究、民俗文化与程序演示用途，不构成任何科学依据或生活决策建议",
+    "text_basis": "以《正统道藏》洞神部原文为准（经萧登福《由道佛两教〈受生经〉看民间纸钱寄库思想》学术论文引录、道音文化整理本、新浪博客正一鹤道人本等多源互证）",
+    "key_sources": [
+      "http://enlight.lib.ntu.edu.tw/FULLTEXT/JR-MISC/87262.pdf",
+      "https://www.daoisms.com.cn/2016/25/00/60987/",
+      "https://blog.sina.cn/dpool/blog/s/blog_4f11c2be0100p6wi.html",
+      "https://ia802906.us.archive.org/4/items/wudouzhenjing/wudouzhenjing.pdf"
+    ]
+  },
+  "rules": {
+    "query_basis": {
+      "five_dou": "按出生天干分属五斗注生（甲乙东斗/丙丁南斗/戊己中斗/庚辛西斗/壬癸北斗），各斗对应气数与受生时所许本命银钱",
+      "twelve_kushen": "按出生地支分属天曹地府十二库（十二本命十二库神），库序按三合局分组：申子辰、亥卯未、寅午戌、巳酉丑"
+    },
+    "interpretation_notes": [
+      "天干口径：萧登福考订为‘出生之日所值天干’；民间实践（如道客巴巴受生债表）多用‘出生年之天干’，两说并存，主表按经文原文‘甲乙生人’表述，使用时请先确定口径",
+      "地支口径：萧登福考订为‘出生之时辰地支’；民间实践亦有按生肖年支使用十二库神者，两说并存，主表按经文原文‘子生之人第一库中’表述"
+    ],
+    "unit": "贯：古代钱币计量单位，一贯为一千文。经文原数见 label 字段，数值见 guan 字段",
+    "redemption_method": "于本命之日（本命年干支日）严置坛场、随力章醮，供养五方五老、注生圣众、五斗星君、本命元辰，醮献钱财以答众真，醮送五本命钱；生身果薄无力章醮者，可于本命之日请正一道士或自诵《五斗金章宝经》，每诵一遍折钱一万贯文；志心持念‘脱化受生天尊’",
+    "reward": "依本命之日烧醮了足、别无少欠，即得见世安乐、出入通达、吉无不利，本命星官常垂荫佑，过世不失人身、得生富贵"
+  },
+  "tables": {
+    "five_dou": {
+      "甲乙": { "stem_group": "甲乙", "heavenly_stems": ["甲", "乙"], "dou": "东斗", "qi": "九气", "qi_number": 9, "guan": 90000, "label": "命属东斗九气，曾许本命银钱九万贯文" },
+      "丙丁": { "stem_group": "丙丁", "heavenly_stems": ["丙", "丁"], "dou": "南斗", "qi": "三气", "qi_number": 3, "guan": 30000, "label": "命属南斗三气，曾许本命银钱三万贯文" },
+      "戊己": { "stem_group": "戊己", "heavenly_stems": ["戊", "己"], "dou": "中斗", "qi": "一十二气", "qi_number": 12, "guan": 120000, "label": "命属中斗一十二气，曾许本命银钱一十二万贯文" },
+      "庚辛": { "stem_group": "庚辛", "heavenly_stems": ["庚", "辛"], "dou": "西斗", "qi": "七气", "qi_number": 7, "guan": 70000, "label": "命属西斗七气，曾许本命银钱七万贯文" },
+      "壬癸": { "stem_group": "壬癸", "heavenly_stems": ["壬", "癸"], "dou": "北斗", "qi": "五气", "qi_number": 5, "guan": 50000, "label": "命属北斗五气，曾许本命银钱五万贯文" }
+    },
+    "twelve_kushen": {
+      "子": { "branch": "子", "zodiac_name": "鼠", "ku_no": 1, "sanhe_group": "申子辰水局", "label": "子生之人第一库中" },
+      "辰": { "branch": "辰", "zodiac_name": "龙", "ku_no": 2, "sanhe_group": "申子辰水局", "label": "辰生之人第二库中" },
+      "申": { "branch": "申", "zodiac_name": "猴", "ku_no": 3, "sanhe_group": "申子辰水局", "label": "申生之人第三库中" },
+      "亥": { "branch": "亥", "zodiac_name": "猪", "ku_no": 4, "sanhe_group": "亥卯未木局", "label": "亥生之人第四库中" },
+      "卯": { "branch": "卯", "zodiac_name": "兔", "ku_no": 5, "sanhe_group": "亥卯未木局", "label": "卯生之人第五库中" },
+      "未": { "branch": "未", "zodiac_name": "羊", "ku_no": 6, "sanhe_group": "亥卯未木局", "label": "未生之人第六库中" },
+      "寅": { "branch": "寅", "zodiac_name": "虎", "ku_no": 7, "sanhe_group": "寅午戌火局", "label": "寅生之人第七库中" },
+      "午": { "branch": "午", "zodiac_name": "马", "ku_no": 8, "sanhe_group": "寅午戌火局", "label": "午生之人第八库中" },
+      "戌": { "branch": "戌", "zodiac_name": "狗", "ku_no": 9, "sanhe_group": "寅午戌火局", "label": "戌生之人第九库中" },
+      "巳": { "branch": "巳", "zodiac_name": "蛇", "ku_no": 10, "sanhe_group": "巳酉丑金局", "label": "巳生之人第十库中" },
+      "酉": { "branch": "酉", "zodiac_name": "鸡", "ku_no": 11, "sanhe_group": "巳酉丑金局", "label": "酉生之人第十一库中" },
+      "丑": { "branch": "丑", "zodiac_name": "牛", "ku_no": 12, "sanhe_group": "巳酉丑金局", "label": "丑生之人第十二库中" }
+    }
+  },
+  "verification": {
+    "cross_source_check": [
+      { "item": "五斗本命钱（5组天干→斗/气数/贯数）", "sources_consistent": 6, "result": "通过", "note": "台大论文、道音文化、新浪博客、道客巴巴、抖音百科、Internet Archive《五斗真经》六源一致：东9万/南3万/中12万/西7万/北5万" },
+      { "item": "十二库神（12地支→库序，三合局分组）", "sources_consistent": 4, "result": "通过", "note": "台大论文、道音文化、抖音百科引文一致；库序为三合局分组：申子辰1-2-3、亥卯未4-5-6、寅午戌7-8-9、巳酉丑10-11-12" }
+    ],
+    "discrepancies": [
+      "天干口径差异：经文‘甲乙生人’未明言年干或日干，萧登福考订为出生日天干，民间受生债表多用出生年天干（如道客巴巴‘甲乙年出生之人’），数据使用时需先定口径",
+      "地支口径差异：经文‘子生之人’萧登福考订为出生时辰地支，民间实践亦有按生肖年支使用者，数据使用时需先定口径",
+      "两部受生经撰于同代而互不通晓，五斗经十二库神（三合局序）与禄库经十二库曹官（子1丑2顺序）库序规则完全不同，不可混用"
+    ],
+    "test_cases": [
+      { "case": "甲日/甲年生人", "five_dou": "东斗·九气·九万贯", "match": true },
+      { "case": "戊日/戊年生人", "five_dou": "中斗·一十二气·一十二万贯", "match": true },
+      { "case": "子时/子年生人", "kushen": "第一库", "match": true },
+      { "case": "酉时/酉年生人", "kushen": "第十一库", "match": true },
+      { "case": "丑时/丑年生人", "kushen": "第十二库", "match": true }
+    ],
+    "coverage": {
+      "five_dou_count": 5,
+      "kushen_count": 12,
+      "five_dou_min_guan": 30000,
+      "five_dou_max_guan": 120000,
+      "note": "五斗本命钱与十二库神分属两个查询维度：前者定欠钱数，后者定还库归属，二者组合完成一次完整的本命钱醮送"
+    }
+  }
+}
