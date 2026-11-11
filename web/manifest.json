@@ -1,11 +1,11 @@
 {
-    "name": "nihaisha_app",
-    "short_name": "nihaisha_app",
+    "name": "汉唐中医 · 倪海厦六经辨证",
+    "short_name": "汉唐中医",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#FDFBF7",
+    "theme_color": "#8B4513",
+    "description": "倪海厦六经辨证中医诊断助手：经方方剂、药材、针灸、古籍讲稿与辨证推演，纯离线，仅供学习参考。",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

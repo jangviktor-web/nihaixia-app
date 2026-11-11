@@ -10,6 +10,7 @@ import '../data/yijing_data.dart';
 import '../services/bazi_service.dart' show computeBaZiPaipan;
 import '../utils/chart_export.dart';
 import '../utils/shake_detector.dart';
+import '../utils/shake_support.dart';
 
 const _kZhiNames = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
 
@@ -43,7 +44,8 @@ class _MeihuaScreenState extends State<MeihuaScreen> {
   final _secondC = TextEditingController(text: '7');
   MeihuaChart? _chart;
   String? _error;
-  bool _shakeEnabled = true;
+  /// 默认开启摇一摇；浏览器里没有加速度计，Web 上默认关并置灰（见 [kShakeSupported]）。
+  bool _shakeEnabled = kShakeSupported;
   late final ShakeDetector _shake;
 
   @override
@@ -63,13 +65,20 @@ class _MeihuaScreenState extends State<MeihuaScreen> {
   }
 
   void _startShake() {
+    if (!kShakeSupported) return;
     // gameInterval(20ms)：摇动是百毫秒级脉冲，normal(200ms) 会漏采。
-    _shake.start(
-        widget._accelSource(samplingPeriod: SensorInterval.gameInterval)
-            .map(_accMag));
+    try {
+      _shake.start(
+          widget._accelSource(samplingPeriod: SensorInterval.gameInterval)
+              .map(_accMag));
+    } catch (_) {
+      // 无传感器（Web / 桌面 / 部分模拟器）：静默放弃，不让梅花页崩掉。
+      setState(() => _shakeEnabled = false);
+    }
   }
 
   void _toggleShake(bool v) {
+    if (!kShakeSupported) return;
     setState(() => _shakeEnabled = v);
     if (v) {
       _startShake();
@@ -373,9 +382,13 @@ class _MeihuaScreenState extends State<MeihuaScreen> {
               visualDensity: VisualDensity.compact,
               dense: true,
               value: _shakeEnabled,
-              onChanged: _toggleShake,
+              onChanged: kShakeSupported ? _toggleShake : null,
               secondary: const Icon(Icons.vibration, size: 20),
               title: const Text('摇一摇随机起卦', style: TextStyle(fontSize: 13)),
+              subtitle: kShakeSupported
+                  ? null
+                  : const Text('当前设备无重力感应，请用下方「随机起卦」',
+                      style: TextStyle(fontSize: 11)),
             ),
           ],
         ),

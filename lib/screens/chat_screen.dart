@@ -15,6 +15,7 @@ import 'formula_detail_screen.dart';
 import 'meridian_detail_screen.dart';
 import '../models/formula.dart';
 import '../widgets/oral_hint_card.dart';
+import '../utils/responsive.dart';
 import 'settings_screen.dart';
 import 'symptom_check_screen.dart';
 
@@ -1028,18 +1029,20 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
           ],
           Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              padding: const EdgeInsets.all(16),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                return _messages[index];
-              },
+            child: PageBody(
+              maxWidth: 860,
+              child: ListView.builder(
+                controller: _scrollController,
+                padding: const EdgeInsets.all(16),
+                itemCount: _messages.length,
+                itemBuilder: (context, index) {
+                  return _messages[index];
+                },
+              ),
             ),
           ),
           if (_showOptions)
             Container(
-              constraints: const BoxConstraints(maxHeight: 200),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
                 border: Border(
@@ -1048,76 +1051,86 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                 ),
               ),
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                shrinkWrap: true,
-                itemCount: _currentOptions.length,
-                itemBuilder: (context, index) {
-                  final option = _currentOptions[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 3),
-                    child: Material(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(20),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(20),
-                        onTap: option.onTap,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 10),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (option.number != null) ...[
-                                Container(
-                                  width: 22,
-                                  height: 22,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).colorScheme.primary,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Text(
-                                    '${option.number}',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                              ],
-                              if (option.icon != null) ...[
-                                Icon(
-                                  option.icon,
-                                  size: 20,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                                const SizedBox(width: 8),
-                              ],
-                              Flexible(
-                                child: Text(
-                                  option.label,
-                                  style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.onSurface,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+              // 手机端选项是「一条条胶囊」竖排；宽屏改成按内容宽度自动换行的 chips，
+              // 不再把 8 个选项塞进一个需要滚动的小盒子。
+              child: PageBody(
+                maxWidth: 860,
+                child: Container(
+                  constraints: const BoxConstraints(maxHeight: 220),
+                  child: SingleChildScrollView(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    child: Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        for (final option in _currentOptions)
+                          _OptionChip(option: option),
+                      ],
                     ),
-                  );
-                },
+                  ),
+                ),
               ),
             ),
         ],
+      ),
+    );
+  }
+}
+
+/// 辨证流程里的单个选项胶囊。
+class _OptionChip extends StatelessWidget {
+  final _ChatOption option;
+
+  const _OptionChip({required this.option});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Material(
+      color: cs.surfaceContainerHighest,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: option.onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (option.number != null) ...[
+                Container(
+                  width: 22,
+                  height: 22,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: cs.primary,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(
+                    '${option.number}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: cs.onPrimary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+              ],
+              if (option.icon != null) ...[
+                Icon(option.icon, size: 20, color: cs.primary),
+                const SizedBox(width: 8),
+              ],
+              Flexible(
+                child: Text(
+                  option.label,
+                  style: TextStyle(color: cs.onSurface, fontSize: 14),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -1150,8 +1163,10 @@ class _ChatBubble extends StatelessWidget {
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4),
+        // 宽屏下按百分比算会得到一条横跨半屏的长行，读起来要来回扫；
+        // 这里给一个绝对值上限，保持与手机端相近的行长。
         constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.85,
+          maxWidth: (MediaQuery.of(context).size.width * 0.85).clamp(0.0, 720.0),
         ),
         child: Column(
           crossAxisAlignment:

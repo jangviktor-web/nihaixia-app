@@ -9,6 +9,7 @@ import '../widgets/keep_alive_tab.dart';
 import '../widgets/meridian_icons.dart';
 import '../widgets/solar_term_card.dart';
 import '../theme/app_colors.dart';
+import '../utils/responsive.dart';
 import 'acupuncture_screen.dart';
 import 'bencao_library_screen.dart';
 import 'llm_ask_screen.dart';
@@ -34,81 +35,210 @@ class _KnowledgeScreenState extends State<KnowledgeScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 7, vsync: this);
+    _tabController = TabController(length: 7, vsync: this)
+      // 宽屏左侧 nav 在 TabBarView 之外，tab 下标变化不会触发本页 setState，
+      // 硬监听一下才能让高亮跟着换。
+      ..addListener(_onTabChanged);
+  }
+
+  void _onTabChanged() {
+    if (mounted) setState(() {});
   }
 
   @override
   void dispose() {
+    _tabController.removeListener(_onTabChanged);
     _tabController.dispose();
     _searchController.dispose();
     super.dispose();
   }
 
+  static const _tabs = <_KnowledgeTab>[
+    _KnowledgeTab('六经', Icons.public),
+    _KnowledgeTab('方剂', Icons.medication),
+    _KnowledgeTab('本草', Icons.eco),
+    _KnowledgeTab('针灸', Icons.healing),
+    _KnowledgeTab('内经', Icons.menu_book),
+    _KnowledgeTab('伤寒金匮', Icons.auto_stories),
+    _KnowledgeTab('搜索', Icons.search),
+  ];
+
+  Widget _aiAction() {
+    return ListenableBuilder(
+      listenable: SettingsRepository.instance,
+      builder: (context, _) {
+        final s = SettingsRepository.instance;
+        if (!s.llmEnabled) return const SizedBox.shrink();
+        return Padding(
+          padding: const EdgeInsets.only(right: 8),
+          child: TextButton.icon(
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.onSurface,
+            ),
+            icon: const Icon(Icons.smart_toy_outlined, size: 18),
+            label: const Text('问倪师AI'),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const LlmAskScreen()),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  List<Widget> _tabViews() => [
+        KeepAliveTab(child: _MeridianTab()),
+        KeepAliveTab(child: _FormulaTab()),
+        KeepAliveTab(child: _HerbTab()),
+        const KeepAliveTab(child: AcupunctureScreen()),
+        const KeepAliveTab(child: NeijingKnowledgeScreen()),
+        const KeepAliveTab(child: ShangHanJinguiScreen()),
+        const KeepAliveTab(child: SearchTab()),
+      ];
+
+  Widget _solarTermCard() {
+    return ListenableBuilder(
+      listenable: SettingsRepository.instance,
+      builder: (context, _) => SettingsRepository.instance.hideSolarTermCard
+          ? const SizedBox.shrink()
+          : const SolarTermCard(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    // 7 个 tab 在手机宽度下要横向滑动才能翻完，电脑上则是一排 1200px 宽的按钮；
+    // 宽屏统一改成左侧竖向 tab 列表，正文区回到可读宽度。
+    if (context.isWideViewport) return _buildWide(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('知识库'),
-        actions: [
-          ListenableBuilder(
-            listenable: SettingsRepository.instance,
-            builder: (context, _) {
-              final s = SettingsRepository.instance;
-              if (!s.llmEnabled) return const SizedBox.shrink();
-              return Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: TextButton.icon(
-                  style: TextButton.styleFrom(
-                    foregroundColor: Theme.of(context).colorScheme.onSurface,
-                  ),
-                  icon: const Icon(Icons.smart_toy_outlined, size: 18),
-                  label: const Text('问倪师AI'),
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const LlmAskScreen()),
-                  ),
-                ),
-              );
-            },
-          ),
-        ],
+        actions: [_aiAction()],
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: '六经', icon: Icon(Icons.public)),
-            Tab(text: '方剂', icon: Icon(Icons.medication)),
-            Tab(text: '本草', icon: Icon(Icons.eco)),
-            Tab(text: '针灸', icon: Icon(Icons.healing)),
-            Tab(text: '内经', icon: Icon(Icons.menu_book)),
-            Tab(text: '伤寒金匮', icon: Icon(Icons.auto_stories)),
-            Tab(text: '搜索', icon: Icon(Icons.search)),
+          tabs: [
+            for (final t in _tabs) Tab(text: t.label, icon: Icon(t.icon)),
           ],
         ),
       ),
       body: Column(
         children: [
           // 节气卡占一屏高度；设置里可关掉（issue #4 反馈占屏比大）
-          ListenableBuilder(
-            listenable: SettingsRepository.instance,
-            builder: (context, _) => SettingsRepository.instance.hideSolarTermCard
-                ? const SizedBox.shrink()
-                : const SolarTermCard(),
-          ),
+          _solarTermCard(),
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: [
-                KeepAliveTab(child: _MeridianTab()),
-                KeepAliveTab(child: _FormulaTab()),
-                KeepAliveTab(child: _HerbTab()),
-                const KeepAliveTab(child: AcupunctureScreen()),
-                const KeepAliveTab(child: NeijingKnowledgeScreen()),
-                const KeepAliveTab(child: ShangHanJinguiScreen()),
-                const KeepAliveTab(child: SearchTab()),
-              ],
+              children: _tabViews(),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildWide(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Scaffold(
+      appBar: AppBar(title: const Text('知识库'), actions: [_aiAction()]),
+      body: Row(
+        children: [
+          Container(
+            width: 176,
+            decoration: BoxDecoration(
+              color: cs.surfaceContainerLow,
+              border: Border(right: BorderSide(color: cs.outlineVariant)),
+            ),
+            child: ListView(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              children: [
+                ListenableBuilder(
+                  listenable: _tabController,
+                  builder: (context, _) => Column(
+                    children: [
+                      for (var i = 0; i < _tabs.length; i++)
+                        _WideTabItem(
+                          tab: _tabs[i],
+                          selected: _tabController.index == i,
+                          onTap: () => _tabController.animateTo(i),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: PageBody(
+              maxWidth: 1100,
+              child: Column(
+                children: [
+                  _solarTermCard(),
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: _tabViews(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _KnowledgeTab {
+  final String label;
+  final IconData icon;
+  const _KnowledgeTab(this.label, this.icon);
+}
+
+/// 宽屏知识库左侧的竖向 tab 项（与手机端 TabBar 同一份配置）。
+class _WideTabItem extends StatelessWidget {
+  final _KnowledgeTab tab;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _WideTabItem({
+    required this.tab,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final fg = selected ? cs.onSecondaryContainer : cs.onSurfaceVariant;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Material(
+        color: selected ? cs.secondaryContainer : Colors.transparent,
+        borderRadius: BorderRadius.circular(20),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            child: Row(
+              children: [
+                Icon(tab.icon, size: 18, color: fg),
+                const SizedBox(width: 10),
+                Text(
+                  tab.label,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: fg,
+                    fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -405,35 +535,50 @@ class _FormulaTabState extends State<_FormulaTab> {
           ),
         ),
         Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            itemCount: formulas.length,
-            itemBuilder: (context, index) {
-              final f = formulas[index];
-              return Card(
-                margin: const EdgeInsets.symmetric(vertical: 4),
-                child: ListTile(
-                  title: Text(
-                    f.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+          child: PageBody(
+            maxWidth: 1000,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                // 宽屏改成两列卡片，一屏能看到更多方剂/药材。
+                final wide = constraints.maxWidth >= 720;
+                return GridView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  itemCount: formulas.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: wide ? 2 : 1,
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
+                    mainAxisExtent: 108,
                   ),
-                  subtitle: Text(
-                    '${f.meridian} · ${f.category}\n${f.indication.length > 40 ? '${f.indication.substring(0, 40)}...' : f.indication}',
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                  isThreeLine: true,
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => FormulaDetailScreen(formula: f),
+                  itemBuilder: (context, index) {
+                    final f = formulas[index];
+                    return Card(
+                      margin: const EdgeInsets.symmetric(vertical: 4),
+                      child: ListTile(
+                        title: Text(
+                          f.name,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(
+                          '${f.meridian} · ${f.category}\n${f.indication.length > 40 ? '${f.indication.substring(0, 40)}...' : f.indication}',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        isThreeLine: true,
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => FormulaDetailScreen(formula: f),
+                            ),
+                          );
+                        },
                       ),
                     );
                   },
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       ],
@@ -619,58 +764,72 @@ class _HerbTabState extends State<_HerbTab> {
         ),
         // Herb list
         Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            itemCount: herbs.length,
-            itemBuilder: (context, index) {
-              final h = herbs[index];
-              final action = h.action ?? '';
-              final actionShort =
-                  action.length > 40 ? '${action.substring(0, 40)}...' : action;
-              return Card(
-                margin: const EdgeInsets.symmetric(vertical: 3),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor:
-                        Theme.of(context).colorScheme.primaryContainer,
-                    child: Text(
-                      h.name.substring(0, 1),
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold,
+          child: PageBody(
+            maxWidth: 1000,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                // 宽屏改成两列卡片，一屏能看到更多药材。
+                final wide = constraints.maxWidth >= 720;
+                return GridView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  itemCount: herbs.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: wide ? 2 : 1,
+                    mainAxisSpacing: 6,
+                    crossAxisSpacing: 8,
+                    mainAxisExtent: 108,
+                  ),
+                  itemBuilder: (context, index) {
+                    final h = herbs[index];
+                    final action = h.action ?? '';
+                    final actionShort =
+                        action.length > 40 ? '${action.substring(0, 40)}...' : action;
+                    return Card(
+                      margin: const EdgeInsets.symmetric(vertical: 3),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primaryContainer,
+                          child: Text(
+                            h.name.substring(0, 1),
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        title: Row(
+                          children: [
+                            Text(
+                              h.name,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(width: 6),
+                            Icon(h.natureIcon, size: 14),
+                          ],
+                        ),
+                        subtitle: Text(
+                          '${h.flavor.isNotEmpty ? "味${h.flavor} " : ""}'
+                          '${h.meridians.isNotEmpty ? "归${h.meridians.join(" ")} " : ""}'
+                          '${h.category}\n$actionShort',
+                          style: const TextStyle(fontSize: 12),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        trailing: const Icon(Icons.chevron_right, size: 20),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => HerbDetailScreen(herb: h),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  title: Row(
-                    children: [
-                      Text(
-                        h.name,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(width: 6),
-                      Icon(
-                        h.natureIcon,
-                        size: 14,
-                      ),
-                    ],
-                  ),
-                  subtitle: Text(
-                    '${h.flavor.isNotEmpty ? "味${h.flavor} " : ""}'
-                    '${h.meridians.isNotEmpty ? "归${h.meridians.join(" ")} " : ""}'
-                    '${h.category}\n$actionShort',
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                  isThreeLine: true,
-                  trailing: const Icon(Icons.chevron_right, size: 20),
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => HerbDetailScreen(herb: h),
-                    ),
-                  ),
-                ),
-              );
-            },
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ),
       ],
