@@ -262,7 +262,8 @@ class _ToolCard extends StatelessWidget {
     final onSurfaceVariant = Theme.of(context).colorScheme.onSurfaceVariant;
     return Card(
       elevation: 2,
-      margin: EdgeInsets.zero,
+      // 保留默认 margin（4）：单列时给圆角与阴影留出呼吸空间；网格布局靠
+      // ZoneSection 的 spacing 收紧，避免卡片把分区底板的内边距填满。
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => Navigator.push(

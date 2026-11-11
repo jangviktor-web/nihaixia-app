@@ -46,8 +46,9 @@ class ZoneSection extends StatelessWidget {
       padding: EdgeInsets.zero,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: columns,
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12,
+        // 卡片自带 4 的 margin，这里用 4 让视觉间距仍是 12。
+        mainAxisSpacing: 4,
+        crossAxisSpacing: 4,
         // 卡片高度约 96 + 内边距，2.9 的比例在 300~420dp 宽度内既不空也不挤。
         childAspectRatio: 2.9,
       ),
