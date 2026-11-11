@@ -1,0 +1,1660 @@
+{
+  "needling_candidates": [
+    {
+      "name": "三阴交穴",
+      "meridian": "足太阴脾经",
+      "freq": 188
+    },
+    {
+      "name": "内关穴",
+      "meridian": "手厥阴心包经",
+      "freq": 149
+    },
+    {
+      "name": "中脘穴",
+      "meridian": "任脉",
+      "freq": 133
+    },
+    {
+      "name": "神门穴",
+      "meridian": "手少阴心经",
+      "freq": 120
+    },
+    {
+      "name": "委中穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 109
+    },
+    {
+      "name": "公孙穴",
+      "meridian": "足太阴脾经",
+      "freq": 99
+    },
+    {
+      "name": "阴陵泉穴",
+      "meridian": "足太阴脾经",
+      "freq": 93
+    },
+    {
+      "name": "列缺穴",
+      "meridian": "手太阴肺经",
+      "freq": 83
+    },
+    {
+      "name": "肩井穴",
+      "meridian": "足少阳胆经",
+      "freq": 73
+    },
+    {
+      "name": "涌泉穴",
+      "meridian": "足少阴肾经",
+      "freq": 70
+    },
+    {
+      "name": "外关穴",
+      "meridian": "手少阳三焦经",
+      "freq": 69
+    },
+    {
+      "name": "支沟穴",
+      "meridian": "手少阳三焦经",
+      "freq": 56
+    },
+    {
+      "name": "血海穴",
+      "meridian": "足太阴脾经",
+      "freq": 54
+    },
+    {
+      "name": "人中",
+      "meridian": "督脉",
+      "freq": 53
+    },
+    {
+      "name": "肺俞穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 53
+    },
+    {
+      "name": "会阴",
+      "meridian": "任脉",
+      "freq": 51
+    },
+    {
+      "name": "环跳穴",
+      "meridian": "足少阳胆经",
+      "freq": 50
+    },
+    {
+      "name": "中府穴",
+      "meridian": "手太阴肺经",
+      "freq": 48
+    },
+    {
+      "name": "申脉穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 48
+    },
+    {
+      "name": "膈俞穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 48
+    },
+    {
+      "name": "尺泽穴",
+      "meridian": "手太阴肺经",
+      "freq": 44
+    },
+    {
+      "name": "间使穴",
+      "meridian": "手厥阴心包经",
+      "freq": 44
+    },
+    {
+      "name": "养老穴",
+      "meridian": "手太阳小肠经",
+      "freq": 43
+    },
+    {
+      "name": "夹脊穴",
+      "meridian": "经外奇穴",
+      "freq": 42
+    },
+    {
+      "name": "肩髃穴",
+      "meridian": "手阳明大肠经",
+      "freq": 42
+    },
+    {
+      "name": "水道穴",
+      "meridian": "足阳明胃经",
+      "freq": 41
+    },
+    {
+      "name": "曲骨",
+      "meridian": "任脉",
+      "freq": 41
+    },
+    {
+      "name": "云门穴",
+      "meridian": "手太阴肺经",
+      "freq": 40
+    },
+    {
+      "name": "长强穴",
+      "meridian": "督脉",
+      "freq": 40
+    },
+    {
+      "name": "风市穴",
+      "meridian": "足少阳胆经",
+      "freq": 38
+    },
+    {
+      "name": "缺盆穴",
+      "meridian": "足阳明胃经",
+      "freq": 37
+    },
+    {
+      "name": "丘墟",
+      "meridian": "足少阳胆经",
+      "freq": 36
+    },
+    {
+      "name": "大敦",
+      "meridian": "足厥阴肝经",
+      "freq": 36
+    },
+    {
+      "name": "商丘穴",
+      "meridian": "足太阴脾经",
+      "freq": 35
+    },
+    {
+      "name": "阿是穴",
+      "meridian": "经外奇穴",
+      "freq": 35
+    },
+    {
+      "name": "日月穴",
+      "meridian": "足少阳胆经",
+      "freq": 34
+    },
+    {
+      "name": "水沟",
+      "meridian": "督脉",
+      "freq": 34
+    },
+    {
+      "name": "然谷穴",
+      "meridian": "足少阴肾经",
+      "freq": 34
+    },
+    {
+      "name": "孔最穴",
+      "meridian": "手太阴肺经",
+      "freq": 33
+    },
+    {
+      "name": "侠溪",
+      "meridian": "足少阳胆经",
+      "freq": 33
+    },
+    {
+      "name": "风门穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 32
+    },
+    {
+      "name": "听宫穴",
+      "meridian": "手太阳小肠经",
+      "freq": 31
+    },
+    {
+      "name": "耳门穴",
+      "meridian": "手少阳三焦经",
+      "freq": 31
+    },
+    {
+      "name": "束骨穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 28
+    },
+    {
+      "name": "梁丘穴",
+      "meridian": "足阳明胃经",
+      "freq": 28
+    },
+    {
+      "name": "中渚穴",
+      "meridian": "手少阳三焦经",
+      "freq": 27
+    },
+    {
+      "name": "耳尖穴",
+      "meridian": "经外奇穴",
+      "freq": 27
+    },
+    {
+      "name": "曲泉",
+      "meridian": "足厥阴肝经",
+      "freq": 26
+    },
+    {
+      "name": "气冲穴",
+      "meridian": "足阳明胃经",
+      "freq": 26
+    },
+    {
+      "name": "通天穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 26
+    },
+    {
+      "name": "丝竹空穴",
+      "meridian": "手少阳三焦经",
+      "freq": 25
+    },
+    {
+      "name": "京门穴",
+      "meridian": "足少阳胆经",
+      "freq": 25
+    },
+    {
+      "name": "翳风穴",
+      "meridian": "手少阳三焦经",
+      "freq": 25
+    },
+    {
+      "name": "膝关",
+      "meridian": "足厥阴肝经",
+      "freq": 25
+    },
+    {
+      "name": "神庭",
+      "meridian": "督脉",
+      "freq": 23
+    },
+    {
+      "name": "液门穴",
+      "meridian": "手少阳三焦经",
+      "freq": 22
+    },
+    {
+      "name": "瞳子髎穴",
+      "meridian": "足少阳胆经",
+      "freq": 22
+    },
+    {
+      "name": "通里穴",
+      "meridian": "手少阴心经",
+      "freq": 22
+    },
+    {
+      "name": "胆俞穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 21
+    },
+    {
+      "name": "阳溪穴",
+      "meridian": "手阳明大肠经",
+      "freq": 21
+    },
+    {
+      "name": "天府穴",
+      "meridian": "手太阴肺经",
+      "freq": 20
+    },
+    {
+      "name": "承扶穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 20
+    },
+    {
+      "name": "蠡沟",
+      "meridian": "足厥阴肝经",
+      "freq": 20
+    },
+    {
+      "name": "建里",
+      "meridian": "任脉",
+      "freq": 20
+    },
+    {
+      "name": "伏兔穴",
+      "meridian": "足阳明胃经",
+      "freq": 18
+    },
+    {
+      "name": "阳池穴",
+      "meridian": "手少阳三焦经",
+      "freq": 18
+    },
+    {
+      "name": "鱼腰",
+      "meridian": "经外奇穴",
+      "freq": 18
+    },
+    {
+      "name": "外丘",
+      "meridian": "足少阳胆经",
+      "freq": 17
+    },
+    {
+      "name": "归来穴",
+      "meridian": "足阳明胃经",
+      "freq": 17
+    },
+    {
+      "name": "秩边穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 17
+    },
+    {
+      "name": "阴郄穴",
+      "meridian": "手少阴心经",
+      "freq": 17
+    },
+    {
+      "name": "曲泽穴",
+      "meridian": "手厥阴心包经",
+      "freq": 16
+    },
+    {
+      "name": "膀胱俞穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 16
+    },
+    {
+      "name": "膺窗穴",
+      "meridian": "足阳明胃经",
+      "freq": 16
+    },
+    {
+      "name": "阴市穴",
+      "meridian": "足阳明胃经",
+      "freq": 16
+    },
+    {
+      "name": "玉堂",
+      "meridian": "任脉",
+      "freq": 16
+    },
+    {
+      "name": "地五会",
+      "meridian": "足少阳胆经",
+      "freq": 15
+    },
+    {
+      "name": "臂臑穴",
+      "meridian": "手阳明大肠经",
+      "freq": 15
+    },
+    {
+      "name": "郄门穴",
+      "meridian": "手厥阴心包经",
+      "freq": 15
+    },
+    {
+      "name": "金门穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 15
+    },
+    {
+      "name": "上廉穴",
+      "meridian": "手阳明大肠经",
+      "freq": 14
+    },
+    {
+      "name": "十宣穴",
+      "meridian": "经外奇穴",
+      "freq": 14
+    },
+    {
+      "name": "幽门穴",
+      "meridian": "足少阴肾经",
+      "freq": 14
+    },
+    {
+      "name": "灵道穴",
+      "meridian": "手少阴心经",
+      "freq": 14
+    },
+    {
+      "name": "犊鼻穴",
+      "meridian": "足阳明胃经",
+      "freq": 14
+    },
+    {
+      "name": "督俞穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 14
+    },
+    {
+      "name": "中庭",
+      "meridian": "任脉",
+      "freq": 14
+    },
+    {
+      "name": "中封",
+      "meridian": "足厥阴肝经",
+      "freq": 14
+    },
+    {
+      "name": "京骨穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 13
+    },
+    {
+      "name": "印堂穴",
+      "meridian": "督脉",
+      "freq": 13
+    },
+    {
+      "name": "天窗穴",
+      "meridian": "手太阳小肠经",
+      "freq": 13
+    },
+    {
+      "name": "消积穴",
+      "meridian": "经外奇穴",
+      "freq": 13
+    },
+    {
+      "name": "神封穴",
+      "meridian": "足少阴肾经",
+      "freq": 13
+    },
+    {
+      "name": "颧髎穴",
+      "meridian": "手太阳小肠经",
+      "freq": 13
+    },
+    {
+      "name": "俞府穴",
+      "meridian": "足少阴肾经",
+      "freq": 12
+    },
+    {
+      "name": "关冲穴",
+      "meridian": "手少阳三焦经",
+      "freq": 12
+    },
+    {
+      "name": "大横穴",
+      "meridian": "足太阴脾经",
+      "freq": 12
+    },
+    {
+      "name": "大赫穴",
+      "meridian": "足少阴肾经",
+      "freq": 12
+    },
+    {
+      "name": "天容穴",
+      "meridian": "手太阳小肠经",
+      "freq": 12
+    },
+    {
+      "name": "巨骨穴",
+      "meridian": "手阳明大肠经",
+      "freq": 12
+    },
+    {
+      "name": "肓俞穴",
+      "meridian": "足少阴肾经",
+      "freq": 12
+    },
+    {
+      "name": "肩髎穴",
+      "meridian": "手少阳三焦经",
+      "freq": 12
+    },
+    {
+      "name": "璇玑",
+      "meridian": "任脉",
+      "freq": 12
+    },
+    {
+      "name": "足临泣",
+      "meridian": "足少阳胆经",
+      "freq": 12
+    },
+    {
+      "name": "天宗穴",
+      "meridian": "手太阳小肠经",
+      "freq": 11
+    },
+    {
+      "name": "气户穴",
+      "meridian": "足阳明胃经",
+      "freq": 11
+    },
+    {
+      "name": "白环俞穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 11
+    },
+    {
+      "name": "膝眼穴",
+      "meridian": "经外奇穴",
+      "freq": 11
+    },
+    {
+      "name": "髀关穴",
+      "meridian": "足阳明胃经",
+      "freq": 11
+    },
+    {
+      "name": "华盖",
+      "meridian": "任脉",
+      "freq": 11
+    },
+    {
+      "name": "天池穴",
+      "meridian": "手厥阴心包经",
+      "freq": 10
+    },
+    {
+      "name": "志室穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 10
+    },
+    {
+      "name": "秉风穴",
+      "meridian": "手太阳小肠经",
+      "freq": 10
+    },
+    {
+      "name": "下髎穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 9
+    },
+    {
+      "name": "中都",
+      "meridian": "足厥阴肝经",
+      "freq": 9
+    },
+    {
+      "name": "侠白穴",
+      "meridian": "手太阴肺经",
+      "freq": 9
+    },
+    {
+      "name": "气舍穴",
+      "meridian": "足阳明胃经",
+      "freq": 9
+    },
+    {
+      "name": "灵墟穴",
+      "meridian": "足少阴肾经",
+      "freq": 9
+    },
+    {
+      "name": "络却穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 9
+    },
+    {
+      "name": "腰阳关",
+      "meridian": "督脉",
+      "freq": 9
+    },
+    {
+      "name": "和髎穴",
+      "meridian": "手少阳三焦经",
+      "freq": 8
+    },
+    {
+      "name": "四满穴",
+      "meridian": "足少阴肾经",
+      "freq": 8
+    },
+    {
+      "name": "小肠俞穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 8
+    },
+    {
+      "name": "彧中穴",
+      "meridian": "足少阴肾经",
+      "freq": 8
+    },
+    {
+      "name": "石关穴",
+      "meridian": "足少阴肾经",
+      "freq": 8
+    },
+    {
+      "name": "神堂穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 8
+    },
+    {
+      "name": "阴包",
+      "meridian": "足厥阴肝经",
+      "freq": 8
+    },
+    {
+      "name": "中渎",
+      "meridian": "足少阳胆经",
+      "freq": 8
+    },
+    {
+      "name": "关门穴",
+      "meridian": "足阳明胃经",
+      "freq": 7
+    },
+    {
+      "name": "太乙穴",
+      "meridian": "足阳明胃经",
+      "freq": 7
+    },
+    {
+      "name": "屋翳穴",
+      "meridian": "足阳明胃经",
+      "freq": 7
+    },
+    {
+      "name": "梁门穴",
+      "meridian": "足阳明胃经",
+      "freq": 7
+    },
+    {
+      "name": "水突穴",
+      "meridian": "足阳明胃经",
+      "freq": 7
+    },
+    {
+      "name": "肓门穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 7
+    },
+    {
+      "name": "紫宫",
+      "meridian": "任脉",
+      "freq": 7
+    },
+    {
+      "name": "阴廉",
+      "meridian": "足厥阴肝经",
+      "freq": 7
+    },
+    {
+      "name": "合阳穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 6
+    },
+    {
+      "name": "大巨穴",
+      "meridian": "足阳明胃经",
+      "freq": 6
+    },
+    {
+      "name": "天牖穴",
+      "meridian": "手少阳三焦经",
+      "freq": 6
+    },
+    {
+      "name": "定喘穴",
+      "meridian": "经外奇穴",
+      "freq": 6
+    },
+    {
+      "name": "库房穴",
+      "meridian": "足阳明胃经",
+      "freq": 6
+    },
+    {
+      "name": "意舍穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 6
+    },
+    {
+      "name": "滑肉门穴",
+      "meridian": "足阳明胃经",
+      "freq": 6
+    },
+    {
+      "name": "眉冲穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 6
+    },
+    {
+      "name": "腹结穴",
+      "meridian": "足太阴脾经",
+      "freq": 6
+    },
+    {
+      "name": "膝阳关",
+      "meridian": "足少阳胆经",
+      "freq": 6
+    },
+    {
+      "name": "角孙穴",
+      "meridian": "手少阳三焦经",
+      "freq": 6
+    },
+    {
+      "name": "强间",
+      "meridian": "督脉",
+      "freq": 6
+    },
+    {
+      "name": "会宗穴",
+      "meridian": "手少阳三焦经",
+      "freq": 5
+    },
+    {
+      "name": "关元俞穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 5
+    },
+    {
+      "name": "四渎穴",
+      "meridian": "手少阳三焦经",
+      "freq": 5
+    },
+    {
+      "name": "天泉穴",
+      "meridian": "手厥阴心包经",
+      "freq": 5
+    },
+    {
+      "name": "曲差穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 5
+    },
+    {
+      "name": "条口透承山穴",
+      "meridian": "足阳明胃经",
+      "freq": 5
+    },
+    {
+      "name": "瘈脉穴",
+      "meridian": "手少阳三焦经",
+      "freq": 5
+    },
+    {
+      "name": "胞肓穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 5
+    },
+    {
+      "name": "脑空穴",
+      "meridian": "足少阳胆经",
+      "freq": 5
+    },
+    {
+      "name": "腰眼穴",
+      "meridian": "经外奇穴",
+      "freq": 5
+    },
+    {
+      "name": "脑户",
+      "meridian": "督脉",
+      "freq": 5
+    }
+  ],
+  "moxibustion_candidates": [
+    {
+      "name": "三阴交穴",
+      "meridian": "足太阴脾经",
+      "freq": 188
+    },
+    {
+      "name": "内关穴",
+      "meridian": "手厥阴心包经",
+      "freq": 149
+    },
+    {
+      "name": "中脘穴",
+      "meridian": "任脉",
+      "freq": 133
+    },
+    {
+      "name": "神门穴",
+      "meridian": "手少阴心经",
+      "freq": 120
+    },
+    {
+      "name": "委中穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 109
+    },
+    {
+      "name": "公孙穴",
+      "meridian": "足太阴脾经",
+      "freq": 99
+    },
+    {
+      "name": "阴陵泉穴",
+      "meridian": "足太阴脾经",
+      "freq": 93
+    },
+    {
+      "name": "列缺穴",
+      "meridian": "手太阴肺经",
+      "freq": 83
+    },
+    {
+      "name": "肩井穴",
+      "meridian": "足少阳胆经",
+      "freq": 73
+    },
+    {
+      "name": "阳陵泉",
+      "meridian": "足少阳胆经",
+      "freq": 72
+    },
+    {
+      "name": "涌泉穴",
+      "meridian": "足少阴肾经",
+      "freq": 70
+    },
+    {
+      "name": "外关穴",
+      "meridian": "手少阳三焦经",
+      "freq": 69
+    },
+    {
+      "name": "太渊穴",
+      "meridian": "手太阴肺经",
+      "freq": 59
+    },
+    {
+      "name": "支沟穴",
+      "meridian": "手少阳三焦经",
+      "freq": 56
+    },
+    {
+      "name": "血海穴",
+      "meridian": "足太阴脾经",
+      "freq": 54
+    },
+    {
+      "name": "人中",
+      "meridian": "督脉",
+      "freq": 53
+    },
+    {
+      "name": "肺俞穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 53
+    },
+    {
+      "name": "会阴",
+      "meridian": "任脉",
+      "freq": 51
+    },
+    {
+      "name": "环跳穴",
+      "meridian": "足少阳胆经",
+      "freq": 50
+    },
+    {
+      "name": "中府穴",
+      "meridian": "手太阴肺经",
+      "freq": 48
+    },
+    {
+      "name": "申脉穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 48
+    },
+    {
+      "name": "膈俞穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 48
+    },
+    {
+      "name": "劳宫穴",
+      "meridian": "手厥阴心包经",
+      "freq": 44
+    },
+    {
+      "name": "尺泽穴",
+      "meridian": "手太阴肺经",
+      "freq": 44
+    },
+    {
+      "name": "间使穴",
+      "meridian": "手厥阴心包经",
+      "freq": 44
+    },
+    {
+      "name": "养老穴",
+      "meridian": "手太阳小肠经",
+      "freq": 43
+    },
+    {
+      "name": "夹脊穴",
+      "meridian": "经外奇穴",
+      "freq": 42
+    },
+    {
+      "name": "带脉穴",
+      "meridian": "足少阳胆经",
+      "freq": 42
+    },
+    {
+      "name": "肩髃穴",
+      "meridian": "手阳明大肠经",
+      "freq": 42
+    },
+    {
+      "name": "大陵穴",
+      "meridian": "手厥阴心包经",
+      "freq": 41
+    },
+    {
+      "name": "水道穴",
+      "meridian": "足阳明胃经",
+      "freq": 41
+    },
+    {
+      "name": "曲骨",
+      "meridian": "任脉",
+      "freq": 41
+    },
+    {
+      "name": "云门穴",
+      "meridian": "手太阴肺经",
+      "freq": 40
+    },
+    {
+      "name": "长强穴",
+      "meridian": "督脉",
+      "freq": 40
+    },
+    {
+      "name": "风市穴",
+      "meridian": "足少阳胆经",
+      "freq": 38
+    },
+    {
+      "name": "缺盆穴",
+      "meridian": "足阳明胃经",
+      "freq": 37
+    },
+    {
+      "name": "丘墟",
+      "meridian": "足少阳胆经",
+      "freq": 36
+    },
+    {
+      "name": "大敦",
+      "meridian": "足厥阴肝经",
+      "freq": 36
+    },
+    {
+      "name": "商丘穴",
+      "meridian": "足太阴脾经",
+      "freq": 35
+    },
+    {
+      "name": "阿是穴",
+      "meridian": "经外奇穴",
+      "freq": 35
+    },
+    {
+      "name": "日月穴",
+      "meridian": "足少阳胆经",
+      "freq": 34
+    },
+    {
+      "name": "水沟",
+      "meridian": "督脉",
+      "freq": 34
+    },
+    {
+      "name": "然谷穴",
+      "meridian": "足少阴肾经",
+      "freq": 34
+    },
+    {
+      "name": "孔最穴",
+      "meridian": "手太阴肺经",
+      "freq": 33
+    },
+    {
+      "name": "侠溪",
+      "meridian": "足少阳胆经",
+      "freq": 33
+    },
+    {
+      "name": "风门穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 32
+    },
+    {
+      "name": "听宫穴",
+      "meridian": "手太阳小肠经",
+      "freq": 31
+    },
+    {
+      "name": "耳门穴",
+      "meridian": "手少阳三焦经",
+      "freq": 31
+    },
+    {
+      "name": "束骨穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 28
+    },
+    {
+      "name": "梁丘穴",
+      "meridian": "足阳明胃经",
+      "freq": 28
+    },
+    {
+      "name": "中渚穴",
+      "meridian": "手少阳三焦经",
+      "freq": 27
+    },
+    {
+      "name": "光明穴",
+      "meridian": "足少阳胆经",
+      "freq": 27
+    },
+    {
+      "name": "耳尖穴",
+      "meridian": "经外奇穴",
+      "freq": 27
+    },
+    {
+      "name": "曲泉",
+      "meridian": "足厥阴肝经",
+      "freq": 26
+    },
+    {
+      "name": "气冲穴",
+      "meridian": "足阳明胃经",
+      "freq": 26
+    },
+    {
+      "name": "通天穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 26
+    },
+    {
+      "name": "丝竹空穴",
+      "meridian": "手少阳三焦经",
+      "freq": 25
+    },
+    {
+      "name": "京门穴",
+      "meridian": "足少阳胆经",
+      "freq": 25
+    },
+    {
+      "name": "翳风穴",
+      "meridian": "手少阳三焦经",
+      "freq": 25
+    },
+    {
+      "name": "膝关",
+      "meridian": "足厥阴肝经",
+      "freq": 25
+    },
+    {
+      "name": "神庭",
+      "meridian": "督脉",
+      "freq": 23
+    },
+    {
+      "name": "液门穴",
+      "meridian": "手少阳三焦经",
+      "freq": 22
+    },
+    {
+      "name": "瞳子髎穴",
+      "meridian": "足少阳胆经",
+      "freq": 22
+    },
+    {
+      "name": "通里穴",
+      "meridian": "手少阴心经",
+      "freq": 22
+    },
+    {
+      "name": "胆俞穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 21
+    },
+    {
+      "name": "阳溪穴",
+      "meridian": "手阳明大肠经",
+      "freq": 21
+    },
+    {
+      "name": "天府穴",
+      "meridian": "手太阴肺经",
+      "freq": 20
+    },
+    {
+      "name": "悬钟",
+      "meridian": "足少阳胆经",
+      "freq": 20
+    },
+    {
+      "name": "承扶穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 20
+    },
+    {
+      "name": "蠡沟",
+      "meridian": "足厥阴肝经",
+      "freq": 20
+    },
+    {
+      "name": "建里",
+      "meridian": "任脉",
+      "freq": 20
+    },
+    {
+      "name": "伏兔穴",
+      "meridian": "足阳明胃经",
+      "freq": 18
+    },
+    {
+      "name": "阳池穴",
+      "meridian": "手少阳三焦经",
+      "freq": 18
+    },
+    {
+      "name": "阳辅",
+      "meridian": "足少阳胆经",
+      "freq": 18
+    },
+    {
+      "name": "鱼腰",
+      "meridian": "经外奇穴",
+      "freq": 18
+    },
+    {
+      "name": "外丘",
+      "meridian": "足少阳胆经",
+      "freq": 17
+    },
+    {
+      "name": "归来穴",
+      "meridian": "足阳明胃经",
+      "freq": 17
+    },
+    {
+      "name": "秩边穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 17
+    },
+    {
+      "name": "阴郄穴",
+      "meridian": "手少阴心经",
+      "freq": 17
+    },
+    {
+      "name": "曲泽穴",
+      "meridian": "手厥阴心包经",
+      "freq": 16
+    },
+    {
+      "name": "膀胱俞穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 16
+    },
+    {
+      "name": "膺窗穴",
+      "meridian": "足阳明胃经",
+      "freq": 16
+    },
+    {
+      "name": "阴市穴",
+      "meridian": "足阳明胃经",
+      "freq": 16
+    },
+    {
+      "name": "玉堂",
+      "meridian": "任脉",
+      "freq": 16
+    },
+    {
+      "name": "地五会",
+      "meridian": "足少阳胆经",
+      "freq": 15
+    },
+    {
+      "name": "臂臑穴",
+      "meridian": "手阳明大肠经",
+      "freq": 15
+    },
+    {
+      "name": "郄门穴",
+      "meridian": "手厥阴心包经",
+      "freq": 15
+    },
+    {
+      "name": "金门穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 15
+    },
+    {
+      "name": "上廉穴",
+      "meridian": "手阳明大肠经",
+      "freq": 14
+    },
+    {
+      "name": "十宣穴",
+      "meridian": "经外奇穴",
+      "freq": 14
+    },
+    {
+      "name": "幽门穴",
+      "meridian": "足少阴肾经",
+      "freq": 14
+    },
+    {
+      "name": "灵道穴",
+      "meridian": "手少阴心经",
+      "freq": 14
+    },
+    {
+      "name": "犊鼻穴",
+      "meridian": "足阳明胃经",
+      "freq": 14
+    },
+    {
+      "name": "督俞穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 14
+    },
+    {
+      "name": "中庭",
+      "meridian": "任脉",
+      "freq": 14
+    },
+    {
+      "name": "中封",
+      "meridian": "足厥阴肝经",
+      "freq": 14
+    },
+    {
+      "name": "中冲穴",
+      "meridian": "手厥阴心包经",
+      "freq": 13
+    },
+    {
+      "name": "京骨穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 13
+    },
+    {
+      "name": "印堂穴",
+      "meridian": "督脉",
+      "freq": 13
+    },
+    {
+      "name": "天窗穴",
+      "meridian": "手太阳小肠经",
+      "freq": 13
+    },
+    {
+      "name": "消积穴",
+      "meridian": "经外奇穴",
+      "freq": 13
+    },
+    {
+      "name": "神封穴",
+      "meridian": "足少阴肾经",
+      "freq": 13
+    },
+    {
+      "name": "颧髎穴",
+      "meridian": "手太阳小肠经",
+      "freq": 13
+    },
+    {
+      "name": "俞府穴",
+      "meridian": "足少阴肾经",
+      "freq": 12
+    },
+    {
+      "name": "关冲穴",
+      "meridian": "手少阳三焦经",
+      "freq": 12
+    },
+    {
+      "name": "大横穴",
+      "meridian": "足太阴脾经",
+      "freq": 12
+    },
+    {
+      "name": "大赫穴",
+      "meridian": "足少阴肾经",
+      "freq": 12
+    },
+    {
+      "name": "天容穴",
+      "meridian": "手太阳小肠经",
+      "freq": 12
+    },
+    {
+      "name": "巨骨穴",
+      "meridian": "手阳明大肠经",
+      "freq": 12
+    },
+    {
+      "name": "肓俞穴",
+      "meridian": "足少阴肾经",
+      "freq": 12
+    },
+    {
+      "name": "肩髎穴",
+      "meridian": "手少阳三焦经",
+      "freq": 12
+    },
+    {
+      "name": "璇玑",
+      "meridian": "任脉",
+      "freq": 12
+    },
+    {
+      "name": "足临泣",
+      "meridian": "足少阳胆经",
+      "freq": 12
+    },
+    {
+      "name": "天宗穴",
+      "meridian": "手太阳小肠经",
+      "freq": 11
+    },
+    {
+      "name": "气户穴",
+      "meridian": "足阳明胃经",
+      "freq": 11
+    },
+    {
+      "name": "白环俞穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 11
+    },
+    {
+      "name": "膝眼穴",
+      "meridian": "经外奇穴",
+      "freq": 11
+    },
+    {
+      "name": "髀关穴",
+      "meridian": "足阳明胃经",
+      "freq": 11
+    },
+    {
+      "name": "华盖",
+      "meridian": "任脉",
+      "freq": 11
+    },
+    {
+      "name": "天池穴",
+      "meridian": "手厥阴心包经",
+      "freq": 10
+    },
+    {
+      "name": "志室穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 10
+    },
+    {
+      "name": "秉风穴",
+      "meridian": "手太阳小肠经",
+      "freq": 10
+    },
+    {
+      "name": "维道穴",
+      "meridian": "足少阳胆经",
+      "freq": 10
+    },
+    {
+      "name": "下髎穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 9
+    },
+    {
+      "name": "中都",
+      "meridian": "足厥阴肝经",
+      "freq": 9
+    },
+    {
+      "name": "五枢穴",
+      "meridian": "足少阳胆经",
+      "freq": 9
+    },
+    {
+      "name": "侠白穴",
+      "meridian": "手太阴肺经",
+      "freq": 9
+    },
+    {
+      "name": "气舍穴",
+      "meridian": "足阳明胃经",
+      "freq": 9
+    },
+    {
+      "name": "灵墟穴",
+      "meridian": "足少阴肾经",
+      "freq": 9
+    },
+    {
+      "name": "络却穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 9
+    },
+    {
+      "name": "腰阳关",
+      "meridian": "督脉",
+      "freq": 9
+    },
+    {
+      "name": "和髎穴",
+      "meridian": "手少阳三焦经",
+      "freq": 8
+    },
+    {
+      "name": "四满穴",
+      "meridian": "足少阴肾经",
+      "freq": 8
+    },
+    {
+      "name": "小肠俞穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 8
+    },
+    {
+      "name": "彧中穴",
+      "meridian": "足少阴肾经",
+      "freq": 8
+    },
+    {
+      "name": "石关穴",
+      "meridian": "足少阴肾经",
+      "freq": 8
+    },
+    {
+      "name": "神堂穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 8
+    },
+    {
+      "name": "阴包",
+      "meridian": "足厥阴肝经",
+      "freq": 8
+    },
+    {
+      "name": "中渎",
+      "meridian": "足少阳胆经",
+      "freq": 8
+    },
+    {
+      "name": "关门穴",
+      "meridian": "足阳明胃经",
+      "freq": 7
+    },
+    {
+      "name": "太乙穴",
+      "meridian": "足阳明胃经",
+      "freq": 7
+    },
+    {
+      "name": "屋翳穴",
+      "meridian": "足阳明胃经",
+      "freq": 7
+    },
+    {
+      "name": "梁门穴",
+      "meridian": "足阳明胃经",
+      "freq": 7
+    },
+    {
+      "name": "水突穴",
+      "meridian": "足阳明胃经",
+      "freq": 7
+    },
+    {
+      "name": "肓门穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 7
+    },
+    {
+      "name": "紫宫",
+      "meridian": "任脉",
+      "freq": 7
+    },
+    {
+      "name": "阴廉",
+      "meridian": "足厥阴肝经",
+      "freq": 7
+    },
+    {
+      "name": "合阳穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 6
+    },
+    {
+      "name": "大巨穴",
+      "meridian": "足阳明胃经",
+      "freq": 6
+    },
+    {
+      "name": "天牖穴",
+      "meridian": "手少阳三焦经",
+      "freq": 6
+    },
+    {
+      "name": "定喘穴",
+      "meridian": "经外奇穴",
+      "freq": 6
+    },
+    {
+      "name": "库房穴",
+      "meridian": "足阳明胃经",
+      "freq": 6
+    },
+    {
+      "name": "意舍穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 6
+    },
+    {
+      "name": "滑肉门穴",
+      "meridian": "足阳明胃经",
+      "freq": 6
+    },
+    {
+      "name": "眉冲穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 6
+    },
+    {
+      "name": "腹结穴",
+      "meridian": "足太阴脾经",
+      "freq": 6
+    },
+    {
+      "name": "膝阳关",
+      "meridian": "足少阳胆经",
+      "freq": 6
+    },
+    {
+      "name": "角孙穴",
+      "meridian": "手少阳三焦经",
+      "freq": 6
+    },
+    {
+      "name": "强间",
+      "meridian": "督脉",
+      "freq": 6
+    },
+    {
+      "name": "会宗穴",
+      "meridian": "手少阳三焦经",
+      "freq": 5
+    },
+    {
+      "name": "关元俞穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 5
+    },
+    {
+      "name": "四渎穴",
+      "meridian": "手少阳三焦经",
+      "freq": 5
+    },
+    {
+      "name": "天泉穴",
+      "meridian": "手厥阴心包经",
+      "freq": 5
+    },
+    {
+      "name": "曲差穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 5
+    },
+    {
+      "name": "条口透承山穴",
+      "meridian": "足阳明胃经",
+      "freq": 5
+    },
+    {
+      "name": "瘈脉穴",
+      "meridian": "手少阳三焦经",
+      "freq": 5
+    },
+    {
+      "name": "胞肓穴",
+      "meridian": "足太阳膀胱经",
+      "freq": 5
+    },
+    {
+      "name": "脑空穴",
+      "meridian": "足少阳胆经",
+      "freq": 5
+    },
+    {
+      "name": "腰眼穴",
+      "meridian": "经外奇穴",
+      "freq": 5
+    },
+    {
+      "name": "脑户",
+      "meridian": "督脉",
+      "freq": 5
+    }
+  ],
+  "excluded_false_positives": [
+    "太阳",
+    "子宫",
+    "气穴",
+    "阑尾",
+    "印堂"
+  ],
+  "freq_rule": "两字以上穴名按 core 计数；单字穴名按全名计数（防「气穴」误判）",
+  "note": "needling/moxibustion 为空的穴位，讲稿穴名出现≥5次者。contraindication 顺带处理。"
+}
