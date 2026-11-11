@@ -3632,8 +3632,8 @@
       "attribute": "荥穴，属水",
       "description": "清热散风、安神定志",
       "location": "足外侧部，第5跖趾关节前方，赤白肉际处",
-      "needling": "",
-      "moxibustion": "",
+      "needling": "《铜人》针二分，留三呼。",
+      "moxibustion": "灸三壮。",
       "contraindication": "",
       "clinicalNotes": "足通谷治头痛、项强、目眩、鼻衄、癫狂。它在小趾根部，清膀胱经的热，嚎！"
     },
@@ -4017,8 +4017,8 @@
       "description": "聪耳镇痉、清热散风",
       "location": "头部，角孙与翳风之间，沿耳轮连线的上、中1/3交点处",
       "needling": "",
-      "moxibustion": "",
-      "contraindication": "",
+      "moxibustion": "《铜人》灸七壮。《明堂》灸三壮。",
+      "contraindication": "禁针。不得多出血，多出血，杀人。",
       "clinicalNotes": "颅息治头痛、耳聋耳鸣、小儿惊风。它在瘈脉上面，治头部的问题，嚎！"
     },
     {
@@ -4139,8 +4139,8 @@
       "attribute": "",
       "description": "疏肝理气、健脾和胃",
       "location": "背部，第9胸椎棘突下，旁开3寸",
-      "needling": "",
-      "moxibustion": "",
+      "needling": "《铜人》针五分。",
+      "moxibustion": "灸三壮。",
       "contraindication": "",
       "clinicalNotes": "魂门治胁痛、呕吐、泄泻、背痛。它在肝俞旁边，治肝的问题，嚎！肝藏魂，所以叫魂门。"
     },
@@ -4448,7 +4448,7 @@
       "location": "足第4趾外侧趾甲角旁约0.1寸。",
       "clinicalNotes": "倪师：足窍阴是胆经井穴，井主心下满，治胆经热、头痛、喉痹、失眠，点刺出血。",
       "needling": "点刺出血",
-      "moxibustion": "",
+      "moxibustion": "灸三壮。",
       "contraindication": ""
     },
     {
