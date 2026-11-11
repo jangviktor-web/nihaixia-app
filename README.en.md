@@ -24,7 +24,7 @@ Offline-first · All data on-device · No sign-up · Ready out of the box (fully
 
 <br/>
 
-**[🤖 Ask Master Ni AI · Free API](#user-content-ask-nishi-ai)** · **[📥 Download APK](#-download-and-install)** · **[📖 Quick Start](#-quick-start)** · **[🏗️ Technical Architecture](#️-technical-architecture)** · **[🗺️ Roadmap](#️-roadmap)** · **[🤝 Contributing](#️-contributing)** · **[📄 Open Source License](#-open-source-license)**
+**[🌐 Web Version](#user-content-online-web)** · **[🤖 Ask Master Ni AI · Free API](#user-content-ask-nishi-ai)** · **[📥 Download APK](#-download-and-install)** · **[📖 Quick Start](#-quick-start)** · **[🏗️ Technical Architecture](#️-technical-architecture)** · **[🗺️ Roadmap](#️-roadmap)** · **[🤝 Contributing](#️-contributing)** · **[📄 Open Source License](#-open-source-license)**
 
 </div>
 
@@ -52,6 +52,18 @@ Offline-first · All data on-device · No sign-up · Ready out of the box (fully
 | 🧪 **Guarded by tests** | Key pattern-differentiation paths and filtering logic all have regression tests; every fix ships with a test to prevent regressions |
 
 <img width="100%" src="docs/images/readme_features.svg" alt="Core capabilities: Six-Meridian pattern differentiation, 322 classical formulas, 465 materia medica, 408 acupoints, 1327 classic entries, 1257 case records">
+
+---
+
+<a name="online-web"></a>
+
+## 🌐 Web version: no install, just open it
+
+No APK needed — open it in a browser with the same features (six-meridian consultation, formulas / herbs / acupoints, full-text classics search, Ask Master Ni AI):
+
+**[👉 jangviktor-web.github.io/nihaixia-app/web](https://jangviktor-web.github.io/nihaixia-app/web/)**
+
+Three things to know: **bookmarks and chat history live only in the current browser** (IndexedDB — clearing site data or switching browsers loses them, and they do not sync with the APK); **first load is ~75 MB** (rendering engine + offline classics; Chrome / Edge recommended); **the first Simplified/Traditional conversion needs network** (OpenCC via CDN), everything else works offline. For long-term use, install the APK.
 
 ---
 
@@ -348,6 +360,8 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 > Zhipu, InternLM and Agnes all offer free models — pick one and pay nothing.
 > Recommended order and field-by-field steps: **[Free model configuration guide](docs/free_api_guide.md)**.
 > How it works and its privacy boundary: **[🤖 Ask Master Ni AI](#user-content-ask-nishi-ai)**.
+
+> 🌐 No APK? **[Try the web version — no install →](#user-content-online-web)**
 
 ### 📥 Method 1: Download Prebuilt APK (V1.11.32)
 

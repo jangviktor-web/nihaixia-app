@@ -24,7 +24,7 @@
 
 <br/>
 
-**[🤖 问倪师AI · 免费 API](#user-content-ask-nishi-ai)** · **[📥 下载 APK](#-下载安装)** · **[📖 快速上手](#-快速上手)** · **[🏗️ 技术架构](#️-技术架构)** · **[🗺️ Roadmap](#️-roadmap)** · **[🤝 贡献指南](#️-贡献指南)** · **[📄 开源许可](#-开源许可)**
+**[🌐 在线网页版](#user-content-online-web)** · **[🤖 问倪师AI · 免费 API](#user-content-ask-nishi-ai)** · **[📥 下载 APK](#-下载安装)** · **[📖 快速上手](#-快速上手)** · **[🏗️ 技术架构](#️-技术架构)** · **[🗺️ Roadmap](#️-roadmap)** · **[🤝 贡献指南](#️-贡献指南)** · **[📄 开源许可](#-开源许可)**
 
 </div>
 
@@ -52,6 +52,18 @@
 | 🧪 **测试守护** | 关键辨证路径与筛选逻辑均有回归测试，修复即写测试，防止复发 |
 
 <img width="100%" src="docs/images/readme_features.svg" alt="核心能力：六经辨证、经方 322、本草 465、穴位 408、经典 1327 条、医案 1257 例">
+
+---
+
+<a name="online-web"></a>
+
+## 🌐 在线网页版：免安装，点开就用
+
+不想装 APK？浏览器直接打开，功能与 APK 一致（六经问诊、方剂本草穴位、经典全文检索、问倪师AI）：
+
+**[👉 jangviktor-web.github.io/nihaixia-app/web](https://jangviktor-web.github.io/nihaixia-app/web/)**
+
+三点实话：**收藏与对话记录只存当前浏览器**（IndexedDB，换浏览器 / 清缓存即丢，不与 APK 互通）；**首次打开约 75MB**（渲染引擎 + 离线古籍，建议 Chrome / Edge）；**繁简转换首次需联网**（OpenCC 走 CDN），其余断网可用。长期使用仍建议装 APK。
 
 ---
 
@@ -342,6 +354,8 @@
 > 智谱 / 书生 / Agnes 三家都有免费模型，任选其一即可，**不用花钱**。
 > 推荐顺序与逐项步骤见 **[免费模型配置指南](docs/free_api_guide.md)**，
 > 功能原理与隐私边界见 **[🤖 问倪师AI](#user-content-ask-nishi-ai)**。
+
+> 🌐 不想装 APK？**[在线网页版免安装试用 →](#user-content-online-web)**
 
 ### 📥 方式一：下载预编译 APK（V1.11.32）
 

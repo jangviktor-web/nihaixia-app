@@ -201,9 +201,18 @@
   @media (prefers-reduced-motion: reduce){
     .btn:hover,.dl:hover{transform:none}
   }
+  /* 顶部网页版公告条（最显眼入口） */
+  .announce{
+    display:block;background:var(--brand);color:var(--bg);
+    text-align:center;font-size:14px;font-weight:600;letter-spacing:.3px;
+    padding:10px 16px;text-decoration:none;
+  }
+  .announce:hover{background:var(--accent);color:var(--bg)}
 </style>
 </head>
 <body>
+
+<a class="announce" href="web/" target="_blank" rel="noopener">🌐 全新网页版已上线 · 免安装，点开即用 →</a>
 
 <header class="nav">
   <div class="wrap nav-inner">
@@ -213,6 +222,7 @@
       <a href="#classics">经典</a>
       <a href="#shots">截图</a>
       <a href="#download">下载</a>
+      <a href="web/" target="_blank" rel="noopener">网页版</a>
       <a href="https://github.com/jangviktor-web/nihaixia-app">GitHub</a>
     </nav>
     <a class="nav-cta" href="#download">下载 APK</a>
@@ -232,6 +242,7 @@
       </p>
       <div class="cta">
         <a class="btn btn-primary" href="#download">📥 下载最新版</a>
+        <a class="btn btn-ghost" href="web/" target="_blank" rel="noopener">🌐 在线试用（免安装）</a>
         <a class="btn btn-ghost" href="https://github.com/jangviktor-web/nihaixia-app">查看源码</a>
       </div>
       <div class="hero-meta">
