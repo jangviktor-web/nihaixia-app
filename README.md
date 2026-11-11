@@ -24,7 +24,7 @@
 
 <br/>
 
-**[🌐 在线网页版](#user-content-online-web)** · **[🤖 问倪师AI · 免费 API](#user-content-ask-nishi-ai)** · **[📥 下载 APK](#-下载安装)** · **[📖 快速上手](#-快速上手)** · **[🏗️ 技术架构](#️-技术架构)** · **[🗺️ Roadmap](#️-roadmap)** · **[🤝 贡献指南](#️-贡献指南)** · **[📄 开源许可](#-开源许可)**
+**[🌐 在线网页版](https://jangviktor-web.github.io/nihaixia-app/web)** · **[🤖 问倪师AI · 免费 API](#user-content-ask-nishi-ai)** · **[📥 下载 APK](#-下载安装)** · **[📖 快速上手](#-快速上手)** · **[🏗️ 技术架构](#️-技术架构)** · **[🗺️ Roadmap](#️-roadmap)** · **[🤝 贡献指南](#️-贡献指南)** · **[📄 开源许可](#-开源许可)**
 
 </div>
 
