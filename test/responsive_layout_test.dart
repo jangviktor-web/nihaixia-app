@@ -52,6 +52,11 @@ void main() {
     // 侧边栏里四项导航文案都在
     expect(find.text('知识库'), findsWidgets);
     expect(find.text('辨证'), findsWidgets);
+
+    // HomeScreen.initState 里有 800ms「更新了什么」与 3s 检查更新两个延迟任务，
+    // 不推进时间会在用例结束时被判定为 pending timer。卸载后把定时器跑完即可。
+    await tester.pumpWidget(wrap(const SizedBox.shrink()));
+    await tester.pump(const Duration(seconds: 4));
   });
 
   testWidgets('工具页：手机单列，桌面多列网格', (tester) async {
@@ -73,12 +78,14 @@ void main() {
 
   testWidgets('PageBody 在宽屏下把内容收进 maxWidth', (tester) async {
     setViewport(tester, const Size(1600, 900));
+    final key = GlobalKey();
     await tester.pumpWidget(wrap(
-      const Scaffold(
-        body: PageBody(maxWidth: 860, child: SizedBox(height: 10)),
+      Scaffold(
+        body: PageBody(maxWidth: 860, child: SizedBox(key: key, height: 10)),
       ),
     ));
-    final width = tester.getSize(find.byType(PageBody)).width;
+    // PageBody 自身是铺满视口的 Align，限宽生效在其子节点上，所以量 child。
+    final width = tester.getSize(find.byKey(key)).width;
     expect(width, lessThanOrEqualTo(860));
   });
 

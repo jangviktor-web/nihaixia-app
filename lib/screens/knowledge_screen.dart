@@ -4,6 +4,7 @@ import '../data/herb_repository.dart';
 import '../data/settings_repository.dart';
 import '../engine/diagnostic_rules.dart';
 import '../models/formula.dart';
+import '../models/herb.dart';
 import '../widgets/keep_alive_tab.dart';
 import '../widgets/meridian_icons.dart';
 import '../widgets/solar_term_card.dart';
@@ -117,7 +118,7 @@ class _KnowledgeScreenState extends State<KnowledgeScreen>
         actions: [_aiAction()],
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
+          tabs: [
             for (final t in _tabs) Tab(text: t.label, icon: Icon(t.icon)),
           ],
         ),
@@ -573,14 +574,14 @@ class _FormulaTabState extends State<_FormulaTab> {
                           );
                         },
                       ),
-                    ),
+                    );
                   },
                 );
               },
             ),
           ),
         ),
-        ],
+      ],
     );
   }
 }
@@ -592,6 +593,8 @@ class _HerbTab extends StatefulWidget {
 
 class _HerbTabState extends State<_HerbTab> {
   String _selectedCategory = '全部';
+  String _selectedNature = '全部';
+  String _selectedMeridian = '全部';
   String _searchQuery = '';
   final TextEditingController _searchCtrl = TextEditingController();
 

@@ -116,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
             : NavigationBar(
                 selectedIndex: _currentIndex,
                 onDestinationSelected: _select,
-                destinations: const [
+                destinations: [
                   for (final d in _destinations)
                     NavigationDestination(
                       icon: Icon(d.icon),
