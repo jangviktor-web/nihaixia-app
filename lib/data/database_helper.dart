@@ -3,6 +3,10 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../models/bookmark.dart';
 
+// Web 与 IO 的 SQLite 工厂不同：Web 要换成跑在 Worker 里的 WASM 实现。
+import 'database_factory_stub.dart'
+    if (dart.library.js_interop) 'database_factory_web.dart';
+
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
   static Database? _database;
@@ -14,6 +18,7 @@ class DatabaseHelper {
 
   Future<Database> get database async {
     if (_database != null) return _database!;
+    initDatabaseFactory();
     _database = await _initDB('nihaisha.db');
     return _database!;
   }

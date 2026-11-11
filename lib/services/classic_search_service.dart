@@ -4,7 +4,10 @@ import 'package:flutter/services.dart';
 
 import '../data/guji_data.dart';
 import '../data/traditional_display.dart';
-import 'gzip_codec_stub.dart' if (dart.library.io) 'gzip_codec_io.dart';
+// IO 走 dart:io 的同步 gzip；Web 走浏览器原生 DecompressionStream（异步）。
+import 'gzip_codec_stub.dart'
+    if (dart.library.io) 'gzip_codec_io.dart'
+    if (dart.library.js_interop) 'gzip_codec_web.dart';
 
 /// 经典（讲稿 + 古籍原文）全文检索。
 ///
@@ -103,7 +106,7 @@ class ClassicSearchService {
     return _sourceLabels[source] ?? source;
   }
 
-  /// 首次调用解压并解析索引（约 1.8MB gzip → 5MB 文本），之后走内存缓存。
+  /// 首次调用解压并解析索引（约 3MB gzip → 30MB 文本），之后走内存缓存。
   static Future<void> ensureLoaded() async {
     if (_entries != null) return;
     _loading ??= _load();
@@ -112,7 +115,8 @@ class ClassicSearchService {
 
   static Future<void> _load() async {
     final data = await rootBundle.load(assetPath);
-    final bytes = gunzipBytes(data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+    final bytes = await gunzipBytesAsync(
+        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
     final decoded = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
     final list = (decoded['entries'] as List<dynamic>).cast<Map<String, dynamic>>();
     _entries = [

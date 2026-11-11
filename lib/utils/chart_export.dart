@@ -1,17 +1,23 @@
-import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show RenderRepaintBoundary;
-import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+
+// 落盘/下载的平台差异全部收在 image_file_* 里：本文件不 import dart:io。
+import 'image_file_stub.dart'
+    if (dart.library.js_interop) 'image_file_web.dart';
 
 /// 排盘结果「存图 / 分享长图」。
 ///
 /// ## 为什么不引 `screenshot` 包
-/// 本库已有 [path_provider] 与 [share_plus]，一张长图 = 全量布局 + 截 layer +
+/// 本库已有 `path_provider` 与 `share_plus`，一张长图 = 全量布局 + 截 layer +
 /// 分享面板，几十行覆盖，不值得为一个功能加依赖。
+///
+/// ## 平台差异
+/// 落盘/分享经 [writeTempPng] / [savePngToDisk] 条件导入拆开：
+/// 移动端与桌面写文件、调系统分享面板；浏览器写不了文件系统，改为触发下载。
 ///
 /// ## 为什么截图副本要套 `OverflowBox(maxHeight: infinity)`
 /// 长内容若放在 `ListView` / `SingleChildScrollView` 里，超出视口的部分**不会被
@@ -47,24 +53,24 @@ class ChartExport {
   }
 
   /// 调起系统分享面板（面板自带「存到相册 / 存到文件 / 微信」等出口）。
+  ///
+  /// Web 上没有系统分享面板可调（`share_plus` 的 Web 实现依赖 navigator.share，
+  /// 桌面浏览器普遍不支持），直接走下载，语义上仍是「把图交出去」。
   static Future<void> sharePng(Uint8List bytes, String filename) async {
-    final dir = await getTemporaryDirectory();
-    final f = File('${dir.path}/$filename');
-    await f.writeAsBytes(bytes, flush: true);
+    if (needsBrowserDownload) {
+      await savePng(bytes, filename);
+      return;
+    }
+    final path = await writeTempPng(bytes, filename);
     await Share.shareXFiles(
-      [XFile(f.path, mimeType: 'image/png')],
+      [XFile(path, mimeType: 'image/png')],
       subject: '汉唐中医',
     );
   }
 
-  /// 存到 App 外部专属目录（无需存储权限），返回路径。
-  static Future<String> savePng(Uint8List bytes, String filename) async {
-    final dir = await getExternalStorageDirectory() ??
-        await getApplicationDocumentsDirectory();
-    final f = File('${dir.path}/$filename');
-    await f.writeAsBytes(bytes, flush: true);
-    return f.path;
-  }
+  /// 存到 App 专属目录（移动端）/ 触发浏览器下载（Web），返回路径或文件名。
+  static Future<String> savePng(Uint8List bytes, String filename) =>
+      savePngToDisk(bytes, filename);
 }
 
 /// 长图页面：上层可滚动查看，底层全量布局供截图。
@@ -116,7 +122,9 @@ class _ChartExportPageState extends State<ChartExportPage> {
         await ChartExport.sharePng(bytes, widget.filename);
       } else {
         final path = await ChartExport.savePng(bytes, widget.filename);
-        messenger.showSnackBar(SnackBar(content: Text('已保存：$path')));
+        messenger.showSnackBar(SnackBar(
+          content: Text(needsBrowserDownload ? '已开始下载：$path' : '已保存：$path'),
+        ));
       }
     } finally {
       if (mounted) setState(() => _busy = false);

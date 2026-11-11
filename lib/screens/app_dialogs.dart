@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:open_filex/open_filex.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
@@ -427,10 +428,17 @@ void showUpdateDialog(BuildContext context, UpdateInfo info) {
             const SizedBox(height: 8),
             Text(info.body),
             const SizedBox(height: 12),
-            Text(
-              '大小：${(info.apkSize / 1024 / 1024).toStringAsFixed(1)} MB',
-              style: TextStyle(color: context.colors.onSurfaceVariant),
-            ),
+            if (!kIsWeb)
+              Text(
+                '大小：${(info.apkSize / 1024 / 1024).toStringAsFixed(1)} MB',
+                style: TextStyle(color: context.colors.onSurfaceVariant),
+              )
+            else
+              // Web 版是网页，刷新即最新：不下载 APK，也没有安装器可拉。
+              Text(
+                '网页版刷新页面即可用上新版本；安卓安装包请在 GitHub / Gitee 发行页下载。',
+                style: TextStyle(color: context.colors.onSurfaceVariant),
+              ),
           ],
         ),
       ),
@@ -442,13 +450,14 @@ void showUpdateDialog(BuildContext context, UpdateInfo info) {
           },
           child: const Text('忽略此版本'),
         ),
-        FilledButton(
-          onPressed: () {
-            Navigator.pop(context);
-            downloadAndInstall(context, info);
-          },
-          child: const Text('下载更新'),
-        ),
+        if (!kIsWeb)
+          FilledButton(
+            onPressed: () {
+              Navigator.pop(context);
+              downloadAndInstall(context, info);
+            },
+            child: const Text('下载更新'),
+          ),
       ],
     ),
   );
