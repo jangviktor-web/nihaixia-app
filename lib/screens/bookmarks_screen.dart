@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../utils/responsive.dart';
 import '../widgets/state_view.dart';
 import 'package:flutter/services.dart';
 import '../models/bookmark.dart';
@@ -303,171 +304,175 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // 文件夹列表
-          if (_folders.isNotEmpty)
-            Container(
-              height: 50,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: FilterChip(
-                      label: const Text('全部'),
-                      selected: _selectedFolderId == null,
-                      onSelected: (_) {
-                        setState(() {
-                          _selectedFolderId = null;
-                        });
-                        _loadData();
-                      },
+      body: PageBody(
+        // 电脑端收藏列表拉满全宽会变成一条条 1600px 长的标题，收进可读宽度即可。
+        maxWidth: 1100,
+        child: Column(
+          children: [
+            // 文件夹列表
+            if (_folders.isNotEmpty)
+              Container(
+                height: 50,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: FilterChip(
+                        label: const Text('全部'),
+                        selected: _selectedFolderId == null,
+                        onSelected: (_) {
+                          setState(() {
+                            _selectedFolderId = null;
+                          });
+                          _loadData();
+                        },
+                      ),
                     ),
-                  ),
-                  ..._folders.map((f) => Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: GestureDetector(
-                          onLongPress: () =>
-                              _showDeleteFolderDialog(f['id'], f['name']),
+                    ..._folders.map((f) => Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: GestureDetector(
+                            onLongPress: () =>
+                                _showDeleteFolderDialog(f['id'], f['name']),
+                            child: FilterChip(
+                              avatar: const Icon(Icons.folder, size: 16),
+                              label: Text(f['name']),
+                              selected: _selectedFolderId == f['id'],
+                              onSelected: (_) {
+                                setState(() {
+                                  _selectedFolderId = f['id'];
+                                });
+                                _loadData();
+                              },
+                            ),
+                          ),
+                        )),
+                  ],
+                ),
+              ),
+            // 分类标签
+            if (categories.isNotEmpty && _selectedFolderId == null)
+              Container(
+                height: 50,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    ...categories.map((cat) => Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
                           child: FilterChip(
-                            avatar: const Icon(Icons.folder, size: 16),
-                            label: Text(f['name']),
-                            selected: _selectedFolderId == f['id'],
+                            label: Text(cat),
+                            selected: _selectedCategory == cat,
                             onSelected: (_) {
-                              setState(() {
-                                _selectedFolderId = f['id'];
-                              });
+                              setState(() =>
+                                  _selectedCategory = _selectedCategory == cat ? null : cat);
                               _loadData();
                             },
                           ),
-                        ),
-                      )),
-                ],
+                        )),
+                  ],
+                ),
               ),
-            ),
-          // 分类标签
-          if (categories.isNotEmpty && _selectedFolderId == null)
-            Container(
-              height: 50,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  ...categories.map((cat) => Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: FilterChip(
-                          label: Text(cat),
-                          selected: _selectedCategory == cat,
-                          onSelected: (_) {
-                            setState(() =>
-                                _selectedCategory = _selectedCategory == cat ? null : cat);
-                            _loadData();
-                          },
-                        ),
-                      )),
-                ],
-              ),
-            ),
-          // 收藏列表
-          Expanded(
-            child: _bookmarks.isEmpty
-                ? StateView.empty(
-                    title: '暂无收藏',
-                    hint: '在辨证结果或方剂详情中点击收藏',
-                    icon: Icons.bookmark_border,
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.all(12),
-                    itemCount: _bookmarks.length,
-                    itemBuilder: (context, index) {
-                      final b = _bookmarks[index];
-                      return Card(
-                        margin: const EdgeInsets.symmetric(vertical: 4),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: Theme.of(context)
-                                .colorScheme
-                                .primaryContainer,
-                            child: Icon(
-                              b.category == '方剂'
-                                  ? Icons.medication
-                                  : b.category == '本草'
-                                      ? Icons.eco
-                                      : Icons.bookmark,
-                              color: Theme.of(context).colorScheme.primary,
+            // 收藏列表
+            Expanded(
+              child: _bookmarks.isEmpty
+                  ? StateView.empty(
+                      title: '暂无收藏',
+                      hint: '在辨证结果或方剂详情中点击收藏',
+                      icon: Icons.bookmark_border,
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.all(12),
+                      itemCount: _bookmarks.length,
+                      itemBuilder: (context, index) {
+                        final b = _bookmarks[index];
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 4),
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer,
+                              child: Icon(
+                                b.category == '方剂'
+                                    ? Icons.medication
+                                    : b.category == '本草'
+                                        ? Icons.eco
+                                        : Icons.bookmark,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                             ),
-                          ),
-                          title: Text(
-                            b.title,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 14),
-                          ),
-                          subtitle: Text(
-                            b.content.length > 80
-                                ? '${b.content.substring(0, 80)}...'
-                                : b.content,
-                            style: const TextStyle(fontSize: 12),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          trailing: PopupMenuButton<String>(
-                            onSelected: (value) {
-                              if (value == 'delete') {
-                                showDialog(
-                                  context: context,
-                                  builder: (ctx) => AlertDialog(
-                                    title: const Text('删除收藏'),
-                                    content: const Text('确定删除这条收藏吗？'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(ctx),
-                                        child: const Text('取消'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          _deleteBookmark(b.id!);
-                                          Navigator.pop(ctx);
-                                        },
-                                        child: const Text('删除'),
-                                      ),
+                            title: Text(
+                              b.title,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 14),
+                            ),
+                            subtitle: Text(
+                              b.content.length > 80
+                                  ? '${b.content.substring(0, 80)}...'
+                                  : b.content,
+                              style: const TextStyle(fontSize: 12),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            trailing: PopupMenuButton<String>(
+                              onSelected: (value) {
+                                if (value == 'delete') {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => AlertDialog(
+                                      title: const Text('删除收藏'),
+                                      content: const Text('确定删除这条收藏吗？'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(ctx),
+                                          child: const Text('取消'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            _deleteBookmark(b.id!);
+                                            Navigator.pop(ctx);
+                                          },
+                                          child: const Text('删除'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                                if (value == 'move') _showMoveToFolderDialog(b);
+                              },
+                              itemBuilder: (context) => [
+                                const PopupMenuItem(
+                                  value: 'move',
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.folder, size: 20),
+                                      SizedBox(width: 8),
+                                      Text('移动到文件夹'),
                                     ],
                                   ),
-                                );
-                              }
-                              if (value == 'move') _showMoveToFolderDialog(b);
-                            },
-                            itemBuilder: (context) => [
-                              const PopupMenuItem(
-                                value: 'move',
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.folder, size: 20),
-                                    SizedBox(width: 8),
-                                    Text('移动到文件夹'),
-                                  ],
                                 ),
-                              ),
-                              const PopupMenuItem(
-                                value: 'delete',
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.delete_outline, size: 20),
-                                    SizedBox(width: 8),
-                                    Text('删除'),
-                                  ],
+                                const PopupMenuItem(
+                                  value: 'delete',
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.delete_outline, size: 20),
+                                      SizedBox(width: 8),
+                                      Text('删除'),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
+                            onTap: () => _openBookmark(b),
                           ),
-                          onTap: () => _openBookmark(b),
-                        ),
-                      );
-                    },
-                  ),
-          ),
-        ],
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }

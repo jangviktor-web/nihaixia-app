@@ -14,12 +14,16 @@ class ZoneSection extends StatelessWidget {
   final IconData icon;
   final List<Widget> children;
 
+  /// 卡片列数。1 表示沿用手机端竖排；>1 时按网格排布（桌面端）。
+  final int columns;
+
   const ZoneSection({
     super.key,
     required this.zone,
     required this.title,
     required this.icon,
     required this.children,
+    this.columns = 1,
   });
 
   /// 根据分区类型返回对应的主题色。
@@ -32,6 +36,24 @@ class ZoneSection extends StatelessWidget {
       case Zone.metaphysics:
         return context.colors.metaphysicsZone;
     }
+  }
+
+  Widget _layout(int columns) {
+    if (columns <= 1) return Column(children: children);
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.zero,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: columns,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        // 卡片高度约 96 + 内边距，2.9 的比例在 300~420dp 宽度内既不空也不挤。
+        childAspectRatio: 2.9,
+      ),
+      itemCount: children.length,
+      itemBuilder: (_, i) => children[i],
+    );
   }
 
   @override
@@ -64,7 +86,12 @@ class ZoneSection extends StatelessWidget {
             border: Border.all(color: color.withValues(alpha: 0.22)),
           ),
           padding: const EdgeInsets.all(8),
-          child: Column(children: children),
+          // 网格列数依赖实际可用宽度（外层已有 PageBody 限宽），不能用整屏宽度算。
+          child: LayoutBuilder(
+            builder: (context, constraints) => _layout(
+              constraints.maxWidth >= 640 ? columns : 1,
+            ),
+          ),
         ),
         const SizedBox(height: 12),
       ],
