@@ -1157,8 +1157,8 @@
       "attribute": "",
       "description": "温中散寒、调理肠胃",
       "location": "腹中部，脐中旁开4寸",
-      "needling": "",
-      "moxibustion": "",
+      "needling": "《铜人》针七分。",
+      "moxibustion": "《铜人》灸五壮。",
       "contraindication": "",
       "clinicalNotes": "大横治腹痛、腹泻、便秘、痢疾。它在肚脐旁边，治脾胃虚寒引起的肠胃问题，嚎！"
     },
@@ -1180,8 +1180,8 @@
       "attribute": "",
       "description": "益肾助阳、调经止带",
       "location": "下腹部，脐中下4寸，前正中线旁开0.5寸",
-      "needling": "",
-      "moxibustion": "",
+      "needling": "《铜人》灸五壮，针三分，《素注》针一寸。倪师：大赫穴在中极外开一寸。你找到中极，就会找到大赫穴。这是近取穴，像阴缩，睾丸缩到腹部里面去，妇人的赤带、白带都可以在大赫穴这下针。",
+      "moxibustion": "《铜人》灸五壮。《素注》灸三壮。",
       "contraindication": "",
       "clinicalNotes": "大赫治遗精、阳痿、带下、阴部痛。它在下腹部，治生殖系统的问题，嚎！"
     },
@@ -1268,8 +1268,8 @@
       "attribute": "",
       "description": "舒筋活络、理气消肿",
       "location": "肩胛部，冈下窝中央凹陷处，约当肩胛冈下缘与肩胛下角之间的上1/3折点处",
-      "needling": "",
-      "moxibustion": "",
+      "needling": "《铜人》灸三壮，针五分，留六呼。倪师：是天宗，这个天宗穴很好找。在这肩胛骨的正中间，就是天宗穴。",
+      "moxibustion": "《铜人》灸三壮。",
       "contraindication": "",
       "clinicalNotes": "嚎！天宗是治**肩背痛**的常用穴。肩胛骨痛、上肢不遂、乳痈，天宗都管。\n它在肩胛骨中间，你按下去会很痛，那里就是天宗。乳房的问题也用天宗，因为小肠经经过乳房，天宗在肩胛部能通乳络，嚎！"
     },
@@ -1279,8 +1279,8 @@
       "attribute": "",
       "description": "清热利咽、消肿降逆",
       "location": "颈外侧部，下颌角后方，胸锁乳突肌前缘凹陷中",
-      "needling": "",
-      "moxibustion": "",
+      "needling": "针一寸。",
+      "moxibustion": "灸三壮。",
       "contraindication": "",
       "clinicalNotes": "天容治耳鸣、耳聋、咽喉肿痛、瘿气。它在下颌角后面，治耳朵和咽喉的问题，嚎！"
     },
@@ -1323,8 +1323,8 @@
       "attribute": "",
       "description": "宽胸理气、活血化瘀",
       "location": "胸部，第4肋间隙，乳头外1寸，前正中线旁开5寸",
-      "needling": "",
-      "moxibustion": "",
+      "needling": "《铜人》灸三壮，针三分。《甲乙》针七分。倪师：天池穴怎么找？在乳中穴旁开一寸，这个穴道叫天池。天池穴是心包经的第一个穴道。",
+      "moxibustion": "《铜人》灸三壮。",
       "contraindication": "",
       "clinicalNotes": "天池治胸闷、胁肋痛、乳痈、瘰疬。它在乳房外侧，治胸部的问题，嚎！"
     },
@@ -1703,9 +1703,9 @@
       "attribute": "",
       "description": "通经活络、化痰散结",
       "location": "肩上部，锁骨肩峰端与肩胛冈之间凹陷处",
-      "needling": "",
-      "moxibustion": "",
-      "contraindication": "",
+      "needling": "《铜人》灸五壮，针一寸半。针则倒悬，一食顷，乃得下针，针四分，泻之勿补，针出始得正卧。",
+      "moxibustion": "《铜人》灸五壮。《明堂》灸三壮至七壮。",
+      "contraindication": "《素注》禁针。倪师：一般而言禁针，因为下面就是肺，所以知道位置就好了。",
       "clinicalNotes": "巨骨治肩臂疼痛、瘰疬、瘿气（甲状腺肿大）。它在锁骨和肩胛骨之间，位置比较深，针的时候要小心，嚎！"
     },
     {
@@ -2273,8 +2273,8 @@
       "attribute": "",
       "description": "理气宽胸、止咳平喘",
       "location": "胸部，锁骨下缘，前正中线旁开4寸",
-      "needling": "",
-      "moxibustion": "",
+      "needling": "《铜人》针三分。",
+      "moxibustion": "《铜人》灸五壮。",
       "contraindication": "",
       "clinicalNotes": "气户治咳嗽气喘、胸胁胀满。它在锁骨下面，治胸部的气机不畅，嚎！"
     },
@@ -2681,9 +2681,9 @@
       "attribute": "",
       "description": "调经止带、强健腰膝",
       "location": "骶部，第4骶后孔，旁开1.5寸",
-      "needling": "",
-      "moxibustion": "",
-      "contraindication": "",
+      "needling": "《素注》针五分，得气则先泻，泻讫多补之，不宜灸。倪师：是白环俞，在第二十一椎下，接近的尾椎骨。从这第二十一堆，外开一寸半，就是白环俞。",
+      "moxibustion": "《明堂》云灸三壮。",
+      "contraindication": "不宜灸。",
       "clinicalNotes": "白环俞治遗精、月经不调、带下、疝气。它在骶部最下面，治下焦的问题，嚎！"
     },
     {
@@ -3028,8 +3028,8 @@
       "attribute": "",
       "description": "理气止痛、润肠通便",
       "location": "腹中部，脐中旁开0.5寸",
-      "needling": "",
-      "moxibustion": "",
+      "needling": "《铜人》针一寸。倪师：那肓俞，从神阙外开一寸就是肓俞。",
+      "moxibustion": "《铜人》灸五壮。",
       "contraindication": "",
       "clinicalNotes": "肓俞治腹痛、腹胀、呕吐、泄泻、便秘。它在肚脐旁边，治腹部的问题，嚎！"
     },
@@ -3159,8 +3159,8 @@
       "attribute": "",
       "description": "通经活络、祛风止痛",
       "location": "肩后部，臂外展时，肩峰后下方凹陷处",
-      "needling": "",
-      "moxibustion": "",
+      "needling": "《铜人》针七分。",
+      "moxibustion": "《铜人》灸三壮。《明堂》灸五壮。",
       "contraindication": "",
       "clinicalNotes": "肩髎治肩臂疼痛、上肢痿痹。它在肩膀后面，配合肩髃治肩周炎效果更好——肩髃管前面，肩髎管后面，嚎！"
     },
@@ -3452,7 +3452,7 @@
       "attribute": "",
       "description": "通经活络、疏风散寒",
       "location": "膝部，髌韧带两侧凹陷中，内侧为内膝眼，外侧为外膝眼（犊鼻）",
-      "needling": "",
+      "needling": "倪师：中间是韧带，韧带的正中间是犊鼻，旁边有两个凹洞，称膝眼，膝眼属经外奇穴，像个眼睛。在双膝眼上下针时，要注意针下去的角度，要呈八字形。上面看是直角，从前面看是八字。扎膝盖的地方，针是直进直出，不要捻针，因为有油囊在里面，若捻针的话，一旦把油带出来，膝盖会受伤，直进直出叫雀啄术。",
       "moxibustion": "",
       "contraindication": "",
       "clinicalNotes": "膝眼治膝关节疼痛、屈伸不利。膝盖痛的时候按膝眼会很酸。配合阳陵泉、阴陵泉，治膝关节炎效果很好，嚎！"
@@ -4118,8 +4118,8 @@
       "attribute": "",
       "description": "通经活络、强腰膝",
       "location": "大腿前面，髂前上棘与髌底外侧端连线上，平臀横纹",
-      "needling": "",
-      "moxibustion": "",
+      "needling": "《铜人》针六分。倪师：从伏兔穴再往上六寸，就是髀关穴，伏兔有时用到，髀关几乎没有用到，这些穴道多半是治抽筋、脚没有力。",
+      "moxibustion": "《铜人》灸三壮。",
       "contraindication": "",
       "clinicalNotes": "髀关治下肢痿痹、腰膝冷痛、麻木。它在大腿根部，治大腿的问题，嚎！"
     },
@@ -4336,8 +4336,8 @@
       "description": "任脉穴，前正中线上，平第1肋间（璇玑下1寸）。主治咳嗽、气喘、胸胁胀痛。",
       "location": "胸部，前正中线上，胸骨角中点，平第1肋间。",
       "clinicalNotes": "倪师：华盖在璇玑下一寸，紫宫上一寸六，治咳逆、喘促、胸胁痛。",
-      "needling": "",
-      "moxibustion": "",
+      "needling": "《铜人》针三分。",
+      "moxibustion": "《铜人》灸五壮。《明下》灸三壮。",
       "contraindication": ""
     },
     {
@@ -4347,8 +4347,8 @@
       "description": "任脉穴，前正中线上，胸骨柄中央，天突下1寸。主治咳嗽、气喘、胸痛、咽喉肿痛。",
       "location": "胸部，前正中线上，胸骨柄中央，天突下1寸。",
       "clinicalNotes": "倪师：璇玑在天突下一寸，华盖上一寸，治咳逆、胸满、喉痹。",
-      "needling": "",
-      "moxibustion": "",
+      "needling": "《铜人》灸五壮，针三分。",
+      "moxibustion": "《铜人》灸五壮。",
       "contraindication": ""
     },
     {
@@ -4415,8 +4415,8 @@
       "description": "胆经俞穴，八脉交会穴通带脉。足背第4、5跖骨底结合部前方凹陷。主治头痛、目赤、胁痛、疟疾、月经不调、带下、瘰疬。",
       "location": "足背，第4、5跖骨底结合部前方凹陷中。",
       "clinicalNotes": "倪师：足临泣是胆经俞穴，又通带脉，治带下、月经不调、少阳经病、疟疾。与丘墟、侠溪配伍治胆经实证；带脉病（如白带）必用。",
-      "needling": "",
-      "moxibustion": "",
+      "needling": "《甲乙》针二分，留五呼，灸三壮。倪师：临泣穴是胆经的俞穴。临泣穴甚佳用，不单单是带脉的病，眼科的病，像妇人乳房的硬块，都可以用临泣穴，只要是胆经经过的地方，通通可以用临泣穴。",
+      "moxibustion": "灸三壮。",
       "contraindication": ""
     },
     {
