@@ -44,13 +44,23 @@ _CH6_TITLE = re.compile(
     r"^([^#\[\]\n]{1,22}?)\s*\[（[^）\]]*）?\]\s*[(（]https?://[^)\s（）]*[）)]?"
 )
 
-# ⛔ 排除名单（单一来源，写入 index 的 _excluded，详情页索引与自动链接共用）：
+# ⛔ 自动链接排除名单：只作用于 injectInternalLinks，不阻止详情页讲义索引。
 #   太阳  —— 讲稿里「太阳病」「足太阳膀胱经」泛滥，全是误链
 #   光明  —— 形容词撞名
-#   子宫  —— 解剖语误链；本库已验证只放 3 字形态「子宫穴」（kShortNameLinkForm 同判例）
-_EXCLUDED = ["太阳", "光明", "子宫"]
-# 子宫的特殊形态：只按 3 字「子宫穴」匹配。
-_FORCE_FORM = {"子宫": "子宫穴"}
+#   子宫  —— 解剖语误链；链接端只认 3 字形态「子宫穴」
+# 历史坑：这份名单曾同时用于索引生成，导致这 3 穴详情页「讲义讲解」入口一起消失。
+_LINK_EXCLUDED = ["太阳", "光明", "子宫"]
+
+# 扫描形态覆盖：某些穴在讲稿里不以正名出现，按正名扫会 0 命中。
+# key = 库里正名（去「穴」）；value = 讲稿里实际出现的形态。
+# ponytail: 只登记无歧义的异写；「五里」「窍阴」「通谷」跨经重名，
+# 「夹脊」是内丹术语、「夜尿」是症状词，一律不收（硬并会张冠李戴）。
+_EXACT_FORMS = {"子宫": ["子宫穴"]}  # 替换：只认 3 字，避开解剖语
+_ALIAS_FORMS = {
+    "口禾髎": ["禾髎"],   # 手阳明大肠经作「禾髎」
+    "耳和髎": ["和髎"],   # 手少阳三焦经书证段作「和髎」
+    "渊腋": ["渊液"],     # 讲稿异体字
+}
 
 
 def purge(text: str) -> str:
@@ -150,16 +160,16 @@ def acupoint_index(bodies):
         key=len,
         reverse=True,
     )
-    index = {}
-    used = [n for n in names if n not in _EXCLUDED and n not in _FORCE_FORM]
-    used += list(_FORCE_FORM.values())  # 子宫穴（3 字形态）
+    # 不再排除 _LINK_EXCLUDED：详情页讲义索引需要这 3 穴，链接端另有名单兜底。
+    used = list(names)
     # str.count 逐词统计（C 级实现，秒级；alternation 正则在此量级会慢到分钟级）。
     # 注：长词与短词重叠（腹通谷/通谷）各自独立计数，消费端按列表展示无歧义。
     out = {}
     for name in used:
+        forms = _EXACT_FORMS.get(name) or ([name] + _ALIAS_FORMS.get(name, []))
         per = {}
         for seq, body in enumerate(bodies):
-            c = body.count(name)
+            c = sum(body.count(f) for f in forms)
             if c:
                 per[seq] = c
         if per:
@@ -167,7 +177,7 @@ def acupoint_index(bodies):
                 ({"s": s, "n": n} for s, n in per.items()),
                 key=lambda x: -x["n"],
             )
-    return {"_excluded": _EXCLUDED, **out}
+    return {"_excluded": _LINK_EXCLUDED, **out}
 
 
 def write_dart(items):
@@ -254,7 +264,7 @@ def main():
     ).write(json.dumps(idx, ensure_ascii=False, indent=1))
 
     print("篇数: %d" % len(items))
-    print("索引穴位数: %d（排除 %s）" % (len(idx) - 1, _EXCLUDED))
+    print("索引穴位数: %d（链接排除 %s）" % (len(idx) - 1, _LINK_EXCLUDED))
     for it in items[:5]:
         print("  ", it["seq"], it["name"], it["asset"])
     print("  ...")

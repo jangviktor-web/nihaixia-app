@@ -53,10 +53,13 @@ void main() {
       idx = await ZhenJiuLectureIndex.load();
     });
 
-    test('json 合法且排除名单生效', () {
+    test('json 合法且排除名单只作用于自动链接', () {
       expect(idx.excludedNames, containsAll(['太阳', '光明', '子宫']));
-      expect(idx.hitsFor('太阳'), isEmpty, reason: '排除词必须查无命中');
-      expect(idx.hitsFor('光明穴'), isEmpty);
+      // 排除名单只防正文自动链接误链；详情页「讲义讲解」仍需这 3 穴入口，
+      // 否则它们在讲稿里出现 143/18/48 次却没有跳转，属连带切断。
+      expect(idx.hitsFor('太阳'), isNotEmpty);
+      expect(idx.hitsFor('光明穴'), isNotEmpty);
+      expect(idx.hitsFor('子宫'), isNotEmpty);
     });
 
     test('高频穴有命中且按次数降序', () {
