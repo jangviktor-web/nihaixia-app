@@ -90,8 +90,10 @@ class ZhenJiuLectureIndex {
           ? kZhenJiuLectures[seq].name
           : '第${seq + 1}篇';
 
-  /// 篇 seq → 资产路径。
-  static String assetOf(int seq) => kZhenJiuLectures[seq].asset;
+  /// 篇 seq → 资产路径；越界返回空串（数据损坏时调用方跳过跳转，不崩）。
+  static String assetOf(int seq) => seq >= 0 && seq < kZhenJiuLectures.length
+      ? kZhenJiuLectures[seq].asset
+      : '';
 }
 
 /// 讲稿命中条目。

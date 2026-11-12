@@ -54,9 +54,11 @@ String decodeMarkdownHref(String href) {
   final shortForm = AcupointRepository.kShortNameLinkForm;
   final excluded = ZhenJiuLectureIndex.cachedExcluded ??
       ZhenJiuLectureIndex.kFallbackExcluded.toSet();
+  // ponytail: 排除名单比对用映射后的完整形态。再 replaceAll('穴','') 会把
+  // 3 字短名（子宫穴/消渴穴）也误排除，kShortNameLinkForm 就白做了。
   final acupointCandidates = AcupointRepository.allNames
       .map((n) => shortForm[n] ?? n)
-      .where((n) => n.length >= 2 && !excluded.contains(n.replaceAll('穴', '')))
+      .where((n) => n.length >= 2 && !excluded.contains(n))
       .toList();
 
   // 名称 → 链接类型；方剂优先（同名时 formula 生效）。
