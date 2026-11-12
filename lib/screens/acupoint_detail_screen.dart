@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import '../models/acupoint_detail.dart';
 import '../data/acupoint_repository.dart';
 import '../data/acupuncture_repository.dart';
+import '../data/guji_data.dart';
 import '../data/zhenjiu_lecture_index.dart';
 import '../models/acupuncture.dart';
 import '../theme/app_colors.dart';
+import 'guji_library_screen.dart';
 import 'markdown_doc_screen.dart';
 
 /// 临床心悟中解析出的处方公式（如「暖宫方：三毛 + 关元 + 气海 + 三阴交」）。
@@ -121,6 +123,9 @@ class AcupointDetailScreen extends StatelessWidget {
           // 讲义讲解：针灸讲稿中提及本穴的篇目（索引无命中则不显示）
           _buildLectureEntry(colorScheme),
 
+          // 古籍原文：《针灸大成》《灵枢》中提及本穴的章节
+          _buildGujiEntry(context, colorScheme),
+
           // 位置
           if (acupoint.location.isNotEmpty)
             _buildSection('位置', acupoint.location, colorScheme, context.colors),
@@ -155,6 +160,90 @@ class AcupointDetailScreen extends StatelessWidget {
           if (relatedPens.isNotEmpty)
             _buildRelatedPenetrationSection(context, relatedPens, colorScheme),
         ],
+      ),
+    );
+  }
+
+  /// 古籍原文：《针灸大成》《灵枢》里提及本穴的章节入口。
+  /// ponytail: 点击时才扫章节（GujiRepository 有缓存），不在 build 里预载 421 章。
+  Widget _buildGujiEntry(BuildContext context, ColorScheme colorScheme) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: ListTile(
+        leading: Icon(Icons.auto_stories_outlined, color: colorScheme.primary),
+        title: const Text('古籍原文', style: TextStyle(fontSize: 15)),
+        subtitle: const Text('《针灸大成》《灵枢》中提及本穴的章节',
+            style: TextStyle(fontSize: 12)),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () => _showGujiSheet(context),
+      ),
+    );
+  }
+
+  Future<List<MapEntry<GujiBook, GujiChapter>>> _gujiHits(
+      List<String> keys) async {
+    final out = <MapEntry<GujiBook, GujiChapter>>[];
+    for (final b in kGujiBooks) {
+      for (final c in await GujiRepository.chaptersOf(b)) {
+        if (keys.any((k) => c.title.contains(k) || c.body.contains(k))) {
+          out.add(MapEntry(b, c));
+        }
+      }
+    }
+    return out;
+  }
+
+  void _showGujiSheet(BuildContext context) {
+    final key = acupoint.name.replaceAll('穴', '');
+    // 古籍多写「太谿」「绝骨」，按正名查会漏，补上异写形态一起扫
+    final keys = [key, ...?AcupointRepository.kAliasForms[key]];
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (sheetCtx) => SafeArea(
+        child: FutureBuilder<List<MapEntry<GujiBook, GujiChapter>>>(
+          future: _gujiHits(keys),
+          builder: (context, snap) {
+            final hits = snap.data ?? const <MapEntry<GujiBook, GujiChapter>>[];
+            return ListView(
+              shrinkWrap: true,
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                  child: Text('${acupoint.name} · 古籍提及',
+                      style: Theme.of(sheetCtx)
+                          .textTheme
+                          .titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w600)),
+                ),
+                if (!snap.hasData && !snap.hasError)
+                  const ListTile(title: Text('加载中…')),
+                if (snap.hasError)
+                  ListTile(title: Text('加载失败：${snap.error}')),
+                if (snap.hasData && hits.isEmpty)
+                  const ListTile(title: Text('暂无相关章节')),
+                for (final e in hits)
+                  ListTile(
+                    dense: true,
+                    title: Text(e.value.title,
+                        style: const TextStyle(fontSize: 14)),
+                    subtitle: Text('《${e.key.title}》',
+                        style: const TextStyle(fontSize: 12)),
+                    onTap: () {
+                      Navigator.pop(sheetCtx);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => GujiChapterScreen(
+                              book: e.key, chapter: e.value),
+                        ),
+                      );
+                    },
+                  ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -224,13 +313,15 @@ class AcupointDetailScreen extends StatelessWidget {
                       fontSize: 12, color: colorScheme.onSurfaceVariant),
                 ),
                 onTap: () {
+                  final asset = ZhenJiuLectureIndex.assetOf(h.seq);
+                  if (asset.isEmpty) return; // seq 越界：数据损坏时不跳转、不崩
                   Navigator.pop(sheetCtx);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) => MarkdownDocScreen(
                         title: ZhenJiuLectureIndex.nameOf(h.seq),
-                        asset: ZhenJiuLectureIndex.assetOf(h.seq),
+                        asset: asset,
                         linkFormulas: true,
                       ),
                     ),

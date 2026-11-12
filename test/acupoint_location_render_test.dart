@@ -55,6 +55,8 @@ void main() {
           reason: '${entry.key} 缺少「位置」区块');
       expect(find.text(entry.value), findsOneWidget,
           reason: '${entry.key} 定位未按修复值渲染');
+      expect(find.text('古籍原文'), findsOneWidget,
+          reason: '${entry.key} 缺少「古籍原文」入口');
       for (final bad in forbidden) {
         expect(find.textContaining(bad), findsNothing,
             reason: '${entry.key} 仍出现讲稿切片片段「$bad」');
