@@ -76,17 +76,69 @@ void main() {
     }
   });
 
-  test('选包：只有分架构包也能选中；没有 apk 时返回 null', () {
+  test('选包：有匹配 ABI 包就选中；无匹配则 null（不把 arm64 发给别的 ABI）', () {
+    // 模拟 arm64 设备
+    expect(
+        UpdateService.pickApkAssetName(allFour,
+            preferred: const [
+              'app-arm64-v8a-release.apk',
+              'app-release.apk'
+            ]),
+        'app-arm64-v8a-release.apk');
+    // 模拟 v7a 设备，资产里只有 arm64（Gitee 现状）→ 诚实跳过，不发错包
     expect(
         UpdateService.pickApkAssetName(
-            const ['app-arm64-v8a-release.apk', 'app-armeabi-v7a-release.apk']),
-        isNotNull);
-    // 发布里只有非预期名的包 → 退回第一个 apk，而不是放弃更新
-    expect(UpdateService.pickApkAssetName(const ['legacy-release.apk']),
-        'legacy-release.apk');
+            const ['app-arm64-v8a-release.apk'],
+            preferred: const [
+              'app-armeabi-v7a-release.apk',
+              'app-release.apk'
+            ]),
+        isNull);
+    // 通用包兜底仍有效
+    expect(
+        UpdateService.pickApkAssetName(const ['app-release.apk'],
+            preferred: const [
+              'app-arm64-v8a-release.apk',
+              'app-release.apk'
+            ]),
+        'app-release.apk');
+  });
+
+  test('选包：legacy 单包 / 空 / 只有源码归档 → null', () {
+    // 旧行为是「退回第一个 apk」，会让非 arm64 设备装错包，已改为放弃更新。
+    expect(UpdateService.pickApkAssetName(const ['legacy-release.apk']), isNull);
     expect(UpdateService.pickApkAssetName(const []), isNull);
     expect(
-        UpdateService.pickApkAssetName(const ['v1.11.23.zip', 'v1.11.23.tar.gz']),
+        UpdateService.pickApkAssetName(
+            const ['v1.11.23.zip', 'v1.11.23.tar.gz']),
+        isNull);
+  });
+
+  test('备用源：Gitee 放行 arm64 + 通用包，v7a/x86_64 拒绝；GitHub 全放行', () {
+    const gh =
+        'https://github.com/jangviktor-web/nihaixia-app/releases/download';
+    const gitee =
+        'https://gitee.com/jangviktor/nihaixia-app/releases/download';
+    expect(
+        UpdateService.fallbackApkUrl(
+            gitee, 'v1.11.32', 'app-arm64-v8a-release.apk'),
+        '$gitee/v1.11.32/app-arm64-v8a-release.apk');
+    // 方案 B 起 Gitee 补传通用包，非 arm64 设备也能走 Gitee 备用源
+    expect(
+        UpdateService.fallbackApkUrl(gitee, 'v1.11.32', 'app-release.apk'),
+        '$gitee/v1.11.32/app-release.apk');
+    for (final n in const [
+      'app-armeabi-v7a-release.apk',
+      'app-x86_64-release.apk'
+    ]) {
+      expect(UpdateService.fallbackApkUrl(gitee, 'v1.11.32', n), isNull,
+          reason: '$n 在 Gitee 上实测 404，不该生成备用链接');
+    }
+    expect(
+        UpdateService.fallbackApkUrl(
+            gh, 'v1.11.32', 'app-armeabi-v7a-release.apk'),
+        '$gh/v1.11.32/app-armeabi-v7a-release.apk');
+    expect(UpdateService.fallbackApkUrl('', 'v1.11.32', 'app-release.apk'),
         isNull);
   });
 
@@ -120,7 +172,8 @@ void main() {
   test('选中的包能查到对应哈希；未列出的包查不到（=> 仅做体积校验）', () {
     final m = UpdateService.parseAssetHashes(sampleBody);
     final picked = UpdateService.pickApkAssetName(
-        const ['app-arm64-v8a-release.apk', 'app-x86_64-release.apk']);
+        const ['app-arm64-v8a-release.apk', 'app-x86_64-release.apk'],
+        preferred: const ['app-arm64-v8a-release.apk', 'app-release.apk']);
     expect(picked, isNotNull);
     expect(m[picked!.toLowerCase()], isNotNull);
     expect(m['app-armeabi-v7a-release.apk'], isNull);

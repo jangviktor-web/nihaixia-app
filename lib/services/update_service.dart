@@ -47,6 +47,14 @@ class UpdateService {
   static const _giteeDownloadBase =
       'https://gitee.com/$_giteeOwner/$_giteeRepo/releases/download';
 
+  /// Gitee 镜像的资产（其余包名在 Gitee 上 404，拼出来只会多一次失败请求）。
+  /// 早期只镜像 arm64（配额 1GB 是全仓库总量）；方案 B 起补传通用包，
+  /// 让 v7a / x86_64 设备也能走 Gitee 备用源。两个包均 < 100MB 单文件上限。
+  static const Set<String> giteeMirroredAssets = {
+    'app-arm64-v8a-release.apk',
+    'app-release.apk',
+  };
+
   /// 第三方 GitHub 加速代理前缀（设置里可选开启）。它是**第三方中继**，能看到、
   /// 理论上也能篡改下载内容，故默认不参与，只在用户显式确认风险后才作为**最后**备用源。
   static const _ghProxyPrefix = 'https://ghproxy.net/';
@@ -151,9 +159,8 @@ class UpdateService {
       // 备用下载源（按可信度排序）：① 未命中的那个官方源（Gitee / GitHub 同包）；
       // ② 只有用户开启「更新镜像加速」时才追加第三方代理 ghproxy 的同一 GitHub 包。
       final extras = <String>[];
-      if (fallbackBase.isNotEmpty && apkAssetName.isNotEmpty) {
-        extras.add('$fallbackBase/$tagName/$apkAssetName');
-      }
+      final fallback = fallbackApkUrl(fallbackBase, tagName, apkAssetName);
+      if (fallback != null) extras.add(fallback);
       if (apkAssetName.isNotEmpty && await isMirrorEnabled()) {
         extras.add('$_ghProxyPrefix$_ghDownloadBase/$tagName/$apkAssetName');
       }
@@ -185,15 +192,29 @@ class UpdateService {
     ];
   }
 
-  /// 从 release 里实际可用的资产名中挑一个：优先 [preferredApkAssetNames]；
-  /// 都不在（老版本可能只传了一个包）则退回第一个 .apk；一个 .apk 都没有则 null。
-  static String? pickApkAssetName(List<String> availableNames) {
+  /// 备用源 URL：Gitee 只接受它实际镜像的资产，其余不生成（必然 404）。
+  /// 抽成纯函数便于回归；checkForUpdate 依赖网络与 DB，不好直接断言。
+  static String? fallbackApkUrl(String base, String tag, String asset) {
+    if (base.isEmpty || tag.isEmpty || asset.isEmpty) return null;
+    if (base == _giteeDownloadBase &&
+        !giteeMirroredAssets.contains(asset)) {
+      return null;
+    }
+    return '$base/$tag/$asset';
+  }
+
+  /// 从 release 里实际可用的资产名中挑一个：优先 [preferredApkAssetNames]。
+  /// 都不在则 **返回 null**：Gitee 主源只有 arm64 包，兜底取第一个会把错包
+  /// 发给 v7a / x86_64 设备（安装失败）。宁可跳过更新，也不装错包。
+  /// [preferred] 仅供测试注入不同 ABI；生产走 [preferredApkAssetNames]。
+  static String? pickApkAssetName(List<String> availableNames,
+      {List<String>? preferred}) {
     final apks = availableNames.where((n) => n.endsWith('.apk')).toList();
     if (apks.isEmpty) return null;
-    for (final want in preferredApkAssetNames()) {
+    for (final want in preferred ?? preferredApkAssetNames()) {
       if (apks.contains(want)) return want;
     }
-    return apks.first;
+    return null;
   }
 
   /// 解析 Release 正文里的「资产名 → SHA-256」表（CI 写入格式：每行 `<hex>  <文件名>`）。
