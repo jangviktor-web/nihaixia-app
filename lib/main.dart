@@ -13,15 +13,19 @@ import 'theme/app_colors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await FormulaRepository.load();
-  await FormulaOralHintRepository.load();
-  await HerbRepository.load();
-  await AcupunctureRepository.load();
-  await AcupointRepository.load();
-  await ChangelogRepository.load();
-  await SettingsRepository.instance.load();
-  // 紫微解读层外置规则；加载失败会在仓库内部静默降级为内建默认值，不影响启动。
-  await ZiweiRulesRepository.load();
+  // 并行加载：8 个仓库互不依赖（各自只读自己的 JSON），串行 await 会把 8 次
+  // 往返叠加成首屏等待。Web 端 HTTP/2 多路复用，并发明显快于串行。
+  await Future.wait([
+    FormulaRepository.load(),
+    FormulaOralHintRepository.load(),
+    HerbRepository.load(),
+    AcupunctureRepository.load(),
+    AcupointRepository.load(),
+    ChangelogRepository.load(),
+    SettingsRepository.instance.load(),
+    // 紫微解读层外置规则；加载失败会在仓库内部静默降级为内建默认值，不影响启动。
+    ZiweiRulesRepository.load(),
+  ]);
   runApp(const NiHaishaApp());
 }
 
