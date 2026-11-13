@@ -155,6 +155,13 @@ class AcupointRepository {
       // 短名会撞普通词时（见 kShortNameLinkForm），改用不会撞的形态参与匹配。
       set.add(kShortNameLinkForm[stripped] ?? stripped);
     }
+    // 2026-11-13 回归修复：简称条目已合并，「人中」「禾髎」「绝骨」等只存在于
+    // kAliasForms。不进候选表则 AI 意图识别 / 医案抽穴 / 处方解析都会漏。
+    for (final aliases in kAliasForms.values) {
+      for (final a in aliases) {
+        if (a.length >= 2) set.add(a);
+      }
+    }
     final list = set.toList();
     // 最长优先，避免子串误配；同长度按名称字典序兜底 —— List.sort 不稳定，
     // 不给次键的话并列项的先后会退化成「_acupoints 的插入顺序」，
@@ -169,7 +176,11 @@ class AcupointRepository {
   static List<AcupointDetail> search(String query) {
     if (query.isEmpty) return _acupoints;
     final q = query.toLowerCase();
+    // 2026-11-13 回归修复：同穴双条目合并后，「人中」「渊液」等只剩别名，
+    // 只查 name 会搜不到（删条目前的旧行为能命中）。
+    final canon = aliasToCanon[query.replaceAll('穴', '')];
     return _acupoints.where((a) {
+      if (canon != null && a.name.replaceAll('穴', '') == canon) return true;
       if (a.name.toLowerCase().contains(q) ||
           a.meridian.toLowerCase().contains(q) ||
           a.description.toLowerCase().contains(q) ||

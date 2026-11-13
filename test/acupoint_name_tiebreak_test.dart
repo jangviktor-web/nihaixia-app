@@ -16,7 +16,8 @@ void main() {
 
   test('allNames：同长度分组内严格按名称升序（次键真的生效）', () {
     final names = AcupointRepository.allNames;
-    expect(names.length, 402, reason: '排序不应丢条目');
+    expect(names.length, greaterThanOrEqualTo(402),
+        reason: '402 条目 + kAliasForms 别名（禾髎/禾窌/和髎/渊液/人中/绝骨/太谿）');
     var checked = 0;
     for (var i = 1; i < names.length; i++) {
       final prev = names[i - 1], cur = names[i];

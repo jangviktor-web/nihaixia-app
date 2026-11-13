@@ -74,6 +74,9 @@ class _AcupointRichTextState extends State<AcupointRichText> {
     final candidates = <String>[
       for (final a in all) form[a.name] ?? a.name,
       for (final a in all) form[a.name.replaceAll('穴', '')] ?? a.name.replaceAll('穴', ''),
+      // 2026-11-13 回归修复：简称条目已合并，别名必须进候选表，
+      // 否则临床心悟里的「人中」「禾髎」等不再成链。
+      for (final aliases in AcupointRepository.kAliasForms.values) ...aliases,
     ]..removeWhere((n) => n.length < 2)
       // 同上：同长度必须有确定次键，否则并列次序取决于 getAll() 的插入顺序
      ..sort((a, b) {

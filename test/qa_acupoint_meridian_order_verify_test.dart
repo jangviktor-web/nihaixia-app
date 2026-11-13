@@ -231,6 +231,13 @@ void main() {
         // 否则「集合必须一致」这条会因**设计内**的形态修正而误报。
         set.add(AcupointRepository.kShortNameLinkForm[n] ?? n);
       }
+      // 2026-11-13：生产 _buildAllNames 已并入 kAliasForms 别名（同穴双条目合并后
+      // 简称只存在于别名表），复刻逻辑必须同步，否则集合相等断言会误报。
+      for (final aliases in AcupointRepository.kAliasForms.values) {
+        for (final a in aliases) {
+          if (a.length >= 2) set.add(a);
+        }
+      }
       final list = set.toList();
       list.sort((x, y) => y.length.compareTo(x.length));
       return list;
