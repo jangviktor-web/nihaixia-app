@@ -301,7 +301,7 @@ class LlmService {
 
   /// 组装一次提问所需的全部本地素材：讲义片段 + 病名对照 + 方剂 + 相关医案 + 统计。
   static Future<LlmRetrieval> prepare(String q) async {
-    // 穴位表幂等加载（402 条，首次几毫秒）：针灸意图要靠穴位名判定，
+    // 穴位表幂等加载（401 条，首次几毫秒）：针灸意图要靠穴位名判定，
     // 「足三里主治什么」这类句子一个针/灸字都没有。
     await AcupointRepository.load();
     final acupoints = <AcupointDetail>[...retrieveAcupoints(q)];
@@ -499,7 +499,7 @@ class LlmService {
   /// 是否针灸类提问：含针刺/艾灸类词，**或**句子里出现了已知穴位名。
   ///
   /// 后一条是必需的：「足三里主治什么」「合谷能治什么」里一个针/灸字都没有，
-  /// 但显然在问针灸。穴位表 402 个正名 + 短名归一，直接复用现有仓库。
+  /// 但显然在问针灸。穴位表 401 个正名 + 短名归一，直接复用现有仓库。
   static bool isAcupunctureQuery(String q) {
     final text = toSimplified(q);
     for (final k in _acuKeywords) {

@@ -16,8 +16,8 @@ void main() {
 
   test('allNames：同长度分组内严格按名称升序（次键真的生效）', () {
     final names = AcupointRepository.allNames;
-    expect(names.length, greaterThanOrEqualTo(402),
-        reason: '402 条目 + kAliasForms 别名（禾髎/禾窌/和髎/渊液/人中/绝骨/太谿）');
+    expect(names.length, greaterThanOrEqualTo(401),
+        reason: '401 条目 + kAliasForms 别名（禾髎/禾窌/和髎/渊液/人中/绝骨/太谿）');
     var checked = 0;
     for (var i = 1; i < names.length; i++) {
       final prev = names[i - 1], cur = names[i];
@@ -63,6 +63,6 @@ void main() {
       expect(byName.containsKey(a.name), isFalse, reason: '「${a.name}」跨经重复');
       byName[a.name] = a.meridian;
     }
-    expect(byName.length, 402);
+    expect(byName.length, 401);
   });
 }

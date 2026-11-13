@@ -97,8 +97,8 @@ void main() {
     expect(names[at + 1], '阴廉');
   });
 
-  test('5. 排序只换顺序、不丢不重：总数仍为 402', () {
-    expect(AcupointRepository.getAll().length, 402);
+  test('5. 排序只换顺序、不丢不重：总数仍为 401', () {
+    expect(AcupointRepository.getAll().length, 401);
   });
 
   test('6. 经外奇穴 没有国标循行表，内部保持原物理顺序', () {

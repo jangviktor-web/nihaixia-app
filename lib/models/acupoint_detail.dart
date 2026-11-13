@@ -11,7 +11,7 @@ class AcupointDetail {
 
   /// 次键经络归属：本穴作为**交会穴**同时归属的奇经（冲 / 带 / 阴维 / 阳维 / 阴跷 / 阳跷）。
   /// 主键 [meridian] 保持十二经 / 督任 / 经外奇穴 之一不变，[meridians] 仅在交会穴上存在，
-  /// 用于让一个多归属穴位在多个经络分组（筛选 chip）里都出现，且不破坏 402 条唯一性。
+  /// 用于让一个多归属穴位在多个经络分组（筛选 chip）里都出现，且不破坏 401 条唯一性。
   final List<String>? meridians;
 
   const AcupointDetail({

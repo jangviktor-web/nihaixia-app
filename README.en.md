@@ -51,7 +51,7 @@ Offline-first · All data on-device · No sign-up · Ready out of the box (fully
 | 🆓 **Completely free** | Apache 2.0 open-source license, no ads, no in-app purchases, no tracking |
 | 🧪 **Guarded by tests** | Key pattern-differentiation paths and filtering logic all have regression tests; every fix ships with a test to prevent regressions |
 
-<img width="100%" src="docs/images/readme_features.svg" alt="Core capabilities: Six-Meridian pattern differentiation, 322 classical formulas, 465 materia medica, 402 acupoints, 1327 classic entries, 1257 case records">
+<img width="100%" src="docs/images/readme_features.svg" alt="Core capabilities: Six-Meridian pattern differentiation, 322 classical formulas, 465 materia medica, 401 acupoints, 1327 classic entries, 1257 case records">
 
 ---
 
@@ -323,7 +323,7 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 | 🔍 **Differential diagnosis** | Automatically compares the key differences between similar patterns to support precise pattern differentiation | 26 pairs |
 | 📚 **Formula quick reference** | Search + Six-Meridian filter + category filter, available offline | 322 formulas |
 | 🌿 **Herb quick reference** | Search + three filters (category / nature and flavor / meridian tropism), covering the full Shennong Bencao Jing; Fuzi is split into raw and prepared entries per Master Ni's system | 465 herbs |
-| 📍 **Acupuncture acupoint quick reference** | The fourteen meridians + extraordinary points, with location / needling / moxibustion / contraindications / clinical insights, and bidirectional acupoint ⇄ prescription links | 402 acupoints |
+| 📍 **Acupuncture acupoint quick reference** | The fourteen meridians + extraordinary points, with location / needling / moxibustion / contraindications / clinical insights, and bidirectional acupoint ⇄ prescription links | 401 acupoints |
 | 💉 **Acupoint prescriptions · Through-needling** | 14 categories of acupuncture prescriptions (257 entries) + 31 through-needling point pairs; component acupoints are tappable | 14 categories |
 | ⏰ **Zi Wu Liu Zhu acupoint selection** | Enter a time to automatically compute the open acupoint | 361 acupoints |
 | 🔧 **Classical-formula dosage conversion** | Ancient units (liang / sheng / zhu) → modern grams | — |
@@ -388,7 +388,7 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 >
 > ![v1.11.32 Ask Master Ni AI and symptom self-check](docs/images/screenshot_v1131_llm_ask.webp)
 >
-> **1. Ask Master Ni AI**: a question is first retrieved against the offline lecture library (394 Shang Han Lun clauses / Jin Gui / 72 acupuncture lectures / 335 materia-medica lectures / 1,257 case records / 48 ancient-modern disease-name pairs / 402 acupoints / 314 formulas). The matched original passages are fed to the model **together with their sources**, and the persona hard-constrains it to answer only from those passages — if the lectures do not cover something it must say so, rather than invent clause numbers or formulas. **The endpoint is yours** (OpenAI-compatible base URL / API key / model name, with one-tap model listing) and is **off by default**; when off, the app makes no network requests, and the key is stored only in the local SQLite database. Conversations persist locally (DB v6) and survive leaving the page or killing the app; a session drawer groups history into today / yesterday / last 7 days / earlier, with switch, rename and delete. Any formula mentioned in an answer that appears in neither the passages nor the case records is flagged as "N formula names not found in the lecture passages". Contraindications and key points for all 314 formulas are also placed in context, so the model can answer "when must this formula NOT be used".
+> **1. Ask Master Ni AI**: a question is first retrieved against the offline lecture library (394 Shang Han Lun clauses / Jin Gui / 72 acupuncture lectures / 335 materia-medica lectures / 1,257 case records / 48 ancient-modern disease-name pairs / 401 acupoints / 314 formulas). The matched original passages are fed to the model **together with their sources**, and the persona hard-constrains it to answer only from those passages — if the lectures do not cover something it must say so, rather than invent clause numbers or formulas. **The endpoint is yours** (OpenAI-compatible base URL / API key / model name, with one-tap model listing) and is **off by default**; when off, the app makes no network requests, and the key is stored only in the local SQLite database. Conversations persist locally (DB v6) and survive leaving the page or killing the app; a session drawer groups history into today / yesterday / last 7 days / earlier, with switch, rename and delete. Any formula mentioned in an answer that appears in neither the passages nor the case records is flagged as "N formula names not found in the lecture passages". Contraindications and key points for all 314 formulas are also placed in context, so the model can answer "when must this formula NOT be used".
 >
 > **2. Symptom self-check**: the "Diagnosis" tab gains a one-page triage — cold/heat overview (required) → advanced clues (optional, multi-select) → eleven questions; three selections are enough for a conclusion. Results show the six-meridian assignment, pattern, confidence, matched symptoms and reasoning, with formulas tappable through to detail pages. If all six of Master Ni's health baselines are met, it says so directly instead of forcing a formula. Positioned as fast triage; for complex presentations the chat-style interview is still recommended.
 >
@@ -642,7 +642,7 @@ flowchart LR
   UI --> DATA["Local Data Layer<br/>SQLite + Offline JSON"]
   DATA --> F["Formulas 322"]
   DATA --> H["Materia Medica 465"]
-  DATA --> A["Acupoints 402"]
+  DATA --> A["Acupoints 401"]
   DATA --> M["Case Records 1257"]
   DATA --> C["Classics Index 1728 Entries"]
   ENG --> F
