@@ -115,7 +115,7 @@ def traceable(fr):
 ```bash
 cd /d/AndroidProjects/nihaisha_app
 # 1. JSON 合法 + 结构
-python -c "import json; d=json.load(open('assets/data/acupoints.json',encoding='utf-8')); assert d['total']==407 and len(d['acupoints'])==407; print('ok')"
+python -c "import json; d=json.load(open('assets/data/acupoints.json',encoding='utf-8')); assert d['total']==402 and len(d['acupoints'])==402; print('ok')"
 # 2. 审计：0 error；不新增 A5/A6 张冠李戴 warning
 python tool/audit_acupoints.py
 # 3. diff：每穴每字段 1 行；变更行数 = 本批穴数 × 补全字段数

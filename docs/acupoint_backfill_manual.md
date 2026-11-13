@@ -59,7 +59,7 @@ def set_field(name: str, field: str, value: str):
 
 def validate():
     d = json.load(open(PATH, encoding='utf-8'))
-    assert d['total'] == 407 and len(d['acupoints']) == 407, '结构破坏'
+    assert d['total'] == 402 and len(d['acupoints']) == 402, '结构破坏'
     return d
 ```
 
@@ -129,7 +129,7 @@ cp assets/data/acupoints.json assets/data/acupoints.json.bak-$(date +%Y%m%d)-bat
 cd /d/AndroidProjects/nihaisha_app
 
 # 1. JSON 合法 + 结构
-python -c "import json; d=json.load(open('assets/data/acupoints.json',encoding='utf-8')); assert d['total']==407 and len(d['acupoints'])==407; print('ok')"
+python -c "import json; d=json.load(open('assets/data/acupoints.json',encoding='utf-8')); assert d['total']==402 and len(d['acupoints'])==402; print('ok')"
 
 # 2. 审计：error 必须为 0；本批穴位不得再出现 A4 warning
 python tool/audit_acupoints.py
