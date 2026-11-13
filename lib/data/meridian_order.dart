@@ -135,13 +135,9 @@ const Map<String, List<String>> kMeridianPointOrder = <String, List<String>>{
 /// 即 `口禾髎穴`、`渊液穴` 即 `渊腋穴`）。它们会被 [pointOrderIndex] 归一到国标穴名
 /// 的序列位置，从而紧邻其标准写法出现，而不是散落在末尾。
 /// 键 = 库内写法去掉尾部「穴」后的形式；值 = 本表 [kMeridianPointOrder] 中的国标穴名。
+/// 2026-11-13：同穴双条目已合并进正名（库 402 条），异名映射只留库内仍存在的写法；
+/// 讲稿简称由 AcupointRepository.kAliasForms 反向表负责链接跳转。
 const Map<String, String> kPointAlias = <String, String>{
-  '禾髎': '口禾髎',
-  '和髎': '耳和髎',
-  '渊液': '渊腋',
-  '阳关': '膝阳关',
-  '五里': '足五里',
-  '人中': '水沟', // 督脉 DU26：人中穴 = 水沟穴，库内两条同名异写
   '顖会': '囟会', // 督脉第 21 穴：库内用异体字「顖会」，国标作「囟会」
 };
 

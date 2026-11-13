@@ -55,6 +55,14 @@ class AcupointRepository {
 
   static List<AcupointDetail> getAll() => _acupoints;
 
+  /// 简称 / 异写 → 正名（去「穴」），由 [kAliasForms] 反向生成，保持单一来源。
+  /// 2026-11-13 同穴双条目合并后，讲稿里的「禾髎」「和髎」「人中」等简称
+  /// 不再有独立条目，靠这张表跳回正名详情页。
+  static final Map<String, String> aliasToCanon = {
+    for (final e in kAliasForms.entries)
+      for (final alias in e.value) alias: e.key,
+  };
+
   static AcupointDetail? findByName(String name) {
     // 精确匹配
     for (final a in _acupoints) {
@@ -64,6 +72,13 @@ class AcupointRepository {
     final stripped = name.replaceAll('穴', '');
     for (final a in _acupoints) {
       if (a.name.replaceAll('穴', '') == stripped) return a;
+    }
+    // 讲稿简称 / 古籍异写 → 正名条目
+    final canon = aliasToCanon[stripped];
+    if (canon != null) {
+      for (final a in _acupoints) {
+        if (a.name.replaceAll('穴', '') == canon) return a;
+      }
     }
     return null;
   }
@@ -116,6 +131,7 @@ class AcupointRepository {
     '口禾髎': ['禾髎', '禾窌'],
     '耳和髎': ['和髎'],
     '渊腋': ['渊液'],
+    '水沟': ['人中'],
     '悬钟': ['绝骨'],
     '太溪': ['太谿'],
   };

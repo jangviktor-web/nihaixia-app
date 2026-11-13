@@ -79,27 +79,26 @@ void main() {
     // 至阴 是国标最后一穴，排在它后面的必定是表外穴。
     expect(names.sublist(zi + 1), equals(<String>['八髎穴']));
 
-    // 2026-11-13：异名条目「通谷穴」已合并进「足通谷穴」，相邻断言随之移除；
-    // 异名归一路径仍由测试 4（五里穴 → 足五里）覆盖。
+    // 2026-11-13：同穴双条目已合并进正名，相邻断言随之移除；
+    // 国标槽位由测试 4（足五里）与测试 3（至阴）断言。
   });
 
-  test('4. 异名归一：「五里穴」被归到国标第 9 位（足五里 的槽位）', () {
+  test('4. 足五里 按国标归到肝经第 9 位（异名条目已正名）', () {
     const meridian = '足厥阴肝经';
     final names = AcupointRepository.getByMeridian(meridian).map((a) => a.name).toList();
-    final at = names.indexOf('五里穴');
-    expect(at, greaterThanOrEqualTo(0), reason: '肝经里找不到 五里穴（异名）');
-
-    // 库里没有标准的「足五里穴」记录，全靠 kPointAlias 把异名归位。
+    final at = names.indexOf('足五里');
+    expect(at, greaterThanOrEqualTo(0), reason: '肝经里找不到 足五里');
+    // 2026-11-13：「五里穴」已改名为国标名「足五里」，不再需要 kPointAlias 归一。
     final canonSlot = kMeridianPointOrder[meridian]!.indexOf('足五里');
     expect(canonSlot, greaterThanOrEqualTo(0));
-    expect(pointOrderIndex(meridian, '五里穴'), canonSlot);
+    expect(pointOrderIndex(meridian, '足五里'), canonSlot);
     // 归位后必须夹在 阴包 与 阴廉 之间。
     expect(names[at - 1], '阴包');
     expect(names[at + 1], '阴廉');
   });
 
-  test('5. 排序只换顺序、不丢不重：总数仍为 407', () {
-    expect(AcupointRepository.getAll().length, 407);
+  test('5. 排序只换顺序、不丢不重：总数仍为 402', () {
+    expect(AcupointRepository.getAll().length, 402);
   });
 
   test('6. 经外奇穴 没有国标循行表，内部保持原物理顺序', () {
@@ -122,12 +121,10 @@ void main() {
     expect(du.last, '印堂穴');
     expect(pointOrderIndex('督脉', '长强穴'), lessThan(pointOrderIndex('督脉', '腰阳关')));
     expect(pointOrderIndex('督脉', '水沟'), lessThan(pointOrderIndex('督脉', '龈交')));
-    // 异名归一：人中穴 = 水沟穴，应紧邻 水沟穴。
-    final renIdx = du.indexOf('人中');
-    final shuiIdx = du.indexOf('水沟');
-    expect(renIdx, greaterThanOrEqualTo(0));
-    expect(shuiIdx, greaterThanOrEqualTo(0));
-    expect((renIdx - shuiIdx).abs(), 1, reason: '异名 人中穴 应与 水沟穴 紧邻');
+    // 2026-11-13：同穴双条目已合并，「人中」不再是独立条目；
+    // 讲稿简称由 AcupointRepository.aliasToCanon 反向表跳回「水沟」。
+    expect(du.contains('人中'), isFalse);
+    expect(du.contains('水沟'), isTrue);
 
     // 任脉：从下往上，会阴 打头、承浆 收尾。
     final rn = AcupointRepository.getByMeridian('任脉').map((a) => a.name).toList();

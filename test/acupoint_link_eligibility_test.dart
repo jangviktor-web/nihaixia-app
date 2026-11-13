@@ -13,6 +13,20 @@ void main() {
 
   setUpAll(() async => AcupointRepository.load());
 
+  test('同穴双条目合并后，讲稿简称仍能跳回正名条目', () {
+    // 2026-11-13：禾髎/和髎/渊液/人中/阳关 等简称条目已合并进正名，
+    // 讲稿正文靠 aliasToCanon 反向表落回正名详情页，链接不能丢。
+    expect(AcupointRepository.aliasToCanon['禾髎'], '口禾髎');
+    expect(AcupointRepository.findByName('禾髎')?.name, '口禾髎穴');
+    expect(AcupointRepository.findByName('和髎')?.name, '耳和髎穴');
+    expect(AcupointRepository.findByName('人中')?.name, '水沟');
+    expect(AcupointRepository.findByName('渊液')?.name, '渊腋穴');
+    for (final gone in const ['禾髎穴', '和髎穴', '渊液穴', '人中', '阳关穴']) {
+      expect(AcupointRepository.getAll().any((a) => a.name == gone), isFalse,
+          reason: '$gone 已合并');
+    }
+  });
+
   test('形态表：只映射「子宫」，且不得收编本名即 2 字的常用穴位', () {
     // 本名就是 2 字的穴位在倪师讲义里有真实引用，改形态会砸掉真链接：
     //   肾关 ——「肾关在小腿内侧、阴陵泉下面两寸…它是董氏奇穴里面的要穴」

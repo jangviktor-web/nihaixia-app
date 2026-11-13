@@ -49,17 +49,19 @@ String decodeMarkdownHref(String href) {
     ...HerbRepository.aliasNames,
   }.where((n) => n.length >= 2).toList();
 
-  // 穴位候选：仓库正名去「穴」后缀 + 短名映射（子宫→子宫穴 / 消渴→消渴穴），
-  // 应用讲稿排除名单（太阳/光明——详见 zhenjiu_lecture_index）。
+  // 穴位候选：仓库正名去「穴」后缀 + 短名映射 + 讲稿简称/古籍异写。
+  // 2026-11-13 同穴双条目合并后，「禾髎」「和髎」「渊液」「人中」等简称不再有
+  // 独立条目，必须由 kAliasForms 补进候选集，否则讲稿正文里这些词不再成链。
+  // 点击由 openInternalLink → findByName 的 aliasToCanon 反向表落回正名条目。
   final shortForm = AcupointRepository.kShortNameLinkForm;
   final excluded = ZhenJiuLectureIndex.cachedExcluded ??
       ZhenJiuLectureIndex.kFallbackExcluded.toSet();
   // ponytail: 排除名单比对用映射后的完整形态。再 replaceAll('穴','') 会把
   // 3 字短名（子宫穴/消渴穴）也误排除，kShortNameLinkForm 就白做了。
-  final acupointCandidates = AcupointRepository.allNames
-      .map((n) => shortForm[n] ?? n)
-      .where((n) => n.length >= 2 && !excluded.contains(n))
-      .toList();
+  final acupointCandidates = <String>{
+    ...AcupointRepository.allNames.map((n) => shortForm[n] ?? n),
+    ...AcupointRepository.kAliasForms.values.expand((v) => v),
+  }.where((n) => n.length >= 2 && !excluded.contains(n)).toList();
 
   // 名称 → 链接类型；方剂优先（同名时 formula 生效）。
   final targetOf = <String, String>{};
