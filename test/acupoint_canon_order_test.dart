@@ -79,16 +79,8 @@ void main() {
     // 至阴 是国标最后一穴，排在它后面的必定是表外穴。
     expect(names.sublist(zi + 1), equals(<String>['八髎穴']));
 
-    // 「通谷穴」虽是异名，但经 kPointAlias 归一到 足通谷，因此落在国标槽位内，
-    // 必须与 足通谷穴 紧邻（二者同一槽位，谁在先由原始物理顺序决定）。
-    final zc = names.indexOf('足通谷穴');
-    final alias = names.indexOf('通谷穴');
-    expect(zc, greaterThanOrEqualTo(0));
-    expect(alias, greaterThanOrEqualTo(0));
-    expect((zc - alias).abs() <= 1, isTrue,
-        reason: '异名 通谷穴 应与 足通谷穴 相邻');
-    expect(pointOrderIndex(meridian, '通谷穴'),
-        pointOrderIndex(meridian, '足通谷穴'));
+    // 2026-11-13：异名条目「通谷穴」已合并进「足通谷穴」，相邻断言随之移除；
+    // 异名归一路径仍由测试 4（五里穴 → 足五里）覆盖。
   });
 
   test('4. 异名归一：「五里穴」被归到国标第 9 位（足五里 的槽位）', () {
@@ -106,8 +98,8 @@ void main() {
     expect(names[at + 1], '阴廉');
   });
 
-  test('5. 排序只换顺序、不丢不重：总数仍为 408', () {
-    expect(AcupointRepository.getAll().length, 408);
+  test('5. 排序只换顺序、不丢不重：总数仍为 407', () {
+    expect(AcupointRepository.getAll().length, 407);
   });
 
   test('6. 经外奇穴 没有国标循行表，内部保持原物理顺序', () {

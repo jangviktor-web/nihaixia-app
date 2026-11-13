@@ -27,8 +27,8 @@ void main() {
     expect(meridians, isNot(equals(byDictionary)));
   });
 
-  test('2. getAll() 条目数 == 408（排序不丢条）', () {
-    expect(AcupointRepository.getAll().length, 408);
+  test('2. getAll() 条目数 == 407（排序不丢条）', () {
+    expect(AcupointRepository.getAll().length, 407);
   });
 
   test('3. getAll() 按 meridian 切连续块，块数 == 15 且块序 == 主键经序', () {

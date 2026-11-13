@@ -138,7 +138,6 @@ const Map<String, List<String>> kMeridianPointOrder = <String, List<String>>{
 const Map<String, String> kPointAlias = <String, String>{
   '禾髎': '口禾髎',
   '和髎': '耳和髎',
-  '通谷': '足通谷',
   '渊液': '渊腋',
   '阳关': '膝阳关',
   '五里': '足五里',

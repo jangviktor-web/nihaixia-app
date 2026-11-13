@@ -16,7 +16,7 @@ void main() {
 
   test('allNames：同长度分组内严格按名称升序（次键真的生效）', () {
     final names = AcupointRepository.allNames;
-    expect(names.length, 408, reason: '排序不应丢条目');
+    expect(names.length, 407, reason: '排序不应丢条目');
     var checked = 0;
     for (var i = 1; i < names.length; i++) {
       final prev = names[i - 1], cur = names[i];
@@ -62,6 +62,6 @@ void main() {
       expect(byName.containsKey(a.name), isFalse, reason: '「${a.name}」跨经重复');
       byName[a.name] = a.meridian;
     }
-    expect(byName.length, 408);
+    expect(byName.length, 407);
   });
 }
