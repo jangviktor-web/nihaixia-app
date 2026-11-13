@@ -54,6 +54,9 @@ app.*.map.json
 # Local temp / scratch / backup artifacts (do not commit)
 _writetest.txt
 *.bak
+# 带日期/批次后缀的备份（如 acupoints.json.bak-20261111-enrich-batch1），
+# 上面的 *.bak 匹配不到，单独一条
+assets/data/*.bak-*
 *.new
 android/build/
 
