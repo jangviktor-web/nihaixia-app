@@ -1,6 +1,6 @@
 # 穴位详情页写法工作流（acupoints.json 数据规范）
 
-> 适用对象：`assets/data/acupoints.json`（408 穴）的生成、审计、修复与部署。
+> 适用对象：`assets/data/acupoints.json`（407 穴）的生成、审计、修复与部署。
 > 配套校验：`python tool/audit_acupoints.py`（检查项 id 与本文档章节对应）。
 > 讲稿原文依据：`assets/zhenjiu_lecture/`（任脉=21 号文件，其余经脉对应文件）。
 
@@ -31,7 +31,7 @@
 1. **审计**：`python tool/audit_acupoints.py` → 按 error/warning 清单定位。
 2. **取材**：只从 `assets/zhenjiu_lecture/` 对应经脉文件取原文（如任脉=21 号文件），grep 穴名定位段落；禁止凭记忆改写。
 3. **修改方式**：**文本级行替换**（定位 `"name": "X穴"` 行 → 40 行窗口内替换字段行，保留缩进与尾逗号）。⛔ 禁止 `json.dump` 全量重写——会把 compact 数组展开，污染 diff（+180 行假变更）。
-4. **校验**：`json.load` 合法 + `total=408` + 内容断言（新文本进、旧文本出）。
+4. **校验**：`json.load` 合法 + `total=407` + 内容断言（新文本进、旧文本出）。
 5. **测试**：跑穴位相关 10 个测试文件（acupoint_*/acupuncture_erxue/llm_acu_accuracy/…）。
 6. **部署**：`acupoints.json` 是打进包的资产——网页版重建部署 `docs/web`；APK 需重新构建发版。
 
@@ -61,6 +61,6 @@
 
 ## 6. 数据现状基线（2026-11-11 审计）
 
-- 408 穴：任脉/胃经/胆经等 14 经 + 经外奇穴。
+- 407 穴：任脉/胃经/胆经等 14 经 + 经外奇穴。
 - `clinicalNotes` 平均 311 字（最丰富）；`description` 平均 16 字（讲稿定位原话）。
 - 空 `needling` 184 条中，经外奇穴与无古籍书证穴位属合法空。
