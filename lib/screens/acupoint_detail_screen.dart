@@ -10,54 +10,6 @@ import '../theme/app_colors.dart';
 import 'guji_library_screen.dart';
 import 'markdown_doc_screen.dart';
 
-/// 临床心悟中解析出的处方公式（如「暖宫方：三毛 + 关元 + 气海 + 三阴交」）。
-class _Formula {
-  final String title;
-  final List<String> points;
-  _Formula({required this.title, required this.points});
-}
-
-/// 解析临床心悟中的处方公式：
-/// - `**XX方**：A + B + C，治…`
-/// - `**A透B**…` / `**A配B**…` / `**A配合B**…`
-List<_Formula> _parseFormulas(String notes) {
-  final formulas = <_Formula>[];
-  if (notes.isEmpty) return formulas;
-  final pointNames = AcupointRepository.allNames;
-  final reg = RegExp(r'\*\*(.+?)\*\*');
-  for (final m in reg.allMatches(notes)) {
-    final seg = m.group(1)!;
-    String scan = seg;
-    // 冒号形式（**暖宫方**：A + B…）时，把冒号后的组成一并纳入扫描
-    final rest = notes.substring(m.end);
-    if (rest.startsWith(RegExp(r'[：:]'))) {
-      final endM = RegExp(r'[，。]').firstMatch(rest.substring(1));
-      final chunk = endM == null
-          ? rest.substring(1)
-          : rest.substring(1, endM.start + 1);
-      scan = '$seg$chunk';
-    }
-    final points = _extractPoints(scan, pointNames);
-    if (points.isNotEmpty) {
-      formulas.add(_Formula(title: seg, points: points));
-    }
-  }
-  return formulas;
-}
-
-/// 从文本中按最长优先提取本库穴位名（避免子串误配，如「三阴交」先于「阴交」）。
-List<String> _extractPoints(String text, List<String> pointNames) {
-  final found = <String>[];
-  var s = text;
-  for (final name in pointNames) {
-    if (s.contains(name)) {
-      found.add(name);
-      s = s.replaceAll(name, '');
-    }
-  }
-  return found;
-}
-
 /// 判断处方/透针中的某个穴名（可能含「透」「、」组合或「穴」后缀）是否命中目标穴。
 bool _nameMatches(String container, String target) {
   final t = target.replaceAll('穴', '');
@@ -77,8 +29,7 @@ class AcupointDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    // 关联数据：临床心悟公式 + 反向关联穴位处方/透针
-    final formulas = _parseFormulas(acupoint.clinicalNotes);
+    // 关联数据：反向关联穴位处方/透针
     final relatedEntries = AcupunctureRepository.getEntries()
         .where((e) => e.acupoints.any((a) => _nameMatches(a.name, acupoint.name)))
         .toList();
@@ -148,10 +99,6 @@ class AcupointDetailScreen extends StatelessWidget {
           if (acupoint.clinicalNotes.isNotEmpty)
             _buildSection(context, '倪海厦临床心悟', acupoint.clinicalNotes, colorScheme, context.colors,
                 isHighlight: true),
-
-          // 倪师处方公式（来自临床心悟）
-          if (formulas.isNotEmpty)
-            _buildFormulaSection(context, formulas, colorScheme),
 
           // 关联穴位处方（反向：哪些处方用到此穴）
           if (relatedEntries.isNotEmpty)
@@ -387,64 +334,6 @@ class AcupointDetailScreen extends StatelessWidget {
               styleSheet: MarkdownDocScreen.styleSheetFor(Theme.of(context)),
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFormulaSection(
-      BuildContext context, List<_Formula> formulas, ColorScheme colorScheme) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '倪师处方公式',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: colorScheme.primary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          ...formulas.map((f) => Container(
-                margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: context.colors.infoContainer,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: context.colors.info),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 2),
-                      margin: const EdgeInsets.only(bottom: 8),
-                      decoration: BoxDecoration(
-                        color: colorScheme.primary,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        f.title,
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: colorScheme.onPrimary,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
-                      children: f.points
-                          .map((p) => _buildPointChip(context, p))
-                          .toList(),
-                    ),
-                  ],
-                ),
-              )),
         ],
       ),
     );
