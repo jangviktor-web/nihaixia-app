@@ -83,11 +83,16 @@ def check(data):
         if '以中脘为主' in v and name not in ('中脘穴', '上脘穴'):
             warnings.append(f"A5 {name}.moxibustion 含「以中脘为主」的梅花灸内容，疑似中脘段错位")
 
-        # A6 针法书证张冠李戴启发式：needling 含巨阙完整书证「针六分留七呼得气即泻」但穴位非巨阙
-        # （不少穴位本有「针六分，留七呼」书证，如间使《素注》，仅凭前两串会误报）
+        # A6 针法书证张冠李戴启发式：同一书名断句内同时含「针六分」「留七呼」「得气即泻」，但穴位非巨阙。
+        # 2026-11-14 修正：原实现按整串 needling 判断，导致石门误报——石门「留七呼+针六分」出自
+        # 《素注》、「得气即泻」出自《甲乙》，分属两个书名，被拼成「巨阙特征」。现改为按句切分，
+        # 只有三词落在同一句（同一书证）时才判错位。
         v = str(p.get('needling', '') or '')
-        if '留七呼' in v and '针六分' in v and '得气即泻' in v and name != '巨阙穴':
-            warnings.append(f"A6 {name}.needling 含巨阙书证特征（针六分留七呼），疑似错位")
+        if name != '巨阙穴':
+            for seg in re.split(r'[；;。]', v):
+                if '针六分' in seg and '留七呼' in seg and '得气即泻' in seg:
+                    warnings.append(f"A6 {name}.needling 同一书证内同时含「针六分/留七呼/得气即泻」（巨阙条特征），疑似错位")
+                    break
 
         # A8 location 必须是定位（规范 §1）：不得填讲稿正文切片。
         # 历史教训：2026-11-11 查出 50 处 location 是讲稿口语段（大陵填「就是后跟，这是膝盖」），
