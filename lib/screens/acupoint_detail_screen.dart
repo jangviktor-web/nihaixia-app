@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import '../models/acupoint_detail.dart';
 import '../data/acupoint_repository.dart';
 import '../data/acupuncture_repository.dart';
@@ -118,7 +119,7 @@ class AcupointDetailScreen extends StatelessWidget {
 
           // 简介
           if (acupoint.description.isNotEmpty)
-            _buildSection('简介', acupoint.description, colorScheme, context.colors),
+            _buildSection(context, '简介', acupoint.description, colorScheme, context.colors),
 
           // 讲义讲解：针灸讲稿中提及本穴的篇目（索引无命中则不显示）
           _buildLectureEntry(colorScheme),
@@ -128,24 +129,24 @@ class AcupointDetailScreen extends StatelessWidget {
 
           // 位置
           if (acupoint.location.isNotEmpty)
-            _buildSection('位置', acupoint.location, colorScheme, context.colors),
+            _buildSection(context, '位置', acupoint.location, colorScheme, context.colors),
 
           // 针刺
           if (acupoint.needling.isNotEmpty)
-            _buildSection('针刺', acupoint.needling, colorScheme, context.colors),
+            _buildSection(context, '针刺', acupoint.needling, colorScheme, context.colors),
 
           // 灸法
           if (acupoint.moxibustion.isNotEmpty)
-            _buildSection('灸法', acupoint.moxibustion, colorScheme, context.colors),
+            _buildSection(context, '灸法', acupoint.moxibustion, colorScheme, context.colors),
 
           // 禁忌
           if (acupoint.contraindication.isNotEmpty)
-            _buildSection('禁忌', acupoint.contraindication, colorScheme, context.colors,
+            _buildSection(context, '禁忌', acupoint.contraindication, colorScheme, context.colors,
                 isWarning: true),
 
           // 倪海厦临床心悟
           if (acupoint.clinicalNotes.isNotEmpty)
-            _buildSection('倪海厦临床心悟', acupoint.clinicalNotes, colorScheme, context.colors,
+            _buildSection(context, '倪海厦临床心悟', acupoint.clinicalNotes, colorScheme, context.colors,
                 isHighlight: true),
 
           // 倪师处方公式（来自临床心悟）
@@ -334,7 +335,8 @@ class AcupointDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSection(String title, String content, ColorScheme colorScheme,
+  Widget _buildSection(BuildContext context, String title, String content,
+      ColorScheme colorScheme,
       AppColors colors,
       {bool isWarning = false, bool isHighlight = false}) {
     final bgColor = isWarning
@@ -374,9 +376,15 @@ class AcupointDetailScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: borderColor),
             ),
-            child: Text(
-              content,
-              style: const TextStyle(fontSize: 14, height: 1.6),
+            // 2026-11-14：改用 MarkdownBody。原先用纯 Text() 渲染，导致
+            // clinicalNotes 里的 **加粗** 在页面上原样显示为裸星号（全库 49 条受影响）。
+            // softLineBreak: true 保留数据中用单 \n 分段的原有版式。
+            child: MarkdownBody(
+              data: content,
+              softLineBreak: true,
+              selectable: true,
+              onTapLink: (_, href, _) => openInternalLink(context, href),
+              styleSheet: MarkdownDocScreen.styleSheetFor(Theme.of(context)),
             ),
           ),
         ],
