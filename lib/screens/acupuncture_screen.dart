@@ -621,8 +621,10 @@ class _AcupunctureScreenState extends State<AcupunctureScreen>
 
   Widget _buildAcupointCard(AcupointDetail acupoint) {
     final colorScheme = Theme.of(context).colorScheme;
-    final hasDetail = acupoint.description.isNotEmpty || acupoint.location.isNotEmpty;
-
+    // 详情页至少会渲染标题、经络/属性 Chip、古籍原文入口，字段稀疏的穴位
+    // （如印堂穴、中枢、急脉的 description/location 为空）也必须能点开。
+    // 旧逻辑用 `description.isNotEmpty || location.isNotEmpty` 当开关，会把这类
+    // 穴位的 onTap 置为 null，表现为「点击无反应、详情页打不开」。
     return Card(
       margin: const EdgeInsets.only(bottom: 6),
       child: ListTile(
@@ -651,17 +653,15 @@ class _AcupunctureScreenState extends State<AcupunctureScreen>
                 style: const TextStyle(fontSize: 12),
               )
             : null,
-        trailing: hasDetail ? const Icon(Icons.chevron_right) : null,
-        onTap: hasDetail
-            ? () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => AcupointDetailScreen(acupoint: acupoint),
-                  ),
-                );
-              }
-            : null,
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => AcupointDetailScreen(acupoint: acupoint),
+            ),
+          );
+        },
       ),
     );
   }
