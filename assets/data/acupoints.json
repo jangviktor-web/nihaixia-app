@@ -978,13 +978,13 @@
     {
       "name": "四神聪穴",
       "meridian": "经外奇穴",
-      "attribute": "",
+      "attribute": "经外奇穴（头顶，百会前后左右各一寸，共四穴）",
       "description": "醒脑开窍、安神定志",
       "location": "头顶，百会前后左右各1寸，共4个点",
       "needling": "",
       "moxibustion": "",
       "contraindication": "",
-      "clinicalNotes": "四神聪治头痛、眩晕、失眠、健忘、癫痫。它在百会四周，能增强百会的功效。失眠、健忘的配合百会一起针，效果更好。"
+      "clinicalNotes": "【源文边界】本库源文（《人纪·针灸》）**全书零命中**，无本穴独立条文、定位、主治与针法。\n【教材补充】本条目 description「醒脑开窍、安神定志」、location「头顶，百会前后左右各1寸，共4个点」及原 clinicalNotes 所述「治头痛、眩晕、失眠、健忘、癫痫，在百会四周能增强百会的功效」均为通行教材内容，非本库源文，按来源分层标注、不冒充倪师书证。\n【说明】源文未及本穴针法、灸法与禁忌，needling/moxibustion/contraindication 留空不写「无」。"
     },
     {
       "name": "地五会",
