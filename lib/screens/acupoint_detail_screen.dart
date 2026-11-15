@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import '../models/acupoint_detail.dart';
+import '../models/bookmark.dart';
 import '../data/acupoint_repository.dart';
+import '../data/database_helper.dart';
 import '../data/acupuncture_repository.dart';
 import '../data/guji_data.dart';
 import '../data/zhenjiu_lecture_index.dart';
@@ -41,6 +43,7 @@ class AcupointDetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(acupoint.name),
         actions: [
+          _AcupointBookmarkButton(acupoint: acupoint),
           if (acupoint.meridian.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(right: 16),
@@ -511,4 +514,69 @@ class AcupointDetailScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+/// 穴位收藏按钮：复用本草/方剂页同一张 bookmarks 表，避免另起一套存储。
+/// ponytail: 独立小 StatefulWidget，主页面保持 StatelessWidget 不动。
+class _AcupointBookmarkButton extends StatefulWidget {
+  final AcupointDetail acupoint;
+  const _AcupointBookmarkButton({required this.acupoint});
+
+  @override
+  State<_AcupointBookmarkButton> createState() =>
+      _AcupointBookmarkButtonState();
+}
+
+class _AcupointBookmarkButtonState extends State<_AcupointBookmarkButton> {
+  bool _saved = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // ponytail: 数据库不可用时按钮保持未收藏态，绝不让详情页整体崩掉。
+    () async {
+      try {
+        final v =
+            await DatabaseHelper.instance.isBookmarked(widget.acupoint.name);
+        if (mounted) setState(() => _saved = v);
+      } catch (_) {}
+    }();
+  }
+
+  Future<void> _toggle() async {
+    final db = DatabaseHelper.instance;
+    final a = widget.acupoint;
+    try {
+      if (_saved) {
+        final all = await db.getAllBookmarks();
+        for (final b in all) {
+          if (b.title == a.name && b.id != null) {
+            await db.deleteBookmark(b.id!);
+            break;
+          }
+        }
+      } else {
+        await db.insertBookmark(Bookmark(
+          title: a.name,
+          content: a.description.isNotEmpty ? a.description : a.clinicalNotes,
+          category: '穴位',
+          source: 'acupoint_detail',
+        ));
+      }
+    } catch (_) {
+      return; // 数据库不可用：保持原状态，不弹成功提示
+    }
+    if (!mounted) return;
+    setState(() => _saved = !_saved);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(_saved ? '已收藏穴位' : '已取消收藏')),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) => IconButton(
+        tooltip: _saved ? '取消收藏' : '收藏穴位',
+        icon: Icon(_saved ? Icons.bookmark : Icons.bookmark_border),
+        onPressed: _toggle,
+      );
 }

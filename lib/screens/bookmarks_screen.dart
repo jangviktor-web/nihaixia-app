@@ -7,8 +7,10 @@ import '../models/bookmark.dart';
 import '../data/database_helper.dart';
 import '../data/formula_repository.dart';
 import '../data/herb_repository.dart';
+import '../data/acupoint_repository.dart';
 import '../screens/formula_detail_screen.dart';
 import '../screens/herb_detail_screen.dart';
+import '../screens/acupoint_detail_screen.dart';
 
 class BookmarksScreen extends StatefulWidget {
   const BookmarksScreen({super.key});
@@ -155,6 +157,16 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => HerbDetailScreen(herb: herb)),
+        );
+        return;
+      }
+    } else if (b.category == '穴位') {
+      final acupoint = AcupointRepository.findByName(b.title);
+      if (acupoint != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (_) => AcupointDetailScreen(acupoint: acupoint)),
         );
         return;
       }
