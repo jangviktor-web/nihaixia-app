@@ -23,14 +23,65 @@ bool _nameMatches(String container, String target) {
   return parts.contains(t);
 }
 
-class AcupointDetailScreen extends StatelessWidget {
+class AcupointDetailScreen extends StatefulWidget {
   final AcupointDetail acupoint;
 
   const AcupointDetailScreen({super.key, required this.acupoint});
 
   @override
+  State<AcupointDetailScreen> createState() => _AcupointDetailScreenState();
+}
+
+class _AcupointDetailScreenState extends State<AcupointDetailScreen> {
+  /// 同经络穴位，顺序沿用 AcupointRepository 的经络内国标穴序
+  /// （_sortByMeridianOrder 已排好），filter 后天然有序。
+  /// ponytail: 只在进页/换穴时算一次；401 条规模不值得做索引缓存。
+  late List<AcupointDetail> _siblings = _buildSiblings();
+  late int _index = _indexOf(widget.acupoint.name);
+
+  int _indexOf(String name) {
+    final i = _siblings.indexWhere((a) => a.name == name);
+    return i < 0 ? 0 : i;
+  }
+
+  @override
+  void didUpdateWidget(AcupointDetailScreen old) {
+    super.didUpdateWidget(old);
+    // 同一位置换 acupoint（测试连续 pump、或将来原地替换）时 State 会被复用，
+    // 必须重算，否则仍显示上一个穴的标题与正文。
+    if (old.acupoint.name != widget.acupoint.name) {
+      _siblings = _buildSiblings();
+      _index = _indexOf(widget.acupoint.name);
+    }
+  }
+
+  List<AcupointDetail> _buildSiblings() {
+    final same = AcupointRepository.getAll()
+        .where((a) => a.meridian == widget.acupoint.meridian)
+        .toList();
+    if (same.isEmpty) return [widget.acupoint];
+    // 传入的实例可能未入库（如测试里手工构造），补进去才能定位到它。
+    if (!same.any((a) => a.name == widget.acupoint.name)) {
+      same.add(widget.acupoint);
+    }
+    return same;
+  }
+
+  AcupointDetail get acupoint => _siblings[_index];
+
+  /// 左右滑动切换同经络上一穴／下一穴。
+  /// 与黄历切换日期同一手法：只认 onHorizontalDragEnd，
+  /// 纵向滚动仍归 ListView，不抢手势。
+  void _swipe(int delta) {
+    final next = _index + delta;
+    if (next < 0 || next >= _siblings.length) return;
+    setState(() => _index = next);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final acupoint = this.acupoint;
     // 关联数据：反向关联穴位处方/透针
     final relatedEntries = AcupunctureRepository.getEntries()
         .where((e) => e.acupoints.any((a) => _nameMatches(a.name, acupoint.name)))
@@ -43,7 +94,7 @@ class AcupointDetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(acupoint.name),
         actions: [
-          _AcupointBookmarkButton(acupoint: acupoint),
+          _AcupointBookmarkButton(key: ValueKey(acupoint.name), acupoint: acupoint),
           if (acupoint.meridian.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(right: 16),
@@ -58,9 +109,28 @@ class AcupointDetailScreen extends StatelessWidget {
             ),
         ],
       ),
-      body: ListView(
+      body: GestureDetector(
+        // ponytail: 与黄历切换日期同一手法——只认横向拖拽结束，
+        // 纵向滚动仍归 ListView，互不抢手势。
+        onHorizontalDragEnd: (d) {
+          final v = d.primaryVelocity ?? 0;
+          if (v > 200) _swipe(-1); // 右滑 → 上一穴
+          if (v < -200) _swipe(1); // 左滑 → 下一穴
+        },
+        child: ListView(
+        // 换穴后回顶部：key 变化令 ListView 重建，滚动位置归零
+        key: ValueKey(acupoint.name),
         padding: const EdgeInsets.all(16),
         children: [
+          // 同经络序位提示（本经络只有一穴时不显示）
+          if (_siblings.length > 1)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(
+                '第 ${_index + 1}/${_siblings.length} 穴 · 左右滑动切换同经络穴位',
+                style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant),
+              ),
+            ),
           // 属性标签
           if (acupoint.attribute.isNotEmpty)
             Padding(
@@ -111,6 +181,7 @@ class AcupointDetailScreen extends StatelessWidget {
           if (relatedPens.isNotEmpty)
             _buildRelatedPenetrationSection(context, relatedPens, colorScheme),
         ],
+        ),
       ),
     );
   }
@@ -520,7 +591,7 @@ class AcupointDetailScreen extends StatelessWidget {
 /// ponytail: 独立小 StatefulWidget，主页面保持 StatelessWidget 不动。
 class _AcupointBookmarkButton extends StatefulWidget {
   final AcupointDetail acupoint;
-  const _AcupointBookmarkButton({required this.acupoint});
+  const _AcupointBookmarkButton({super.key, required this.acupoint});
 
   @override
   State<_AcupointBookmarkButton> createState() =>

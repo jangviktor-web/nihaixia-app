@@ -62,4 +62,34 @@ void main() {
           reason: '${a.name} 详情页渲染抛异常');
     }
   });
+
+  testWidgets('同一位置换 acupoint：标题与正文同步切换（滑动切换的基础）', (tester) async {
+    await tester.runAsync(() async {
+      try {
+        await ZhenJiuLectureIndex.load();
+      } catch (_) {}
+    });
+
+    const a = AcupointDetail(name: '印堂穴', meridian: '督脉', clinicalNotes: '甲内容。');
+    const b = AcupointDetail(name: '中枢', meridian: '督脉', clinicalNotes: '乙内容。');
+
+    Future<void> pumpOne(AcupointDetail x) async {
+      await tester.pumpWidget(MaterialApp(
+        theme: ThemeData(extensions: [AppColors.light]),
+        home: AcupointDetailScreen(acupoint: x),
+      ));
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+    }
+
+    await pumpOne(a);
+    expect(find.text('印堂穴'), findsWidgets);
+
+    // 同位置替换会复用 State：若未在 didUpdateWidget 重算同经络列表，
+    // 标题仍会停在「印堂穴」——这条断言就是它的回归检查。
+    await pumpOne(b);
+    expect(find.text('中枢'), findsWidgets, reason: '换穴后标题未更新');
+    expect(find.text('印堂穴'), findsNothing, reason: '换穴后残留上一个穴的标题');
+    expect(tester.takeException(), isNull);
+  });
 }
