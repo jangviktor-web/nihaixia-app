@@ -15,7 +15,7 @@
 <a href="https://trendshift.io/repositories/108262?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-108262" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/108262/daily?language=HTML" alt="jangviktor-web%2Fnihaixia | Trendshift" width="250" height="55"/></a>
 <a href="https://trendshift.io/repositories/108262?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-108262" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/108262/weekly?language=HTML" alt="jangviktor-web%2Fnihaixia | Trendshift" width="250" height="55"/></a>
 
-[![Release](https://img.shields.io/github/v/release/jangviktor-web/nihaixia-app?style=for-the-badge&color=green&label=📥%20Download)](https://github.com/jangviktor-web/nihaixia-app/releases/latest)
+[![Release](https://img.shields.io/github/v/release/jangviktor-web/nihaixia-app?style=for-the-badge&color=green&label=%F0%9F%93%A5%20Download)](https://github.com/jangviktor-web/nihaixia-app/releases/latest)
 [![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev)
 [![Android](https://img.shields.io/badge/Android-7.0%2B-3DDC84?style=for-the-badge&logo=android&logoColor=white)]()
@@ -374,13 +374,13 @@
 
 ### 📥 方式一：下载预编译 APK（V1.11.33）
 
-[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安装包‑3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-release.apk)
+[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安装包-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-release.apk)
 &nbsp;&nbsp;
-[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安装包‑0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-arm64-v8a-release.apk)
+[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安装包-0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-arm64-v8a-release.apk)
 &nbsp;&nbsp;
-[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安装包‑9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-armeabi-v7a-release.apk)
+[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安装包-9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-armeabi-v7a-release.apk)
 &nbsp;&nbsp;
-[![📦 x86_64(虚拟机)](https://img.shields.io/badge/📦%20x86_64(虚拟机)-安卓安装包‑1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-x86_64-release.apk)
+[![📦 x86_64(虚拟机)](https://img.shields.io/badge/📦%20x86_64%28虚拟机%29-安卓安装包-1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-x86_64-release.apk)
 
 | 安装包 | 适用设备 |
 |:---|:---|
@@ -406,6 +406,11 @@
 > **四、其他修复**
 > - 移除重复的「倪师处方公式」卡片；印堂、中枢、急脉等稀疏数据穴位详情页可正常打开。
 >
+>
+> **五、README 图片修复（本次一并修的线上显示问题）**
+> - `📥 Download` 版本徽章整块空白 → `label` 里 emoji 未编码，shields 返回 400；改 `%F0%9F%93%A5`。
+> - x86_64 徽章显示「badge not found」→ URL 里 `x86_64(虚拟机)` 的括号把链接提前截断；括号编码为 `%28` `%29`。
+> - 四个安装包徽章只剩左半 → 文案尾部误用 **U+2011 非断连字符** 当分隔符；统一改 ASCII `-`。三语同步，15 个徽章逐条校验 `aria-label` 完整。
 > 详见 [Release Notes](release_notes/v1.11.33.md)。
 
 <details>
