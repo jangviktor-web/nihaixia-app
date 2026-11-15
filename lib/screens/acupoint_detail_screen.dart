@@ -131,13 +131,20 @@ class _AcupointDetailScreenState extends State<AcupointDetailScreen> {
                 style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant),
               ),
             ),
-          // 属性标签
+          // 属性标签：attribute 最长 54 字（内关/飞扬），Chip 内 Text 不换行、
+          // 窄屏会被裁掉大半；改用可换行容器。
+          // ponytail: 纯 Container + Text，不引新组件、不加样式参数。
           if (acupoint.attribute.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(bottom: 12),
-              child: Chip(
-                label: Text(acupoint.attribute),
-                backgroundColor: context.colors.infoContainer,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: context.colors.infoContainer,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(acupoint.attribute),
               ),
             ),
 
