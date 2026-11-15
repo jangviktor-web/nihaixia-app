@@ -15,7 +15,7 @@ Offline-first · All data on-device · No sign-up · Ready out of the box (fully
 <a href="https://trendshift.io/repositories/108262?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-108262" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/108262/daily?language=HTML" alt="jangviktor-web%2Fnihaixia | Trendshift" width="250" height="55"/></a>
 <a href="https://trendshift.io/repositories/108262?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-108262" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/108262/weekly?language=HTML" alt="jangviktor-web%2Fnihaixia | Trendshift" width="250" height="55"/></a>
 
-[![Release](https://img.shields.io/github/v/release/jangviktor-web/nihaixia-app?style=for-the-badge&color=green&label=📥%20Download)](https://github.com/jangviktor-web/nihaixia-app/releases/latest)
+[![Release](https://img.shields.io/github/v/release/jangviktor-web/nihaixia-app?style=for-the-badge&color=green&label=%F0%9F%93%A5%20Download)](https://github.com/jangviktor-web/nihaixia-app/releases/latest)
 [![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev)
 [![Android](https://img.shields.io/badge/Android-7.0%2B-3DDC84?style=for-the-badge&logo=android&logoColor=white)]()
@@ -412,6 +412,11 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 > **4. Other fixes**
 > - Removed the duplicated "formula" card; sparse-data acupoints (Yintang, Zhongshu, Jimai) now open normally.
 >
+>
+> **5. README image fixes (fixed in this release)**
+> - The `📥 Download` version badge rendered as a blank box — the emoji inside `label` was unencoded and shields returned 400; now `%F0%9F%93%A5`.
+> - The x86_64 badge showed "badge not found" — the parentheses in `x86_64(虚拟机)` terminated the URL early; now `%28` / `%29`.
+> - All four APK badges showed only their left half — the message segment used a **U+2011 non-breaking hyphen** as separator, so shields could not parse it; replaced with an ASCII `-`. Fixed in all three READMEs; 15 badges verified for a complete `aria-label`.
 > See [Release Notes](release_notes/v1.11.33.md).
 
 <details>
