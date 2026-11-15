@@ -132,6 +132,19 @@
 
 <div align="center">
 
+<div align="center">
+
+**v1.11.33 穴位詳情頁 —— 同經絡左右滑動換穴 · 收藏 · 講義與古籍入口 · 四段式臨床心悟**
+
+![v1.11.33 穴位詳情頁](docs/images/screenshot_v1133_acupoint_detail.webp)
+
+</div>
+
+從左到右：① 穴位詳情頁頂部「第 7/11 穴 · 左右滑動切換同經絡穴位」與可換行的屬性標籤、收藏按鈕 ② 「講義講解」「古籍原文」入口及點擊後的古籍提及列表 ③ 倪海廈臨床心悟按【倪師主治思路／配穴與針法／主治·書證】分段呈現，下方接關聯穴位處方。
+
+<details>
+<summary><b>📁 歷史版本截圖（v1.11.32 → v1.11.0，按版本從新到舊）· 點選展開</b></summary>
+
 **v1.11.32 問倪師AI · 症狀自查 —— 本地講義檢索 + 你自配的端點 + 一頁勾選出結論**
 
 ![v1.11.32 問倪師AI 與症狀自查](docs/images/screenshot_v1131_llm_ask.webp)
@@ -148,8 +161,6 @@
 
 ⑤ **症狀自查** —— 寒熱總綱（必選）→ 進階線索（選填）→ 十一問，選滿 3 項即可出結論，方劑可繼續點進詳情。
 
-<details>
-<summary><b>📁 歷史版本截圖（v1.11.31 → v1.11.0，按版本從新到舊）· 點選展開</b></summary>
 
 <div align="center">
 
@@ -351,7 +362,7 @@
 > 「問倪師AI」為**可選功能**：端點與 Key 由你自填，**預設關閉**，關閉時不發出任何網路請求（詳見 [PRIVACY.md](PRIVACY.md)）
 > 通用版 APK 約 82MB，分架構版 34–38MB
 > 自 V1.11.9 起由 GitHub Actions 自動構建釋出，推送 `v*` tag 即出包
-> **最後更新：2026-11-07（v1.11.32）**
+> **最後更新：2026-11-15（v1.11.33）**
 
 > [!TIP]
 > **💰 免費 API · 5 分鐘啟用「問倪師AI」**
@@ -361,15 +372,15 @@
 
 > 🌐 不想裝 APK？**[線上網頁版免安裝試用 →](#user-content-online-web)**
 
-### 📥 方式一：下載預編譯 APK（V1.11.32）
+### 📥 方式一：下載預編譯 APK（V1.11.33）
 
-[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安裝包‑3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.32/app-release.apk)
+[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安裝包‑3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-release.apk)
 &nbsp;&nbsp;
-[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安裝包‑0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.32/app-arm64-v8a-release.apk)
+[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安裝包‑0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-arm64-v8a-release.apk)
 &nbsp;&nbsp;
-[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安裝包‑9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.32/app-armeabi-v7a-release.apk)
+[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安裝包‑9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-armeabi-v7a-release.apk)
 &nbsp;&nbsp;
-[![📦 x86_64(虛擬機器)](https://img.shields.io/badge/📦%20x86_64(虛擬機器)-安卓安裝包‑1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.32/app-x86_64-release.apk)
+[![📦 x86_64(虛擬機器)](https://img.shields.io/badge/📦%20x86_64(虛擬機器)-安卓安裝包‑1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-x86_64-release.apk)
 
 | 安裝包 | 適用裝置 |
 |:---|:---|
@@ -377,6 +388,28 @@
 | arm64‑v8a | 新款 64 位手機，體積更小 |
 | armeabi‑v7a | 老舊 32 位裝置 |
 | x86_64 | 安卓模擬器 / 虛擬機器 |
+
+> **V1.11.33 穴位詳情頁體驗升級 · 臨床心悟全庫格式歸一 · 講義與古籍索引修復**（2026-11-15 發布）
+>
+> **一、穴位詳情頁更好用**
+> - **左右滑動切換同經絡穴位**：左滑下一穴、右滑上一穴，依本經絡國標穴序，頂部顯示「第 N/M 穴」，到兩端停住不循環；縱向捲動不受影響。
+> - **新增收藏**：右上角書籤按鈕，首頁「收藏」列表可跳回詳情頁。
+> - **長屬性不再裁字**：屬性標籤改為可換行容器，小螢幕與系統字級 200% 下也能完整顯示（經 7 尺寸 × 3 字級共 21 組掃描驗證）。
+>
+> **二、臨床心悟全庫格式歸一**
+> - 401 條統一為 `【】` 方括號標題格式，標準標頭由 67 種收斂到 6 種，格式合規率 100%；清掉混入的編輯說明、第三方校對標記、編造配方與他穴內容。
+>
+> **三、講義與古籍索引修復**
+> - 講義索引按經絡章消歧，修復手五里／腰陽關／腹通谷／頭竅陰／譩譆 等 9 個同名異穴的串篇與缺鍵，索引穴位數 389→394。
+> - 古籍原文入口補異體字別名（附陽→跗陽、譩嘻→譩譆），《針灸大成》可查穴位增至 378/401。
+>
+> **四、其他修復**
+> - 移除重複的「倪師處方公式」卡片；印堂、中樞、急脈等稀疏資料穴位詳情頁可正常開啟。
+>
+> 詳見 [Release Notes](release_notes/v1.11.33.md)。
+
+<details>
+<summary><b>歷史更新日誌（v1.11.32 及更早）</b></summary>
 
 > **V1.11.32 問倪師AI（本地講義檢索 + 自配端點）· 症狀自查 · 回答內跳轉 · 類方禁忌進上下文**
 >
@@ -393,8 +426,6 @@
 > 詳見 [Release Notes](release_notes/v1.11.32.md)。
 >
 
-<details>
-<summary><b>歷史更新日誌（v1.11.31 及更早）</b></summary>
 
 > **V1.11.31 傷寒論宋本統一版 · 方劑見於經典修復 · 排版規範化**：傷寒論資產整體切換為宋本條號命名（390 條文 + 4 附錄 = 394 篇），列表名統一「宋本N·」；經典索引 1728 條、方劑索引 279 條重建對齊；補齊 8 個方劑「見於經典」跳轉並撤銷「杏子湯」誤掛；條文卡排版規範化、R1 歸零。詳見 [Release Notes](release_notes/v1.11.31.md)。
 > 

@@ -138,6 +138,19 @@ Key signup paths, screenshots and common errors: [Free model configuration guide
 
 <div align="center">
 
+<div align="center">
+
+**v1.11.33 Acupoint detail — swipe between same-meridian points · bookmarks · lecture & classics entries · structured clinical notes**
+
+![v1.11.33 acupoint detail](docs/images/screenshot_v1133_acupoint_detail.webp)
+
+</div>
+
+Left to right: (1) the "7 of 11 · swipe to switch within this meridian" indicator, wrapping attribute label and bookmark button; (2) the Lecture Notes / Classics entries and the classic-reference list; (3) clinical notes in the four standard bracket sections (point location / treatment rationale / needling & combinations / classical indications), with related formula prescriptions below.
+
+<details>
+<summary><b>📁 Historical screenshots (v1.11.32 → v1.11.0, newest to oldest) · Click to expand</b></summary>
+
 **v1.11.32 Ask Master Ni AI · Symptom self-check — local lecture retrieval + your own endpoint + one-page triage**
 
 ![v1.11.32 Ask Master Ni AI and symptom self-check](docs/images/screenshot_v1131_llm_ask.webp)
@@ -154,8 +167,6 @@ Key signup paths, screenshots and common errors: [Free model configuration guide
 
 ⑤ **Symptom self-check** — cold/heat overview (required) → advanced clues (optional) → eleven questions; pick three items and the conclusion appears, and formulas remain tappable through to detail pages.
 
-<details>
-<summary><b>📁 Historical screenshots (v1.11.31 → v1.11.0, newest to oldest) · Click to expand</b></summary>
 
 <div align="center">
 
@@ -357,7 +368,7 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 > "Ask Master Ni AI" is **optional**: you supply the endpoint and key yourself, it is **off by default**, and when off the app makes no network requests (see [PRIVACY.md](PRIVACY.md))
 > Universal APK about 82MB, per-architecture builds 34–38MB
 > Since V1.11.9, builds and releases are automated by GitHub Actions; pushing a `v*` tag produces the packages
-> **Last updated: 2026-11-07 (v1.11.32)**
+> **Last updated: 2026-11-15 (v1.11.33)**
 
 > [!TIP]
 > **💰 Free API · enable "Ask Master Ni AI" in 5 minutes**
@@ -367,15 +378,15 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 
 > 🌐 No APK? **[Try the web version — no install →](#user-content-online-web)**
 
-### 📥 Method 1: Download Prebuilt APK (V1.11.32)
+### 📥 Method 1: Download Prebuilt APK (V1.11.33)
 
-[![📦 Universal APK](https://img.shields.io/badge/📦%20Universal%20APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.32/app-release.apk)
+[![📦 Universal APK](https://img.shields.io/badge/📦%20Universal%20APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-release.apk)
 &nbsp;&nbsp;
-[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a%20APK-0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.32/app-arm64-v8a-release.apk)
+[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a%20APK-0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-arm64-v8a-release.apk)
 &nbsp;&nbsp;
-[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a%20APK-9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.32/app-armeabi-v7a-release.apk)
+[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a%20APK-9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-armeabi-v7a-release.apk)
 &nbsp;&nbsp;
-[![📦 x86_64 Emulator APK](https://img.shields.io/badge/📦%20x86_64%20Emulator%20APK-1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.32/app-x86_64-release.apk)
+[![📦 x86_64 Emulator APK](https://img.shields.io/badge/📦%20x86_64%20Emulator%20APK-1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-x86_64-release.apk)
 
 | Package | Recommended for |
 |:---|:---|
@@ -383,6 +394,28 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 | arm64‑v8a | Newer 64-bit phones, smaller |
 | armeabi‑v7a | Older 32-bit devices |
 | x86_64 | Emulators / virtual machines |
+
+> **V1.11.33 Acupoint detail UX · Clinical notes normalized · Lecture & classic index fixes**
+>
+> **1. A better acupoint detail page**
+> - **Swipe left/right** to move through acupoints of the same meridian in canonical order; a "N of M" indicator shows the position, and vertical scrolling is unaffected.
+> - **Bookmarks**: a bookmark button in the app bar; the Favorites list links back to the detail page.
+> - **No more clipped attributes**: long attribute text now wraps, so it stays readable on narrow screens and at 200% system text scale (verified across 7 screen sizes × 3 text scales).
+>
+> **2. Clinical notes normalized across the library**
+> - All 401 entries now use the same `【】` bracket headings; 67 distinct heading wordings consolidated into 6 standard ones (100% compliant). Editorial notes, third-party proofreading marks, fabricated formulas and content belonging to other acupoints were removed.
+>
+> **3. Lecture and classic index fixes**
+> - The lecture index now disambiguates by meridian chapter, fixing 9 cross-meridian same-name acupoints; indexed acupoints rose from 389 to 394.
+> - Variant-character aliases added to the classics entry (Fuyang, Yixi), bringing *Zhen Jiu Da Cheng* coverage to 378/401.
+>
+> **4. Other fixes**
+> - Removed the duplicated "formula" card; sparse-data acupoints (Yintang, Zhongshu, Jimai) now open normally.
+>
+> See [Release Notes](release_notes/v1.11.33.md).
+
+<details>
+<summary><b>Historical changelog (v1.11.32 and earlier)</b></summary>
 
 > **V1.11.32 Ask Master Ni AI (local lecture retrieval + bring-your-own endpoint) · Symptom self-check · In-answer linking · Formula contraindications in context**
 >
@@ -399,8 +432,6 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 > See [Release Notes](release_notes/v1.11.32.md).
 >
 
-<details>
-<summary><b>Historical changelog (v1.11.31 and earlier)</b></summary>
 
 > **V1.11.31 Unified Song-edition Shang Han Lun · Fixed "Found in the Classics" on formulas · Standardized layout**: Shang Han Lun assets were switched wholesale to Song-edition clause numbering (390 clauses + 4 appendices = 394 chapters), with list names unified as "Song edition N ·"; the classics index (1728 entries) and formula index (279 entries) were rebuilt and aligned; "Found in the Classics" jumps were completed for 8 formulas and the mistaken "Xingzi Tang" link was removed; clause-card layout was standardized and R1 was cleared. See [Release Notes](release_notes/v1.11.31.md).
 > 
