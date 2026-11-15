@@ -138,8 +138,6 @@ Key signup paths, screenshots and common errors: [Free model configuration guide
 
 <div align="center">
 
-<div align="center">
-
 **v1.11.33 Acupoint detail — swipe between same-meridian points · bookmarks · lecture & classics entries · structured clinical notes**
 
 ![v1.11.33 acupoint detail](docs/images/screenshot_v1133_acupoint_detail.webp)
@@ -150,6 +148,8 @@ Left to right: (1) the "7 of 11 · swipe to switch within this meridian" indicat
 
 <details>
 <summary><b>📁 Historical screenshots (v1.11.32 → v1.11.0, newest to oldest) · Click to expand</b></summary>
+
+<div align="center">
 
 **v1.11.32 Ask Master Ni AI · Symptom self-check — local lecture retrieval + your own endpoint + one-page triage**
 

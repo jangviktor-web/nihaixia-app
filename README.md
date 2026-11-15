@@ -132,8 +132,6 @@
 
 <div align="center">
 
-<div align="center">
-
 **v1.11.33 穴位详情页 —— 同经络左右滑动换穴 · 收藏 · 讲义与古籍入口 · 四段式临床心悟**
 
 ![v1.11.33 穴位详情页](docs/images/screenshot_v1133_acupoint_detail.webp)
@@ -144,6 +142,8 @@
 
 <details>
 <summary><b>📁 历史版本截图（v1.11.32 → v1.11.0，按版本从新到旧）· 点击展开</b></summary>
+
+<div align="center">
 
 **v1.11.32 问倪师AI · 症状自查 —— 本地讲义检索 + 你自配的端点 + 一页勾选出结论**
 
