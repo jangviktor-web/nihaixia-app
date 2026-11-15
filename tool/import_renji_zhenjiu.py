@@ -66,6 +66,30 @@ _ALIAS_FORMS = {
     "足五里": ["五里"],   # ⚠️ 24_大肠经 的「五里」实为手五里，会带入 1~2 篇噪音
     "膝阳关": ["阳关"],   # ⚠️ 「阳关」偶指腰阳关，同上
     "足通谷": ["通谷"],
+    # 2026-11-15 补：以下 6 穴在讲稿里只以简称/异写出现，按正名扫 0 命中，
+    # 详情页「讲义讲解」入口一直缺失。
+    "手五里": ["五里"],
+    "腰阳关": ["阳关"],
+    "腹通谷": ["通谷"],
+    "头窍阴": ["窍阴"],
+    "足窍阴": ["窍阴"],
+    "譩譆": ["譩嘻"],     # 讲稿通篇作「譩嘻」
+}
+
+# 跨经重名穴：简称只在**所属经络章**有意义，否则会把同名异穴的段落错归过去。
+# 2026-11-15 实测错装：足五里 5 篇里 3 篇属他经（手阳明篇的「五里」是手五里）、
+# 膝阳关 4 篇里 2 篇是腰阳关（督脉篇）、足通谷 6 篇里 1 篇是腹通谷（足少阴篇）。
+# 头窍阴/足窍阴同属胆经一篇，两穴都指向该篇——那是真的同篇讲过，不算错装。
+_CHAPTER_FILTER = {
+    "足五里": ["足厥阴肝经"],
+    "手五里": ["手阳明大肠经"],
+    "膝阳关": ["足少阳胆经"],
+    "腰阳关": ["督脉"],
+    "足通谷": ["足太阳膀胱经"],
+    "腹通谷": ["足少阴肾经"],
+    "头窍阴": ["足少阳胆经"],
+    "足窍阴": ["足少阳胆经"],
+    "譩譆": ["足太阳膀胱经"],
 }
 
 
@@ -158,13 +182,18 @@ def safe_name(title: str) -> str:
     return re.sub(r"[\\/:*?\"<>|（）()\s、，。·]", "", title)[:40]
 
 
-def acupoint_index(bodies):
-    """扫全部篇正文，统计穴位名出现次数。"""
+def acupoint_index(bodies, titles=None):
+    """扫全部篇正文，统计穴位名出现次数。
+
+    [titles] 给出篇名时，[_CHAPTER_FILTER] 里登记的跨经重名穴只在该穴所属
+    经络章内计数，避免把同名异穴的段落算进来。
+    """
     data = json.load(io.open(ACUPOINT_JSON, encoding="utf-8"))
     names = sorted(
         {a["name"].replace("穴", "") for a in data["acupoints"]},
-        key=len,
-        reverse=True,
+        # 次级键按字典序，否则同长度穴名的相对顺序随 set 迭代漂移，
+        # 每次重跑都会把 json 整体重排（纯顺序 diff，审阅困难）。
+        key=lambda s: (-len(s), s),
     )
     # 不再排除 _LINK_EXCLUDED：详情页讲义索引需要这 3 穴，链接端另有名单兜底。
     used = list(names)
@@ -173,8 +202,11 @@ def acupoint_index(bodies):
     out = {}
     for name in used:
         forms = _EXACT_FORMS.get(name) or ([name] + _ALIAS_FORMS.get(name, []))
+        only = _CHAPTER_FILTER.get(name)
         per = {}
         for seq, body in enumerate(bodies):
+            if only and titles and not any(k in titles[seq] for k in only):
+                continue
             c = sum(body.count(f) for f in forms)
             if c:
                 per[seq] = c
@@ -222,6 +254,11 @@ def write_dart(items):
 
 
 def main():
+    """⚠️ 重跑会**重写全部 72 篇 md**：源 txt 是原始写法（口歪/眯），
+    仓库篇文件已做异体字归一（口喎/瞇），重跑会把归一成果冲掉。
+    只想更新 acupoint_index.json 时，请用 tool/reindex_zhenjiu_index.py
+    （只重算索引、不动篇；篇清单以 zhenjiu_lecture_data.dart 的 seq→asset 为准）。
+    """
     src_path = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_SRC
     src = io.open(src_path, encoding="utf-8").read()
     os.makedirs(OUT_DIR, exist_ok=True)
@@ -260,7 +297,8 @@ def main():
     print("兜底清理修正篇数:", n_fixed)
     idx = acupoint_index(
         [io.open(os.path.join(ROOT, it["asset"]), encoding="utf-8").read()
-         for it in items]
+         for it in items],
+        [it["name"] for it in items],
     )
     io.open(
         os.path.join(OUT_DIR, "acupoint_index.json"),
