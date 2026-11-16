@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../engine/yijing_engine.dart';
+import '../services/classic_search_service.dart';
 import 'yijing_detail_screen.dart';
+import 'llm_ask_screen.dart';
 
 /// 解卦结果页：本卦 / 动爻 / 变卦 / 互卦
 class YiJingResultScreen extends StatelessWidget {
@@ -8,12 +10,66 @@ class YiJingResultScreen extends StatelessWidget {
 
   const YiJingResultScreen({super.key, required this.cast});
 
+  /// 卦象摘要：本地引擎已排出本卦/动爻/变卦/互卦，
+  /// 并附《天纪·人间道》原文，模型只解读、不重算。
+  String _digest() {
+    final b = StringBuffer()
+      ..writeln('起卦法：${cast.method}')
+      ..writeln('本卦：第${cast.primary.seq}卦 ${cast.primary.name}｜'
+          '卦辞：${cast.primary.judgement}');
+    if (cast.movingLines.isEmpty) {
+      b.writeln('动爻：六爻皆静');
+    } else {
+      b.writeln('动爻：${cast.movingTitles.join('、')}');
+      b.writeln('动爻爻辞：${cast.movingTexts.join('；')}');
+    }
+    final changed = cast.changed;
+    if (changed != null) {
+      b.writeln('变卦：第${changed.seq}卦 ${changed.name}｜卦辞：${changed.judgement}');
+    }
+    final nuclear = cast.nuclear;
+    if (nuclear != null) {
+      b.writeln('互卦：第${nuclear.seq}卦 ${nuclear.name}');
+    }
+    b.writeln('本卦《天纪·人间道》：${cast.primary.renjian}');
+    return b.toString().trim();
+  }
+
+  void _askNishi(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => LlmAskScreen(
+          prefill: '请按倪师天纪的思路解这一卦：本卦与变卦的吉凶、'
+              '动爻的提示，以及人间道上的应对。',
+          seedHits: [
+            ClassicHit(
+              source: 'yijing',
+              sourceLabel: '易经卦象（本地起卦结果）',
+              title: '本卦动爻与变卦',
+              snippet: _digest(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('解卦结果')),
+      appBar: AppBar(
+        title: const Text('解卦结果'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.forum_outlined),
+            tooltip: '请倪师解此卦',
+            onPressed: () => _askNishi(context),
+          ),
+        ],
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
