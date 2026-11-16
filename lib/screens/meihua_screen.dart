@@ -8,9 +8,11 @@ import 'package:sxwnl_spa_dart/sxwnl_spa_dart.dart' show LunarDate, AstroDateTim
 import '../data/meihua_data.dart';
 import '../data/yijing_data.dart';
 import '../services/bazi_service.dart' show computeBaZiPaipan;
+import '../services/classic_search_service.dart';
 import '../utils/chart_export.dart';
 import '../utils/shake_detector.dart';
 import '../utils/shake_support.dart';
+import 'llm_ask_screen.dart';
 
 const _kZhiNames = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
 
@@ -156,6 +158,44 @@ class _MeihuaScreenState extends State<MeihuaScreen> {
     );
   }
 
+  /// 卦象摘要：起卦法、主卦、动爻、体用生克、旺衰、互变与《天纪·人间道》。
+  /// 推演由本地引擎完成，模型只解读、不重算。
+  String _digest(MeihuaChart c) {
+    final b = StringBuffer()
+      ..writeln('起卦法：${c.methodLabel}')
+      ..writeln('主卦：${c.main.name}｜卦辞：${c.main.judgement}')
+      ..writeln('动爻：第${c.movingYao}爻｜爻辞：${c.movingYaoCi}')
+      ..writeln('体用：体卦${c.ti.name}（${c.ti.nature}）｜用卦${c.yong.name}（${c.yong.nature}）'
+          '｜${c.mainRelation.label}：${c.mainRelation.verdict}')
+      ..writeln('体卦旺衰：${c.tiWangShuai.label}（月建${c.monthBranch}）')
+      ..writeln('互卦：${c.mutual.name}｜变卦：${c.changed.name}｜'
+          '变卦卦辞：${c.changed.judgement}')
+      ..writeln('主卦《天纪·人间道》：${c.main.renjian}');
+    return b.toString().trim();
+  }
+
+  void _askNishi() {
+    final c = _chart;
+    if (c == null) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => LlmAskScreen(
+          prefill: '请按倪师天纪的思路解这一卦：主卦与变卦的吉凶、'
+              '体用生克的含义，以及人间道上的应对。',
+          seedHits: [
+            ClassicHit(
+              source: 'meihua',
+              sourceLabel: '梅花易数（本地起卦结果）',
+              title: '主互变与体用',
+              snippet: _digest(c),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   /// 存图 / 分享长图：内容与结果区同源。
   void _exportImage() {
     final c = _chart;
@@ -211,6 +251,12 @@ class _MeihuaScreenState extends State<MeihuaScreen> {
       appBar: AppBar(
         title: const Text('梅花易数'),
         actions: [
+          if (_chart != null)
+            IconButton(
+              icon: const Icon(Icons.forum_outlined),
+              tooltip: '请倪师解此卦',
+              onPressed: _askNishi,
+            ),
           if (_chart != null)
             IconButton(
               icon: const Icon(Icons.image_outlined),

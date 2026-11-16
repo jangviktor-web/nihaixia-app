@@ -95,7 +95,13 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
     super.initState();
     final prefill = widget.prefill?.trim();
     if (prefill != null && prefill.isNotEmpty) _controller.text = prefill;
-    _restoreHistory();
+    if (widget.seedHits.isEmpty) {
+      _restoreHistory();
+    } else {
+      // 命理入口（seedHits 非空）不接续上次医疗会话：否则命盘问题会挂在
+      // 桂枝汤之类的旧上下文后面，模型容易串味。
+      _historyReady = true;
+    }
   }
 
   Future<void> _restoreHistory() async {
@@ -181,7 +187,11 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
     try {
       // 必须走 prepare：整句提问在整串匹配下 0 命中，需关键词回退；
       // 且要一并拿方剂清单 / 医案 / 统计，否则模型只答第一个方剂、不会数、不回链医案。
-      final r = (await LlmService.prepare(q)).withHits(widget.seedHits);
+      // 命理入口只喂盘面事实：检索医疗库会把含「格局/大限」的医案片段
+      // 混进命理解读里跑偏，也白烧上下文预算。
+      final r = widget.seedHits.isNotEmpty
+          ? const LlmRetrieval(classics: []).withHits(widget.seedHits)
+          : await LlmService.prepare(q);
       final text = await LlmService.ask(
         q,
         LlmConfig.fromSettings(),
@@ -317,6 +327,24 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
   /// 免责框由 App 固定渲染，绝不交给模型生成。
   /// 急症提问另出加强版：persona 禁止模型在正文写安全话术，缺口在这里补。
   Widget _disclaimer(ColorScheme cs) {
+    // 命理入口（seedHits 非空）走民俗口径：这里渲染「请遵医嘱用药」不合适，
+    // 也违反命理模块须带民俗参考免责的约定。
+    if (widget.seedHits.isNotEmpty) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+        color: cs.surfaceContainerHighest,
+        child: Text(
+          'AI 生成内容，非倪海厦本人原话，仅供民俗文化学习参考，'
+          '不构成医疗、投资或人生决策建议。',
+          style: TextStyle(
+            fontSize: 12,
+            height: 1.5,
+            color: cs.onSurfaceVariant,
+          ),
+        ),
+      );
+    }
     final last = _turns.isEmpty ? '' : _turns.last.question;
     final emergency = LlmService.isEmergencyQuery(last);
     // 针灸提问另加一句：取穴与手法是可照着做的操作，风险比开方更直接。
