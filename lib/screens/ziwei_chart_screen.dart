@@ -12,6 +12,8 @@ import '../data/ziwei_case_data.dart';
 import '../data/saved_chart_repository.dart';
 import '../data/settings_repository.dart';
 import '../theme/app_colors.dart';
+import '../services/classic_search_service.dart';
+import 'llm_ask_screen.dart';
 
 /// 紫微斗数排盘界面。
 ///
@@ -283,6 +285,12 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
         actions: [
           if (_chart != null && !_calculating)
             IconButton(
+              tooltip: '请倪师解读此盘',
+              icon: const Icon(Icons.forum_outlined),
+              onPressed: _askNishi,
+            ),
+          if (_chart != null && !_calculating)
+            IconButton(
               tooltip: '存图 / 分享长图',
               icon: const Icon(Icons.image_outlined),
               onPressed: _exportImage,
@@ -369,6 +377,55 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
             _buildInterpretationSection(cs, _chart!),
           ],
         ],
+      ),
+    );
+  }
+
+  /// 命盘摘要：把本地引擎算出的确定性事实拼成一段文本。
+  ///
+  /// ponytail: 只列十二宫主星与生年四化，星曜全量会超出 prompt 预算；
+  /// 需要更细（亮度/杂曜/流年）时再扩。
+  String _chartDigest(ZiweiChart c) {
+    final buf = StringBuffer()
+      ..writeln('八字四柱：${c.baziFull}')
+      ..writeln('农历：${c.lunarText}｜性别：${c.genderLabel}｜五行局：${c.elementBureauLabel}');
+    if (c.mingZhuLabel != null || c.shenZhuLabel != null) {
+      buf.writeln('命主：${c.mingZhuLabel ?? '—'}｜身主：${c.shenZhuLabel ?? '—'}');
+    }
+    final sh = c.sihua
+        .map((s) => '${s.starLabelName}化${s.typeLabel}')
+        .join('、');
+    if (sh.isNotEmpty) buf.writeln('生年四化：$sh');
+    buf.writeln('十二宫主星：');
+    for (final p in c.palaces) {
+      final majors = p.majors.map((s) => '${s.label}${s.sihuaText}').join('、');
+      final tag = [if (p.isLife) '命宫', if (p.isBody) '身宫'].join('');
+      buf.writeln(
+        '· ${p.roleLabel}（${p.ganzhiLabel}）${tag.isEmpty ? '' : '[$tag]'}'
+        '${majors.isEmpty ? '无主星' : majors}',
+      );
+    }
+    return buf.toString().trim();
+  }
+
+  /// 请倪师解读此盘：盘面事实作为一条本地片段注入，模型只解读、不重算。
+  void _askNishi() {
+    final c = _chart;
+    if (c == null) return;
+    final seed = ClassicHit(
+      source: 'ziwei',
+      sourceLabel: '紫微命盘（本地排盘结果）',
+      title: '本盘十二宫与四化',
+      snippet: _chartDigest(c),
+    );
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => LlmAskScreen(
+          prefill: '请按倪师天纪的论断思路，解读我这个紫微命盘：'
+              '命身格局、生年四化落宫、以及当前大限的重点。',
+          seedHits: [seed],
+        ),
       ),
     );
   }

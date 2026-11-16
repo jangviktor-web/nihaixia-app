@@ -61,7 +61,14 @@ class _Turn {
 /// 长对话模式（最近 3 轮历史），但不加模式开关：点「新对话」清空即等同于一问一答。
 /// 默认关闭，未配置时本页只给出前往设置的入口，不发起任何网络请求。
 class LlmAskScreen extends StatefulWidget {
-  const LlmAskScreen({super.key});
+  const LlmAskScreen({super.key, this.prefill, this.seedHits = const []});
+
+  /// 进入时预填到输入框的问题（如从命盘结果页带入的「请解读此盘」）。
+  final String? prefill;
+
+  /// 预置的本地事实片段（如命盘摘要）。命理模块无讲稿可检索，靠它把
+  /// 本地引擎算出的盘面事实喂给模型，走同一条「只依据事实作答」的管线。
+  final List<ClassicHit> seedHits;
 
   @override
   State<LlmAskScreen> createState() => _LlmAskScreenState();
@@ -86,6 +93,8 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
   @override
   void initState() {
     super.initState();
+    final prefill = widget.prefill?.trim();
+    if (prefill != null && prefill.isNotEmpty) _controller.text = prefill;
     _restoreHistory();
   }
 
@@ -172,7 +181,7 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
     try {
       // 必须走 prepare：整句提问在整串匹配下 0 命中，需关键词回退；
       // 且要一并拿方剂清单 / 医案 / 统计，否则模型只答第一个方剂、不会数、不回链医案。
-      final r = await LlmService.prepare(q);
+      final r = (await LlmService.prepare(q)).withHits(widget.seedHits);
       final text = await LlmService.ask(
         q,
         LlmConfig.fromSettings(),

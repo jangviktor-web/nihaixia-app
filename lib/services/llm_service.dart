@@ -92,6 +92,26 @@ class LlmRetrieval {
 
   /// 病名对照块（空串表示本条提问没命中对照关系）。
   String get diseaseBrief => DiseaseAliasIndex.brief(diseases);
+
+  /// 前置注入额外的本地事实片段（如紫微命盘摘要）。
+  ///
+  /// 非医疗模块（命理）没有讲稿索引可检索，但盘面是本地引擎算出的确定性事实。
+  /// 包装成 [ClassicHit] 后走同一条「只依据给定事实作答」的管线即可，
+  /// 无需为命理另建索引或另写一套 prompt。
+  LlmRetrieval withHits(List<ClassicHit> hits) {
+    if (hits.isEmpty) return this;
+    return LlmRetrieval(
+      classics: [...hits, ...classics],
+      matchedArticles: matchedArticles,
+      formulas: formulas,
+      cases: cases,
+      caseFormulas: caseFormulas,
+      formulaBriefs: formulaBriefs,
+      acupoints: acupoints,
+      diseases: diseases,
+      stats: stats,
+    );
+  }
 }
 
 /// 倪师讲义问答：本地检索片段 + 人格规则 → 一次 POST。
