@@ -28,7 +28,7 @@ class DatabaseHelper {
     final path = join(dbPath, testDbName ?? filePath);
     return await openDatabase(
       path,
-      version: 6,
+      version: 7,
       onCreate: _createDB,
       onUpgrade: _upgradeDB,
     );
@@ -149,6 +149,8 @@ class DatabaseHelper {
         created_at TEXT NOT NULL
       )
     ''');
+    // 阅读进度（按文档记录滚动位置，重开 App 后回到原处）
+    await db.execute(_createReadingProgressSql);
   }
 
   Future<void> _upgradeDB(Database db, int oldVersion, int newVersion) async {
@@ -241,7 +243,21 @@ class DatabaseHelper {
         )
       ''');
     }
+    if (oldVersion < 7) {
+      // 阅读进度：每篇文档记住滚动位置
+      await db.execute(_createReadingProgressSql);
+    }
   }
+
+  /// 阅读进度表（`_createDB` 与 `_upgradeDB` 共用，避免两处 SQL 漂移）。
+  static const String _createReadingProgressSql = '''
+    CREATE TABLE IF NOT EXISTS reading_progress(
+      doc_key TEXT PRIMARY KEY,
+      offset REAL NOT NULL,
+      max_extent REAL NOT NULL,
+      updated_at INTEGER NOT NULL
+    )
+  ''';
 
   Future<int> insertBookmark(Bookmark bookmark) async {
     final db = await database;

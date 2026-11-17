@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../widgets/state_view.dart';
 import 'package:flutter/services.dart';
@@ -5,6 +7,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../widgets/traditional_toggle_button.dart';
 import '../data/chinese_convert.dart' show toSimplified;
+import '../data/reading_progress_repository.dart';
 import '../data/formula_repository.dart';
 import '../data/traditional_display.dart';
 import '../data/herb_repository.dart';
@@ -162,6 +165,11 @@ class MarkdownDocScreen extends StatefulWidget {
   final String? footer;
   final bool linkFormulas;
 
+  /// 阅读进度的存储键。不传时用 [asset]（无 asset 则用 [title]）。
+  ///
+  /// 仅当标题可能重名（如不同古书的同名章节）时才需要显式指定。
+  final String? progressKey;
+
   const MarkdownDocScreen({
     super.key,
     required this.title,
@@ -169,6 +177,7 @@ class MarkdownDocScreen extends StatefulWidget {
     this.content,
     this.footer,
     this.linkFormulas = false,
+    this.progressKey,
   }) : assert(asset != '' || content != null, 'asset 与 content 至少要提供一个');
 
   @override
@@ -269,10 +278,32 @@ class MarkdownDocScreen extends StatefulWidget {
 class _MarkdownDocScreenState extends State<MarkdownDocScreen> {
   late Future<String> _future;
 
+  /// 阅读进度：外部控制器交给 flutter_markdown 的 `Markdown.controller`，
+  /// 它内部是 ListView，传同一个 controller 就能读写滚动位置。
+  final ScrollController _scroll = ScrollController();
+  Timer? _saveTimer;
+
+  /// 每篇只自动恢复一次，避免用户手动滚走后被再次拉回。
+  bool _restored = false;
+
+  String get _progressKey => widget.progressKey ??
+      (widget.asset.isNotEmpty ? widget.asset : widget.title);
+
   @override
   void initState() {
     super.initState();
     _future = _load();
+    _scroll.addListener(_onScroll);
+    _future.then((_) => _restoreProgress());
+  }
+
+  @override
+  void dispose() {
+    _saveTimer?.cancel();
+    _persistProgress();
+    _scroll.removeListener(_onScroll);
+    _scroll.dispose();
+    super.dispose();
   }
 
   Future<String> _load() async {
@@ -283,8 +314,53 @@ class _MarkdownDocScreenState extends State<MarkdownDocScreen> {
   }
 
   /// 重载正文（切换繁体显示后调用）。
+  ///
+  /// 内容长度会随简繁转换变化，先存一次当前位置再允许重新恢复，
+  /// 否则切换后会被弹回顶部。
   void _reload() {
-    setState(() => _future = _load());
+    _saveTimer?.cancel();
+    // 先落库再重新加载：否则恢复读到的还是切换前的旧偏移
+    final pending = _persistProgress();
+    setState(() {
+      _restored = false;
+      _future = _load();
+    });
+    pending.then((_) => _future.then((_) => _restoreProgress()));
+  }
+
+  void _onScroll() {
+    _saveTimer?.cancel();
+    _saveTimer = Timer(const Duration(milliseconds: 600), _persistProgress);
+  }
+
+  Future<void> _persistProgress() async {
+    if (!_scroll.hasClients) return;
+    await ReadingProgressRepository.save(
+      _progressKey,
+      _scroll.offset,
+      _scroll.position.maxScrollExtent,
+    );
+  }
+
+  /// 恢复上次阅读位置。
+  ///
+  /// Markdown 是懒渲染列表，首帧时 `maxScrollExtent` 往往只算到已布局部分，
+  /// 直接按它换算会偏前，故做一次延迟补跳。
+  Future<void> _restoreProgress() async {
+    if (_restored) return;
+    _restored = true;
+    final saved = await ReadingProgressRepository.load(_progressKey);
+    if (saved == null || !mounted) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted || !_scroll.hasClients) return;
+      final max = _scroll.position.maxScrollExtent;
+      _scroll.jumpTo(saved.resolvedOffset(max).clamp(0.0, max));
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+      if (!mounted || !_scroll.hasClients) return;
+      final max2 = _scroll.position.maxScrollExtent;
+      final target = saved.resolvedOffset(max2).clamp(0.0, max2);
+      if ((_scroll.offset - target).abs() > 24) _scroll.jumpTo(target);
+    });
   }
 
   String _injectLinks(String md) => injectInternalLinks(md);
@@ -322,6 +398,7 @@ class _MarkdownDocScreenState extends State<MarkdownDocScreen> {
               Expanded(
                 child: Markdown(
                   data: snapshot.data ?? '',
+                  controller: _scroll,
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                   selectable: true,
                   onTapLink: (text, href, title) => _onTapLink(href),
