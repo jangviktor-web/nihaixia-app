@@ -38,6 +38,8 @@ class TianjiDocListScreen extends StatelessWidget {
         'assets/tianji/8_风水布局.md'),
     ('地脉道 · 堪舆', '八煞黄泉', '水法八煞',
         'assets/tianji/8_八煞黄泉.md'),
+    ('地纪 · 游记', '地纪游记', '陕西 / 武当山 / 桂林阳朔 · 倪师地纪之旅日记',
+        'assets/tianji/13_地纪游记.md'),
   ];
 
   @override
