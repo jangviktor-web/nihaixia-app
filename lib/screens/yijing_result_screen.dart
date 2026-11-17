@@ -50,6 +50,7 @@ class YiJingResultScreen extends StatelessWidget {
               snippet: _digest(),
             ),
           ],
+          seedQuery: cast.primary.name,
         ),
       ),
     );

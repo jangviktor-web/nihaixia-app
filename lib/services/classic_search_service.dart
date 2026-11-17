@@ -79,14 +79,19 @@ class _IndexEntry {
 class ClassicSearchService {
   static const String assetPath = 'assets/guji/classic_index.json.gz';
 
+  /// 天纪口述字幕索引（独立库）。命理内容不进医疗索引，避免「失眠」这类
+  /// 医疗提问命中医理口述；只在命理入口按需加载。
+  static const String tianjiAssetPath = 'assets/tianji/tianji_index.json.gz';
+
   /// 展示条数上限（命中总数另外统计）。
   static const int maxHits = 40;
 
-  static List<_IndexEntry>? _entries;
-  static Future<void>? _loading;
+  /// 索引缓存按资产路径分桶：医疗（classic_index）与天纪（tianji_index）互不干扰。
+  static final Map<String, List<_IndexEntry>> _entries = {};
+  static final Map<String, Future<void>> _loading = {};
 
-  /// 索引是否已加载（供 UI 判断是否显示加载态）。
-  static bool get isLoaded => _entries != null;
+  /// 医疗索引是否已加载（供 UI 判断是否显示加载态）。
+  static bool get isLoaded => _entries.containsKey(assetPath);
 
   static const Map<String, String> _sourceLabels = {
     'shanghan': '伤寒论讲稿',
@@ -94,6 +99,7 @@ class ClassicSearchService {
     'neijing': '内经讲稿',
     'zhenjiu': '针灸讲稿',
     'bencao': '本草讲稿',
+    'tianji': '天纪讲义',
   };
 
   static String _labelOf(String source, String? bookId) {
@@ -107,19 +113,19 @@ class ClassicSearchService {
   }
 
   /// 首次调用解压并解析索引（约 3MB gzip → 30MB 文本），之后走内存缓存。
-  static Future<void> ensureLoaded() async {
-    if (_entries != null) return;
-    _loading ??= _load();
-    await _loading;
+  static Future<void> ensureLoaded({String path = assetPath}) async {
+    if (_entries.containsKey(path)) return;
+    _loading.putIfAbsent(path, () => _load(path));
+    await _loading[path];
   }
 
-  static Future<void> _load() async {
-    final data = await rootBundle.load(assetPath);
+  static Future<void> _load(String path) async {
+    final data = await rootBundle.load(path);
     final bytes = await gunzipBytesAsync(
         data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
     final decoded = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
     final list = (decoded['entries'] as List<dynamic>).cast<Map<String, dynamic>>();
-    _entries = [
+    _entries[path] = [
       for (final e in list)
         _IndexEntry(
           source: e['s'] as String,
@@ -146,11 +152,12 @@ class ClassicSearchService {
     int snippetSpan = 32,
     int maxResults = maxHits,
     Set<String>? onlySources,
+    String path = assetPath,
   }) async {
     final q = query.trim();
     if (q.isEmpty) return ClassicSearchResult.empty;
-    await ensureLoaded();
-    final entries = _entries!;
+    await ensureLoaded(path: path);
+    final entries = _entries[path]!;
     // 繁简归一：繁体输入（如「當歸」「湯」）也能命中简体索引。
     // 索引正文已在构建期统一为简体，故只需归一查询词。
     final needle = (await normalizeQuery(q)).toLowerCase();
@@ -198,7 +205,7 @@ class ClassicSearchService {
     await ensureLoaded();
     final needle = (await normalizeQuery(q)).toLowerCase();
     final out = <String>{};
-    for (final e in _entries!) {
+    for (final e in _entries[assetPath]!) {
       final a = e.asset;
       if (a == null) continue;
       if (e.title.toLowerCase().contains(needle) ||

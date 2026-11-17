@@ -418,6 +418,15 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
       title: '本盘十二宫与四化',
       snippet: _chartDigest(c),
     );
+    // 命宫主星名作检索词（「紫微」32 条、「天府」24 条命中），
+    // 无主星则退回泛词「紫微星」。
+    var seedQuery = '紫微星';
+    for (final p in c.palaces) {
+      if (p.isLife && p.majors.isNotEmpty) {
+        seedQuery = p.majors.first.label;
+        break;
+      }
+    }
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -425,6 +434,7 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
           prefill: '请按倪师天纪的论断思路，解读我这个紫微命盘：'
               '命身格局、生年四化落宫、以及当前大限的重点。',
           seedHits: [seed],
+          seedQuery: seedQuery,
         ),
       ),
     );

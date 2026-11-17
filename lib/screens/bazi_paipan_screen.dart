@@ -187,6 +187,8 @@ class _BaZiPaipanScreenState extends State<BaZiPaipanScreen> {
               snippet: digest,
             ),
           ],
+          // 八字无单一大词可检索，用「八字」作检索词（天纪字幕命中 60 条）。
+          seedQuery: '八字',
         ),
       ),
     );

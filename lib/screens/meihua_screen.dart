@@ -191,6 +191,7 @@ class _MeihuaScreenState extends State<MeihuaScreen> {
               snippet: _digest(c),
             ),
           ],
+          seedQuery: c.main.name,
         ),
       ),
     );
