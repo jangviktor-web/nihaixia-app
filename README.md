@@ -132,6 +132,25 @@
 
 <div align="center">
 
+**v1.11.34 天纪讲义改版 · 双排盘接入问倪师AI**
+
+![v1.11.34 天纪讲义](docs/images/screenshot_v1134_tianji_lectures.webp)
+
+</div>
+
+从左到右：① **天纪讲义分类页** —— 9 篇按「天纪总纲 / 紫微斗数 / 相术·命相同参 / 地脉道·堪舆」分组，点进篇内是带搜索的小节目录。 ② **疾厄宫·身相部位图** —— 原本显示 HTML 代码的盘面换成清晰配图，标注肩胸胁足与膀胱·子宫、卵巢·妇科。 ③ **易中圣人·八卦类象盘** —— 先天八卦环形配图，八个卦位与类象一目了然。
+
+<div align="center">
+
+![v1.11.34 紫微/八字排盘接入问倪师AI](docs/images/screenshot_v1134_ai_interpretation.webp)
+
+</div>
+
+上排从左到右：① **紫微斗数排盘** —— 填生辰后点右上角对话图标（红圈处）即可带盘面去问倪师AI。 ② **问倪师AI·解读入口** —— 已带好「请按倪师天纪的论断思路解读这个紫微命盘…」提示词。 ③ **解读报告** —— 按「命宫格局 → 四化落宫 → 大限重点」展开，表格逐项拆解。
+下排从左到右：④ **八字排盘** —— 同样点右上角对话图标带盘面去解读。 ⑤ **命局总览表** —— 八字、性别、五行局、命宫/身主、当前大限一览。 ⑥ **未来十年趋势** —— 分「事业转折 / 人际与下属 / 财运波动」三段，底部标注 AI 生成、非倪师原话。
+
+<div align="center">
+
 **v1.11.33 穴位详情页 —— 同经络左右滑动换穴 · 收藏 · 讲义与古籍入口 · 四段式临床心悟**
 
 ![v1.11.33 穴位详情页](docs/images/screenshot_v1133_acupoint_detail.webp)
@@ -372,15 +391,15 @@
 
 > 🌐 不想装 APK？**[在线网页版免安装试用 →](#user-content-online-web)**
 
-### 📥 方式一：下载预编译 APK（V1.11.33）
+### 📥 方式一：下载预编译 APK（V1.11.34）
 
-[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安装包-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-release.apk)
+[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安装包-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.34/app-release.apk)
 &nbsp;&nbsp;
-[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安装包-0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-arm64-v8a-release.apk)
+[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安装包-0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.34/app-arm64-v8a-release.apk)
 &nbsp;&nbsp;
-[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安装包-9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-armeabi-v7a-release.apk)
+[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安装包-9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.34/app-armeabi-v7a-release.apk)
 &nbsp;&nbsp;
-[![📦 x86_64(虚拟机)](https://img.shields.io/badge/📦%20x86_64%28虚拟机%29-安卓安装包-1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-x86_64-release.apk)
+[![📦 x86_64(虚拟机)](https://img.shields.io/badge/📦%20x86_64%28虚拟机%29-安卓安装包-1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.34/app-x86_64-release.apk)
 
 | 安装包 | 适用设备 |
 |:---|:---|
@@ -388,6 +407,25 @@
 | arm64‑v8a | 新款 64 位手机，体积更小 |
 | armeabi‑v7a | 老旧 32 位设备 |
 | x86_64 | 安卓模拟器 / 虚拟机 |
+
+> **V1.11.34 天纪讲义改版 · 地纪游记 · 盘面图表化 · 命理AI解读升级 · 阅读进度记忆**（2026-11-18 发布）
+>
+> **一、天纪讲义：从「一页 166 节」改为三层目录**
+> - **怎么用**：首页 →「天纪讲义」→ 先看 9 篇分类卡片（天机道 / 十二宫详解 / 星曜详解 / 手相 / 相术总结 / 六神占断论 / 堪舆风水 / 风水布局 / 八煞黄泉）→ 点进任意篇，出现该篇的小节目录（顶部可搜标题或正文，带序号与一行预览）→ 点某节看正文。
+> - **新增第 10 篇《地纪》游记**：倪师实地走访陕西、汉中、武当山、桂林阳朔的日记，21 节按日期切分；在「地纪 · 游记」分组下。
+> - **盘面不再是一堆 HTML 代码**：疾厄宫的子午流注钟盘、身相部位图、易中圣人的先天/后天八卦盘与爻象卡，全部换成清晰配图，图内文字仍可被搜索命中。
+>
+> **二、问倪师AI：命理场景独立口径 + 双排盘入口**
+> - **怎么用（紫微）**：工具 → 紫微斗数排盘 → 填生辰 → 点右上角对话图标，盘面自动带入「问倪师AI」，已预填解读提示词。
+> - **怎么用（八字）**：工具 → 八字排盘 → 填生辰 → 同样点右上角对话图标。
+> - **解读口径**：盘面事实单独成块并标注「本地引擎计算」，不再与讲义原文混在一起；只讲倾向不给定论，不作医疗、投资或法律结论。
+> - **检索质量**：命理提问先做多词拆分再按相关度排序（此前搜「八字」会命中 60/99 篇字幕，近乎随机）；整理讲义 188 节与字幕合并去重后一并入库，讲义优先。
+> - **当前大限**：紫微解读的盘面摘要补上大限宫位 + 主星 + 干支，模型不再凭空编造大限。
+>
+> **三、阅读进度记忆**
+> - 全 App 16 个阅读入口（天纪、古籍、伤寒、金匮、内经、本草、针灸、医案、紫微命例等）都会记住你读到哪，重开 App 或切换繁体后自动回到原处；读到末尾会视为已读完并清除记录。
+>
+> 详见 [Release Notes](release_notes/v1.11.34.md)。
 
 > **V1.11.33 穴位详情页体验升级 · 临床心悟全库格式归一 · 讲稿与古籍索引修复**（2026-11-15 发布）
 >

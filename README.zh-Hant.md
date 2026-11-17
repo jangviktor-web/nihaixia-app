@@ -132,6 +132,25 @@
 
 <div align="center">
 
+**v1.11.34 天紀講義改版 · 雙排盤接入問倪師AI**
+
+![v1.11.34 天紀講義](docs/images/screenshot_v1134_tianji_lectures.webp)
+
+</div>
+
+從左到右：① **天紀講義分類頁** —— 9 篇按「天紀總綱 / 紫微斗數 / 相術·命相同參 / 地脈道·堪輿」分組，點進篇內是附搜尋的小節目錄。 ② **疾厄宮·身相部位圖** —— 原本顯示 HTML 程式碼的盤面換成清晰配圖，標註肩胸脅足與膀胱·子宮、卵巢·婦科。 ③ **易中聖人·八卦類象盤** —— 先天八卦環形配圖，八個卦位與類象一目瞭然。
+
+<div align="center">
+
+![v1.11.34 紫微/八字排盤接入問倪師AI](docs/images/screenshot_v1134_ai_interpretation.webp)
+
+</div>
+
+上排從左到右：① **紫微斗數排盤** —— 填生辰後點右上角對話圖示（紅圈處）即可帶盤面去問倪師AI。 ② **問倪師AI·解讀入口** —— 已帶好「請按倪師天紀的論斷思路解讀這個紫微命盤…」提示詞。 ③ **解讀報告** —— 按「命宮格局 → 四化落宮 → 大限重點」展開，表格逐項拆解。
+下排從左到右：④ **八字排盤** —— 同樣點右上角對話圖示帶盤面去解讀。 ⑤ **命局總覽表** —— 八字、性別、五行局、命宮/身主、當前大限一覽。 ⑥ **未來十年趨勢** —— 分「事業轉折 / 人際與下屬 / 財運波動」三段，底部標註 AI 生成、非倪師原話。
+
+<div align="center">
+
 **v1.11.33 穴位詳情頁 —— 同經絡左右滑動換穴 · 收藏 · 講義與古籍入口 · 四段式臨床心悟**
 
 ![v1.11.33 穴位詳情頁](docs/images/screenshot_v1133_acupoint_detail.webp)
@@ -372,15 +391,15 @@
 
 > 🌐 不想裝 APK？**[線上網頁版免安裝試用 →](#user-content-online-web)**
 
-### 📥 方式一：下載預編譯 APK（V1.11.33）
+### 📥 方式一：下載預編譯 APK（V1.11.34）
 
-[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安裝包-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-release.apk)
+[![📦 通用版 APK](https://img.shields.io/badge/📦%20通用版-安卓安裝包-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.34/app-release.apk)
 &nbsp;&nbsp;
-[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安裝包-0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-arm64-v8a-release.apk)
+[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a-安卓安裝包-0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.34/app-arm64-v8a-release.apk)
 &nbsp;&nbsp;
-[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安裝包-9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-armeabi-v7a-release.apk)
+[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a-安卓安裝包-9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.34/app-armeabi-v7a-release.apk)
 &nbsp;&nbsp;
-[![📦 x86_64(虛擬機器)](https://img.shields.io/badge/📦%20x86_64%28虛擬機器%29-安卓安裝包-1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-x86_64-release.apk)
+[![📦 x86_64(虛擬機器)](https://img.shields.io/badge/📦%20x86_64%28虛擬機器%29-安卓安裝包-1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.34/app-x86_64-release.apk)
 
 | 安裝包 | 適用裝置 |
 |:---|:---|
@@ -388,6 +407,25 @@
 | arm64‑v8a | 新款 64 位手機，體積更小 |
 | armeabi‑v7a | 老舊 32 位裝置 |
 | x86_64 | 安卓模擬器 / 虛擬機器 |
+
+> **V1.11.34 天紀講義改版 · 地紀遊記 · 盤面圖表化 · 命理AI解讀升級 · 閱讀進度記憶**（2026-11-18 發布）
+>
+> **一、天紀講義：從「一頁 166 節」改為三層目錄**
+> - **怎麼用**：首頁 →「天紀講義」→ 先看 9 篇分類卡片（天機道 / 十二宮詳解 / 星曜詳解 / 手相 / 相術總結 / 六神占斷論 / 堪輿風水 / 風水布局 / 八煞黃泉）→ 點進任一篇，出現該篇的小節目錄（頂端可搜標題或內文，附序號與一行預覽）→ 點某節看正文。
+> - **新增第 10 篇《地紀》遊記**：倪師實地走訪陝西、漢中、武當山、桂林陽朔的日記，21 節按日期切分；在「地紀 · 遊記」分組下。
+> - **盤面不再是一堆 HTML 程式碼**：疾厄宮的子午流注鐘盤、身相部位圖、易中聖人的先天/後天八卦盤與爻象卡，全數換成清晰配圖，圖內文字仍可被搜尋命中。
+>
+> **二、問倪師AI：命理場景獨立口徑 + 雙排盤入口**
+> - **怎麼用（紫微）**：工具 → 紫微斗數排盤 → 填生辰 → 點右上角對話圖示，盤面自動帶入「問倪師AI」，已預填解讀提示詞。
+> - **怎麼用（八字）**：工具 → 八字排盤 → 填生辰 → 同樣點右上角對話圖示。
+> - **解讀口徑**：盤面事實單獨成塊並標註「本機引擎計算」，不再與講義原文混在一起；只講傾向不給定論，不作醫療、投資或法律結論。
+> - **搜尋品質**：命理提問先做多詞拆分再按相關度排序（此前搜「八字」會命中 60/99 篇字幕，近乎隨機）；整理講義 188 節與字幕合併去重後一併入庫，講義優先。
+> - **當前大限**：紫微解讀的盤面摘要補上大限宮位 + 主星 + 干支，模型不再憑空編造大限。
+>
+> **三、閱讀進度記憶**
+> - 全 App 16 個閱讀入口（天紀、古籍、傷寒、金匱、內經、本草、針灸、醫案、紫微命例等）都會記住你讀到哪，重開 App 或切換繁體後自動回到原處；讀到末尾會視為已讀完並清除記錄。
+>
+> 詳見 [Release Notes](release_notes/v1.11.34.md)。
 
 > **V1.11.33 穴位詳情頁體驗升級 · 臨床心悟全庫格式歸一 · 講義與古籍索引修復**（2026-11-15 發布）
 >

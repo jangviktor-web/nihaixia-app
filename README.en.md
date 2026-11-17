@@ -138,6 +138,25 @@ Key signup paths, screenshots and common errors: [Free model configuration guide
 
 <div align="center">
 
+**v1.11.34 Tianji lectures redesigned · Zi Wei and BaZi charts feed into Ask-Ni-Hai-Xia AI**
+
+![v1.11.34 Tianji lectures](docs/images/screenshot_v1134_tianji_lectures.webp)
+
+</div>
+
+Left to right: 1) **Tianji lecture index** - 9 works grouped under "Tianji Essentials / Zi Wei Dou Shu / Physiognomy / Feng Shui"; tap a work for its searchable section list. 2) **Affliction palace body map** - the former raw HTML diagram is now a clean illustration labelling shoulders, chest, flanks, feet and lower-abdominal organs. 3) **Bagua correspondences** - a circular diagram of the eight trigrams and their associations.
+
+<div align="center">
+
+![v1.11.34 Zi Wei and BaZi charts into AI](docs/images/screenshot_v1134_ai_interpretation.webp)
+
+</div>
+
+Top row: 1) **Zi Wei chart** - enter birth data, then tap the chat icon (circled) to send the chart to Ask-Ni-Hai-Xia AI. 2) **AI prompt** - pre-filled with "Interpret this Zi Wei chart using Master Ni's Tianji reasoning". 3) **Interpretation** - structured as "Life Palace pattern, Four Transformations, current Decade" with detail tables.
+Bottom row: 4) **BaZi chart** - same chat icon sends the chart for interpretation. 5) **Chart summary** - BaZi, gender, Five-Element group, life and body palaces and current decade at a glance. 6) **Ten-year outlook** - career turn, relationships and financial swings, with a footer noting AI-generated content, not Master Ni's words.
+
+<div align="center">
+
 **v1.11.33 Acupoint detail — swipe between same-meridian points · bookmarks · lecture & classics entries · structured clinical notes**
 
 ![v1.11.33 acupoint detail](docs/images/screenshot_v1133_acupoint_detail.webp)
@@ -378,15 +397,15 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 
 > 🌐 No APK? **[Try the web version — no install →](#user-content-online-web)**
 
-### 📥 Method 1: Download Prebuilt APK (V1.11.33)
+### 📥 Method 1: Download Prebuilt APK (V1.11.34)
 
-[![📦 Universal APK](https://img.shields.io/badge/📦%20Universal%20APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-release.apk)
+[![📦 Universal APK](https://img.shields.io/badge/📦%20Universal%20APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.34/app-release.apk)
 &nbsp;&nbsp;
-[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a%20APK-0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-arm64-v8a-release.apk)
+[![📦 arm64‑v8a APK](https://img.shields.io/badge/📦%20arm64‑v8a%20APK-0284CC?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.34/app-arm64-v8a-release.apk)
 &nbsp;&nbsp;
-[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a%20APK-9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-armeabi-v7a-release.apk)
+[![📦 armeabi‑v7a APK](https://img.shields.io/badge/📦%20armeabi‑v7a%20APK-9C27B0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.34/app-armeabi-v7a-release.apk)
 &nbsp;&nbsp;
-[![📦 x86_64 Emulator APK](https://img.shields.io/badge/📦%20x86_64%20Emulator%20APK-1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.33/app-x86_64-release.apk)
+[![📦 x86_64 Emulator APK](https://img.shields.io/badge/📦%20x86_64%20Emulator%20APK-1565C0?style=for-the-badge&logo=android&logoColor=white)](https://ghproxy.net/https://github.com/jangviktor-web/nihaixia-app/releases/download/v1.11.34/app-x86_64-release.apk)
 
 | Package | Recommended for |
 |:---|:---|
@@ -394,6 +413,25 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 | arm64‑v8a | Newer 64-bit phones, smaller |
 | armeabi‑v7a | Older 32-bit devices |
 | x86_64 | Emulators / virtual machines |
+
+> **V1.11.34 Tianji redesign, Di Ji travelogue, illustrated charts, upgraded AI metaphysics readings, reading progress** (released 2026-11-18)
+>
+> **1. Tianji lectures: from a single 166-section list to a three-level index**
+> - **How to use**: Home - "Tianji Lectures" - browse 9 grouped works (Tianji Essentials / Zi Wei Dou Shu / Physiognomy / Feng Shui), tap one for its searchable section list (title or full text, numbered with a one-line preview) - tap a section to read.
+> - **New 10th work, the Di Ji travelogue**: Master Ni's field notes from Shaanxi, Hanzhong, Wudang Mountain and Guilin/Yangshuo - 21 date-based sections under the "Di Ji / Travelogue" group.
+> - **No more raw HTML**: the Affliction-palace body map and the Yi Zhong Sheng Ren Bagua/decade diagrams are now clean illustrations; their text remains searchable.
+>
+> **2. Ask-Ni-Hai-Xia AI: a separate metaphysics mode plus two chart entry points**
+> - **How to use (Zi Wei)**: Tools - Zi Wei chart - enter birth data - tap the chat icon at top right; the chart is attached automatically with a ready-made interpretation prompt.
+> - **How to use (BaZi)**: Tools - BaZi chart - enter birth data - same chat icon.
+> - **Interpretation policy**: chart facts are shown separately and labelled "computed locally", never mixed with lecture quotations; tendencies only, no certainties, and no medical, investment or legal conclusions.
+> - **Retrieval quality**: metaphysics queries are split into terms then ranked by relevance (previously "BaZi" matched 60 of 99 subtitle files); 188 curated lecture sections are merged with subtitles, deduplicated, with lectures preferred.
+> - **Current decade**: the chart digest now includes the decade palace, its main star and Heavenly Stem/Branch, so the model no longer has to invent it.
+>
+> **3. Reading progress**
+> - All 16 reading entry points (Tianji, classics, Shang Han Lun, Jin Gui Yao Lue, Nei Jing, materia medica, acupuncture, case studies, Zi Wei examples, etc.) remember where you stopped; reopen the app or switch to Traditional Chinese and you return to the same spot. Reaching the end marks the item as read and clears the record.
+>
+> See [Release Notes](release_notes/v1.11.34.md).
 
 > **V1.11.33 Acupoint detail UX · Clinical notes normalized · Lecture & classic index fixes**
 >
@@ -415,7 +453,7 @@ From left to right: ① **Daily Chinese almanac · Zodiac clash** — the day's 
 >
 > **5. README image fixes (fixed in this release)**
 > - The `📥 Download` version badge rendered as a blank box — the emoji inside `label` was unencoded and shields returned 400; now `%F0%9F%93%A5`.
-> - The x86_64 badge showed "badge not found" — the parentheses in `x86_64(虚拟机)` terminated the URL early; now `%28` / `%29`.
+> - The x86_64 badge showed "badge not found" — the parentheses in `x86_64 (VM)` terminated the URL early; now `%28` / `%29`.
 > - All four APK badges showed only their left half — the message segment used a **U+2011 non-breaking hyphen** as separator, so shields could not parse it; replaced with an ASCII `-`. Fixed in all three READMEs; 15 badges verified for a complete `aria-label`.
 > See [Release Notes](release_notes/v1.11.33.md).
 
