@@ -69,6 +69,7 @@ flutter:
     - assets/yijing/
     - assets/yijing_minggua/
     - assets/tianji/
+    - assets/tianji/images/
     - assets/critical_illness/
     - assets/medical_cases/
     - assets/neijing/

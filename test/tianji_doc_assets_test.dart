@@ -6,12 +6,23 @@ import 'package:nihaisha_app/services/classic_search_service.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('天纪讲义：列表里的每个资产都能加载，且无残留图片引用', () async {
+  test('天纪讲义：列表里的每个资产都能加载，图片引用必须可达', () async {
     expect(TianjiDocListScreen.docs, isNotEmpty);
     for (final (_, title, _, asset) in TianjiDocListScreen.docs) {
       final text = await rootBundle.loadString(asset);
       expect(text.trim(), isNotEmpty, reason: '$title（$asset）内容为空');
-      expect(text.contains('!['), isFalse, reason: '$title（$asset）残留图片引用');
+      // 早年间讲义里的图片引用全是被剔除的死链（板书照片），所以曾断言
+      // 「不允许出现 !['」。现在有真实盘面图（assets/tianji/images/），
+      // 规则升级为：出现的每一条图片引用都必须指向打包进 App 的真实资产。
+      for (final m
+          in RegExp(r'!\[[^\]]*\]\(([^)]+)\)').allMatches(text)) {
+        final src = Uri.decodeComponent(m.group(1)!);
+        try {
+          await rootBundle.load(src);
+        } catch (_) {
+          fail('$title（$asset）引用的图片不存在：$src');
+        }
+      }
     }
   });
 
