@@ -57,6 +57,23 @@ DATE_TITLES = {
 
 DATE = re.compile(r"^(\d{1,2}/\d{1,2})")
 
+# 编者注（非倪师原文，必须用 blockquote 且明确标注）。12/07 原文的「XX」是
+# 倪师本人刻意保密的药名，汉唐网站流传原文同样保留 XX；但《唐本草》对紫参
+# 「皮紫黑，肉红白，肉浅皮深」的记载与本文「外皮黑色、中间鲜红」的饮片外观
+# 吻合，经方紫参汤 / 泽漆汤即用此药，倪师在《金匮》讲课中曾误以为失传。
+# 补注信息来源：汉唐地纪系列原文 + 2026-11-17 联网核查（多源一致）。
+EDITOR_NOTES = {
+    "12/10": """
+> 编者注：上一节（12/07）原文中的「XX」为倪师本人刻意保密的药名（原文写明
+> 「我必须将之保密，否则一旦公开，药价必将水涨船高」），汉唐网站流传原文
+> 同样保留 XX，此处不作替换。据《唐本草》紫参「皮紫黑，肉红白，肉浅皮深」
+> 的记载与文中「外皮黑色、中间鲜红」的饮片外观对照，此药即**紫参**
+> （一名拳参，《神农本草经》一名牡蒙）。经方紫参汤（紫参半斤、甘草三两，
+> 《金匮》治「下利肺痛」）与泽漆汤（紫参五两）所用即此药；倪师在《金匮要略》
+> 讲课中曾误以为紫参已失传，此行于亳州药市寻得。本注为整理者所加，非倪师原文。
+""",
+}
+
 
 def main():
     raw = open(SRC, encoding="utf-8").read()
@@ -96,6 +113,12 @@ def main():
 
     body = "\n".join(out)
     body = re.sub(r"\n{3,}", "\n\n", body)  # 压多余空行
+    # 编者注插到对应节的标题之前（挂在下一节的标题上，即上一节的末尾）
+    for anchor, note in EDITOR_NOTES.items():
+        pat = re.compile(rf"^##### {re.escape(anchor)}\s", re.M)
+        if not pat.search(body):
+            raise SystemExit(f"✗ 编者注锚点「{anchor}」未找到")
+        body = pat.sub(lambda m: note.strip("\n") + "\n\n" + m.group(0), body, count=1)
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     open(OUT, "w", encoding="utf-8", newline="\n").write(body)
     print(f"[OK] 写入 {os.path.relpath(OUT, os.path.dirname(__file__) + '/..')}  "
