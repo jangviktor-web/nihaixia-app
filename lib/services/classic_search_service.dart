@@ -147,12 +147,18 @@ class ClassicSearchService {
   /// [onlySources] 限定来源（如问针灸时只要 `zhenjiu`）。不加限定时针灸讲稿
   /// 会被伤寒条文挤掉 —— 索引里伤寒 394 条、针灸只有 72 条，全源检索前几条
   /// 轮不到针灸。
+  ///
+  /// [rankByRelevance] 为真时启用相关度模式：`query` 可用空格分隔多个词
+  /// （任一命中即召回），按「标题命中 100 分 + 正文词频（封顶 20）」排序后取前 N。
+  /// 默认 false 保持既有「标题优先 + 索引顺序」——医疗检索依赖这个顺序，
+  /// 改默认值会让已验证的讲稿可达率漂移。命理入口传 true。
   static Future<ClassicSearchResult> search(
     String query, {
     int snippetSpan = 32,
     int maxResults = maxHits,
     Set<String>? onlySources,
     String path = assetPath,
+    bool rankByRelevance = false,
   }) async {
     final q = query.trim();
     if (q.isEmpty) return ClassicSearchResult.empty;
@@ -160,19 +166,48 @@ class ClassicSearchService {
     final entries = _entries[path]!;
     // 繁简归一：繁体输入（如「當歸」「湯」）也能命中简体索引。
     // 索引正文已在构建期统一为简体，故只需归一查询词。
-    final needle = (await normalizeQuery(q)).toLowerCase();
+    final normalized = (await normalizeQuery(q)).toLowerCase();
+    final terms = rankByRelevance
+        ? normalized.split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList()
+        : <String>[normalized];
+    if (terms.isEmpty) return ClassicSearchResult.empty;
 
     final titleHits = <ClassicHit>[];
     final bodyHits = <ClassicHit>[];
+    final scored = <({ClassicHit hit, int score})>[];
     var total = 0;
 
     for (final e in entries) {
       if (onlySources != null && !onlySources.contains(e.source)) continue;
-      final inTitle = e.title.toLowerCase().contains(needle);
-      final idx = e.text.toLowerCase().indexOf(needle);
-      if (!inTitle && idx < 0) continue;
+      final lowerTitle = e.title.toLowerCase();
+      final lowerText = e.text.toLowerCase();
+
+      var score = 0;
+      var matched = false;
+      var bestIdx = -1;
+      var bestLen = q.length;
+      for (final t in terms) {
+        final inTitle = lowerTitle.contains(t);
+        final idx = inTitle ? -1 : lowerText.indexOf(t);
+        if (!inTitle && idx < 0) continue;
+        matched = true;
+        if (inTitle) score += 100;
+        // 词频封顶 20：否则长篇口述靠重复同一个词就能霸榜
+        var freq = 0;
+        var p = idx >= 0 ? idx : lowerText.indexOf(t);
+        while (p >= 0 && freq < 20) {
+          freq++;
+          p = lowerText.indexOf(t, p + t.length);
+        }
+        score += freq;
+        if (bestIdx < 0 && idx >= 0) {
+          bestIdx = idx;
+          bestLen = t.length;
+        }
+      }
+      if (!matched) continue;
       total++;
-      if (titleHits.length + bodyHits.length >= maxResults) continue;
+
       final hit = ClassicHit(
         source: e.source,
         sourceLabel: _labelOf(e.source, e.bookId),
@@ -180,13 +215,27 @@ class ClassicSearchService {
         asset: e.asset,
         bookId: e.bookId,
         chapterIndex: e.chapterIndex,
-        snippet: _snippet(e.text, inTitle ? -1 : idx, q.length, snippetSpan),
+        snippet: _snippet(e.text, bestIdx, bestLen, snippetSpan),
       );
-      if (inTitle) {
-        titleHits.add(hit);
+
+      if (rankByRelevance) {
+        scored.add((hit: hit, score: score));
       } else {
-        bodyHits.add(hit);
+        if (titleHits.length + bodyHits.length >= maxResults) continue;
+        if (lowerTitle.contains(normalized)) {
+          titleHits.add(hit);
+        } else {
+          bodyHits.add(hit);
+        }
       }
+    }
+
+    if (rankByRelevance) {
+      scored.sort((a, b) => b.score.compareTo(a.score));
+      return ClassicSearchResult(
+        total: total,
+        hits: scored.take(maxResults).map((e) => e.hit).toList(),
+      );
     }
 
     return ClassicSearchResult(

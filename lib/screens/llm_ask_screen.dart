@@ -206,6 +206,9 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
                 onlySources: const {'tianji'},
                 snippetSpan: LlmService.contextSnippetSpan,
                 path: ClassicSearchService.tianjiAssetPath,
+                // 命理检索必须按相关度排序：天纪字幕里「八字」命中 60/99 条、
+                // 「卦」74/99 条，按索引顺序取前 8 条等于随机摘录。
+                rankByRelevance: true,
               ))
                   .hits,
             ).withFacts(widget.seedHits)

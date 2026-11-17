@@ -50,7 +50,8 @@ class YiJingResultScreen extends StatelessWidget {
               snippet: _digest(),
             ),
           ],
-          seedQuery: cast.primary.name,
+          // 卦名定位到该卦，「卦」「爻」把讲义理的片段排前
+          seedQuery: '${cast.primary.name} 卦 爻',
         ),
       ),
     );

@@ -191,7 +191,8 @@ class _MeihuaScreenState extends State<MeihuaScreen> {
               snippet: _digest(c),
             ),
           ],
-          seedQuery: c.main.name,
+          // 卦名定位到该卦，「卦」「爻」把讲义理的片段排前
+          seedQuery: '${c.main.name} 卦 爻',
         ),
       ),
     );

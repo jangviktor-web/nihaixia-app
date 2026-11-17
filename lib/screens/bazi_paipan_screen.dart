@@ -187,8 +187,10 @@ class _BaZiPaipanScreenState extends State<BaZiPaipanScreen> {
               snippet: digest,
             ),
           ],
-          // 八字无单一大词可检索，用「八字」作检索词（天纪字幕命中 60 条）。
-          seedQuery: '八字',
+          // 天纪几乎不讲八字（索引里「日主」0 命中、「四柱」仅 3 条），
+          // 所以只取少量义理片段作补充，主体靠上面的盘面事实。
+          // 不用「八字」：它命中 60/99 条，等于没检索。
+          seedQuery: '四柱 五行 命宫',
         ),
       ),
     );

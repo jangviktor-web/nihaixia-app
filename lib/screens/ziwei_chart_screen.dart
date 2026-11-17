@@ -418,12 +418,12 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
       title: '本盘十二宫与四化',
       snippet: _chartDigest(c),
     );
-    // 命宫主星名作检索词（「紫微」32 条、「天府」24 条命中），
-    // 无主星则退回泛词「紫微星」。
-    var seedQuery = '紫微星';
+    // 多词召回 + 相关度排序（见 ClassicSearchService.rankByRelevance）：
+    // 主星名定位到具体星曜，「命宫」「四化」让同时讲到落宫与四化的片段排前。
+    var seedQuery = '紫微星 命宫 四化';
     for (final p in c.palaces) {
       if (p.isLife && p.majors.isNotEmpty) {
-        seedQuery = p.majors.first.label;
+        seedQuery = '${p.majors.first.label} 命宫 四化';
         break;
       }
     }
