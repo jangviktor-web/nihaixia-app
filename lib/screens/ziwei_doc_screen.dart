@@ -3,6 +3,7 @@ import '../widgets/state_view.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import '../data/ziwei_case_data.dart';
+import '../utils/reading_progress_mixin.dart';
 
 /// 倪师《天纪》紫微斗数原文阅读页（Markdown 渲染）。
 /// 内容为倪师口述讲解，作为排盘结果补充，属民俗文化参考。
@@ -15,13 +16,18 @@ class ZiweiDocScreen extends StatefulWidget {
   State<ZiweiDocScreen> createState() => _ZiweiDocScreenState();
 }
 
-class _ZiweiDocScreenState extends State<ZiweiDocScreen> {
+class _ZiweiDocScreenState extends State<ZiweiDocScreen>
+    with ReadingProgressMixin<ZiweiDocScreen> {
   late Future<String> _future;
+
+  @override
+  String get readingProgressKey => widget.entry.asset;
 
   @override
   void initState() {
     super.initState();
     _future = _load();
+    _future.then((_) => restoreReadingProgress());
   }
 
   Future<String> _load() async {
@@ -49,6 +55,7 @@ class _ZiweiDocScreenState extends State<ZiweiDocScreen> {
               Expanded(
                 child: Markdown(
                   data: text,
+                  controller: readingScroll,
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                   selectable: true,
                   styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
