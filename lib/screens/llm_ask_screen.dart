@@ -208,13 +208,18 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
                 path: ClassicSearchService.tianjiAssetPath,
               ))
                   .hits,
-            ).withHits(widget.seedHits)
+            ).withFacts(widget.seedHits)
           : await LlmService.prepare(q);
       final text = await LlmService.ask(
         q,
         LlmConfig.fromSettings(),
         retrieval: r,
         history: history,
+        // 命理入口（带盘面事实）用民俗铁律：医疗那套会让模型把盘面当讲义，
+        // 或直接判「讲义里没有涉及」而拒答。
+        scene: widget.seedHits.isNotEmpty
+            ? LlmScene.divination
+            : LlmScene.medical,
       );
       if (!mounted) return;
       setState(() {
