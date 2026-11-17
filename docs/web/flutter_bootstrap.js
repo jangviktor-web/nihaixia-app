@@ -38,10 +38,10 @@ addEventListener("message", eventListener);
 if (!window._flutter) {
   window._flutter = {};
 }
-_flutter.buildConfig = {"engineRevision":"89c39edfdfae2949f6806e4a315c0c08522238b7","wasmHashes":{"webparagraph/canvaskit.wasm":"0ce1b05082efdc8529550e8a01f6ff0593972d55525035010e26f5600aa9f254","chromium/canvaskit.wasm":"ae8ff1d858140f7b1300ced3fa89fb8c9dce0a400a0f4f1e11f6dcfb3315fdcf","skwasm.wasm":"e540fd5e8303b7b68ec2718cb49e9c421f8ade3075b15e02a7059a62654df9a1","skwasm_heavy.wasm":"565f5cc1cca6ab120f11934b105f01fec4b58b480c82e0889dca93af8e6f8635","wimp.wasm":"e924eaafd801d41e017d178f3fd5cf8a417f641fe35c9ed34a4e1d7582283e0c","canvaskit.wasm":"fbed517a43e82452404446683f00f2e876d835aed84410695759e67b6bb01cd3","sqlite3.wasm":"13d3f11d05b39ba0618a7115fb41640a5d48b6300f5d3f325f554b42bd6688a4"},"builds":[{"compileTarget":"dart2js","renderer":"canvaskit","mainJsPath":"main.dart.js"},{}]};
+_flutter.buildConfig = {"engineRevision":"5f77625673248ee5846fbcaf5d3e1a3878386fd7","wasmHashes":{"canvaskit.wasm":"2898c0795cf4a694e86ee3445c7414c2503fbcb46967154762f50ebde988da04","chromium/canvaskit.wasm":"ba4024133403777f41c709b9e76e9f4bdb76c73d33adba8645527a59d815d824","skwasm.wasm":"a957befea55cf597eeebcf3286f1b88f463f3ad8bfc13e55aa8f5d34cd2ade4d","skwasm_heavy.wasm":"781a14fc7e9cd387ee6df4a056f62af7e940c60cc42ce04571cc2e810042c588","webparagraph/canvaskit.wasm":"7a61c4ad71781875a80bbfc5ee6e49686dd190d629e0fe986d3ecc05ada58856","wimp.wasm":"7474f6074c42c4be503c9059c9b5058e468a68a8917ac6c3607f0da4922f7e5a"},"builds":[{"compileTarget":"dart2js","renderer":"canvaskit","mainJsPath":"main.dart.js"},{}]};
 
 _flutter.loader.load({
   serviceWorkerSettings: {
-    serviceWorkerVersion: "2058372850" /* Flutter's service worker is deprecated and will be removed in a future Flutter release. */
+    serviceWorkerVersion: "405216412" /* Flutter's service worker is deprecated and will be removed in a future Flutter release. */
   }
 });
