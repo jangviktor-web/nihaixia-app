@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
 
-import '../data/tianji_section_repository.dart';
-import 'markdown_doc_screen.dart';
+import 'tianji_section_list_screen.dart';
 
 /// 倪师《天纪》讲义阅读入口。
 ///
+/// 三层结构：**讲义 → 篇 → 节 → 正文**。
+/// 点某篇进入该篇的节目录（[TianjiSectionListScreen]），再点某节看正文。
+///
+/// 2026-11-17 用户要求：先把 9 篇分开列，点进去才是篇内的小节。
+/// 此前把 166 节混成一个扁平列表，篇与篇之间没有分界。
+///
 /// 内容逐字摘自倪师天纪口述讲义（天机道 / 紫微斗数 / 相术 / 地脉道），
 /// 属民俗文化参考，不构成任何医疗诊断或人生决策建议。
-///
-/// 2026-11-17 用户要求按「一节一卡」浏览（同针灸大成章节目录），
-/// 不再整篇连续滚动：列表由各篇 Markdown 的 `##` / `####` 标题切出。
-class TianjiDocListScreen extends StatefulWidget {
+class TianjiDocListScreen extends StatelessWidget {
   const TianjiDocListScreen({super.key});
 
-  /// (分组, 标题, 副标题, 资产路径)
+  /// (分组, 篇名, 副标题, 资产路径)
   ///
-  /// public 供测试遍历，保证「列表里的路径」与「真实资产」不会漂移。
+  /// public 供测试遍历，保证「列表里的路径」与「真实资产」不会漂移；
+  /// 同时作为 [TianjiSectionRepository] 的唯一篇清单来源。
   static const List<(String, String, String, String)> docs = [
     ('天纪总纲', '天机道', '天纪与真理 / 形与神 / 什么是「易」/ 命相同参',
         'assets/tianji/1_天机道.md'),
@@ -38,137 +41,55 @@ class TianjiDocListScreen extends StatefulWidget {
   ];
 
   @override
-  State<TianjiDocListScreen> createState() => _TianjiDocListScreenState();
-}
-
-class _TianjiDocListScreenState extends State<TianjiDocListScreen> {
-  late final Future<List<TianjiSection>> _future =
-      TianjiSectionRepository.parseAll(TianjiDocListScreen.docs);
-  final TextEditingController _controller = TextEditingController();
-  String _query = '';
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  List<TianjiSection> _filter(List<TianjiSection> all) {
-    final q = _query.trim();
-    if (q.isEmpty) return all;
-    return all
-        .where((s) => s.title.contains(q) || s.body.contains(q))
-        .toList();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final children = <Widget>[];
+    String? lastGroup;
+    for (final (group, title, subtitle, _) in docs) {
+      if (group != lastGroup) {
+        lastGroup = group;
+        children.add(Padding(
+          padding: const EdgeInsets.fromLTRB(4, 18, 4, 6),
+          child: Text(
+            group,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              color: cs.primary,
+            ),
+          ),
+        ));
+      }
+      children.add(Card(
+        elevation: 0,
+        color: cs.surfaceContainerHighest,
+        margin: const EdgeInsets.only(bottom: 8),
+        child: ListTile(
+          title: Text(title),
+          subtitle: Text(subtitle, style: const TextStyle(fontSize: 12)),
+          trailing: const Icon(Icons.chevron_right, size: 18),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => TianjiSectionListScreen(book: title),
+            ),
+          ),
+        ),
+      ));
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text('天纪讲义')),
-      body: Column(
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-            child: Text(
-              '内容摘自倪师《天纪》口述讲义，属民俗文化参考，'
-              '不构成任何医疗诊断或人生决策建议。',
-              style: TextStyle(
-                  fontSize: 12, height: 1.5, color: cs.onSurfaceVariant),
-            ),
+          Text(
+            '内容摘自倪师《天纪》口述讲义，属民俗文化参考，'
+            '不构成任何医疗诊断或人生决策建议。',
+            style:
+                TextStyle(fontSize: 12, height: 1.5, color: cs.onSurfaceVariant),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 10, 12, 4),
-            child: TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                isDense: true,
-                hintText: '搜索章节名、正文…',
-                prefixIcon: const Icon(Icons.search, size: 20),
-                suffixIcon: _controller.text.isEmpty
-                    ? null
-                    : IconButton(
-                        icon: const Icon(Icons.clear, size: 18),
-                        onPressed: () {
-                          _controller.clear();
-                          setState(() => _query = '');
-                        },
-                      ),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12)),
-              ),
-              onChanged: (v) => setState(() => _query = v),
-            ),
-          ),
-          Expanded(
-            child: FutureBuilder<List<TianjiSection>>(
-              future: _future,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState != ConnectionState.done) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text('加载失败：${snapshot.error}',
-                        style: TextStyle(color: cs.error)),
-                  );
-                }
-                final sections = _filter(snapshot.data ?? const []);
-                if (sections.isEmpty) {
-                  return const Center(child: Text('没有匹配的章节'));
-                }
-                return ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(12, 4, 12, 16),
-                  itemCount: sections.length,
-                  itemBuilder: (context, i) {
-                    final s = sections[i];
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 6),
-                      child: ListTile(
-                        dense: true,
-                        leading: CircleAvatar(
-                          radius: 16,
-                          backgroundColor: cs.primaryContainer,
-                          child: Text(
-                            '${s.index + 1}',
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: cs.onPrimaryContainer,
-                            ),
-                          ),
-                        ),
-                        title: Text(
-                          s.title,
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w600),
-                        ),
-                        subtitle: Text(
-                          s.body.replaceAll('\n', ' '),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                              fontSize: 11, color: cs.onSurfaceVariant),
-                        ),
-                        trailing: const Icon(Icons.chevron_right, size: 18),
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => MarkdownDocScreen(
-                              title: s.title,
-                              content: s.body,
-                              footer: '内容摘自倪师《天纪》口述讲义（${s.book}），'
-                                  '属民俗文化参考，不构成医疗或人生决策建议。',
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
+          ...children,
         ],
       ),
     );

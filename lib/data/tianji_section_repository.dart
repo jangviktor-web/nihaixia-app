@@ -22,6 +22,15 @@ class TianjiSection {
     required this.title,
     required this.body,
   });
+
+  /// 篇内显示用标题：去掉「篇名 · 」前缀。
+  ///
+  /// 篇内节列表已经在「篇」这一层里，再带一遍篇名只会挤占一行；
+  /// 串联层级（如「北斗星系 · 紫微星」）保留，那个信息有用。
+  String get shortTitle {
+    final prefix = '$book · ';
+    return title.startsWith(prefix) ? title.substring(prefix.length) : title;
+  }
 }
 
 class TianjiSectionRepository {
@@ -48,6 +57,15 @@ class TianjiSectionRepository {
     }();
     _cache[key] = future;
     return future;
+  }
+
+  /// 指定篇的节列表（复用同一份解析缓存，不重复读文件）。
+  static Future<List<TianjiSection>> sectionsOf(
+    List<(String, String, String, String)> docs,
+    String book,
+  ) async {
+    final all = await parseAll(docs);
+    return all.where((s) => s.book == book).toList();
   }
 
   /// 按标题切节。
