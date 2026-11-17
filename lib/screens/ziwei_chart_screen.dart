@@ -385,7 +385,11 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
   ///
   /// ponytail: 只列十二宫主星与生年四化，星曜全量会超出 prompt 预算；
   /// 需要更细（亮度/杂曜/流年）时再扩。
-  String _chartDigest(ZiweiChart c) {
+  ///
+  /// [currentAge] 为虚岁，用于定位当前大限。prefill 明确要求解读「当前大限的
+  /// 重点」，但此前摘要里没有大限数据，模型只能凭空补 —— 命盘 decades 本来
+  /// 就有完整十二限，只是没喂进去。
+  String _chartDigest(ZiweiChart c, {int? currentAge}) {
     final buf = StringBuffer()
       ..writeln('八字四柱：${c.baziFull}')
       ..writeln('农历：${c.lunarText}｜性别：${c.genderLabel}｜五行局：${c.elementBureauLabel}');
@@ -396,6 +400,22 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
         .map((s) => '${s.starLabelName}化${s.typeLabel}')
         .join('、');
     if (sh.isNotEmpty) buf.writeln('生年四化：$sh');
+    if (currentAge != null) {
+      for (final d in c.decades) {
+        if (currentAge < d.startTime || currentAge > d.endTime) continue;
+        // 大限宫的主星需按宫位名回查（ZiweiDecade 只存宫位名与干支）
+        final palace = c.palaces.where((p) => p.roleLabel == d.roleLabel);
+        final majors = palace.isEmpty
+            ? ''
+            : palace.first.majors
+                .map((s) => '${s.label}${s.sihuaText}')
+                .join('、');
+        buf.writeln('当前大限：第${d.index}大限（${d.rangeLabel}，虚岁$currentAge）'
+            '落${d.roleLabel}（${d.ganzhiLabel}）'
+            '${majors.isEmpty ? '无主星' : majors}');
+        break;
+      }
+    }
     buf.writeln('十二宫主星：');
     for (final p in c.palaces) {
       final majors = p.majors.map((s) => '${s.label}${s.sihuaText}').join('、');
@@ -412,11 +432,14 @@ class _ZiweiChartScreenState extends State<ZiweiChartScreen> {
   void _askNishi() {
     final c = _chart;
     if (c == null) return;
+    // 虚岁按公历年近似（未扣本年生日是否已过）。大限跨度 10 年，差 1 岁通常
+    // 仍落在同一限内；恰在交界年份时可能定位到相邻大限。
+    final currentAge = DateTime.now().year - _year + 1;
     final seed = ClassicHit(
       source: 'ziwei',
       sourceLabel: '紫微命盘（本地排盘结果）',
-      title: '本盘十二宫与四化',
-      snippet: _chartDigest(c),
+      title: '本盘十二宫、生年四化与当前大限',
+      snippet: _chartDigest(c, currentAge: currentAge),
     );
     // 多词召回 + 相关度排序（见 ClassicSearchService.rankByRelevance）：
     // 主星名定位到具体星曜，「命宫」「四化」让同时讲到落宫与四化的片段排前。

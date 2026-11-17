@@ -49,11 +49,15 @@ mixin ReadingProgressMixin<T extends StatefulWidget> on State<T> {
 
   Future<void> _persistReadingProgress() async {
     if (!readingScroll.hasClients) return;
-    await ReadingProgressRepository.save(
-      readingProgressKey,
-      readingScroll.offset,
-      readingScroll.position.maxScrollExtent,
-    );
+    try {
+      await ReadingProgressRepository.save(
+        readingProgressKey,
+        readingScroll.offset,
+        readingScroll.position.maxScrollExtent,
+      );
+    } catch (_) {
+      // 进度是增强功能：写失败只是丢一次位置，绝不能让阅读页报错。
+    }
   }
 
   /// 重载正文前调用：先把当前位置落库并允许重新恢复。
@@ -70,18 +74,27 @@ mixin ReadingProgressMixin<T extends StatefulWidget> on State<T> {
   Future<void> restoreReadingProgress() async {
     if (_restored) return;
     _restored = true;
-    final saved = await ReadingProgressRepository.load(readingProgressKey);
+    ReadingProgress? saved;
+    try {
+      saved = await ReadingProgressRepository.load(readingProgressKey);
+    } catch (_) {
+      // 数据库不可用（如纯 widget 测试环境）时按「没有记录」处理，
+      // 页面照常从顶部开始读。
+      return;
+    }
     if (saved == null || !mounted) return;
+    // 捕获为非空 final：可空局部变量进不了闭包的类型提升
+    final progress = saved;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted || !readingScroll.hasClients) return;
       final max = readingScroll.position.maxScrollExtent;
-      readingScroll.jumpTo(saved.resolvedOffset(max).clamp(0.0, max));
+      readingScroll.jumpTo(progress.resolvedOffset(max).clamp(0.0, max));
       // Markdown 是懒渲染列表：首帧时 maxScrollExtent 只算到已布局部分，
       // 直接按它换算会偏前，故延迟补跳一次。
       await Future<void>.delayed(const Duration(milliseconds: 200));
       if (!mounted || !readingScroll.hasClients) return;
       final max2 = readingScroll.position.maxScrollExtent;
-      final target = saved.resolvedOffset(max2).clamp(0.0, max2);
+      final target = progress.resolvedOffset(max2).clamp(0.0, max2);
       if ((readingScroll.offset - target).abs() > 24) {
         readingScroll.jumpTo(target);
       }
