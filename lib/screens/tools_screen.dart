@@ -22,6 +22,7 @@ import 'huangdi_siji_screen.dart';
 import 'sanshan_lingqian_screen.dart';
 import 'xiaoliuren_screen.dart';
 import 'meihua_screen.dart';
+import 'tianji_doc_list_screen.dart';
 import '../theme/app_colors.dart';
 import '../utils/responsive.dart';
 import '../widgets/zone_section.dart';
@@ -118,6 +119,13 @@ class ToolsScreen extends StatelessWidget {
                   icon: Icons.auto_awesome,
                   columns: columns,
                   children: [
+                    _ToolCard(
+                      icon: Icons.menu_book_outlined,
+                      title: '天纪讲义',
+                      subtitle: '天机道 / 紫微星曜 / 相术 / 堪舆 · 倪师口述原文',
+                      color: colorScheme.secondary,
+                      builder: (_) => TianjiDocListScreen(),
+                    ),
                     _ToolCard(
                       icon: Icons.auto_awesome,
                       title: '紫微斗数排盘',
