@@ -212,9 +212,11 @@ class MarkdownDocScreen extends StatefulWidget {
       h3: (tt.titleMedium ?? const TextStyle(fontSize: 16))
           .copyWith(color: cs.onSurface),
       h3Padding: EdgeInsets.zero,
-      h4: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)
+      // 小节标题（讲义普遍用 #### 分节）必须有上下留白，否则标题与正文挤在
+      // 一起、同属小字号，整页读起来像"一大段"（2026-11-17 用户反馈天纪讲义）。
+      h4: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold, height: 1.3)
           .copyWith(color: cs.primary),
-      h4Padding: EdgeInsets.zero,
+      h4Padding: const EdgeInsets.only(top: 22, bottom: 8),
       h5: (tt.bodyLarge ?? const TextStyle(fontSize: 16))
           .copyWith(color: cs.onSurface),
       h5Padding: EdgeInsets.zero,
