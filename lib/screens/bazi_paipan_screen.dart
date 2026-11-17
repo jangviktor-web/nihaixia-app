@@ -13,6 +13,9 @@ import 'package:nihaisha_app/widgets/bazi_location_picker.dart';
 import 'package:nihaisha_app/widgets/bazi_fortune_card.dart';
 import 'package:nihaisha_app/widgets/bazi_paipan_widgets.dart';
 
+import 'package:nihaisha_app/services/classic_search_service.dart';
+import 'llm_ask_screen.dart';
+
 /// 八字排盘：生辰 → 四柱 + 十神 + 旬空 + 刑冲合害 + 长生十二神 + 八字详批。
 ///
 /// 四柱取自项目内 [ZiweiDate.bazi]（与命盘 / 黄历同口径），其余关系检测复用既有
@@ -164,6 +167,35 @@ class _BaZiPaipanScreenState extends State<BaZiPaipanScreen> {
     );
   }
 
+  /// 请倪师解读此盘：复用 [_buildShareText] 的排盘文本作为事实片段注入，
+  /// 模型只解读、不重算（排盘由本地引擎完成）。
+  void _askNishi() {
+    if (_result == null) return;
+    // 去掉分享用的页脚，只留盘面事实。
+    final digest = _buildShareText().split('—— 来自汉唐中医').first.trim();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => LlmAskScreen(
+          prefill: '请按倪师天纪的论断思路，解读我这个八字：'
+              '日主强弱与格局用神，以及当前大运的重点。',
+          seedHits: [
+            ClassicHit(
+              source: 'bazi',
+              sourceLabel: '八字排盘（本地排盘结果）',
+              title: '四柱十神与大运',
+              snippet: digest,
+            ),
+          ],
+          // 天纪几乎不讲八字（索引里「日主」0 命中、「四柱」仅 3 条），
+          // 所以只取少量义理片段作补充，主体靠上面的盘面事实。
+          // 不用「八字」：它命中 60/99 条，等于没检索。
+          seedQuery: '四柱 五行 命宫',
+        ),
+      ),
+    );
+  }
+
   Widget _buildExportContent() {
     final r = _result!;
     final cs = Theme.of(context).colorScheme;
@@ -290,6 +322,11 @@ class _BaZiPaipanScreenState extends State<BaZiPaipanScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('八字排盘'), actions: [
     if (_result != null) ...[
+      IconButton(
+        icon: const Icon(Icons.forum_outlined),
+        tooltip: '请倪师解读此盘',
+        onPressed: _askNishi,
+      ),
       IconButton(
         icon: const Icon(Icons.image_outlined),
         tooltip: '存图 / 分享长图',

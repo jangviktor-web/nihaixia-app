@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../widgets/state_view.dart';
 import 'package:flutter/services.dart';
@@ -5,6 +7,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../widgets/traditional_toggle_button.dart';
 import '../data/chinese_convert.dart' show toSimplified;
+import '../utils/reading_progress_mixin.dart';
 import '../data/formula_repository.dart';
 import '../data/traditional_display.dart';
 import '../data/herb_repository.dart';
@@ -162,6 +165,11 @@ class MarkdownDocScreen extends StatefulWidget {
   final String? footer;
   final bool linkFormulas;
 
+  /// 阅读进度的存储键。不传时用 [asset]（无 asset 则用 [title]）。
+  ///
+  /// 仅当标题可能重名（如不同古书的同名章节）时才需要显式指定。
+  final String? progressKey;
+
   const MarkdownDocScreen({
     super.key,
     required this.title,
@@ -169,6 +177,7 @@ class MarkdownDocScreen extends StatefulWidget {
     this.content,
     this.footer,
     this.linkFormulas = false,
+    this.progressKey,
   }) : assert(asset != '' || content != null, 'asset 与 content 至少要提供一个');
 
   @override
@@ -212,9 +221,11 @@ class MarkdownDocScreen extends StatefulWidget {
       h3: (tt.titleMedium ?? const TextStyle(fontSize: 16))
           .copyWith(color: cs.onSurface),
       h3Padding: EdgeInsets.zero,
-      h4: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)
+      // 小节标题（讲义普遍用 #### 分节）必须有上下留白，否则标题与正文挤在
+      // 一起、同属小字号，整页读起来像"一大段"（2026-11-17 用户反馈天纪讲义）。
+      h4: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold, height: 1.3)
           .copyWith(color: cs.primary),
-      h4Padding: EdgeInsets.zero,
+      h4Padding: const EdgeInsets.only(top: 22, bottom: 8),
       h5: (tt.bodyLarge ?? const TextStyle(fontSize: 16))
           .copyWith(color: cs.onSurface),
       h5Padding: EdgeInsets.zero,
@@ -264,13 +275,19 @@ class MarkdownDocScreen extends StatefulWidget {
       styleSheetFor(Theme.of(context));
 }
 
-class _MarkdownDocScreenState extends State<MarkdownDocScreen> {
+class _MarkdownDocScreenState extends State<MarkdownDocScreen>
+    with ReadingProgressMixin<MarkdownDocScreen> {
   late Future<String> _future;
+
+  @override
+  String get readingProgressKey => widget.progressKey ??
+      (widget.asset.isNotEmpty ? widget.asset : widget.title);
 
   @override
   void initState() {
     super.initState();
     _future = _load();
+    _future.then((_) => restoreReadingProgress());
   }
 
   Future<String> _load() async {
@@ -281,8 +298,13 @@ class _MarkdownDocScreenState extends State<MarkdownDocScreen> {
   }
 
   /// 重载正文（切换繁体显示后调用）。
+  ///
+  /// 内容长度会随简繁转换变化，先把当前位置落库再重载，否则恢复读到的
+  /// 还是切换前的旧偏移、会被弹回顶部。
   void _reload() {
+    final pending = beforeReadingReload();
     setState(() => _future = _load());
+    pending.then((_) => _future.then((_) => restoreReadingProgress()));
   }
 
   String _injectLinks(String md) => injectInternalLinks(md);
@@ -320,6 +342,7 @@ class _MarkdownDocScreenState extends State<MarkdownDocScreen> {
               Expanded(
                 child: Markdown(
                   data: snapshot.data ?? '',
+                  controller: readingScroll,
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                   selectable: true,
                   onTapLink: (text, href, title) => _onTapLink(href),

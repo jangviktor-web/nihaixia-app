@@ -78,6 +78,12 @@ class LlmRetrieval {
   /// 计数类提问的本地统计，空串表示不注入。
   final String stats;
 
+  /// 本地确定性事实（命理盘面、卦象等），由 App 引擎算出，**不是**讲义摘录。
+  ///
+  /// 与 [classics] 分开存放的原因：混在一起会被模型当成「倪师原话」转述，
+  /// 或反过来被当成无关片段忽略。渲染时单独成块并注明「可直接引用、不要重算」。
+  final List<ClassicHit> seedFacts;
+
   const LlmRetrieval({
     required this.classics,
     this.matchedArticles = 0,
@@ -88,15 +94,43 @@ class LlmRetrieval {
     this.acupoints = const [],
     this.diseases = const [],
     this.stats = '',
+    this.seedFacts = const [],
   });
 
   /// 病名对照块（空串表示本条提问没命中对照关系）。
   String get diseaseBrief => DiseaseAliasIndex.brief(diseases);
+
+  /// 并入本地确定性事实（如紫微命盘摘要），单独成块渲染。
+  ///
+  /// 非医疗模块（命理）没有讲稿可检索，但盘面是本地引擎算出的确定性事实，
+  /// 走「只依据给定事实作答」的同一条管线即可，无需另建索引。
+  LlmRetrieval withFacts(List<ClassicHit> facts) {
+    if (facts.isEmpty) return this;
+    return LlmRetrieval(
+      classics: classics,
+      matchedArticles: matchedArticles,
+      formulas: formulas,
+      cases: cases,
+      caseFormulas: caseFormulas,
+      formulaBriefs: formulaBriefs,
+      acupoints: acupoints,
+      diseases: diseases,
+      stats: stats,
+      seedFacts: [...facts, ...seedFacts],
+    );
+  }
 }
 
 /// 倪师讲义问答：本地检索片段 + 人格规则 → 一次 POST。
 ///
 /// ponytail: 非流式、无重试队列；历史只带最近 3 轮、由调用方传入，不持久化。
+/// 问答场景。铁律措辞必须随场景变化：医疗场景枚举六类本地事实并禁止套外部知识；
+/// 命理场景要让模型知道「盘面是本地算出的确定性数据」且受民俗口径约束。
+///
+/// 只有一个 persona、一套铁律时，命理问题会被当成看病来答：模型要么判
+/// 「讲义里没有涉及」而拒答（盘面被无视），要么把盘面当讲义转述。
+enum LlmScene { medical, divination }
+
 class LlmService {
   LlmService._();
 
@@ -675,13 +709,32 @@ class LlmService {
   }
 
   /// 纯函数，便于测试：system = 人格规则 + App 铁律。
-  static String buildSystem(String persona) => '''
+  static String buildSystem(
+    String persona, {
+    LlmScene scene = LlmScene.medical,
+  }) =>
+      '''
 $persona
 
 ---
+${scene == LlmScene.divination ? _divinationRules : _medicalRules}''';
+
+  static const String _medicalRules = '''
 【本轮运行时铁律 · 优先级最高】
 只依据下方【讲义片段】【古今·中西医病名对照】【命中片段中出现的方剂】【方剂库摘要】【倪师医案】【本地统计】作答。后五块也是应用从本地数据确定性抽取的事实，其中统计数字可直接引用并说明口径。
 以上都未涉及就明确说「讲义里没有涉及这个话题，我不能替倪师乱讲」，绝不编造、不引用外部知识、不虚构条文号或方剂。
+不要输出资产路径、行号或模块编号。不要写免责声明与安全话术——应用会在回答下方固定渲染免责框。
+''';
+
+  /// 命理场景铁律：事实分两层（本地盘面 vs 讲义摘录），并约束表达尺度。
+  static const String _divinationRules = '''
+【本轮运行时铁律 · 优先级最高】
+本次是命理（紫微斗数 / 八字 / 卦象 / 梅花易数）解读，不是看病。
+只依据下方两块作答：
+①【本地盘面事实】由 App 本地引擎算出，是确定性数据，可直接引用；不要重新推算，不要改写星曜、宫位、四化或卦象。
+②【讲义片段】是倪师天纪口述摘录，用来说明义理；片段没讲到的，不要硬套，也不要补充自己的流派知识。
+以上都未涉及就明确说「讲义里没有涉及这个话题，我不能替倪师乱讲」，绝不编造条文、星曜、卦辞或流派说法。
+表达尺度：命理属民俗文化参考，只讲倾向与可能性，不用「一定 / 必然 / 注定 / 肯定会」这类断定；不预测生死、不诊断疾病、不给用药建议、不作投资或法律结论。用户若问健康、钱财、法律的具体决定，用一句话说明这属民俗参考、请就医或咨询专业人士即可，不要展开长篇免责。
 不要输出资产路径、行号或模块编号。不要写免责声明与安全话术——应用会在回答下方固定渲染免责框。
 ''';
 
@@ -698,6 +751,7 @@ $persona
     List<AcupointDetail> acupoints = const [],
     String diseaseBrief = '',
     String stats = '',
+    List<ClassicHit> seedFacts = const [],
   }) {
     final buf = StringBuffer();
     for (final hit in hits.take(maxHits)) {
@@ -712,6 +766,11 @@ $persona
     final excerpts = buf.toString().trim();
 
     final parts = <String>[
+      // 本地确定性事实（命理盘面 / 卦象）单独成块，且不截断：
+      // 它由 App 自己生成、长度可控，截断会丢宫位导致模型算错。
+      if (seedFacts.isNotEmpty)
+        '【本地盘面事实】（由 App 本地引擎计算，可直接引用；不要重新推算）\n'
+            '${seedFacts.map((f) => '【${f.sourceLabel}·${f.title}】\n${f.snippet}').join('\n\n')}',
       '【讲义片段】\n'
           '${excerpts.isEmpty ? "（本次检索没有命中讲义内容）" : excerpts}',
     ];
@@ -889,6 +948,7 @@ $persona
     LlmConfig config, {
     LlmRetrieval? retrieval,
     List<({String question, String answer})> history = const [],
+    LlmScene scene = LlmScene.medical,
     // 推理型模型（reasoning）吐完思考再说答案，60s 常常不够，调用方可放宽。
     Duration timeout = const Duration(seconds: 60),
   }) async {
@@ -899,7 +959,7 @@ $persona
     final decoded = await _postChat(
       config,
       buildMessages(
-        system: buildSystem(await loadPersona()),
+        system: buildSystem(await loadPersona(), scene: scene),
         currentContext: buildContext(
           r.classics,
           q,
@@ -909,6 +969,7 @@ $persona
           acupoints: r.acupoints,
           diseaseBrief: r.diseaseBrief,
           stats: r.stats,
+          seedFacts: r.seedFacts,
         ),
         history: history,
       ),

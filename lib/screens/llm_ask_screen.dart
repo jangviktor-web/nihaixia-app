@@ -61,7 +61,24 @@ class _Turn {
 /// 长对话模式（最近 3 轮历史），但不加模式开关：点「新对话」清空即等同于一问一答。
 /// 默认关闭，未配置时本页只给出前往设置的入口，不发起任何网络请求。
 class LlmAskScreen extends StatefulWidget {
-  const LlmAskScreen({super.key});
+  const LlmAskScreen({
+    super.key,
+    this.prefill,
+    this.seedHits = const [],
+    this.seedQuery,
+  });
+
+  /// 进入时预填到输入框的问题（如从命盘结果页带入的「请解读此盘」）。
+  final String? prefill;
+
+  /// 预置的本地事实片段（如命盘摘要）。命理模块无讲稿可检索，靠它把
+  /// 本地引擎算出的盘面事实喂给模型，走同一条「只依据事实作答」的管线。
+  final List<ClassicHit> seedHits;
+
+  /// 命理检索词（盘面实体，如星名 / 卦名）。
+  /// [ClassicSearchService.search] 是整串 `contains`，问答长句必然 0 命中，
+  /// 所以天纪检索用它，而不是用户问题本身。
+  final String? seedQuery;
 
   @override
   State<LlmAskScreen> createState() => _LlmAskScreenState();
@@ -86,7 +103,15 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
   @override
   void initState() {
     super.initState();
-    _restoreHistory();
+    final prefill = widget.prefill?.trim();
+    if (prefill != null && prefill.isNotEmpty) _controller.text = prefill;
+    if (widget.seedHits.isEmpty) {
+      _restoreHistory();
+    } else {
+      // 命理入口（seedHits 非空）不接续上次医疗会话：否则命盘问题会挂在
+      // 桂枝汤之类的旧上下文后面，模型容易串味。
+      _historyReady = true;
+    }
   }
 
   Future<void> _restoreHistory() async {
@@ -172,12 +197,32 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
     try {
       // 必须走 prepare：整句提问在整串匹配下 0 命中，需关键词回退；
       // 且要一并拿方剂清单 / 医案 / 统计，否则模型只答第一个方剂、不会数、不回链医案。
-      final r = await LlmService.prepare(q);
+      // 命理入口：只检索天纪口述索引（独立库），不碰医疗库，
+      // 再前置盘面事实——模型既能看到倪师原话，也有确定性盘面可依。
+      final r = widget.seedHits.isNotEmpty
+          ? LlmRetrieval(
+              classics: (await ClassicSearchService.search(
+                widget.seedQuery ?? q,
+                onlySources: const {'tianji'},
+                snippetSpan: LlmService.contextSnippetSpan,
+                path: ClassicSearchService.tianjiAssetPath,
+                // 命理检索必须按相关度排序：天纪字幕里「八字」命中 60/99 条、
+                // 「卦」74/99 条，按索引顺序取前 8 条等于随机摘录。
+                rankByRelevance: true,
+              ))
+                  .hits,
+            ).withFacts(widget.seedHits)
+          : await LlmService.prepare(q);
       final text = await LlmService.ask(
         q,
         LlmConfig.fromSettings(),
         retrieval: r,
         history: history,
+        // 命理入口（带盘面事实）用民俗铁律：医疗那套会让模型把盘面当讲义，
+        // 或直接判「讲义里没有涉及」而拒答。
+        scene: widget.seedHits.isNotEmpty
+            ? LlmScene.divination
+            : LlmScene.medical,
       );
       if (!mounted) return;
       setState(() {
@@ -308,6 +353,24 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
   /// 免责框由 App 固定渲染，绝不交给模型生成。
   /// 急症提问另出加强版：persona 禁止模型在正文写安全话术，缺口在这里补。
   Widget _disclaimer(ColorScheme cs) {
+    // 命理入口（seedHits 非空）走民俗口径：这里渲染「请遵医嘱用药」不合适，
+    // 也违反命理模块须带民俗参考免责的约定。
+    if (widget.seedHits.isNotEmpty) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+        color: cs.surfaceContainerHighest,
+        child: Text(
+          'AI 生成内容，非倪海厦本人原话，仅供民俗文化学习参考，'
+          '不构成医疗、投资或人生决策建议。',
+          style: TextStyle(
+            fontSize: 12,
+            height: 1.5,
+            color: cs.onSurfaceVariant,
+          ),
+        ),
+      );
+    }
     final last = _turns.isEmpty ? '' : _turns.last.question;
     final emergency = LlmService.isEmergencyQuery(last);
     // 针灸提问另加一句：取穴与手法是可照着做的操作，风险比开方更直接。

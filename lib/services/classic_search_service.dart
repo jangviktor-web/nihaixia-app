@@ -79,14 +79,19 @@ class _IndexEntry {
 class ClassicSearchService {
   static const String assetPath = 'assets/guji/classic_index.json.gz';
 
+  /// 天纪口述字幕索引（独立库）。命理内容不进医疗索引，避免「失眠」这类
+  /// 医疗提问命中医理口述；只在命理入口按需加载。
+  static const String tianjiAssetPath = 'assets/tianji/tianji_index.json.gz';
+
   /// 展示条数上限（命中总数另外统计）。
   static const int maxHits = 40;
 
-  static List<_IndexEntry>? _entries;
-  static Future<void>? _loading;
+  /// 索引缓存按资产路径分桶：医疗（classic_index）与天纪（tianji_index）互不干扰。
+  static final Map<String, List<_IndexEntry>> _entries = {};
+  static final Map<String, Future<void>> _loading = {};
 
-  /// 索引是否已加载（供 UI 判断是否显示加载态）。
-  static bool get isLoaded => _entries != null;
+  /// 医疗索引是否已加载（供 UI 判断是否显示加载态）。
+  static bool get isLoaded => _entries.containsKey(assetPath);
 
   static const Map<String, String> _sourceLabels = {
     'shanghan': '伤寒论讲稿',
@@ -94,6 +99,7 @@ class ClassicSearchService {
     'neijing': '内经讲稿',
     'zhenjiu': '针灸讲稿',
     'bencao': '本草讲稿',
+    'tianji': '天纪讲义',
   };
 
   static String _labelOf(String source, String? bookId) {
@@ -107,19 +113,19 @@ class ClassicSearchService {
   }
 
   /// 首次调用解压并解析索引（约 3MB gzip → 30MB 文本），之后走内存缓存。
-  static Future<void> ensureLoaded() async {
-    if (_entries != null) return;
-    _loading ??= _load();
-    await _loading;
+  static Future<void> ensureLoaded({String path = assetPath}) async {
+    if (_entries.containsKey(path)) return;
+    _loading.putIfAbsent(path, () => _load(path));
+    await _loading[path];
   }
 
-  static Future<void> _load() async {
-    final data = await rootBundle.load(assetPath);
+  static Future<void> _load(String path) async {
+    final data = await rootBundle.load(path);
     final bytes = await gunzipBytesAsync(
         data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
     final decoded = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
     final list = (decoded['entries'] as List<dynamic>).cast<Map<String, dynamic>>();
-    _entries = [
+    _entries[path] = [
       for (final e in list)
         _IndexEntry(
           source: e['s'] as String,
@@ -141,31 +147,67 @@ class ClassicSearchService {
   /// [onlySources] 限定来源（如问针灸时只要 `zhenjiu`）。不加限定时针灸讲稿
   /// 会被伤寒条文挤掉 —— 索引里伤寒 394 条、针灸只有 72 条，全源检索前几条
   /// 轮不到针灸。
+  ///
+  /// [rankByRelevance] 为真时启用相关度模式：`query` 可用空格分隔多个词
+  /// （任一命中即召回），按「标题命中 100 分 + 正文词频（封顶 20）」排序后取前 N。
+  /// 默认 false 保持既有「标题优先 + 索引顺序」——医疗检索依赖这个顺序，
+  /// 改默认值会让已验证的讲稿可达率漂移。命理入口传 true。
   static Future<ClassicSearchResult> search(
     String query, {
     int snippetSpan = 32,
     int maxResults = maxHits,
     Set<String>? onlySources,
+    String path = assetPath,
+    bool rankByRelevance = false,
   }) async {
     final q = query.trim();
     if (q.isEmpty) return ClassicSearchResult.empty;
-    await ensureLoaded();
-    final entries = _entries!;
+    await ensureLoaded(path: path);
+    final entries = _entries[path]!;
     // 繁简归一：繁体输入（如「當歸」「湯」）也能命中简体索引。
     // 索引正文已在构建期统一为简体，故只需归一查询词。
-    final needle = (await normalizeQuery(q)).toLowerCase();
+    final normalized = (await normalizeQuery(q)).toLowerCase();
+    final terms = rankByRelevance
+        ? normalized.split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList()
+        : <String>[normalized];
+    if (terms.isEmpty) return ClassicSearchResult.empty;
 
     final titleHits = <ClassicHit>[];
     final bodyHits = <ClassicHit>[];
+    final scored = <({ClassicHit hit, int score})>[];
     var total = 0;
 
     for (final e in entries) {
       if (onlySources != null && !onlySources.contains(e.source)) continue;
-      final inTitle = e.title.toLowerCase().contains(needle);
-      final idx = e.text.toLowerCase().indexOf(needle);
-      if (!inTitle && idx < 0) continue;
+      final lowerTitle = e.title.toLowerCase();
+      final lowerText = e.text.toLowerCase();
+
+      var score = 0;
+      var matched = false;
+      var bestIdx = -1;
+      var bestLen = q.length;
+      for (final t in terms) {
+        final inTitle = lowerTitle.contains(t);
+        final idx = inTitle ? -1 : lowerText.indexOf(t);
+        if (!inTitle && idx < 0) continue;
+        matched = true;
+        if (inTitle) score += 100;
+        // 词频封顶 20：否则长篇口述靠重复同一个词就能霸榜
+        var freq = 0;
+        var p = idx >= 0 ? idx : lowerText.indexOf(t);
+        while (p >= 0 && freq < 20) {
+          freq++;
+          p = lowerText.indexOf(t, p + t.length);
+        }
+        score += freq;
+        if (bestIdx < 0 && idx >= 0) {
+          bestIdx = idx;
+          bestLen = t.length;
+        }
+      }
+      if (!matched) continue;
       total++;
-      if (titleHits.length + bodyHits.length >= maxResults) continue;
+
       final hit = ClassicHit(
         source: e.source,
         sourceLabel: _labelOf(e.source, e.bookId),
@@ -173,13 +215,27 @@ class ClassicSearchService {
         asset: e.asset,
         bookId: e.bookId,
         chapterIndex: e.chapterIndex,
-        snippet: _snippet(e.text, inTitle ? -1 : idx, q.length, snippetSpan),
+        snippet: _snippet(e.text, bestIdx, bestLen, snippetSpan),
       );
-      if (inTitle) {
-        titleHits.add(hit);
+
+      if (rankByRelevance) {
+        scored.add((hit: hit, score: score));
       } else {
-        bodyHits.add(hit);
+        if (titleHits.length + bodyHits.length >= maxResults) continue;
+        if (lowerTitle.contains(normalized)) {
+          titleHits.add(hit);
+        } else {
+          bodyHits.add(hit);
+        }
       }
+    }
+
+    if (rankByRelevance) {
+      scored.sort((a, b) => b.score.compareTo(a.score));
+      return ClassicSearchResult(
+        total: total,
+        hits: scored.take(maxResults).map((e) => e.hit).toList(),
+      );
     }
 
     return ClassicSearchResult(
@@ -198,7 +254,7 @@ class ClassicSearchService {
     await ensureLoaded();
     final needle = (await normalizeQuery(q)).toLowerCase();
     final out = <String>{};
-    for (final e in _entries!) {
+    for (final e in _entries[assetPath]!) {
       final a = e.asset;
       if (a == null) continue;
       if (e.title.toLowerCase().contains(needle) ||
