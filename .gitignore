@@ -57,6 +57,13 @@ _writetest.txt
 # 带日期/批次后缀的备份（如 acupoints.json.bak-20261111-enrich-batch1），
 # 上面的 *.bak 匹配不到，单独一条
 assets/data/*.bak-*
+# 医案 md 补入脚本的自动备份（fill_medical_cases_from_md.py --apply 每次覆盖）
+*.bak-fill-md
+# 医案排版归一脚本的自动备份
+*.bak-fmt
+# 医案重复行合并脚本的自动备份
+*.bak-merge
+*.bak-dup
 *.new
 android/build/
 

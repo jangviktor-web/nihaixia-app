@@ -49,30 +49,32 @@ void main() {
       expect(find.text('肺癌'), findsOneWidget);
       expect(find.text('其他疾病'), findsOneWidget);
 
-      // Baseline count.
-      final baseline = tester
-              .widget<Text>(find.textContaining('/ 1089 例'))
-              .data ??
-          '';
-      expect(baseline.contains('1089 / 1089'), isTrue,
-          reason: 'baseline should be 1089/1089, got: ' + baseline);
+      // Baseline count. 总数随医案补入变化，从界面读取而非硬编码。
+      final baselineText =
+          tester
+              .widget<Text>(find.textContaining(RegExp(r'共 \d+ / \d+ 例')))
+              .data ?? '';
+      final mb = RegExp(r'共 (\d+) / (\d+) 例').firstMatch(baselineText);
+      expect(mb, isNotNull, reason: 'count line: ' + baselineText);
+      final total = int.parse(mb!.group(2)!);
+      expect(int.parse(mb.group(1)!), total,
+          reason: 'baseline should be N/N, got: ' + baselineText);
 
       // Tap formula chip → must reduce but stay > 0.
       await tester.tap(find.text('桂枝汤'));
       for (var i = 0; i < 20; i++) {
         await tester.pump(const Duration(milliseconds: 100));
       }
-      final afterFormula = tester
-              .widget<Text>(find.textContaining('/ 1089 例'))
-              .data ??
-          '';
-      final mf =
-          RegExp(r'共 (\d+) / 1089 例').firstMatch(afterFormula);
+      final afterFormula =
+          tester
+              .widget<Text>(find.textContaining(RegExp(r'共 \d+ / \d+ 例')))
+              .data ?? '';
+      final mf = RegExp(r'共 (\d+) / (\d+) 例').firstMatch(afterFormula);
       expect(mf, isNotNull, reason: 'count line: ' + afterFormula);
       final nf = int.parse(mf!.group(1)!);
       expect(nf, greaterThan(0),
           reason: '桂枝汤 tap must yield >0, got $nf');
-      expect(nf, lessThan(1089));
+      expect(nf, lessThan(total));
 
       // Reset to 全部 (治法), tap disease chip → also must reduce > 0.
       // Scroll filter bar left then tap 治法 row's 全部 chip.
@@ -118,12 +120,11 @@ void main() {
       for (var i = 0; i < 20; i++) {
         await tester.pump(const Duration(milliseconds: 100));
       }
-      final afterDisease = tester
-              .widget<Text>(find.textContaining('/ 1089 例'))
-              .data ??
-          '';
-      final md =
-          RegExp(r'共 (\d+) / 1089 例').firstMatch(afterDisease);
+      final afterDisease =
+          tester
+              .widget<Text>(find.textContaining(RegExp(r'共 \d+ / \d+ 例')))
+              .data ?? '';
+      final md = RegExp(r'共 (\d+) / (\d+) 例').firstMatch(afterDisease);
       expect(md, isNotNull, reason: 'count line: ' + afterDisease);
       final nd = int.parse(md!.group(1)!);
       expect(nd, greaterThan(0),
