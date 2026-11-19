@@ -8,6 +8,8 @@
    既有的 `喜按→虚` 同一风格）。
 2. 病因分析列尾部的空诊断标签 —— 如 `... 眼诊： 特殊诊断耳诊：`，标签后面
    没有任何内容。连同悬挂的 `1、` 编号与空 `【望诊】` 段头一起清掉。
+3. 患者列的性别写法 —— 拉丁 `F/M/Male/Female`（大小写都有）与中文 `男/女`
+   并存。表内绝大多数已是中文，统一到中文。
 
 用法：
     python tool/normalize_case_format.py            # dry-run，只打印将改动的行
@@ -21,6 +23,7 @@ import shutil
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 APP = os.path.join(REPO, "assets", "medical_cases", "cases_table.md")
 
+COL_PT = 3                            # 患者
 COL_DX, COL_FORMULA = 5, 7            # split('|') 后的下标：0 是空，1 起才是列
 COL_NAME = ["序号", "日期", "患者", "主要诊断", "病因分析", "西医背景",
             "方剂", "针灸", "治法", "结果", "医嘱", "观点"]
@@ -46,6 +49,12 @@ DANGLING_NO = re.compile(r"\d+、\s*$")
 # ⚠ 只清我们自己的分节头。表里还有 `【下焦寒实】` 这类真正的正文标记，
 # 不能当成悬挂段头删掉（#616 曾因此丢内容）。
 DANGLING_HEAD = re.compile(r"【(?:主诉|问诊|脉诊|望诊|触诊|其他)】\s*$")
+# 性别写法混用：`F，73岁` / `male，70岁` / `MALE，42岁` / `Female，中年`。统一写中文。
+# ⚠ 只吃「独占一个 token」的性别词（后面是行尾或逗号/顿号/空格）：
+#    `M.A.，男，52岁`、`M.S.，女，40岁` 是患者缩写，`meiZ.，女，73岁`、`Messer Lois`、
+#    `Murray Jim` 是姓名首字母——后面紧跟字母或点，不会被匹配。
+GENDER = re.compile(r"^(female|male|f|m)(?=$|[，,、 \t])", re.I)
+GENDER_CN = {"f": "女", "female": "女", "m": "男", "male": "男"}
 
 
 def strip_empty_tail(s):
@@ -60,8 +69,10 @@ def strip_empty_tail(s):
             return s
 
 
-def fix_cell(s, is_dx):
+def fix_cell(s, is_dx, is_pt=False):
     out = MOJIBAKE.sub("", s)             # 乱码残渣先清，否则会干扰后面的字符类判断
+    if is_pt:                            # 性别只可能在患者列首位
+        out = GENDER.sub(lambda m: GENDER_CN[m.group(1).lower()], out, count=1)
     out = RANGE.sub(r"\1→\2", out)        # 6S7 → 6→7（必须先做，S_ARROW 会吃掉 S）
     out = S_ARROW.sub("→", out)           # 「S->合细辛」→「→合细辛」
     out = S_JUNK.sub("", out)             # 「S-S-S-(除…」→「(除…」
@@ -92,7 +103,7 @@ def main():
             continue
         for j in range(1, 13):                 # 全部 12 列；空尾标签规则只对病因分析生效
             old = c[j].strip()
-            new = fix_cell(old, j == COL_DX)
+            new = fix_cell(old, j == COL_DX, j == COL_PT)
             if new != old:
                 c[j] = " " + new + " "
                 changed.append((i + 1, c[1].strip(), j, old, new))
