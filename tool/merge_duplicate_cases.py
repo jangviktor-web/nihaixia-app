@@ -7,7 +7,8 @@
 把新行的内容并进去，再删新行——原序号不挪位，历史溯源标记也留在原处。
 
 并规则（只为「不丢东西」，不重写、不润色）：
-  主要诊断  保留行优先，若为空才取对方
+  主要诊断  原值不拼；原值为空、或对方更完整且包含原值（「里寒且湿」→「里寒且湿表虚仍有」）时取对方
+  （日期与患者同上：不拼，空则取对方，包含关系则取更完整的那份）
   病因分析  保留行若等于诊断（占位复述）→ 换成对方的三诊；否则有差异就追加
   方剂/结果/医嘱/观点  保留行为空取对方；两边近似同一段文字→取较完整的那份；
                         确实不同才追加，中间用「 ｜ 」
@@ -41,10 +42,20 @@ COL = ["", "序号", "日期", "患者", "主要诊断", "病因分析", "西医
 IDX_DX, IDX_TAGS = 5, 9          # 病因分析 / 治法
 KEEP_AS_IS = (2, 3, 4)           # 日期 / 患者 / 主要诊断：同一就诊，保留原值不拼
 EMPTY_ISH = ("", "无", "未提及", "（空）")
+EMPTY_ACUP = EMPTY_ISH + ("有", "有针灸", "是", "无针灸")
 SEP = " ｜ "
 
 
 def load_map():
+    """→ [(保留, 被并, 备注, pin 集合, take 集合)]
+
+    第 4 列起可选：
+      `pin=7,12`   这些列一律保留原行值，不被对方覆盖
+                   （用于「串行」——对方那一格其实是别的患者的内容）
+      `take=7`     这些列直接取对方的值
+                   （用于「补入缺少」——原行那格被截断，对方才是完整版，
+                    而 kinship() 会判成 same 从而保留短的）
+    """
     out = []
     if not os.path.exists(MAP):
         return out
@@ -53,14 +64,20 @@ def load_map():
             continue
         p = [x.strip() for x in ln.rstrip("\n").split("\t")]
         if len(p) >= 2 and p[0].isdigit() and p[1].isdigit():
-            out.append((p[0], p[1], p[2] if len(p) > 2 else ""))
+            pin, take = set(), set()
+            for extra in p[3:]:
+                m = re.match(r"(pin|take)=([\d,\s]+)$", extra)
+                if m:
+                    tgt = pin if m.group(1) == "pin" else take
+                    tgt.update(int(x) for x in re.findall(r"\d+", m.group(2)))
+            out.append((p[0], p[1], p[2] if len(p) > 2 else "", pin, take))
     return out
 
 
 def _flat(s):
     """抹掉标点空白，只留字。保留数字与拉丁字母——剂量 `3钱`/`5钱`、`HT-2`/`HTS2`
     的差异正是要保住的信息，不能跟着标点一起抹掉。"""
-    return re.sub(r"[\s，。、；：""''（）()【】\[\]{}—\-－_/\\:.,·|!！?？~～]+", "", s)
+    return re.sub(r"[\s，。、；：""''（）()【】\[\]{}—\-－_/\\:.,·|!！?？~～+＋&*]+", "", s)
 
 
 def _cprefix(a, b):
@@ -100,11 +117,18 @@ def pick(keep, drop, is_dx=False, keep_dx=None, is_acup=False):
     """返回合并后的单元格。只为「不丢东西」，不重写、不润色。"""
     k, d = keep.strip(), drop.strip()
     if is_acup:
-        # 「无 / 未提及」都是空义词。两侧都空义时保留原值，空为空（详情页才会隐藏该栏）
-        if k in EMPTY_ISH:
-            return d if d not in EMPTY_ISH else k
-        if d in EMPTY_ISH or d in k:
+        # 「无 / 未提及 / 有」都是空义词。两侧都空义时保留原值，空为空（详情页才会隐藏该栏）
+        if k in EMPTY_ACUP:
+            return d if d not in EMPTY_ACUP else k
+        if d in EMPTY_ACUP:
             return k
+        # 穴位清单常只差标点（末尾多一个「。」、顿号换逗号）。不比抹平后的串，
+        # 会把同一串穴位拼两遍（实测 #270←#1368 拼成「…梁丘 ｜ …梁丘。」）
+        fk, fd = _flat(k), _flat(d)
+        if fk == fd or fd in fk:
+            return k
+        if fk in fd:
+            return d
         return k + SEP + d
     if is_dx:
         # 保留行的病因分析若只是诊断的复述，视为占位，换掉
@@ -118,7 +142,9 @@ def pick(keep, drop, is_dx=False, keep_dx=None, is_acup=False):
     if rel == "same":
         return k
     if rel == "longer":
-        return d if len(d) > len(k) else k
+        # 比「压缩后」的长度：否则  会被 （半角逗号+
+        # 空格）顶掉——raw 长 1 个字符，实际信息一点没多，还把全角标点弄脏了
+        return d if len(_flat(d)) > len(_flat(k)) else k
     return k + SEP + d
 
 
@@ -162,7 +188,7 @@ def main():
 
     plan = []
     dead = set()
-    for keep_seq, drop_seq, note in pairs:
+    for keep_seq, drop_seq, note, pin, take in pairs:
         if keep_seq not in rows or drop_seq not in rows:
             print("⚠ 跳过 %s←%s：序号不存在（已合并过？）" % (keep_seq, drop_seq))
             continue
@@ -170,34 +196,51 @@ def main():
         di, dc = rows[drop_seq]
         new = list(kc)
         for j in range(2, 13):
+            if j in pin:
+                continue                      # 串行列：对方那一格不属于本患者，原值不动
+            if j in take:
+                new[j] = dc[j].strip()        # 补入缺少：原行是截断版，直接取对方的完整版
+                continue
             if j in KEEP_AS_IS:
-                # 同一就诊：非空就不动（不拼），但保留行为空时必须取对方，
-                # 否则 #1186 那种只剩诊断的骨架行永远补不上患者与日期
-                if not kc[j].strip():
-                    new[j] = dc[j].strip()
+                # 同一就诊：原值不拼。但两种情况要取对方——
+                # ① 原值为空（#1186 那种只剩诊断的骨架行，患者列一直空着）
+                # ② 对方更完整且包含原值（「男」→「男，41岁」、「里寒且湿」→「里寒且湿表虚仍有」）
+                k, d = kc[j].strip(), dc[j].strip()
+                if not k:
+                    new[j] = d
+                elif d and len(_flat(d)) > len(_flat(k)) and _flat(k) and _flat(k) in _flat(d):
+                    new[j] = d
                 continue
             new[j] = pick(kc[j], dc[j],
                           is_dx=(j == IDX_DX), keep_dx=kc[4], is_acup=(j == 8))
         # 治法：先剥掉原有标记再拼去重后的全集，否则会出现 `<md:1223> … <md:1223>`
         base = re.sub(r"<md:[^>]+>", "", kc[IDX_TAGS]).strip()
         new[IDX_TAGS] = " ".join([base] + merge_tags(kc[IDX_TAGS], dc[IDX_TAGS])).strip()
-        plan.append((keep_seq, drop_seq, kc, new, note))
+        plan.append((keep_seq, drop_seq, kc, new, note, pin, take))
         dead.add(di)
 
     if not plan:
         print("无可合并项。")
         return
 
-    for keep_seq, drop_seq, kc, new, note in plan:
+    for keep_seq, drop_seq, kc, new, note, pin, take in plan:
         print("=" * 96)
         print("保留 #%s　并入 #%s　%s" % (keep_seq, drop_seq, note))
+        if pin:
+            print("  固定列（取原值）：%s" % "、".join(COL[j] for j in sorted(pin)))
+        if take:
+            print("  整列取对方（原行截断）：%s" % "、".join(COL[j] for j in sorted(take)))
         for j in range(2, 13):
             a, b = kc[j].strip(), new[j].strip()
             if a != b:
-                if j == IDX_DX and a == kc[4].strip():
+                if j in take:
+                    mark = "整列取对方"
+                elif j == IDX_DX and a == kc[4].strip():
                     mark = "占位替换"
                 elif not a:
                     mark = "空→补"
+                elif len(b) > len(a) and _flat(a) and _flat(a) in _flat(b):
+                    mark = "取更完整"
                 else:
                     mark = "追加"
                 print("  [%s] %s" % (COL[j], mark))
@@ -210,7 +253,7 @@ def main():
         print("dry-run，未写回。确认后加 --apply")
         return
 
-    for keep_seq, drop_seq, kc, new, note in plan:
+    for keep_seq, drop_seq, kc, new, note, pin, take in plan:
         ki = rows[keep_seq][0]
         lines[ki] = render(new)
     out_lines = [ln for i, ln in enumerate(lines) if i not in dead]
