@@ -158,10 +158,26 @@ class _SearchTabState extends State<SearchTab> {
     }
     setState(() => _classicLoading = true);
     try {
-      final result = await ClassicSearchService.search(query);
+      // 讲稿/古籍索引与医案文章体索引各自独立；同屏合并展示，计数也相加。
+      // 文章体是诊疗日志叙述，四诊细节（镜面舌、一息三至…）只能在这里搜到。
+      // 并行查两个索引：串行会让首次解压时间翻倍，拖慢搜索页响应。
+      final futures = <Future<ClassicSearchResult>>[
+        ClassicSearchService.search(query),
+        ClassicSearchService.search(
+          query,
+          path: ClassicSearchService.medicalArticleAssetPath,
+          snippetSpan: 120, // 文章体段落长，窗口放大才能看到完整四诊描述
+        ),
+      ];
+      final results = await Future.wait(futures);
+      final result = results[0];
+      final articles = results[1];
       if (!mounted || seq != _classicSeq) return;
       setState(() {
-        _classicResults = result;
+        _classicResults = ClassicSearchResult(
+          total: result.total + articles.total,
+          hits: [...result.hits, ...articles.hits],
+        );
         _classicLoading = false;
       });
     } catch (_) {
@@ -173,8 +189,26 @@ class _SearchTabState extends State<SearchTab> {
     }
   }
 
-  /// 打开经典命中：讲稿 → 原文阅读页；古籍 → 对应章节。
+  /// 打开经典命中：讲稿 → 原文阅读页；古籍 → 对应章节；
+  /// 医案文章体 → 段落全文（源语料不打包进 App，只有索引里的正文）。
   Future<void> _openClassicHit(ClassicHit hit) async {
+    if (hit.source == 'yianwen') {
+      if (!mounted) return;
+      await showDialog<void>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text(hit.title),
+          content: SingleChildScrollView(child: Text(hit.snippet)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('关闭'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
     if (hit.source == 'guji') {
       final book = kGujiBooks.firstWhere(
         (b) => b.id == hit.bookId,

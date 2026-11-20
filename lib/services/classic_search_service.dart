@@ -83,6 +83,11 @@ class ClassicSearchService {
   /// 医疗提问命中医理口述；只在命理入口按需加载。
   static const String tianjiAssetPath = 'assets/tianji/tianji_index.json.gz';
 
+  /// 医案文章体全文索引（诊疗日志/文章，非病案表格）。
+  /// 源 `tool/source/article_corpus/`，由 tool/build_medical_article_index.py 生成。
+  /// 段落号与 cases_table.md 的 `<art:文件#段号>` 标记一一对应。
+  static const String medicalArticleAssetPath = 'assets/medical_cases/article_index.json.gz';
+
   /// 展示条数上限（命中总数另外统计）。
   static const int maxHits = 40;
 
@@ -100,6 +105,7 @@ class ClassicSearchService {
     'zhenjiu': '针灸讲稿',
     'bencao': '本草讲稿',
     'tianji': '天纪讲义',
+    'yianwen': '医案文章',
   };
 
   static String _labelOf(String source, String? bookId) {
