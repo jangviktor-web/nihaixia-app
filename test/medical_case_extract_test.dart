@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nihaisha_app/data/formula_repository.dart';
 import 'package:nihaisha_app/data/medical_case_data.dart';
@@ -45,5 +47,49 @@ void main() {
       extractFormulaNames('小柴胡汤 → 大柴胡汤'),
       containsAll(<String>['小柴胡汤', '大柴胡汤']),
     );
+  });
+
+  test('治法列不把 <md:N> 溯源标记漏给用户', () {
+    final md = File('assets/medical_cases/cases_table.md').readAsStringSync();
+    // 先证明源表里确实带标记，否则这条测试会变成空跑
+    expect(md.contains('<md:'), isTrue);
+    final cases = parseMedicalCaseTable(md);
+    expect(cases, isNotEmpty);
+    final dirty =
+        cases.where((c) => c.method.contains('<md:')).map((c) => '#${c.seq}');
+    expect(dirty, isEmpty, reason: '治法原则会直接显示原始标记：${dirty.join(", ")}');
+  });
+
+  test('四诊列：标签白名单 + 顺序固定（主诉→问诊→望诊→脉诊）', () {
+    final md = File('assets/medical_cases/cases_table.md').readAsStringSync();
+    final cases = parseMedicalCaseTable(md);
+    final withFour = cases.where((c) => c.fourDiagnoses.isNotEmpty).toList();
+    // 资产里确实有大量四诊，否则这条测试会空跑
+    expect(withFour.length, greaterThan(500));
+
+    const order = ['主诉', '问诊', '望诊', '脉诊'];
+    final bad = <String>[];
+    for (final c in withFour) {
+      final tags = RegExp(r'【([^】]+)】')
+          .allMatches(c.fourDiagnoses)
+          .map((m) => m.group(1)!)
+          .toList();
+      if (!c.fourDiagnoses.startsWith('【')) {
+        bad.add('#${c.seq} 不以标签开头');
+        continue;
+      }
+      var last = -1;
+      for (final tag in tags) {
+        final i = order.indexOf(tag);
+        if (i < 0) {
+          bad.add('#${c.seq} 非白名单标签【$tag】');
+        } else if (i <= last) {
+          bad.add('#${c.seq} 标签乱序或重复【$tag】');
+        } else {
+          last = i;
+        }
+      }
+    }
+    expect(bad, isEmpty);
   });
 }

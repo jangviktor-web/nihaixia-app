@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import '../widgets/state_view.dart';
-import 'package:flutter/services.dart';
 
 import '../data/database_helper.dart';
 import '../data/formula_repository.dart';
@@ -13,8 +12,8 @@ import '../widgets/medical_case_list_card.dart';
 import 'medical_case_detail_screen.dart';
 import 'medical_case_insights_screen.dart';
 
-/// 倪师医案库（1089 例可用）可搜索浏览。
-/// 运行时解析 assets/medical_cases/cases_table.md，按诊断/方剂/结果/观点全文检索
+/// 倪师医案库：可搜索浏览，条目数由 assets 表决定（详见「数据洞察」页）。
+/// 数据来自 [getAllMedicalCases] 的进程内缓存，按诊断/方剂/结果/观点全文检索
 /// （简繁归一：繁体原文可被简体关键词命中）。支持 300ms 防抖、关键词高亮、
 /// 年份/治法/收藏/最近浏览筛选、方剂数/药数徽标、数据洞察入口。
 class MedicalCaseLibraryScreen extends StatefulWidget {
@@ -66,9 +65,9 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
     // 被首次访问并永久缓存为 []，将导致治法栏 freqF 错算、filter 0 结果）。
     await FormulaRepository.load();
     await HerbRepository.load();
-    final md =
-        await rootBundle.loadString('assets/medical_cases/cases_table.md');
-    _all = parseMedicalCaseTable(md);
+    // 复用 medical_case_data.dart 的进程内缓存，不再自己 loadString + 解析一遍
+    // （否则 932 KB 字符串与 1448 条 MedicalCase 会有两份常驻内存）。
+    _all = await getAllMedicalCases();
     _years = _computeYears(_all);
     // 同步累计治法(方剂名)/疾病(西医病名)分类频次：访问 c.formulaNames /
     // c.diseaseNames 同时填充全局 memo 缓存（保证详情秒开），并让

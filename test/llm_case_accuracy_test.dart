@@ -46,7 +46,7 @@ void main() {
       for (var i = 0; i < _sampleSize; i++) pool[i * step],
     ];
 
-    var p1 = 0, p2 = 0, p3 = 0;
+    var p1 = 0, p2 = 0, p3 = 0, p3n = 0;
     final misses = <String>[];
 
     for (final c in picked) {
@@ -63,8 +63,12 @@ void main() {
           .join('\n');
       final inCase = _hit(caseText, gt);
 
-      // 病机关键术语：抽 2–4 字片段，要求至少 2 个能落地
+      // 病机关键术语：抽 2–4 字片段，要求至少 2 个能落地。
+      // 分母只算「确实有病机」的样本：四诊拆成第 13 列后，原先靠四诊充数的行
+      // mechanism 变空，bits 恒为空、必然计未命中——那是口径问题，不是检索退化。
       final mech = c.mechanism;
+      final hasMech = mech.trim().length >= 4;
+      if (hasMech) p3n++;
       final bits = <String>{
         for (var len = 4; len >= 2; len--)
           for (var i = 0; i + len <= mech.length; i++)
@@ -76,7 +80,7 @@ void main() {
 
       if (inClassic) p1++;
       if (inCase) p2++;
-      if (mechHits >= 2) p3++;
+      if (hasMech && mechHits >= 2) p3++;
       if (!inClassic) {
         misses.add('#${c.seq} ${c.diagnosis} → ${gt.join('/')}');
       }
@@ -84,9 +88,9 @@ void main() {
 
     final r1 = p1 * 100 ~/ _sampleSize;
     final r2 = p2 * 100 ~/ _sampleSize;
-    final r3 = p3 * 100 ~/ _sampleSize;
+    final r3 = p3n == 0 ? 100 : p3 * 100 ~/ p3n;
     // ignore: avoid_print
-    print('P1 讲稿可达 $r1% ｜ P2 医案可达 $r2% ｜ P3 病机可达 $r3%');
+    print('P1 讲稿可达 $r1% ｜ P2 医案可达 $r2% ｜ P3 病机可达 $r3%（分母 $p3n）');
     if (misses.isNotEmpty) {
       // ignore: avoid_print
       print('讲稿未命中：\n  ${misses.join('\n  ')}');

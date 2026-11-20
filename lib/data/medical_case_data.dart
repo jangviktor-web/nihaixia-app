@@ -1,6 +1,6 @@
 /// 倪师医案合并蒸馏表格（1256 行 → 可用 1089 例：无方剂/未公开的剔除）。
 ///
-/// 原始表格为 markdown（assets/medical_cases/cases_table.md，12 列）。
+/// 原始表格为 markdown（assets/medical_cases/cases_table.md，13 列）。
 /// 不在编译期展开为常量（避免 685KB 膨胀），改为运行时按行解析。
 /// 内容属传统文化参考，非医疗建议。
 ///
@@ -288,6 +288,11 @@ class MedicalCase {
   final String advice; // 生活医嘱
   final String view; // 倪海厦核心观点/评论
 
+  /// 四诊记录：`【主诉】…【问诊】…【望诊】…【脉诊】…`（望在脉前，合望闻问切）。
+  /// 源讲义有哪几段就写哪几段，缺的段不补空标签。空串表示该案无四诊细节
+  /// （原始蒸馏稿只有病机结论），不代表「没问过病人」。
+  final String fourDiagnoses;
+
   MedicalCase({
     required this.seq,
     this.date = '',
@@ -301,11 +306,13 @@ class MedicalCase {
     this.result = '',
     this.advice = '',
     this.view = '',
+    this.fourDiagnoses = '',
   });
 
   /// 归一后的全文检索索引（简繁归一 + 小写），懒计算一次，供 [matches] 复用。
+  /// 四诊进检索：患者口语化的描述（「口渴爱喝温水」「三点会醒」）本身就是最好的检索词。
   late final String _searchNorm = toSimplified(
-    '$diagnosis\n$formula\n$result\n$view\n$mechanism\n$patient',
+    '$diagnosis\n$formula\n$result\n$view\n$mechanism\n$patient\n$fourDiagnoses',
   ).toLowerCase();
 
   /// 方剂索引：命中 FormulaRepository 的方剂名（简繁归一、去重、保持出现顺序）。
@@ -372,6 +379,7 @@ class MedicalCase {
     }
 
     section('诊断', diagnosis);
+    section('四诊', fourDiagnoses);
     section('病机', mechanism);
     section('方剂', formula);
     section('治法', method);
@@ -382,6 +390,11 @@ class MedicalCase {
     return buf.toString();
   }
 }
+
+/// 构建期溯源标记 `<md:N>`：只供工具链（回填 / 判重 / 体检）使用，不面向用户。
+/// 治法列里 827 行带此标记，其中 277 行只有标记本身——不剔除的话，
+/// 详情页「治法原则」会直接显示 `<md:1059>` 这种原始标记。
+final _mdTag = RegExp(r'<md:\d+>');
 
 /// 解析 markdown 表格文本为病例列表。
 /// 跳过表头（首格「序号」）与分隔行（含 `---`），仅收录首格为数字的行。
@@ -395,7 +408,7 @@ List<MedicalCase> parseMedicalCaseTable(String md) {
     if (!line.startsWith('|')) continue;
 
     // 按 | 切分后，仅去除首尾由外框竖线产生的空串；
-    // 【保留内部空单元格】以维持 12 列对齐（中间列为空不应导致后续列左移）。
+    // 【保留内部空单元格】以维持 13 列对齐（中间列为空不应导致后续列左移）。
     final rawCells = line.split('|').map((c) => c.trim()).toList();
     if (rawCells.isNotEmpty && rawCells.first.isEmpty) rawCells.removeAt(0);
     if (rawCells.isNotEmpty && rawCells.last.isEmpty) rawCells.removeLast();
@@ -412,9 +425,9 @@ List<MedicalCase> parseMedicalCaseTable(String md) {
     final seq = int.tryParse(cells[0]);
     if (seq == null) continue;
 
-    // 补齐至 12 列，防止短行越界
+    // 补齐至 13 列，防止短行越界
     final padded = List<String>.from(cells);
-    while (padded.length < 12) {
+    while (padded.length < 13) {
       padded.add('');
     }
     // 源表以「---」作为空值占位，归一为空串以便详情页隐藏
@@ -437,10 +450,11 @@ List<MedicalCase> parseMedicalCaseTable(String md) {
       western: padded[5],
       formula: padded[6],
       acupuncture: padded[7],
-      method: padded[8],
+      method: padded[8].replaceAll(_mdTag, '').trim(),
       result: padded[9],
       advice: padded[10],
       view: padded[11],
+      fourDiagnoses: padded[12],
     ));
   }
 

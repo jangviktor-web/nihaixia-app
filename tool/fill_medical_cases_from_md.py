@@ -18,7 +18,7 @@ APP = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                    "assets", "medical_cases", "cases_table.md")
 DECISIONS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "case_review_decisions.tsv")
 HIGH, LOW = 0.62, 0.35          # 回填 / 人工复核 阈值
-COLS = 12
+COLS = 13
 I_DATE = 1                      # 日期列下标（0 是序号）
 
 def load_decisions():
@@ -37,6 +37,14 @@ def clean_cell(s):
     s = re.sub(r"\s*\n\s*", " ", str(s or ""))
     s = re.sub(r"[ \t]+", " ", s).strip()
     return s.replace("|", "／")
+
+def scrub_brackets(s):
+    """四诊正文自带的【】会与【主诉】等标签混淆，统一换成〔〕。
+
+    实测源讲义里有 `体内积【水】`、`吃【interferon】`、`Tarceva【Target drug】`、
+    `【瘀血】` 这类强调写法，不换掉的话「按标签取某一段」的正则会提前截断。
+    """
+    return str(s or "").replace("【", "〔").replace("】", "〕")
 
 def to_iso(s):
     s = str(s or "").strip()
@@ -102,23 +110,25 @@ def load_dir(d):
     return out
 
 def md_to_row(x, seq):
-    """md 7 字段 -> App 12 列；三诊并入病因分析，统一【标签】排版。"""
+    """md 7 字段 -> App 13 列；四诊单独进第 13 列，病因分析只放病机。"""
     s = x["sec"]
     patient = clean_cell(s.get("性别", "") + "，" + s.get("年龄及体型", "")).strip("，")
     diag = clean_cell(x["diag"])
-    parts = []
-    if s.get("来诊原因"): parts.append("【主诉】" + clean_cell(s["来诊原因"]))
-    if s.get("问诊"):     parts.append("【问诊】" + clean_cell(s["问诊"]))
-    if s.get("脉诊"):     parts.append("【脉诊】" + clean_cell(s["脉诊"]))
-    if s.get("望诊"):     parts.append("【望诊】" + clean_cell(s["望诊"]))
-    mech = clean_cell(" ".join(parts))
+    # 四诊：顺序固定「主诉 → 问诊 → 望诊 → 脉诊」（望在脉前，合望闻问切）。
+    # 与 tool/split_case_four_diagnoses.py 的 FOUR 常量必须保持一致。
+    four = []
+    for key, lab in (("来诊原因", "主诉"), ("问诊", "问诊"),
+                     ("望诊", "望诊"), ("脉诊", "脉诊")):
+        if s.get(key):
+            four.append("【%s】%s" % (lab, scrub_brackets(clean_cell(s[key]))))
     formula = clean_cell(s.get("中药处方", ""))
     acu = clean_cell(s.get("针灸处方", "")) or "未提及"
     # 解说：部分 md 用「备注」承载倪师按语，二者等价
     view = clean_cell(s.get("解说", "") or s.get("备注", ""))
     # 来源标记写入「治法」列：既是溯源，也是幂等指纹（ponytail: 一列两用，不加字段）
     src = "<md:%s>" % (x["srcrow"] or x["file"])
-    return [str(seq), x["date"], patient, diag, mech, "", formula, acu, src, "", "", view]
+    return [str(seq), x["date"], patient, diag, "", "", formula, acu, src, "", "",
+            view, " ".join(four)]
 
 def sig(x):
     # 身份键：编号代号优先，无编号则用标题首段（英文患者名）；配合日期即一次就诊
@@ -180,12 +190,12 @@ def dedupe_cases(up):
 
 # ---------- 同内容去重 ----------
 def identical_key(c):
-    """12 列去掉「序号」与 <md:N> 标记后的比对键（严格：逐字比对）。"""
+    """13 列去掉「序号」与 <md:N> 标记后的比对键（严格：逐字比对）。"""
     return tuple(re.sub(r"<md:[^>]+>", "", v).strip()
                  for n, v in enumerate(c) if n != 0)
 
 def loose_key(c):
-    """12 列去掉序号、md 标记、空白与全部标点后的比对键。
+    """13 列去掉序号、md 标记、空白与全部标点后的比对键。
 
     源语料同一案常有两份，差异只是标点写法：一份写 `重(脾) 腹筋`，
     另一份写 `重(脾);腹筋`。严格比对抓不住，抹平标点后才是同一段文字。

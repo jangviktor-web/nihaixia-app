@@ -99,9 +99,9 @@ def main():
         if not s.startswith("|") or not s.endswith("|"):
             continue
         c = ln.split("|")
-        if len(c) != 14 or not c[1].strip().isdigit():
+        if len(c) != 15 or not c[1].strip().isdigit():
             continue
-        for j in range(1, 13):                 # 全部 12 列；空尾标签规则只对病因分析生效
+        for j in range(1, 14):                 # 全部 13 列；空尾标签规则只对病因分析生效
             old = c[j].strip()
             new = fix_cell(old, j == COL_DX, j == COL_PT)
             if new != old:

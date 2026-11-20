@@ -93,10 +93,21 @@ class _MedicalCaseDetailScreenState extends State<MedicalCaseDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    /// 四诊记录是一串 `【主诉】…【问诊】…【望诊】…【脉诊】…`；拆成独立栏展示。
+    /// 源讲义缺哪一段就返回空串，详情页遇到空值自动跳过该栏。
+    String four(String label) {
+      final m = RegExp('【$label】([^【]*)').firstMatch(c.fourDiagnoses);
+      return m?.group(1)?.trim() ?? '';
+    }
+
     final rows = <(String, String)>[
       ('日期', c.date),
       ('患者', c.patient),
       ('主要诊断', c.diagnosis),
+      ('患者主诉', four('主诉')),
+      ('患者口述（问诊）', four('问诊')),
+      ('患者面诊（望诊）', four('望诊')),
+      ('患者脉诊', four('脉诊')),
       ('中医病机', c.mechanism),
       ('西医背景', c.western),
       ('方剂组成', c.formula),

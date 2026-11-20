@@ -818,6 +818,9 @@ ${scene == LlmScene.divination ? _divinationRules : _medicalRules}''';
       extra.writeln('【倪师医案】（本地医案库，引用时写「医案 #序号」）');
       for (final c in cases.take(maxCases)) {
         extra.writeln('#${c.seq}｜诊断：${_clip(c.diagnosis, 40)}'
+            // 四诊是原始观察（患者口述 / 面诊舌象 / 脉象），病机是推论，
+            // 分开给才能让模型学到「看到什么 → 推出什么」的对应关系。
+            '${c.fourDiagnoses.isEmpty ? "" : "｜四诊：${_clipFour(c.fourDiagnoses)}"}'
             '${c.mechanism.isEmpty ? "" : "｜病机：${_clip(c.mechanism, 40)}"}'
             '${c.formula.isEmpty ? "" : "｜方剂：${_clip(c.formula, 60)}"}'
             // 医案里的「针灸方案」是倪师真实的配穴记录，之前完全没进上下文，
@@ -842,6 +845,23 @@ ${scene == LlmScene.divination ? _divinationRules : _medicalRules}''';
 
     parts.add('【提问】\n$question');
     return parts.join('\n\n');
+  }
+
+  /// 四诊串按段截断：每段最多 [per] 字。
+  /// 不分段直接 clip 整串的话，一段冗长的病史叙述会把望诊/脉诊整个挤出预算，
+  /// 而望诊舌象与脉象恰恰是「望闻问切」里信息密度最高的两段。
+  static String _clipFour(String four, {int per = 48}) {
+    final buf = StringBuffer();
+    for (final seg in four.split('【').where((s) => s.trim().isNotEmpty)) {
+      final i = seg.indexOf('】');
+      if (i < 0) {
+        buf.write(_clip(seg, per));
+        continue;
+      }
+      buf.write('【${seg.substring(0, i)}】');
+      buf.write(_clip(seg.substring(i + 1), per));
+    }
+    return buf.toString();
   }
 
   static String _clip(String s, int max) {
