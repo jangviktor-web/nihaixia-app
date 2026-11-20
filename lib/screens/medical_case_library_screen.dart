@@ -26,7 +26,6 @@ class MedicalCaseLibraryScreen extends StatefulWidget {
 
 class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
   static const _debounceDelay = Duration(milliseconds: 300);
-  static const _maxYearChips = 8;
   static const _maxFormulaChips = 12;
   static const _maxDiseaseChips = 12;
   static const _recentLimit = 20;
@@ -160,15 +159,16 @@ class _MedicalCaseLibraryScreenState extends State<MedicalCaseLibraryScreen> {
     setState(() => _query = '');
   }
 
-  /// 年份候选：date 字段提取年份，去重降序，取最近若干年。
+  /// 年份候选：date 字段提取年份，去重降序。
+  /// 不设上限：chip 行本身横向滚动，截断只会让早年病例（2000/2002/2003
+  /// 共 4 例）筛不到——治法/疾病栏有「其他」哨兵兜底，年份没有。
   List<String> _computeYears(List<MedicalCase> all) {
-    final years = all
+    return all
         .map((c) => _yearOf(c.date))
         .whereType<String>()
         .toSet()
         .toList()
       ..sort((a, b) => b.compareTo(a));
-    return years.take(_maxYearChips).toList();
   }
 
   String? _yearOf(String date) {

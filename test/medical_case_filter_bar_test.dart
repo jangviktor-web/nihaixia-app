@@ -44,6 +44,18 @@ void main() {
       expect(find.text('疾病'), findsOneWidget);
       expect(find.text('视图'), findsOneWidget);
 
+      // 年份 chip 不设上限：早年病例（2000 1 例 / 2002 1 例 / 2003 2 例）
+      // 也必须有筛选入口。曾用 take(8) 截断，降序取前 8 个正好把这三个
+      // 年份砍掉，那 4 条只能靠列表滚动碰到。治法/疾病栏有「其他」哨兵
+      // 兜底，年份没有，所以这里必须全展示。
+      for (final y in ['2000', '2002', '2003']) {
+        expect(
+          find.widgetWithText(FilterChip, y),
+          findsOneWidget,
+          reason: '年份 chip 缺失：$y（年份候选被截断）',
+        );
+      }
+
       // Top disease chips.
       expect(find.text('乳癌'), findsOneWidget);
       expect(find.text('肺癌'), findsOneWidget);

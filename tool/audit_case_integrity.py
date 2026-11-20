@@ -182,15 +182,19 @@ def main():
         [(k[:18], sorted(v)[:3]) for k, v in grp.items()
          if len({c for c, _s, _f in v if c}) > 1 and len({s for _c, s, _f in v} - {"?"}) > 1]))
 
-    print("\n== 五、日期越界（倪师医案主区间 2005–2009）")
-    # 只提示不计入待处理：2000–2004 / 2010–2011 可能是真实早期或台北诊期，
-    # 需人工看内容定性；>2012 的必错（倪师 2012 年初已辞世）。
-    oor = [(r[I_NO], r[I_DATE], r[I_PT][:18]) for r in rows
-           if r[I_DATE][:4].isdigit()
-           and not 2005 <= int(r[I_DATE][:4]) <= 2009]
-    must = [x for x in oor if int(x[1][:4]) > 2012]
-    print("  越界 %d 行；其中晚于 2012（必错）%d 行" % (len(oor), len(must)))
-    for no, d, pt in oor:
+    print("\n== 五、日期分布（主区间 2005–2009，区间外仅提示不算缺陷）")
+    # 区间外不是错误：2000–2004 是佛州开诊早年，2010–2011 是台北诊期，
+    # 倪师 1990 年代已在佛州执业、2012 年初辞世，这些年份都真实存在。
+    # 逐条核实过 12 行（患者栏多为「黄女士」「一位61岁的女性」这类描述式，
+    # 源讲义本就没有规范患者名），全部为就诊日，无需改动。
+    # 唯一硬错误判据是 >2012（辞世后不可能有记录）。
+    out_of_main = [(r[I_NO], r[I_DATE], r[I_PT][:18]) for r in rows
+                   if r[I_DATE][:4].isdigit()
+                   and not 2005 <= int(r[I_DATE][:4]) <= 2009]
+    must = [x for x in out_of_main if int(x[1][:4]) > 2012]
+    print("  区间外 %d 行（真实早年/台北诊期，非缺陷）；其中晚于 2012（必错）%d 行"
+          % (len(out_of_main), len(must)))
+    for no, d, pt in out_of_main:
         print("      #%-6s %s  %s%s" % (no, d, pt, "   ← 必错" if (no, d, pt) in must else ""))
 
     print("\n合计待处理 %d 项" % bad_total)
