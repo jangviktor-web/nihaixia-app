@@ -12,8 +12,14 @@
 import os, re, sys, shutil, argparse
 from collections import defaultdict
 
-MD_DIR = r"C:\Users\jangviktor\DoubaoWork\chats\2026-11-19\new-chat-5\renji_kb_md\03_医学\医案上"
-MD_DOWN = r"C:\Users\jangviktor\DoubaoWork\chats\2026-11-19\new-chat-5\renji_kb_md\03_医学\医案下"
+_HERE = os.path.dirname(os.path.abspath(__file__))
+_SRC_LOCAL = os.path.join(_HERE, "source", "renji_case_md")
+_SRC_REMOTE = r"C:\Users\jangviktor\DoubaoWork\chats\2026-11-19\new-chat-5\renji_kb_md\03_医学"
+# 源讲义已随仓库入库（tool/source/renji_case_md，2746 个 md，清单见 MANIFEST.tsv），
+# 优先读项目副本；只有副本缺失时才退回原始导出目录。这样 clone 即可重跑。
+_BASE = _SRC_LOCAL if os.path.isdir(os.path.join(_SRC_LOCAL, "医案上")) else _SRC_REMOTE
+MD_DIR = os.path.join(_BASE, "医案上")
+MD_DOWN = os.path.join(_BASE, "医案下")
 APP = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                    "assets", "medical_cases", "cases_table.md")
 DECISIONS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "case_review_decisions.tsv")

@@ -49,14 +49,16 @@ void main() {
     );
   });
 
-  test('治法列不把 <md:N> 溯源标记漏给用户', () {
+  test('治法列不把 <md:N> / <art:文件#段号> 溯源标记漏给用户', () {
     final md = File('assets/medical_cases/cases_table.md').readAsStringSync();
-    // 先证明源表里确实带标记，否则这条测试会变成空跑
+    // 先证明源表里两类标记都存在，否则这条测试会变成半空跑
     expect(md.contains('<md:'), isTrue);
+    expect(md.contains('<art:'), isTrue);
     final cases = parseMedicalCaseTable(md);
     expect(cases, isNotEmpty);
-    final dirty =
-        cases.where((c) => c.method.contains('<md:')).map((c) => '#${c.seq}');
+    final dirty = cases
+        .where((c) => c.method.contains('<md:') || c.method.contains('<art:'))
+        .map((c) => '#${c.seq}');
     expect(dirty, isEmpty, reason: '治法原则会直接显示原始标记：${dirty.join(", ")}');
   });
 
