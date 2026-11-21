@@ -112,10 +112,14 @@ void main() {
           contains('枳实栀子豉汤'));
       expect(FormulaRepository.search('甘姜苓术汤').map((f) => f.name),
           contains('甘草干姜茯苓白术汤'));
-      // 合并后条目总数 327 → 314（含新增桂苓甘草龙骨牡蛎汤、再并橘枳生姜汤/厚朴人参汤）；且不再有重名
-      expect(FormulaRepository.getAll().length, 314);
+      // 合并后条目总数 327 → 313（含新增桂苓甘草龙骨牡蛎汤，并掉橘枳生姜汤/厚朴人参汤，
+      // 再并桂枝去芍药加蜀漆「龙骨牡蛎」/「牡蛎龙骨」救逆汤两条同名异序）；且不再有重名
+      expect(FormulaRepository.getAll().length, 313);
       final names = FormulaRepository.getAll().map((f) => f.name).toList();
       expect(names.toSet().length, names.length, reason: '不应有重名方剂');
+      // 合并后的异序写法必须仍能搜到正名（alias 兜底）
+      expect(FormulaRepository.search('桂枝去芍药加蜀漆牡蛎龙骨救逆汤').map((f) => f.name),
+          contains('桂枝去芍药加蜀漆龙骨牡蛎救逆汤'));
     });
 
     test('回归：大黄蟅虫丸异写可搜到正名（蛰/蟅/䗪 是异体字，不是繁简）', () async {

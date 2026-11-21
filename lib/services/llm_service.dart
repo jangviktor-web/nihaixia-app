@@ -946,7 +946,7 @@ ${scene == LlmScene.divination ? _divinationRules : _medicalRules}''';
   /// 片段中出现」，让用户自己判断可信度，不改写、不拦截回答。
   ///
   /// 支撑面 = 【讲义片段里出现的方】∪【命中片段的方剂清单】∪【医案用方】。
-  /// ⛔ 已知天花板：只能识别 `formulas.json` 里有的方名（314 首）。模型自造
+  /// ⛔ 已知天花板：只能识别 `formulas.json` 里有的方名（313 首）。模型自造
   /// 的、或库外冷门方的名字抽不出来 —— 漏报但不误报，升级方向是扩充方剂库。
   static List<String> unverifiedFormulas(String answer, LlmRetrieval r) {
     final cited = extractFormulaNames(answer);

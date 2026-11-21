@@ -1,5 +1,5 @@
 {
-  "total": 314,
+  "total": 313,
   "formulas": [
     {
       "id": "yiqi_tang",
@@ -2809,7 +2809,7 @@
     {
       "id": "guizhi_qu_shaoyao_jia_shuqi_longgu_muli_tang",
       "name": "桂枝去芍药加蜀漆龙骨牡蛎救逆汤",
-      "alias": "救逆汤",
+      "alias": "救逆汤,桂枝去芍药加蜀漆牡蛎龙骨救逆汤",
       "meridian": "太阳",
       "category": "安神剂",
       "components": [
@@ -13462,59 +13462,6 @@
         "身痛"
       ],
       "id": "kb_桂枝加芍药生姜各一两人参三两新加汤"
-    },
-    {
-      "name": "桂枝去芍药加蜀漆牡蛎龙骨救逆汤",
-      "alias": "救逆汤",
-      "meridian": "太阳",
-      "category": "伤寒·火逆",
-      "components": [
-        {
-          "name": "桂枝",
-          "dosage": "三两",
-          "role": "通阳"
-        },
-        {
-          "name": "甘草",
-          "dosage": "二两",
-          "role": "和中"
-        },
-        {
-          "name": "生姜",
-          "dosage": "三两",
-          "role": "和胃"
-        },
-        {
-          "name": "大枣",
-          "dosage": "十二枚",
-          "role": "补脾"
-        },
-        {
-          "name": "牡蛎",
-          "dosage": "五两",
-          "role": "敛神"
-        },
-        {
-          "name": "龙骨",
-          "dosage": "四两",
-          "role": "镇惊"
-        },
-        {
-          "name": "蜀漆",
-          "dosage": "三两",
-          "role": "涤痰截疟"
-        }
-      ],
-      "indication": "火逆下之，因烧针烦躁，惊狂卧起不安。",
-      "contraindication": "体虚者减蜀漆。",
-      "dosage": "水煎服，先煮蜀漆。",
-      "explanation": "火劫伤心神，桂枝救逆、龙牡镇惊、蜀漆涤痰。",
-      "keywords": [
-        "惊狂",
-        "烦躁",
-        "火逆"
-      ],
-      "id": "kb_桂枝去芍药加蜀漆牡蛎龙骨救逆汤"
     },
     {
       "name": "桂枝去芍药加麻黄细辛附子汤",
