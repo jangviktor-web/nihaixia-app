@@ -65,6 +65,21 @@ def is_empirical(name):
 # 非方剂条目（灸法等外治操作），不算方
 NOT_FORMULA = {'结胸灸法', '小青龙汤加减'}
 
+# 外用/外治方：不在十问辨证范围内，不做问诊规则（仍留在方剂库供查阅）
+# 依据各自原文的给药途径：熏、洗、摩、扑粉、坐药、导法、外敷
+EXTERNAL = {
+    '猪胆汁方',    # 233 大猪胆汁「皆可为导」——谷道给药
+    '百合洗方',    # 064 百合病变渴，「外洗」从表补
+    '雄黄熏方',    # 068 蚀于肛者，雄黄熏之
+    '苦参汤',      # 068 蚀于下部，苦参汤洗之
+    '矾石汤',      # 091 治脚气冲心，外洗
+    '矾石丸',      # 436 下白物，坐药
+    '麝香矾石散',  # 矾石类，鼻嗅/外用
+    '头风摩散',    # 084 头风，外摩
+    '温粉',        # 038 大青龙后「温粉扑之」，止汗外扑
+    '黄连粉',      # 386 浸淫疮，外扑（方阙）
+}
+
 data = json.load(io.open('assets/data/formulas.json', encoding='utf-8'))
 formulas = data['formulas']
 
@@ -111,9 +126,10 @@ print(f'  人工异名表命中     {len(by_manual)}')
 print(f'  剂型后缀疑似同方   {len(suspect)}（已排除 {len(DISTINCT)} 个明确不同方）')
 print(f'  >>> 剩余无规则     {len(gap)}')
 emp = [f for f in gap if is_empirical(f['name'])]
-zz = [f for f in gap if not is_empirical(f['name'])]
+ext = [f for f in gap if not is_empirical(f['name']) and f['name'] in EXTERNAL]
+zz = [f for f in gap if not is_empirical(f['name']) and f['name'] not in EXTERNAL]
 print(f'     其中 倪师经验方/后世方 {len(emp)}')
-print(f'     其中 仲景原文方（真实缺口）{len(zz)}')
+print(f'     其中 仲景原文方 {len(zz) + len(ext)}（待补规则 {len(zz)} / 外用不补 {len(ext)}）')
 print(f'  库内重复（同方多名）{len(dups)} 组')
 print('=' * 62)
 
@@ -130,7 +146,7 @@ print('\n【库内重复】')
 for v in dups:
     print(f'  {v}')
 
-print(f'\n【仲景原文方 · 真实缺口 {len(zz)} 首】')
+print(f'\n【仲景原文方 · 待补问诊规则 {len(zz)} 首】')
 by_mer = {}
 for f in zz:
     by_mer.setdefault(f.get('meridian') or '未分类', []).append(f['name'])
@@ -138,20 +154,26 @@ for m in sorted(by_mer, key=lambda x: -len(by_mer[x])):
     print(f'\n-- {m}（{len(by_mer[m])}）')
     print('  ' + '、'.join(by_mer[m]))
 
+print(f'\n【外用/外治方 · 不补问诊规则 {len(ext)} 首】')
+for f in ext:
+    print(f'  {f["name"]}（{f.get("meridian") or ""}）')
+
 print(f'\n【倪师经验方/后世方 {len(emp)} 首】')
 print('  ' + '、'.join(f['name'] for f in emp))
+
+
+def _row(f, kind):
+    return '\t'.join([f['name'], kind, str(f.get('meridian') or ''),
+                      str(f.get('category') or ''),
+                      str(f.get('indication') or '').replace('\t', ' ')[:80]]) + '\n'
+
 
 with io.open('tool/gap_no_rule.tsv', 'w', encoding='utf-8', newline='') as fp:
     fp.write('name\tkind\tmeridian\tcategory\tindication\n')
     for f in zz:
-        fp.write('\t'.join(['仲景原文方', str(f.get('meridian') or ''),
-                            str(f.get('category') or ''),
-                            str(f.get('indication') or '')[:80]].insert(0, f['name'])) if False else
-                 '\t'.join([f['name'], '仲景原文方', str(f.get('meridian') or ''),
-                            str(f.get('category') or ''),
-                            str(f.get('indication') or '').replace('\t', ' ')[:80]]) + '\n')
+        fp.write(_row(f, '仲景待补规则'))
+    for f in ext:
+        fp.write(_row(f, '外用不补'))
     for f in emp:
-        fp.write('\t'.join([f['name'], '经验/后世方', str(f.get('meridian') or ''),
-                            str(f.get('category') or ''),
-                            str(f.get('indication') or '').replace('\t', ' ')[:80]]) + '\n')
+        fp.write(_row(f, '经验/后世方'))
 print('\n已写 tool/gap_no_rule.tsv')
