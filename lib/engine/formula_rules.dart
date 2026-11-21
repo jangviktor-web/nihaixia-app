@@ -29,6 +29,7 @@ const String kD4 = 'd_joint_pain'; // 历节：桂枝附子/桂枝芍药知母/�
 const String kD5 = 'd_chest_pain'; // 胸痹心痛：栝蒌薤白半夏/枳实薤白桂枝/薏苡附子散/乌头赤石脂丸
 const String kD6 = 'd_vomit_after'; // 吐后：大黄甘草汤/茯苓泽泻汤
 const String kD7 = 'd_woman_belly'; // 妇人腹痛：内补当归建中/红蓝花酒/当归芍药散/温经汤/大黄䗪虫丸
+const String kD8 = 'd_leukorrhea'; // 带下三方（纯 ext 兜底）：矾石散/蛇床子散/狼牙汤
 
 
 // ============ 12 问 canonical 选项（顺序=文档编号） ============
@@ -86,6 +87,11 @@ const Map<String, List<String>> qOptions = {
     '五十岁上下，唇干口燥、手掌心发热、傍晚发热',
     '人极瘦、吃不下、小腿干皮、眼圈发黑',
   ],
+  kD8: [
+    '经水不来、有干血，下白物',
+    '阴中冷、痒，湿盛',
+    '阴中生疮、溃烂',
+  ],
 };
 
 /// 一张鉴别追问：题干 + {并列方名: 该方对应的选项号(1-based)}。
@@ -131,6 +137,13 @@ const List<Disambiguator> kDisambiguators = [
     '当归芍药散': 3,
     '温经汤': 4,
     '大黄䗪虫丸': 5,
+  }),
+  // 这三首没有 required，全靠 extReference:leukorrhea 兜底成 1.0 分，
+  // 只勾「带下」时三方同分——而治法差得远（坐药丸 / 温阴中 / 外洗）。
+  Disambiguator(kD8, '带下是哪一种？', {
+    '矾石散': 1,
+    '蛇床子散': 2,
+    '狼牙汤': 3,
   }),
 ];
 
@@ -1462,6 +1475,7 @@ const List<FormulaRule> allFormulaRules = [
     name: '矾石散',
     meridian: '金匮',
     extReference: {'leukorrhea'},
+    reference: {kD8: [1]},
     differential: '经水闭不利＋脏坚癖不止。',
   ),
   FormulaRule(
@@ -1475,12 +1489,14 @@ const List<FormulaRule> allFormulaRules = [
     name: '蛇床子散',
     meridian: '金匮',
     extReference: {'leukorrhea', 'vulva_cold'},
+    reference: {kD8: [2]},
     differential: '阴寒 → 温阴中坐药。',
   ),
   FormulaRule(
     name: '狼牙汤',
     meridian: '金匮',
     extReference: {'leukorrhea', 'vulva_ulcer'},
+    reference: {kD8: [3]},
     differential: '阴中蚀疮烂。',
   ),
   // N. 杂方

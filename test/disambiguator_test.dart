@@ -85,6 +85,13 @@ void main() {
         for (final key in rule.extRequired) {
           e.toggleExtSymptom(key, true);
         }
+        // 纯参考方（无 required）没有 ★ 门禁，只靠 extReference 兜底入选，
+        // 必须把参考兼症也勾上，否则测出来的「未触发」是测试漏配。
+        if (rule.required.isEmpty) {
+          for (final key in rule.extReference) {
+            e.toggleExtSymptom(key, true);
+          }
+        }
 
         // 2) 应当触发同一张鉴别表；若本方靠 ext/更严的 ★ 已经单独出线，则不需要问
         final pending = e.pendingDisambiguator();
