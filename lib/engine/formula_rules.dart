@@ -32,6 +32,7 @@ const String kD7 = 'd_woman_belly'; // 妇人腹痛：内补当归建中/红蓝�
 const String kD8 = 'd_leukorrhea'; // 带下三方（纯 ext 兜底）：矾石散/蛇床子散/狼牙汤
 const String kD9 = 'd_edema'; // 水气八方（共用「身重浮肿」）：越婢/甘草麻黄/越婢加术/防己茯苓/麻黄附子/杏子/芪芍桂酒/防己黄芪
 const String kD10 = 'd_sore_throat'; // 少阴咽痛五方：甘草汤/桔梗汤/猪肤汤/苦酒汤/半夏散及汤
+const String kD11 = 'd_epigastric_mass'; // 心下痞坚/坚大如盘：木防己/去石膏加苓硝/桂甘姜枣/枳术/苓甘五味加大黄/半夏麻黄
 
 
 // ============ 12 问 canonical 选项（顺序=文档编号） ============
@@ -111,6 +112,15 @@ const Map<String, List<String>> qOptions = {
     '咽中溃烂生疮，说不出话、发不出声',
     '咽中痛而偏寒，痰涎多',
   ],
+  kD11: [
+    '喘满、面黑、心下痞坚，服之即愈',
+    '同上但服后三日复发，更实、大便不通',
+    '坚大如盘而兼手脚冰冷（属气分）',
+    '坚大如盘而无阳虚，属水饮所作',
+    '咳而胸满、形肿（面不热）',
+    '咳而胸满、形肿而面热如醉',
+    '心下动悸明显（胃脘有跳动感）',
+  ],
 };
 
 /// 一张鉴别追问：题干 + {并列方名: 该方对应的选项号(1-based)}。
@@ -183,6 +193,17 @@ const List<Disambiguator> kDisambiguators = [
     '猪肤汤': 3,
     '苦酒汤': 4,
     '半夏散及汤': 5,
+  }),
+  // 木防己汤与其「去石膏加茯苓芒硝」是同一条原文的前后半，信号完全相同，
+  // 只能靠本题分；其余几首是同区（心下）平局时的兜底。
+  Disambiguator(kD11, '心下（胃脘）的硬满是哪一种？', {
+    '木防己汤': 1,
+    '木防己去石膏加茯苓芒硝汤': 2,
+    '桂甘姜枣麻辛附子汤': 3,
+    '枳术汤': 4,
+    '苓甘五味加姜辛半夏杏仁汤': 5,
+    '苓甘五味加姜辛夏杏大黄汤': 6,
+    '半夏麻黄丸': 7,
   }),
 ];
 
@@ -1324,7 +1345,7 @@ const List<FormulaRule> allFormulaRules = [
     meridian: '金匮',
     required: {kQ1: [1]},
     extRequired: {'epigastric_hard_solid'},
-    reference: {kQ7: [5], kQ2: [4]},
+    reference: {kQ7: [5], kQ2: [4], kD11: [1]},
     differential: '膈间支饮＋喘满心下痞坚＋面色黧黑 → 攻补兼施。',
   ),
   FormulaRule(
@@ -1703,6 +1724,92 @@ const List<FormulaRule> allFormulaRules = [
     reference: {kD10: [5]},
     differential: '咽中痛而偏寒（半夏桂枝甘草）→ 可作散可作汤，'
         '倪师：不能散服者煎汤。',
+  ),
+  // ============ 痰饮/支饮九首（金匮·痰饮咳嗽病篇）============
+  // 苓甘五味四首是嵌套链：症状越多越出高阶方，不必靠提问分。
+  // 其余各首靠「多一个必选」压过现有方；只有木防己两方信号全同，走 kD11。
+  FormulaRule(
+    name: '厚朴大黄汤',
+    meridian: '金匮',
+    required: {kQ6: [2]}, // 便秘（厚朴大黄即小承气类）
+    extRequired: {'chest_full_no_lie'},
+    reference: {kQ5: [13]},
+    differential: '支饮胸满者。与葶苈大枣泻肺汤区别：彼为肺痈喘不得卧，此为支饮实满。',
+  ),
+  FormulaRule(
+    name: '木防己去石膏加茯苓芒硝汤',
+    meridian: '金匮',
+    required: {kQ1: [1]},
+    extRequired: {'epigastric_hard_solid'},
+    reference: {kQ7: [5], kQ2: [4], kD11: [2]},
+    differential: '木防己汤证之「实者」：服后三日复发、更实、大便不通 → '
+        '去石膏之清，加茯苓芒硝攻水。与木防己汤同条前后半，靠追问分。',
+  ),
+  FormulaRule(
+    name: '桂苓五味甘草汤',
+    meridian: '金匮',
+    required: {kQ10: [6]}, // 气上撞心
+    extRequired: {'chest_oppression'},
+    reference: {kQ7: [5]},
+    differential: '小青龙汤后气从少腹上冲（气冲）。倪师：冲气即低则效，'
+        '若反更咳胸满，再去桂加干姜细辛。',
+  ),
+  FormulaRule(
+    name: '苓甘五味姜辛汤',
+    meridian: '金匮',
+    extRequired: {'cough_wheeze', 'chest_oppression'},
+    differential: '气冲已平而反更咳、胸满 → 去桂加干姜细辛。'
+        '此为苓甘五味链第一阶（2 必选），逐阶叠加见下三方。',
+  ),
+  FormulaRule(
+    name: '苓甘五味姜辛半夏汤',
+    meridian: '金匮',
+    required: {kQ8: [8]}, // 恶心呕吐
+    extRequired: {'cough_wheeze', 'chest_oppression'},
+    differential: '前方证而兼呕 → 加半夏。链第二阶（3 必选）。',
+  ),
+  FormulaRule(
+    name: '苓甘五味加姜辛半夏杏仁汤',
+    meridian: '金匮',
+    required: {kQ8: [8]},
+    extRequired: {'cough_wheeze', 'chest_oppression', 'edema'}, // 形肿
+    reference: {kD11: [5]},
+    differential: '前方证而形肿 → 加杏仁。倪师：其证应内麻黄，以其人血虚'
+        '故不内，逆而内之必厥。链第三阶（4 必选）。',
+  ),
+  FormulaRule(
+    name: '苓甘五味加姜辛夏杏大黄汤',
+    meridian: '金匮',
+    required: {kQ8: [8]},
+    extRequired: {'cough_wheeze', 'chest_oppression', 'edema'},
+    reference: {kD11: [6]},
+    differential: '前方证而面热如醉（胃热上冲薰面）→ 加大黄以利之。链第四阶，'
+        '「面热如醉」无对应信号，靠 kD11 与第三阶分。',
+  ),
+  FormulaRule(
+    name: '桂甘姜枣麻辛附子汤',
+    meridian: '金匮',
+    required: {kQ1: [6]}, // 手脚冰冷（阳虚无以运）
+    extRequired: {'epigastric_hard_full'},
+    reference: {kD11: [3]},
+    differential: '气分，心下坚大如盘，边如旋盘 → 阳虚气不行。'
+        '倪师讲「阴阳大气一转」。与枳术汤同句，看有无阳虚（手脚冰冷）。',
+  ),
+  FormulaRule(
+    name: '枳术汤',
+    meridian: '金匮',
+    extRequired: {'epigastric_hard_full'},
+    reference: {kQ7: [5], kD11: [4]},
+    differential: '心下坚大如盘，边如旋盘，水饮所作 → 只枳实白术。'
+        '与桂甘姜枣汤一实一虚：此无水路不通之阳虚。',
+  ),
+  FormulaRule(
+    name: '半夏麻黄丸',
+    meridian: '金匮',
+    extRequired: {'epigastric_palpitation'},
+    reference: {kD11: [7]},
+    differential: '心下悸者。倪师：病人会说「我的胃这里有个脉会跳动」。'
+        '与茯苓甘草汤区别：彼为汗出不渴之水停胃中，此为水在心下作悸。',
   ),
 ];
 
