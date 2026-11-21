@@ -7,6 +7,59 @@ import '../models/diagnosis.dart';
 import 'llm_ask_screen.dart';
 import 'symptom_result_sheet.dart';
 
+/// 兼症（按诊）分组：胸口、心下、腹部、少腹的按压与自觉。
+///
+/// 这些信号在倪师讲义里往往是**决定性的**——「少腹急结」定桃核承气汤、
+/// 「心下逆满」定苓桂术甘汤、「胸闷」定桂枝去芍药汤——但十问（问诊）问不到，
+/// 规则表却有 37 首方把它们当必选(★)。自查页不给入口，这些方在自查路径上
+/// 就是结构性不可达（37/172 = 21.5%），病人只能拿到按经套出来的方，
+/// 一对照讲义自然显得「AI 更对」。
+const Map<String, List<(String, String)>> _kExtGroups = {
+  '胸部': [
+    ('chest_oppression', '胸闷/气短'),
+    ('chest_hard_full', '胸中痞硬（气上冲咽）'),
+    ('chest_full_no_lie', '胸满不能卧'),
+    ('chest_diaphragm_hard', '胸膈心下硬满（项强）'),
+    ('chest_heart_great_cold', '心胸中大寒痛'),
+    ('vexing_heat_pain', '心中懊憹热痛'),
+    ('suspended_fluid', '悬饮（胸胁引痛）'),
+  ],
+  '心下（胃脘）': [
+    ('epigastric_reverse_full', '心下逆满'),
+    ('epigastric_palpitation', '心下悸'),
+    ('epigastric_full_pain', '心下满微痛'),
+    ('epigastric_press_pain', '心下按之痛（局限）'),
+    ('epigastric_hard_full', '心下硬满（无热）'),
+    ('epigastric_solid_full', '心下坚满（利反快）'),
+    ('epigastric_hard_solid', '心下痞坚（面色黧黑）'),
+    ('epigastric_to_abdomen_hard', '心下至少腹硬满剧痛'),
+  ],
+  '腹部': [
+    ('periumbilical_pain', '绕脐痛'),
+    ('abdomen_pain', '腹中痛（里急）'),
+    ('abdomen_colic', '腹痛阵作时止'),
+    ('abdomen_cold_thunder', '腹中寒气雷鸣切痛'),
+    ('abdomen_full', '腹满'),
+    ('heart_abdomen_acute', '心腹胀满卒痛'),
+    ('hypochondriac_partial_pain', '胁下偏痛'),
+    ('hypochondriac_qi_rise', '胁下气逆'),
+  ],
+  '少腹': [
+    ('lesser_abdomen_acute', '少腹急结'),
+    ('lesser_abdomen_hard', '少腹硬满'),
+    ('lesser_abdomen_full', '少腹满'),
+    ('lesser_abdomen_mass', '少腹癥块'),
+  ],
+  '其他': [
+    ('nape_stiff', '项强如柔痉'),
+    ('umbilical_palpitation', '脐下悸'),
+    ('day_vex_night_calm', '昼日烦躁夜安静'),
+    ('body_no_aversion_face_red', '身反不恶寒面赤'),
+    ('jaundice_dark_forehead', '身黄额上黑'),
+    ('jaundice_abdominal_full', '身黄腹满'),
+  ],
+};
+
 /// 症状自查：把辨证引擎的「十问」做成一页式勾选表，一次出结果。
 ///
 /// 与「辨证」Tab 的聊天式问诊共用同一套引擎与规则数据（DiagnosticEngine +
@@ -38,6 +91,10 @@ class _SymptomCheckScreenState extends State<SymptomCheckScreen> {
   /// 聊天页有这一步、原自查页漏了——实测「怕冷+便稀+尿清+嗜睡」会因此
   /// 被判成小青龙汤，勾上「小便清长」「大便稀溏」后才回到少阴/太阴。
   final Set<String> _clues = {};
+
+  /// 已勾选的兼症（规则引擎 ext key）。十问问不到、但 37 首方以之为必选，
+  /// 由 [ _kExtGroups ] 提供入口。
+  final Set<String> _extSelected = {};
 
   /// 至少答这么多题才允许辨证：只勾一两项容易给出误导性结论。
   static const int _minAnswered = 3;
@@ -82,6 +139,14 @@ class _SymptomCheckScreenState extends State<SymptomCheckScreen> {
               orElse: () => const MapEntry('', ''))
           .key;
       if (label.isNotEmpty) _engine.answerZhenJia(key, label);
+    }
+
+    // 兼症（按诊）：逐项写入引擎的 ext 集合，取消勾选的显式移除——
+    // toggle 是幂等的，但只 add 不 remove 会让用户改主意后仍留着旧信号。
+    for (final group in _kExtGroups.values) {
+      for (final (key, _) in group) {
+        _engine.toggleExtSymptom(key, _extSelected.contains(key));
+      }
     }
 
     // 与聊天页一致：倪师六条健康基线全过 → 直接给正面反馈，不进入异常辨证。
@@ -166,7 +231,7 @@ class _SymptomCheckScreenState extends State<SymptomCheckScreen> {
       // 也不写「置信度 95%」——那个数字只是勾选条数的映射，写进提示词会让
       // 模型拿它当可信度背书，反而降低纠错意愿。
       ..writeln('【本地规则初判·待验证假设，非讲义原文】${r.meridian}病 · ${r.pattern}'
-          '（依据 ${r.matchedSymptoms.length} 项症状，本地规则只反映信息量，不代表准确率）')
+          '（${r.matchedSymptoms.isEmpty ? "没有逐条症状依据，只是按经络方向给的参考方" : "依据 ${r.matchedSymptoms.length} 项症状，本地规则只反映信息量，不代表准确率"}）')
       ..writeln('【该假设给出的参考方剂】${r.recommendedFormulas.isEmpty ? r.formula : r.recommendedFormulas.join('、')}')
       ..writeln('请只依据讲义与医案核对这个假设：它成不成立、依据是哪几条、'
           '若不成立该是什么证；并指出我漏问了什么。不要直接复述假设，'
@@ -247,6 +312,7 @@ class _SymptomCheckScreenState extends State<SymptomCheckScreen> {
                 _selected.clear();
                 _tempKey = null;
                 _clues.clear();
+                _extSelected.clear();
               }),
               child: const Text('清空'),
             ),
@@ -254,7 +320,7 @@ class _SymptomCheckScreenState extends State<SymptomCheckScreen> {
       ),
       body: ListView.builder(
         padding: const EdgeInsets.fromLTRB(12, 12, 12, 96),
-        itemCount: _questions.length + 3,
+        itemCount: _questions.length + 4,
         itemBuilder: (context, i) {
           if (i == 0) {
             return Padding(
@@ -357,6 +423,64 @@ class _SymptomCheckScreenState extends State<SymptomCheckScreen> {
                     ),
                   ],
                 ),
+              ),
+            );
+          }
+          if (i == _questions.length + 3) {
+            // 第三步：兼症（按诊）。十问问不到、但 37 首方以之为必选，
+            // 不给入口这些方在自查路径上就永远出不来。
+            return Card(
+              margin: const EdgeInsets.symmetric(vertical: 6),
+              child: ExpansionTile(
+                tilePadding: const EdgeInsets.symmetric(horizontal: 12),
+                childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                initiallyExpanded: _extSelected.isNotEmpty,
+                title: const Text('【第三步·兼症按诊】（选填，可多选）',
+                    style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        height: 1.5)),
+                subtitle: Text(
+                  '按压胸腹有什么感觉？这些兼症决定很多经方的取舍——'
+                  '「少腹急结」定桃核承气汤、「心下逆满」定苓桂术甘汤，十问问不到。',
+                  style: TextStyle(
+                      fontSize: 11, height: 1.5, color: cs.onSurfaceVariant),
+                ),
+                children: [
+                  for (final g in _kExtGroups.entries) ...[
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 10, bottom: 6),
+                        child: Text(g.key,
+                            style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: cs.primary)),
+                      ),
+                    ),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        for (final (key, label) in g.value)
+                          FilterChip(
+                            label: Text(label,
+                                style: const TextStyle(fontSize: 11)),
+                            selected: _extSelected.contains(key),
+                            visualDensity: VisualDensity.compact,
+                            onSelected: (v) => setState(() {
+                              if (v) {
+                                _extSelected.add(key);
+                              } else {
+                                _extSelected.remove(key);
+                              }
+                            }),
+                          ),
+                      ],
+                    ),
+                  ],
+                ],
               ),
             );
           }

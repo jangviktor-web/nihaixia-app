@@ -203,14 +203,27 @@ class SymptomResultSheet extends StatelessWidget {
           children: [
             _pill(context, '${r.meridian}病', cs.primary),
             const SizedBox(width: 8),
-            _pill(context, '依据 ${r.matchedSymptoms.length} 项',
-                cs.surfaceContainerHighest),
+            // matchedSymptoms 为空 = 走的是「按经络方向套方」的兜底路径，
+            // 没有任何逐条症状依据。此时仍写「依据 0 项」等于把话说一半：
+            // 用户看不出这个结论其实是猜的方向，还会以为它和规则出方一样可靠。
+            _pill(
+              context,
+              r.matchedSymptoms.isEmpty
+                  ? '依据不足'
+                  : '依据 ${r.matchedSymptoms.length} 项',
+              r.matchedSymptoms.isEmpty
+                  ? cs.errorContainer
+                  : cs.surfaceContainerHighest,
+            ),
           ],
         ),
         const SizedBox(height: 6),
         Text(
-          '「依据 N 项」是本次勾选里落进规则加权表的症状条数，只说明信息够不够，'
-          '不是准确率——多勾几项它就会变高，和辨证对错无关。',
+          r.matchedSymptoms.isEmpty
+              ? '这个结论只是按经络方向给的参考方，没有逐条症状依据。'
+                  '补勾几题、或展开「兼症按诊」勾上相符的项，才能落到具体方证上。'
+              : '「依据 N 项」是本次勾选里落进规则加权表的症状条数，只说明信息够不够，'
+                  '不是准确率——多勾几项它就会变高，和辨证对错无关。',
           style:
               TextStyle(fontSize: 11, height: 1.6, color: cs.onSurfaceVariant),
         ),

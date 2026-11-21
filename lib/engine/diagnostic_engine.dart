@@ -1340,6 +1340,18 @@ class DiagnosticEngine {
   // ==================== 主诊断 ====================
 
   DiagnosisResult? diagnose() {
+    // 自查页允许只答最低题数（3 题）就出结果，但 answerTenQuestion 只在
+    // 「答完全部十问」时才调 _decideMeridianDirection。于是方向会停在寒热
+    // 总纲给出的粗粒度值上——「太阴/少阴」是两经共用的占位名，不是合法经名，
+    // 下面 switch 没有该 case，直接落 default return null，把本可出的结论
+    // 白扔掉（实测：选「只怕冷不发热」+3 题必得 null，界面显示「信息不足」）。
+    //
+    // 这里补一次定经：幂等——_decideMeridianDirection 内部只在方向为 null
+    // 或恰为「太阴/少阴」时才动，已定向的太阳/阳明/少阳不受影响，不会把
+    // 已经判对的大青龙、小青龙改走。
+    if (_meridianDirection == null || _meridianDirection == '太阴/少阴') {
+      _decideMeridianDirection();
+    }
     if (_meridianDirection == null) return null;
 
     // 架构修正：最终诊断前，用【全部】答案（十问 + 跟进）重算「合病」，
