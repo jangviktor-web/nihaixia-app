@@ -7,14 +7,20 @@ import '../models/diagnosis.dart';
 import 'llm_ask_screen.dart';
 import 'symptom_result_sheet.dart';
 
-/// 兼症（按诊）分组：胸口、心下、腹部、少腹的按压与自觉。
+/// 兼症（按诊）分组：胸口、心下、腹部、少腹的按压与自觉，加上「其他」里的
+/// 黄疸/咳喘/项背僵硬/身重浮肿。
 ///
 /// 这些信号在倪师讲义里往往是**决定性的**——「少腹急结」定桃核承气汤、
 /// 「心下逆满」定苓桂术甘汤、「胸闷」定桂枝去芍药汤——但十问（问诊）问不到，
-/// 规则表却有 37 首方把它们当必选(★)。自查页不给入口，这些方在自查路径上
-/// 就是结构性不可达（37/172 = 21.5%），病人只能拿到按经套出来的方，
-/// 一对照讲义自然显得「AI 更对」。
-const Map<String, List<(String, String)>> _kExtGroups = {
+/// 规则表却有 49 条把它们当必选(★)。自查页不给入口，这些方在自查路径上
+/// 就是结构性不可达。
+///
+/// ⚠️ jaundice / cough_wheeze / neck_stiff / edema 这 4 个 key 原本只在聊天页
+/// 由跟进问诊派生，界面上没有勾选入口 → 13 条规则（茵陈蒿汤系、麻杏石甘汤系、
+/// 葛根汤系、防己黄芪汤）在 App 里永远出不来，而引擎测试直接 toggleExtSymptom
+/// 绕过了界面，所以一直报「可达」。已补进「其他」组，
+/// test/ext_signal_coverage_test.dart 锁住这条不变式。
+const Map<String, List<(String, String)>> kSymptomExtGroups = {
   '胸部': [
     ('chest_oppression', '胸闷/气短'),
     ('chest_hard_full', '胸中痞硬（气上冲咽）'),
@@ -57,6 +63,12 @@ const Map<String, List<(String, String)>> _kExtGroups = {
     ('body_no_aversion_face_red', '身反不恶寒面赤'),
     ('jaundice_dark_forehead', '身黄额上黑'),
     ('jaundice_abdominal_full', '身黄腹满'),
+    // 这 4 个 key 规则表早就在用，但界面上没有入口 → 13 条规则在 App 里不可达
+    // （只在聊天页的跟进问诊里由 _syncExtSymptomsFromAnswers 派生）。
+    ('jaundice', '身黄/目黄'),
+    ('cough_wheeze', '咳喘（咳而上气）'),
+    ('neck_stiff', '项背僵硬（项背强几几）'),
+    ('edema', '身重浮肿'),
   ],
 };
 
@@ -93,7 +105,7 @@ class _SymptomCheckScreenState extends State<SymptomCheckScreen> {
   final Set<String> _clues = {};
 
   /// 已勾选的兼症（规则引擎 ext key）。十问问不到、但 37 首方以之为必选，
-  /// 由 [ _kExtGroups ] 提供入口。
+  /// 由 [ kSymptomExtGroups ] 提供入口。
   final Set<String> _extSelected = {};
 
   /// 至少答这么多题才允许辨证：只勾一两项容易给出误导性结论。
@@ -143,7 +155,7 @@ class _SymptomCheckScreenState extends State<SymptomCheckScreen> {
 
     // 兼症（按诊）：逐项写入引擎的 ext 集合，取消勾选的显式移除——
     // toggle 是幂等的，但只 add 不 remove 会让用户改主意后仍留着旧信号。
-    for (final group in _kExtGroups.values) {
+    for (final group in kSymptomExtGroups.values) {
       for (final (key, _) in group) {
         _engine.toggleExtSymptom(key, _extSelected.contains(key));
       }
@@ -458,7 +470,7 @@ class _SymptomCheckScreenState extends State<SymptomCheckScreen> {
                       fontSize: 11, height: 1.5, color: cs.onSurfaceVariant),
                 ),
                 children: [
-                  for (final g in _kExtGroups.entries) ...[
+                  for (final g in kSymptomExtGroups.entries) ...[
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Padding(
