@@ -6,6 +6,7 @@ import '../engine/diagnostic_engine.dart';
 import '../engine/diagnostic_rules.dart';
 import '../models/diagnosis.dart';
 import 'formula_detail_screen.dart';
+import 'llm_ask_screen.dart';
 
 /// 症状自查：把辨证引擎的「十问」做成一页式勾选表，一次出结果。
 ///
@@ -138,6 +139,37 @@ class _SymptomCheckScreenState extends State<SymptomCheckScreen> {
     );
   }
 
+  /// 把勾选结果写成结构化四诊文本，交给「问倪师 AI」。
+  /// 用题目原文（含「（少阳）」括注）而非 key——那是模型的辨证线索。
+  String _buildAiPrefill(DiagnosisResult r) {
+    final buf = StringBuffer()
+      ..writeln('我按倪师十问自查的结果如下，请结合讲义与医案帮我辨证：')
+      ..writeln('【四诊·问诊】');
+    for (final q in _questions) {
+      final i = _selected[q.key];
+      if (i == null || i < 0 || i >= q.options.length) continue;
+      buf.writeln('${q.question}：${q.options[i]}');
+    }
+    final temp = DiagnosticRules.temperaturePatterns
+        .where((t) => t.key == _tempKey)
+        .map((t) => t.label)
+        .toList();
+    if (temp.isNotEmpty) buf.writeln('【寒热总纲】${temp.join('、')}');
+    if (_clues.isNotEmpty) {
+      final labels = DiagnosticRules.zhenJiaClueKeys.entries
+          .where((e) => _clues.contains(e.value))
+          .map((e) => e.key);
+      buf.writeln('【寒热真假线索】${labels.join('、')}');
+    }
+    buf
+      ..writeln('【本地规则初判】${r.meridian}病 · ${r.pattern}'
+          '（置信度 ${(r.confidence * 100).round()}%）')
+      ..writeln('【参考方剂】${r.recommendedFormulas.isEmpty ? r.formula : r.recommendedFormulas.join('、')}')
+      ..writeln('请指出这个初判对不对、依据是哪几条，以及我漏问了什么。'
+          '只按倪师讲义与医案回答，不要照搬西医病名。');
+    return buf.toString().trim();
+  }
+
   void _showResult(DiagnosisResult r) {
     final cs = Theme.of(context).colorScheme;
     showModalBottomSheet<void>(
@@ -233,6 +265,26 @@ class _SymptomCheckScreenState extends State<SymptomCheckScreen> {
               Text(r.explanation,
                   style: const TextStyle(fontSize: 12, height: 1.7)),
             ],
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: () {
+                  Navigator.pop(sheetCtx); // 先关结果弹层，避免叠三层
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => LlmAskScreen(
+                        prefill: _buildAiPrefill(r),
+                        freshSession: true,
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.forum_outlined),
+                label: const Text('带着这个结果问倪师 AI'),
+              ),
+            ),
             const SizedBox(height: 16),
             Text(
               '本结果由本地规则引擎按倪师讲义规则生成，仅供学习参考，不构成诊疗建议。'

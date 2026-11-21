@@ -66,6 +66,7 @@ class LlmAskScreen extends StatefulWidget {
     this.prefill,
     this.seedHits = const [],
     this.seedQuery,
+    this.freshSession = false,
   });
 
   /// 进入时预填到输入框的问题（如从命盘结果页带入的「请解读此盘」）。
@@ -79,6 +80,11 @@ class LlmAskScreen extends StatefulWidget {
   /// [ClassicSearchService.search] 是整串 `contains`，问答长句必然 0 命中，
   /// 所以天纪检索用它，而不是用户问题本身。
   final String? seedQuery;
+
+  /// true = 不接续上次医疗会话。自查页带入结构化四诊时用，避免模型把这次
+  /// 的寒热/二便串到上一轮「桂枝汤」之类的旧上下文后面。默认 false，
+  /// 现有入口（知识库/八字/紫微/梅花/易经）行为不变。
+  final bool freshSession;
 
   @override
   State<LlmAskScreen> createState() => _LlmAskScreenState();
@@ -105,11 +111,11 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
     super.initState();
     final prefill = widget.prefill?.trim();
     if (prefill != null && prefill.isNotEmpty) _controller.text = prefill;
-    if (widget.seedHits.isEmpty) {
+    if (widget.seedHits.isEmpty && !widget.freshSession) {
       _restoreHistory();
     } else {
-      // 命理入口（seedHits 非空）不接续上次医疗会话：否则命盘问题会挂在
-      // 桂枝汤之类的旧上下文后面，模型容易串味。
+      // 命理入口（seedHits 非空）与自查页（freshSession）不接续上次医疗会话：
+      // 否则新问题会挂在桂枝汤之类的旧上下文后面，模型容易串味。
       _historyReady = true;
     }
   }
