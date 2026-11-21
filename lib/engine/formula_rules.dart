@@ -31,6 +31,7 @@ const String kD6 = 'd_vomit_after'; // 吐后：大黄甘草汤/茯苓泽泻汤
 const String kD7 = 'd_woman_belly'; // 妇人腹痛：内补当归建中/红蓝花酒/当归芍药散/温经汤/大黄䗪虫丸
 const String kD8 = 'd_leukorrhea'; // 带下三方（纯 ext 兜底）：矾石散/蛇床子散/狼牙汤
 const String kD9 = 'd_edema'; // 水气八方（共用「身重浮肿」）：越婢/甘草麻黄/越婢加术/防己茯苓/麻黄附子/杏子/芪芍桂酒/防己黄芪
+const String kD10 = 'd_sore_throat'; // 少阴咽痛五方：甘草汤/桔梗汤/猪肤汤/苦酒汤/半夏散及汤
 
 
 // ============ 12 问 canonical 选项（顺序=文档编号） ============
@@ -103,6 +104,13 @@ const Map<String, List<String>> qOptions = {
     '汗出色黄如柏汁、沾衣',
     '身重、汗出恶风、肌肉痛（不是水肿）',
   ],
+  kD10: [
+    '咽痛轻微，没有别的症状',
+    '咽痛，服甘草汤后没有好转',
+    '咽痛兼下利、胸满、心烦',
+    '咽中溃烂生疮，说不出话、发不出声',
+    '咽中痛而偏寒，痰涎多',
+  ],
 };
 
 /// 一张鉴别追问：题干 + {并列方名: 该方对应的选项号(1-based)}。
@@ -167,6 +175,14 @@ const List<Disambiguator> kDisambiguators = [
     '杏子汤': 6,
     '黄芪芍药桂枝苦酒汤': 7,
     '防己黄芪汤': 8,
+  }),
+  // 五首都只靠「咽痛」出线；猪肤汤另有三必选可自行出线，其余四首靠本题分。
+  Disambiguator(kD10, '咽痛是哪一种？', {
+    '甘草汤': 1,
+    '桔梗汤': 2,
+    '猪肤汤': 3,
+    '苦酒汤': 4,
+    '半夏散及汤': 5,
   }),
 ];
 
@@ -270,6 +286,7 @@ const Map<String, String> extSymptoms = {
   'cold_hernia_abdomen': '寒疝腹痛胁痛里急',
   'limb_numb': '手足不仁',
   'edema': '身重浮肿',
+  'sore_throat': '咽痛/咽中痛',
 };
 
 // ============ 公式规则 ============
@@ -1645,6 +1662,47 @@ const List<FormulaRule> allFormulaRules = [
     reference: {kQ3: [1], kD9: [7]},
     differential: '黄汗：身体肿＋发热＋汗出而渴＋汗沾衣色正黄如柏汁＋脉自沉。'
         '倪师：汗出入水中浴，水从汗孔入得之。',
+  ),
+  // ============ 少阴咽痛五方（伤寒 310–313）============
+  // 五首都挂在「咽痛」这一个新信号上，彼此同分，靠 kD10 一句追问分。
+  // 猪肤汤另有三必选（下利+心烦），满足时会自行出线，不用问。
+  FormulaRule(
+    name: '甘草汤',
+    meridian: '少阴',
+    extRequired: {'sore_throat'},
+    reference: {kD10: [1]},
+    differential: '少阴二三日咽痛，最轻者 → 单味甘草。倪师：比较轻的喉痛就用它。',
+  ),
+  FormulaRule(
+    name: '桔梗汤',
+    meridian: '少阴',
+    extRequired: {'sore_throat'},
+    reference: {kD10: [2]},
+    differential: '甘草汤不差者再加桔梗 → 开肺利咽。倪师：吃了甘草汤没好才升级。',
+  ),
+  FormulaRule(
+    name: '猪肤汤',
+    meridian: '少阴',
+    required: {kQ6: [3], kQ10: [4]}, // 下利 + 心烦
+    extRequired: {'sore_throat'},
+    reference: {kD10: [3]},
+    differential: '下利＋咽痛＋胸满＋心烦 → 虚火上浮。'
+        '倪师：寒湿挡在中间，心肾不能相交，心的火往上走造成咽痛。',
+  ),
+  FormulaRule(
+    name: '苦酒汤',
+    meridian: '少阴',
+    extRequired: {'sore_throat'},
+    reference: {kD10: [4]},
+    differential: '咽中伤生疮、不能语言、声不出 → 最重者，半夏苦酒鸡子白含咽。',
+  ),
+  FormulaRule(
+    name: '半夏散及汤',
+    meridian: '少阴',
+    extRequired: {'sore_throat'},
+    reference: {kD10: [5]},
+    differential: '咽中痛而偏寒（半夏桂枝甘草）→ 可作散可作汤，'
+        '倪师：不能散服者煎汤。',
   ),
 ];
 

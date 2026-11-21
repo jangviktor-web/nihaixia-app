@@ -70,6 +70,7 @@ const Map<String, List<(String, String)>> kSymptomExtGroups = {
     ('neck_stiff', '项背僵硬（项背强几几）'),
     ('edema', '身重浮肿'),
     ('yellow_sweat', '黄汗（汗出色黄沾衣）'),
+    ('sore_throat', '咽痛/咽中痛'),
   ],
 };
 

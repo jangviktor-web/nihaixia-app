@@ -11,7 +11,7 @@
 //   ✗ 空       —— 必选全满足却给不出任何方（门禁或路径问题）
 //   ✗ 数据缺   —— 规则引用的选项号在选项表里不存在（硬数据错误）
 //
-// 现状：179 条，164 命中 / 15 被抢 / 0 空 / 0 数据缺；15 条被抢里 11 条
+// 现状：184 条，183 命中 / 1 被抢 / 0 空 / 0 数据缺（含 kD 追问后的完整链路）；
 // 归因于「必选签名相撞」，属于规则表本身分不开，见第二个 test 的冲突清单。
 //
 // 运行：flutter test test/formula_rule_reachability_test.dart
@@ -53,7 +53,8 @@ void main() {
     final stolen = <(String, String)>[]; // (本该的方, 实际给的方)
     final empty = <String>[];
     final badData = <String>[];
-    final extOnly = <String>[]; // 无 required，纯靠 extReference 兜底
+    final extOnly = <String>[];
+    final kdResolved = <String>[]; // 平局后靠 kD 追问才出本方的 // 无 required，纯靠 extReference 兜底
 
     for (final rule in allFormulaRules) {
       final e = DiagnosticEngine();
@@ -94,6 +95,27 @@ void main() {
       } else if (r.recommendedFormulas.contains(rule.name) ||
           r.formula == rule.name) {
         hit.add(rule.name);
+      } else if (e.pendingDisambiguator() != null) {
+        // 平局：产品里会补问一句 kD 再出结果，所以这里也要答，
+        // 否则量到的是「不含鉴别题的引擎」，随 kD 组增多会持续掉。
+        final d = kDisambiguators.firstWhere(
+            (d) => d.members.containsKey(rule.name),
+            orElse: () => kDisambiguators.first);
+        final no = d.members[rule.name];
+        if (no == null) {
+          stolen.add((rule.name, r.formula));
+        } else {
+          e.answerTenQuestion(d.key, qOptions[d.key]![no - 1]);
+          final r2 = e.diagnose();
+          if (r2 != null &&
+              (r2.formula == rule.name ||
+                  r2.recommendedFormulas.contains(rule.name))) {
+            hit.add(rule.name);
+            kdResolved.add(rule.name);
+          } else {
+            stolen.add((rule.name, r2?.formula ?? ''));
+          }
+        }
       } else {
         stolen.add((rule.name, r.formula));
       }
@@ -103,7 +125,7 @@ void main() {
     // ignore: avoid_print
     print('[规则可达] 总 $total 条 | ✓命中本方 ${hit.length} | '
         '✗被抢 ${stolen.length} | ✗空 ${empty.length} | ✗数据缺 ${badData.length} '
-        '| 其中纯参考方 ${extOnly.length} 条');
+        '| 其中纯参考方 ${extOnly.length} 条 | 靠 kD 追问才可达 ${kdResolved.length} 条');
 
     if (stolen.isNotEmpty) {
       // 关键交叉验证：被抢的方，是不是都跟抢它的方「必选签名完全相同」？
@@ -138,13 +160,14 @@ void main() {
       print('[规则数据异常] ${badData.take(10).join("；")}');
     }
 
-    // 现状基线 164/179 = 91.6%。剩下的 15 条里 11 条是「必选签名相撞」——
+    // 现状基线 183/184 = 99.5%。唯一被抢的是旋覆代赭汤——它 reference 为空，
+// 与生姜泻心汤同分，只在「不答大便」时平局；真实流程答了 stool 就分开，故不做题。。剩下的 15 条里 11 条是「必选签名相撞」——
     // 规则表给两首语义不同的方写了同一组 ★，引擎无论怎么排都会有一首拿不到，
     // 只能改规则表（给对方补一条能分开的必选/扩展必选），改算法改不了。
     // 另 4 条是同门方被参考分更高的近邻方吃掉（大黄䗪虫丸/温经汤/红蓝花酒/
     // 内补当归建中汤→当归芍药散系）。门槛留在 0.90 防回退。
-    expect(hit.length / total, greaterThanOrEqualTo(0.90),
-        reason: '按规则自己的必选条件能得出本方的比例不应低于 90%');
+    expect(hit.length / total, greaterThanOrEqualTo(0.95),
+        reason: '按规则自己的必选条件（含 kD 追问）能得出本方的比例不应低于 95%');
     expect(badData, isEmpty, reason: '规则表引用了不存在的选项号，属数据错误');
     expect(empty, isEmpty, reason: '必选全满足却出不了任何方，属引擎路径缺陷');
   });
