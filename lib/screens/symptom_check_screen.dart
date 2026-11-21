@@ -162,12 +162,38 @@ class _SymptomCheckScreenState extends State<SymptomCheckScreen> {
       buf.writeln('【寒热真假线索】${labels.join('、')}');
     }
     buf
-      ..writeln('【本地规则初判】${r.meridian}病 · ${r.pattern}'
+      // 明确标注为「待验证假设」：这不是用户自述的结论，也不是讲义事实。
+      // 模型若把它当既定事实，就会顺着复述；当它是错误断言，又会刻意反驳。
+      ..writeln('【本地规则初判·待验证假设，非讲义原文】${r.meridian}病 · ${r.pattern}'
           '（置信度 ${(r.confidence * 100).round()}%）')
-      ..writeln('【参考方剂】${r.recommendedFormulas.isEmpty ? r.formula : r.recommendedFormulas.join('、')}')
-      ..writeln('请指出这个初判对不对、依据是哪几条，以及我漏问了什么。'
-          '只按倪师讲义与医案回答，不要照搬西医病名。');
+      ..writeln('【该假设给出的参考方剂】${r.recommendedFormulas.isEmpty ? r.formula : r.recommendedFormulas.join('、')}')
+      ..writeln('请只依据讲义与医案核对这个假设：它成不成立、依据是哪几条、'
+          '若不成立该是什么证；并指出我漏问了什么。不要直接复述假设，'
+          '也不要照搬西医病名。');
     return buf.toString().trim();
+  }
+
+  /// 检索专用词：只用勾选项的裸症状（去括注），不带「请结合讲义」等套话。
+  /// 组词顺序：诊断名 → 寒热 → 症状，让 keywordsFor 的前 32 个 4 字词
+  /// 优先覆盖辨证关键线索，而不是被模板文字吃掉。
+  String _buildRetrievalQuery(DiagnosisResult r) {
+    final parts = <String>[r.pattern, ...r.matchedSymptoms];
+    final temp = DiagnosticRules.temperaturePatterns
+        .where((t) => t.key == _tempKey)
+        .map((t) => t.label)
+        .toList();
+    parts.addAll(temp);
+    for (final q in _questions) {
+      final i = _selected[q.key];
+      if (i == null || i < 0 || i >= q.options.length) continue;
+      // 「手脚冰冷（阴·阳虚）」→「手脚冰冷」：括注是规则引擎的分类提示，
+      // 不是患者主诉，进检索词只会稀释症状。
+      parts.add(q.options[i].replaceAll(RegExp(r'（[^）]*）'), ''));
+    }
+    for (final e in DiagnosticRules.zhenJiaClueKeys.entries) {
+      if (_clues.contains(e.value)) parts.add(e.key);
+    }
+    return parts.where((s) => s.trim().isNotEmpty).join(' ');
   }
 
   void _showResult(DiagnosisResult r) {
@@ -276,6 +302,7 @@ class _SymptomCheckScreenState extends State<SymptomCheckScreen> {
                     MaterialPageRoute(
                       builder: (_) => LlmAskScreen(
                         prefill: _buildAiPrefill(r),
+                        retrievalQuery: _buildRetrievalQuery(r),
                         freshSession: true,
                       ),
                     ),

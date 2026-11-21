@@ -66,6 +66,7 @@ class LlmAskScreen extends StatefulWidget {
     this.prefill,
     this.seedHits = const [],
     this.seedQuery,
+    this.retrievalQuery,
     this.freshSession = false,
   });
 
@@ -80,6 +81,11 @@ class LlmAskScreen extends StatefulWidget {
   /// [ClassicSearchService.search] 是整串 `contains`，问答长句必然 0 命中，
   /// 所以天纪检索用它，而不是用户问题本身。
   final String? seedQuery;
+
+  /// 医疗入口的检索词，与显示/提问文本分离。
+  /// 自查页带入的是长结构化文本（含模板标签），直接当检索词会让 keywordsFor
+  /// 抽到「请结合讲义与医案」这类套话、把真症状词挤出前 32 个候选。
+  final String? retrievalQuery;
 
   /// true = 不接续上次医疗会话。自查页带入结构化四诊时用，避免模型把这次
   /// 的寒热/二便串到上一轮「桂枝汤」之类的旧上下文后面。默认 false，
@@ -218,7 +224,7 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
               ))
                   .hits,
             ).withFacts(widget.seedHits)
-          : await LlmService.prepare(q);
+          : await LlmService.prepare(widget.retrievalQuery ?? q);
       final text = await LlmService.ask(
         q,
         LlmConfig.fromSettings(),
