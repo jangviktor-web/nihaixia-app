@@ -156,6 +156,17 @@ class _SymptomCheckScreenState extends State<SymptomCheckScreen> {
       return;
     }
 
+    // 鉴别追问：规则表里有几组方「必选(★)信号完全相同」，引擎自己分不开。
+    // 并列 ≥2 首时先补问一句（答案走 reference，+1 分即可破局），答完再出结论。
+    final extra = _engine.pendingDisambiguator();
+    if (extra != null && !_questions.any((q) => q.key == extra.key)) {
+      setState(() => _questions = [..._questions, extra]);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('你的答案落到几首同证的方上，末尾多了一题，确认后再点一次')),
+      );
+      return;
+    }
+
     final result = _engine.diagnose();
     if (!mounted) return;
     if (result == null) {

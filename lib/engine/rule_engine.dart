@@ -102,6 +102,15 @@ class RuleEngine {
     return extTier.first;
   }
 
+  /// 与最佳方得分并列的所有候选（含最佳方）。
+  /// 用于鉴别追问：并列 ≥2 首时引擎自己分不开，需要多问一句。
+  static List<RuleMatch> tiedTop(Map<String, int> q, Set<String> ext) {
+    final c = evaluate(q, ext);
+    if (c.length < 2) return const [];
+    final top = c.first.score;
+    return c.where((m) => (m.score - top).abs() < 0.001).toList();
+  }
+
   /// 与最佳方「必选(★)症状签名完全相同」的所有满足候选（含最佳方本身）。
   /// 用于需求：规则症状相同则同时推荐，不再静默只取一个。
   static List<RuleMatch> coRecommended(Map<String, int> q, Set<String> ext) {

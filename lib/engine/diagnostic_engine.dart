@@ -228,6 +228,25 @@ class DiagnosticEngine {
     );
   }
 
+  /// 鉴别追问：十问答完后若规则引擎跑出 ≥2 首同分方，且它们同属一张鉴别表
+  /// （规则表里 ★ 必选完全相同的方组），返回那一道追问；否则 null。
+  /// 一次只返回一道：选项写的是 reference（+1 分），答完评分差 ≥1，不会二次平局。
+  FollowUpQuestion? pendingDisambiguator() {
+    final tied = RuleEngine.tiedTop(_qAnswers, _extSymptoms);
+    if (tied.length < 2) return null;
+    final names = tied.map((m) => m.rule.name).toSet();
+    for (final d in kDisambiguators) {
+      if (_answers.containsKey(d.key)) continue; // 已经问过，不再重复
+      if (d.members.keys.where(names.contains).length < 2) continue;
+      return FollowUpQuestion(
+        key: d.key,
+        question: d.question,
+        options: qOptions[d.key] ?? const [],
+      );
+    }
+    return null;
+  }
+
   List<FollowUpQuestion> getFollowUpQuestions(String meridian) {
     // 仅保留六经跟进 + 六经杂证补充（原"金匮证候族通道B"依赖已删除的主诉入口，不再触发）
     final meridianQs = DiagnosticRules.followUpQuestions[meridian] ?? const <FollowUpQuestion>[];
@@ -881,6 +900,9 @@ class DiagnosticEngine {
       }
     }
     if (questionKey == kQ12) opts = DiagnosticRules.vomitTypeQuestion.options;
+    // 鉴别追问(kD*)不在十问列表里，选项表直接取 canonical 表——两边是同一份
+    // const 列表，所以 indexOf 拿到的一定是规则表认的选项号。
+    opts ??= qOptions[questionKey];
     if (opts == null) return;
     final idx = opts.indexOf(answer);
     if (idx < 0) return; // fail-closed

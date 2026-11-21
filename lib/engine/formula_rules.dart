@@ -18,6 +18,19 @@ const String kQ10 = 'energy';     // 精神 6
 const String kQ11 = 'menstrual';  // 月经/性功能 8（可跳）
 const String kQ12 = 'vomit_type'; // 呕吐类型 7（Q8=⑧触发）
 
+// ============ 鉴别追问 D1–D7 ============
+// 用途：规则表里有 7 组方「必选(★)信号完全相同」，引擎无论如何排序都会有一首拿不到。
+// 这 7 张表把原文/倪师讲稿里真正的鉴别点抽成一道追问，答案只写 reference（+1 分）：
+// 现行平局全是 0 分差，1 分必破局；不动 required，老路径不会变不可达。
+const String kD1 = 'd_abdomen_closed'; // 腹满不通：小承气/桂枝加大黄/厚朴三物
+const String kD2 = 'd_thirst_urine'; // 渴+小便：五苓散/猪苓汤/文蛤散
+const String kD3 = 'd_dysentery'; // 臭脓血便：白头翁汤/白头翁加甘草阿胶汤
+const String kD4 = 'd_joint_pain'; // 历节：桂枝附子/桂枝芍药知母/乌头汤
+const String kD5 = 'd_chest_pain'; // 胸痹心痛：栝蒌薤白半夏/枳实薤白桂枝/薏苡附子散/乌头赤石脂丸
+const String kD6 = 'd_vomit_after'; // 吐后：大黄甘草汤/茯苓泽泻汤
+const String kD7 = 'd_woman_belly'; // 妇人腹痛：内补当归建中/红蓝花酒/当归芍药散/温经汤/大黄䗪虫丸
+
+
 // ============ 12 问 canonical 选项（顺序=文档编号） ============
 const Map<String, List<String>> qOptions = {
   kQ1: [
@@ -42,7 +55,84 @@ const Map<String, List<String>> qOptions = {
   kQ10: ['精力充沛', '容易疲倦', '但欲寐', '烦躁不安', '说话没力气', '气上撞心'],
   kQ11: ['没有此症状', '月经正常', '痛经量少色暗有块', '月经量多色红', '月经不调先后无定期', '已绝经', '性功能正常', '性功能减退腰酸'],
   kQ12: ['恶心但不呕', '干呕含吐涎沫', '呕吐少量', '呕吐剧烈', '食入即吐', '朝食暮吐暮食朝吐', '噫气嗳气'],
+  // —— 鉴别追问（参数与原文/倪师讲稿逐字对应）——
+  kD1: [
+    '胀满为主，按着不算痛，或有谵语潮热',
+    '痛得拒按，是太阳病拉肚子或攻下之后变成这样',
+    '胀而痛，痛得厉害，但没有谵语潮热，屁也少',
+  ],
+  kD2: [
+    '喝水就吐，或刚发过汗还有点低烧',
+    '小便时会痛甚至带血，或腰腹绞痛',
+    '只是很渴、喝多少都不解渴，小便其实正常',
+  ],
+  kD3: ['里急后重、肛门灼热，体力还行', '产后或久病极虚，人很虚弱'],
+  kD4: [
+    '一身都疼、翻身都痛，没有固定的关节，也不渴',
+    '主要在膝盖，脚肿头昏想吐，人瘦',
+    '关节剧痛，弯不了伸不开',
+  ],
+  kD5: [
+    '躺下更痛、坐起来好些，痰多',
+    '胸闷＋胃脘痞＋气从胁下往上冲心',
+    '天气一变冷就痛，时痛时止',
+    '像箭穿过，前胸后背来回穿痛，持续不停',
+  ],
+  kD6: ['吃完就吐，吐完不渴，大便也不顺', '吐完很渴想喝水，喝了又不舒服'],
+  kD7: [
+    '产后虚弱、腹中抽痛、气短没力',
+    '痛像针扎刀割，位置固定',
+    '隐痛，月经色淡，下身容易水肿',
+    '五十岁上下，唇干口燥、手掌心发热、傍晚发热',
+    '人极瘦、吃不下、小腿干皮、眼圈发黑',
+  ],
 };
+
+/// 一张鉴别追问：题干 + {并列方名: 该方对应的选项号(1-based)}。
+/// 触发条件 = 规则引擎跑出 ≥2 首同分方，且名单里命中 ≥2 首（见 engine.pendingDisambiguator）。
+/// 选项号同时是校验依据：每首方的 reference[该 key] 必须含这个号，否则测试会报错。
+class Disambiguator {
+  final String key;
+  final String question;
+  final Map<String, int> members;
+  const Disambiguator(this.key, this.question, this.members);
+}
+
+const List<Disambiguator> kDisambiguators = [
+  Disambiguator(kD1, '肚子胀满、大便不通，这个痛是哪一种？', {
+    '小承气汤': 1,
+    '桂枝加大黄汤': 2,
+    '厚朴三物汤': 3,
+  }),
+  Disambiguator(kD2, '口渴、小便不顺，具体是哪种？', {
+    '五苓散': 1,
+    '猪苓汤': 2,
+    '文蛤散': 3,
+  }),
+  Disambiguator(kD3, '这种臭脓血便，身体虚不虚？', {
+    '白头翁汤': 1,
+    '白头翁加甘草阿胶汤': 2,
+  }),
+  Disambiguator(kD4, '关节痛主要在哪儿、怎么痛？', {
+    '桂枝附子汤': 1,
+    '桂枝芍药知母汤': 2,
+    '乌头汤': 3,
+  }),
+  Disambiguator(kD5, '胸口痛是哪一种？', {
+    '栝蒌薤白半夏汤': 1,
+    '枳实薤白桂枝汤': 2,
+    '薏苡附子散': 3,
+    '乌头赤石脂丸': 4,
+  }),
+  Disambiguator(kD6, '吐完之后渴不渴？', {'大黄甘草汤': 1, '茯苓泽泻汤': 2}),
+  Disambiguator(kD7, '腹中痛是哪一种？', {
+    '内补当归建中汤': 1,
+    '红蓝花酒': 2,
+    '当归芍药散': 3,
+    '温经汤': 4,
+    '大黄䗪虫丸': 5,
+  }),
+];
 
 // ============ 扩展症状（文档"其他不适"类信号；供 Q12 后多选捕获） ============
 const Map<String, String> extSymptoms = {
@@ -351,7 +441,7 @@ const List<FormulaRule> allFormulaRules = [
     name: '内补当归建中汤',
     meridian: '太阳',
     required: {kQ5: [6], kQ11: [3]},
-    reference: {kQ1: [7], kQ10: [2, 5]},
+    reference: {kQ1: [7], kQ10: [2, 5], kD7: [1]},
     differential: '小建中汤证＋月经量少色暗 → 产后血虚。',
   ),
   FormulaRule(
@@ -428,14 +518,14 @@ const List<FormulaRule> allFormulaRules = [
     name: '五苓散',
     meridian: '太阳',
     required: {kQ3: [2], kQ7: [5]},
-    reference: {kQ2: [1], kQ1: [1], kQ6: [3]},
+    reference: {kQ2: [1], kQ1: [1], kQ6: [3], kD2: [1]},
     differential: '口渴＋水入则吐＋小便不利 → 膀胱气化不行。',
   ),
   FormulaRule(
     name: '猪苓汤',
     meridian: '太阳',
     required: {kQ3: [2], kQ7: [5, 6]},
-    reference: {kQ9: [4], kQ2: [9], kQ1: [2]},
+    reference: {kQ9: [4], kQ2: [9], kQ1: [2], kD2: [2]},
     differential: '渴而不呕＋小便不利＋心烦不寐 → 阴虚水热互结。',
   ),
   FormulaRule(
@@ -608,7 +698,7 @@ const List<FormulaRule> allFormulaRules = [
     name: '小承气汤',
     meridian: '阳明',
     required: {kQ6: [2], kQ5: [7]},
-    reference: {kQ1: [1], kQ10: [4], kQ2: [4, 5]},
+    reference: {kQ1: [1], kQ10: [4], kQ2: [4, 5], kD1: [1]},
     differential: '便秘＋腹大满不通 → 满为主，热次之。',
   ),
   FormulaRule(
@@ -693,7 +783,7 @@ const List<FormulaRule> allFormulaRules = [
     name: '桂枝加大黄汤',
     meridian: '太阴',
     required: {kQ5: [7], kQ6: [2]},
-    reference: {kQ1: [1]},
+    reference: {kQ1: [1], kD1: [2]},
     differential: '桂枝加衣汤证＋大实痛 → 兼有实邪。',
   ),
 
@@ -775,7 +865,7 @@ const List<FormulaRule> allFormulaRules = [
     name: '猪苓汤',
     meridian: '少阴',
     required: {kQ3: [2], kQ7: [5]},
-    reference: {kQ9: [4], kQ2: [9], kQ1: [2]},
+    reference: {kQ9: [4], kQ2: [9], kQ1: [2], kD2: [2]},
     differential: '渴＋小便不利＋心烦不寐 → 阴虚水热互结。',
   ),
   FormulaRule(
@@ -835,7 +925,7 @@ const List<FormulaRule> allFormulaRules = [
     name: '白头翁汤',
     meridian: '厥阴',
     required: {kQ6: [6], kQ5: [7]},
-    reference: {kQ2: [4], kQ3: [2], kQ1: [1]},
+    reference: {kQ2: [4], kQ3: [2], kQ1: [1], kD3: [1]},
     differential: '下利脓血色鲜＋里急后重＋腹痛 → 热毒痢疾。',
   ),
   // v3.2 全量补全：白头翁加甘草阿胶汤（白头翁汤证＋产后气血虚）
@@ -843,7 +933,7 @@ const List<FormulaRule> allFormulaRules = [
     name: '白头翁加甘草阿胶汤',
     meridian: '厥阴',
     required: {kQ6: [6], kQ5: [7]},
-    reference: {kQ2: [9], kQ10: [2]},
+    reference: {kQ2: [9], kQ10: [2], kD3: [2]},
     differential: '白头翁汤证＋产后气血虚 → 加甘草阿胶扶正。',
   ),
   FormulaRule(
@@ -892,7 +982,7 @@ const List<FormulaRule> allFormulaRules = [
     name: '桂枝附子汤',
     meridian: '金匮',
     required: {kQ1: [7], kQ5: [8]},
-    reference: {kQ4: [1], kQ2: [1, 6, 11]},
+    reference: {kQ4: [1], kQ2: [1, 6, 11], kD4: [1]},
     differential: '身体疼烦不能转侧＋不呕不渴 → 风湿在表。',
   ),
   FormulaRule(
@@ -924,7 +1014,7 @@ const List<FormulaRule> allFormulaRules = [
     meridian: '金匮',
     required: {kQ5: [8], kQ1: [7]},
     extReference: {'all_joints_pain', 'body_emaciated'},
-    reference: {kQ4: [2], kQ10: [2]},
+    reference: {kQ4: [2], kQ10: [2], kD4: [2]},
     differential: '诸肢节疼痛＋身体尫羸＋头眩短气 → 风湿历节（偏风湿热）。',
   ),
   FormulaRule(
@@ -932,7 +1022,7 @@ const List<FormulaRule> allFormulaRules = [
     meridian: '金匮',
     required: {kQ5: [8], kQ1: [7]},
     extReference: {'joint_cant_bend'},
-    reference: {kQ4: [1], kQ5: [9]},
+    reference: {kQ4: [1], kQ5: [9], kD4: [3]},
     differential: '关节剧痛不可屈伸＋不汗出 → 寒湿历节。',
   ),
   // D. 血痹虚劳
@@ -970,7 +1060,7 @@ const List<FormulaRule> allFormulaRules = [
     meridian: '金匮',
     required: {kQ5: [6], kQ11: [3, 4]},
     extReference: {'skin_rough'},
-    reference: {kQ10: [2], kQ2: [6]},
+    reference: {kQ10: [2], kQ2: [6], kD7: [5]},
     differential: '五劳虚极羸瘦＋腹满不能食＋肌肤甲错 → 干血劳。',
   ),
   FormulaRule(
@@ -1030,7 +1120,7 @@ const List<FormulaRule> allFormulaRules = [
     name: '栝蒌薤白半夏汤',
     meridian: '金匮',
     required: {kQ5: [16]},
-    reference: {kQ2: [7], kQ10: [2]},
+    reference: {kQ2: [7], kQ10: [2], kD5: [1]},
     differential: '比栝蒌薤白白酒汤更重 → 痰浊更甚。',
   ),
   FormulaRule(
@@ -1038,7 +1128,7 @@ const List<FormulaRule> allFormulaRules = [
     meridian: '金匮',
     required: {kQ5: [16]},
     extRequired: {'hypochondriac_qi_rise'},
-    reference: {kQ2: [7]},
+    reference: {kQ2: [7], kD5: [2]},
     differential: '心中痞＋留气结在胸 → 气滞偏重。',
   ),
   FormulaRule(
@@ -1064,14 +1154,14 @@ const List<FormulaRule> allFormulaRules = [
     name: '薏苡附子散',
     meridian: '金匮',
     required: {kQ5: [16]},
-    reference: {kQ1: [6]},
+    reference: {kQ1: [6], kD5: [3]},
     differential: '胸痹缓急（时缓时急）→ 寒湿。',
   ),
   FormulaRule(
     name: '乌头赤石脂丸',
     meridian: '金匮',
     required: {kQ5: [16]},
-    reference: {kQ1: [6, 7], kQ2: [10]},
+    reference: {kQ1: [6, 7], kQ2: [10], kD5: [4]},
     differential: '心痛彻背背痛彻心不止 → 阴寒痼结。',
   ),
   // G. 腹满寒疝
@@ -1094,7 +1184,7 @@ const List<FormulaRule> allFormulaRules = [
     name: '厚朴三物汤',
     meridian: '金匮',
     required: {kQ5: [7], kQ6: [2]},
-    reference: {kQ2: [4]},
+    reference: {kQ2: [4], kD1: [3]},
     differential: '痛而闭 → 以痛为主（区别于小承气以满为主）。',
   ),
   FormulaRule(
@@ -1216,6 +1306,7 @@ const List<FormulaRule> allFormulaRules = [
     name: '文蛤散',
     meridian: '金匮',
     required: {kQ3: [2], kQ7: [5]},
+    reference: {kD2: [3]},
     differential: '渴欲饮水不止 → 渴。',
   ),
   FormulaRule(
@@ -1284,7 +1375,7 @@ const List<FormulaRule> allFormulaRules = [
     name: '当归芍药散',
     meridian: '金匮',
     required: {kQ5: [6], kQ11: [3, 5]},
-    reference: {kQ7: [5], kQ10: [2]},
+    reference: {kQ7: [5], kQ10: [2], kD7: [3]},
     differential: '妇人腹中㽲痛 → 肝脾不和血水互结。',
   ),
   FormulaRule(
@@ -1350,7 +1441,7 @@ const List<FormulaRule> allFormulaRules = [
     name: '温经汤',
     meridian: '金匮',
     required: {kQ11: [3, 4, 5], kQ5: [6]},
-    reference: {kQ1: [6, 7, 2], kQ2: [9]},
+    reference: {kQ1: [6, 7, 2], kQ2: [9], kD7: [4]},
     differential: '妇人年五十所下利数十日不止＋唇口干燥＋少腹里急 → 冲任虚寒兼瘀。',
   ),
   FormulaRule(
@@ -1377,6 +1468,7 @@ const List<FormulaRule> allFormulaRules = [
     name: '红蓝花酒',
     meridian: '金匮',
     required: {kQ11: [3], kQ5: [6]},
+    reference: {kD7: [2]},
     differential: '妇人腹中血气刺痛 → 活血止痛。',
   ),
   FormulaRule(
@@ -1440,14 +1532,14 @@ const List<FormulaRule> allFormulaRules = [
     name: '大黄甘草汤',
     meridian: '金匮',
     required: {kQ12: [5]},
-    reference: {kQ6: [2]},
+    reference: {kQ6: [2], kD6: [1]},
     differential: '食已即吐 → 胃热上冲。与干姜芩连人参汤区别：偏实热便秘。',
   ),
   FormulaRule(
     name: '茯苓泽泻汤',
     meridian: '金匮',
     required: {kQ12: [5]},
-    reference: {kQ3: [2], kQ7: [5]},
+    reference: {kQ3: [2], kQ7: [5], kD6: [2]},
     differential: '渴欲饮水＋水入则吐 → 与五苓散区别：呕重渴重。',
   ),
 ];

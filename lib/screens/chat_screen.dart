@@ -303,6 +303,27 @@ class _ChatScreenState extends State<ChatScreen> {
       _showHealthyBaselineResult();
       return;
     }
+    // 鉴别追问：规则表里有几组方 ★ 必选完全相同，十问答完仍并列时补问一句
+    // （答案写 reference，+1 分即可定方；答完递归回本方法，不会再问第二次）。
+    final extra = _engine.pendingDisambiguator();
+    if (extra != null) {
+      _addBotMessage(extra.question);
+      setState(() {
+        _currentOptions = extra.options
+            .map((o) => _ChatOption(
+                  label: o,
+                  onTap: () {
+                    _saveSnapshot();
+                    _addUserMessage(o);
+                    _engine.answerTenQuestion(extra.key, o);
+                    _afterTenQuestions();
+                  },
+                ))
+            .toList();
+        _showOptions = true;
+      });
+      return;
+    }
     // v1.11.8 ③ 寒热真假八维法（选填，可多选/跳过）
     _showZhenJiaOptions();
   }
