@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../data/formula_repository.dart';
 import '../data/settings_repository.dart';
 import '../engine/diagnostic_engine.dart';
 import '../engine/diagnostic_rules.dart';
 import '../models/diagnosis.dart';
-import 'formula_detail_screen.dart';
 import 'llm_ask_screen.dart';
+import 'symptom_result_sheet.dart';
 
 /// 症状自查：把辨证引擎的「十问」做成一页式勾选表，一次出结果。
 ///
@@ -164,8 +163,10 @@ class _SymptomCheckScreenState extends State<SymptomCheckScreen> {
     buf
       // 明确标注为「待验证假设」：这不是用户自述的结论，也不是讲义事实。
       // 模型若把它当既定事实，就会顺着复述；当它是错误断言，又会刻意反驳。
+      // 也不写「置信度 95%」——那个数字只是勾选条数的映射，写进提示词会让
+      // 模型拿它当可信度背书，反而降低纠错意愿。
       ..writeln('【本地规则初判·待验证假设，非讲义原文】${r.meridian}病 · ${r.pattern}'
-          '（置信度 ${(r.confidence * 100).round()}%）')
+          '（依据 ${r.matchedSymptoms.length} 项症状，本地规则只反映信息量，不代表准确率）')
       ..writeln('【该假设给出的参考方剂】${r.recommendedFormulas.isEmpty ? r.formula : r.recommendedFormulas.join('、')}')
       ..writeln('请只依据讲义与医案核对这个假设：它成不成立、依据是哪几条、'
           '若不成立该是什么证；并指出我漏问了什么。不要直接复述假设，'
@@ -197,7 +198,6 @@ class _SymptomCheckScreenState extends State<SymptomCheckScreen> {
   }
 
   void _showResult(DiagnosisResult r) {
-    final cs = Theme.of(context).colorScheme;
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -209,133 +209,29 @@ class _SymptomCheckScreenState extends State<SymptomCheckScreen> {
         initialChildSize: 0.6,
         maxChildSize: 0.92,
         minChildSize: 0.4,
-        builder: (_, scrollCtrl) => ListView(
-          controller: scrollCtrl,
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
-          children: [
-            Text('自查结果',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                _pill('${r.meridian}病', cs.primary),
-                const SizedBox(width: 8),
-                _pill('置信度 ${(r.confidence * 100).round()}%',
-                    cs.surfaceContainerHighest),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Text(r.pattern,
-                style: const TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.bold, height: 1.4)),
-            if (r.patternDetail.isNotEmpty) ...[
-              const SizedBox(height: 6),
-              Text(r.patternDetail,
-                  style: TextStyle(
-                      fontSize: 13,
-                      height: 1.6,
-                      color: cs.onSurfaceVariant)),
-            ],
-            const SizedBox(height: 16),
-            Text('参考方剂',
-                style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    color: cs.primary)),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (final name in r.recommendedFormulas.isEmpty
-                    ? <String>[r.formula]
-                    : r.recommendedFormulas)
-                  ActionChip(
-                    avatar: const Icon(Icons.medication_outlined, size: 16),
-                    label: Text(name),
-                    // 点进去看组成、剂量与「见于经典」原文
-                    onPressed: () {
-                      final f = FormulaRepository.getByName(name);
-                      if (f == null) return;
-                      Navigator.push(
-                        sheetCtx,
-                        MaterialPageRoute(
-                            builder: (_) => FormulaDetailScreen(formula: f)),
-                      );
-                    },
-                  ),
-              ],
-            ),
-            if (r.matchedSymptoms.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              Text('命中的症状',
-                  style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      color: cs.primary)),
-              const SizedBox(height: 6),
-              Text(r.matchedSymptoms.join('、'),
-                  style: const TextStyle(fontSize: 12, height: 1.6)),
-            ],
-            if (r.explanation.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              Text('为什么这样辨',
-                  style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      color: cs.primary)),
-              const SizedBox(height: 6),
-              Text(r.explanation,
-                  style: const TextStyle(fontSize: 12, height: 1.7)),
-            ],
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                onPressed: () {
-                  Navigator.pop(sheetCtx); // 先关结果弹层，避免叠三层
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => LlmAskScreen(
-                        prefill: _buildAiPrefill(r),
-                        retrievalQuery: _buildRetrievalQuery(r),
-                        freshSession: true,
-                      ),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.forum_outlined),
-                label: const Text('带着这个结果问倪师 AI'),
+        builder: (_, scrollCtrl) => SymptomResultSheet(
+          result: r,
+          // future 在弹层外创建（见 SymptomResultSheet.relatedCases 注释）：
+          // FutureBuilder 每次 rebuild 都会重订阅，写进内层会让滚动反复重扫医案库。
+          relatedCases: SymptomResultSheet.loadRelated(r),
+          scrollController: scrollCtrl,
+          onAskAi: () {
+            Navigator.pop(sheetCtx); // 先关结果弹层，避免叠三层
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => LlmAskScreen(
+                  prefill: _buildAiPrefill(r),
+                  retrievalQuery: _buildRetrievalQuery(r),
+                  freshSession: true,
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              '本结果由本地规则引擎按倪师讲义规则生成，仅供学习参考，不构成诊疗建议。'
-              '结论偏倚可能来自勾选项不全或有相互矛盾的描述，症状复杂请用聊天式问诊逐项确认。',
-              style: TextStyle(fontSize: 11, height: 1.6, color: cs.onSurfaceVariant),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
   }
-
-  Widget _pill(String text, Color color) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.16),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(text,
-            style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onSurface)),
-      );
 
   @override
   Widget build(BuildContext context) {

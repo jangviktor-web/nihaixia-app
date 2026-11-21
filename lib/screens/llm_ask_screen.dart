@@ -10,6 +10,7 @@ import '../services/classic_search_service.dart';
 import '../services/llm_service.dart';
 import '../widgets/state_view.dart';
 import '../widgets/traditional_toggle_button.dart';
+import 'classic_hit_launcher.dart';
 import 'markdown_doc_screen.dart';
 import 'medical_case_detail_screen.dart';
 import 'settings_screen.dart';
@@ -618,6 +619,11 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
     );
   }
 
+  /// 该片段能否点开原文核对。讲稿看 asset、古籍看 bookId、
+  /// 医案文章体看 source（正文只存在索引里，用弹层展示）。
+  bool _hitOpenable(ClassicHit h) =>
+      h.source == 'yianwen' || h.bookId != null || h.asset != null;
+
   /// 来源可展开：点开直接看命中片段，答案可溯源（不是只给一个数字）。
   Widget _sourcesTile(List<ClassicHit> sources) {
     if (sources.isEmpty) {
@@ -646,21 +652,15 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(fontSize: 12),
             ),
-            trailing: h.asset == null
-                ? null
-                : const Icon(Icons.chevron_right, size: 16),
-            // 素材片段带 asset：点开就是该条原文，便于核对回答是否照讲义讲。
-            onTap: h.asset == null
-                ? null
-                : () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => MarkdownDocScreen(
-                          title: '${h.sourceLabel}·${h.title}',
-                          asset: h.asset!,
-                        ),
-                      ),
-                    ),
+            trailing: _hitOpenable(h)
+                ? const Icon(Icons.chevron_right, size: 16)
+                : null,
+            // 三类命中统一走 openClassicHit：讲稿→原文、古籍→章节、
+            // 医案文章→段落全文。此前只支持讲稿，古籍命中点了没反应，
+            // 用户无法核对回答是否照原文讲。
+            onTap: _hitOpenable(h)
+                ? () => openClassicHit(context, h)
+                : null,
           ),
       ],
     );

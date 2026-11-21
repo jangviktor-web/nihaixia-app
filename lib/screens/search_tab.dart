@@ -5,7 +5,6 @@ import '../data/acupuncture_repository.dart';
 import '../data/acupoint_repository.dart';
 import '../data/formula_repository.dart';
 import '../data/chinese_convert.dart';
-import '../data/guji_data.dart';
 import '../data/herb_repository.dart';
 import '../data/search_history_repository.dart';
 import '../services/classic_search_service.dart';
@@ -16,10 +15,9 @@ import '../models/herb.dart';
 import '../widgets/highlighted_text.dart';
 import '../theme/app_colors.dart';
 import 'acupoint_detail_screen.dart';
+import 'classic_hit_launcher.dart';
 import 'formula_detail_screen.dart';
-import 'guji_library_screen.dart';
 import 'herb_detail_screen.dart';
-import 'markdown_doc_screen.dart';
 
 class SearchTab extends StatefulWidget {
   const SearchTab({super.key});
@@ -190,55 +188,9 @@ class _SearchTabState extends State<SearchTab> {
   }
 
   /// 打开经典命中：讲稿 → 原文阅读页；古籍 → 对应章节；
-  /// 医案文章体 → 段落全文（源语料不打包进 App，只有索引里的正文）。
-  Future<void> _openClassicHit(ClassicHit hit) async {
-    if (hit.source == 'yianwen') {
-      if (!mounted) return;
-      await showDialog<void>(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: Text(hit.title),
-          content: SingleChildScrollView(child: Text(hit.snippet)),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('关闭'),
-            ),
-          ],
-        ),
-      );
-      return;
-    }
-    if (hit.source == 'guji') {
-      final book = kGujiBooks.firstWhere(
-        (b) => b.id == hit.bookId,
-        orElse: () => kGujiBooks.first,
-      );
-      final chapters = await GujiRepository.chaptersOf(book);
-      final index = hit.chapterIndex ?? -1;
-      if (!mounted) return;
-      if (index < 0 || index >= chapters.length) return;
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => GujiChapterScreen(book: book, chapter: chapters[index]),
-        ),
-      );
-      return;
-    }
-    final asset = hit.asset;
-    if (asset == null || !mounted) return;
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => MarkdownDocScreen(
-          title: hit.title,
-          asset: asset,
-          linkFormulas: true,
-        ),
-      ),
-    );
-  }
+  /// 医案文章体 → 段落全文。落地页实现在 [openClassicHit]，与问倪师 AI
+  /// 回答页的来源回查共用，避免两处漂移。
+  Future<void> _openClassicHit(ClassicHit hit) => openClassicHit(context, hit);
 
   void _onSubmitted(String query) {
     if (query.trim().isNotEmpty) {
