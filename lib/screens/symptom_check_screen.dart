@@ -69,6 +69,7 @@ const Map<String, List<(String, String)>> kSymptomExtGroups = {
     ('cough_wheeze', '咳喘（咳而上气）'),
     ('neck_stiff', '项背僵硬（项背强几几）'),
     ('edema', '身重浮肿'),
+    ('yellow_sweat', '黄汗（汗出色黄沾衣）'),
   ],
 };
 

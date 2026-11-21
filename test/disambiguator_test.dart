@@ -11,6 +11,7 @@ import 'package:nihaisha_app/data/formula_repository.dart';
 import 'package:nihaisha_app/engine/diagnostic_engine.dart';
 import 'package:nihaisha_app/engine/diagnostic_rules.dart';
 import 'package:nihaisha_app/engine/formula_rules.dart';
+import 'package:nihaisha_app/engine/rule_engine.dart';
 
 String? optionText(String qKey, int oneBased) {
   final i = oneBased - 1;
@@ -132,5 +133,52 @@ void main() {
     }
     expect(tried, greaterThanOrEqualTo(14), reason: '参与测试的方太少');
     expect(fail, isEmpty, reason: fail.join('；'));
+  });
+
+  test('kD9 真实平局：越婢汤 ⇄ 杏子汤、麻黄附子汤 ⇄ 甘草麻黄汤', () {
+    // 上一条测试是「按本方自己的 ★ 构造输入」，多数情况下并不触发平局；
+    // 这里刻意构造「两首同时满足且同分」的真实场景，验证追问真的会弹出、真能定方。
+    final cases = <String, (Map<String, int>, Set<String>, String, int)>{
+      // 脉浮 + 不渴 + 出汗 + 浮肿 → 越婢汤（汗出）与杏子汤（脉浮）同为 9.0
+      '越婢汤': (
+        {kQ4: 4, kQ3: 1, kQ2: 1},
+        {'edema'},
+        '越婢汤',
+        1,
+      ),
+      // 脉沉 + 但欲寐 + 不渴 + 小便不利 + 浮肿 → 麻黄附子汤与甘草麻黄汤同为 9.0
+      '甘草麻黄汤': (
+        {kQ2: 2, kQ10: 3, kQ3: 1, kQ7: 5},
+        {'edema'},
+        '甘草麻黄汤',
+        2,
+      ),
+    };
+
+    for (final e0 in cases.entries) {
+      final (q, ext, want, kdNo) = e0.value;
+      final e = DiagnosticEngine();
+      e.answerTemperaturePattern('fever_chills');
+      q.forEach((k, n) {
+        final t = optionText(k, n);
+        expect(t, isNotNull, reason: '$k[$n] 无对应选项');
+        e.answerTenQuestion(k, t!);
+      });
+      for (final x in ext) {
+        e.toggleExtSymptom(x, true);
+      }
+
+      final tied = RuleEngine.tiedTop(e.qAnswers, e.extSymptoms);
+      expect(tied.length, greaterThanOrEqualTo(2),
+          reason: '${e0.key} 场景应形成平局：${tied.map((m) => m.rule.name)}');
+
+      final pending = e.pendingDisambiguator();
+      expect(pending?.key, kD9, reason: '${e0.key} 场景应触发 kD9');
+
+      e.answerTenQuestion(kD9, qOptions[kD9]![kdNo - 1]);
+      final r = e.diagnose();
+      expect(r?.formula, want, reason: '答完 kD9 应定为 $want');
+      expect(e.pendingDisambiguator(), isNull, reason: '不应二次追问');
+    }
   });
 }

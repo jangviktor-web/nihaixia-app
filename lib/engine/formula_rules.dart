@@ -30,6 +30,7 @@ const String kD5 = 'd_chest_pain'; // 胸痹心痛：栝蒌薤白半夏/枳实�
 const String kD6 = 'd_vomit_after'; // 吐后：大黄甘草汤/茯苓泽泻汤
 const String kD7 = 'd_woman_belly'; // 妇人腹痛：内补当归建中/红蓝花酒/当归芍药散/温经汤/大黄䗪虫丸
 const String kD8 = 'd_leukorrhea'; // 带下三方（纯 ext 兜底）：矾石散/蛇床子散/狼牙汤
+const String kD9 = 'd_edema'; // 水气八方（共用「身重浮肿」）：越婢/甘草麻黄/越婢加术/防己茯苓/麻黄附子/杏子/芪芍桂酒/防己黄芪
 
 
 // ============ 12 问 canonical 选项（顺序=文档编号） ============
@@ -92,6 +93,16 @@ const Map<String, List<String>> qOptions = {
     '阴中冷、痒，湿盛',
     '阴中生疮、溃烂',
   ],
+  kD9: [
+    '一身悉肿、恶风、续自汗出，无大热',
+    '一身面目洪肿、无汗、小便不利、不渴',
+    '里水而小便自利，因此口渴',
+    '四肢肿、肌肉聂聂跳动',
+    '肿而脉沉小、但欲寐（属少阴）',
+    '肿而脉浮、按之虚胀如水',
+    '汗出色黄如柏汁、沾衣',
+    '身重、汗出恶风、肌肉痛（不是水肿）',
+  ],
 };
 
 /// 一张鉴别追问：题干 + {并列方名: 该方对应的选项号(1-based)}。
@@ -144,6 +155,18 @@ const List<Disambiguator> kDisambiguators = [
     '矾石散': 1,
     '蛇床子散': 2,
     '狼牙汤': 3,
+  }),
+  // 七首都靠「身重浮肿」出线；防己黄芪汤原文同样「汗出恶风＋身重」，
+  // 一并拉进来，否则越婢汤与它会跨组平局而没人管。
+  Disambiguator(kD9, '肿胀是哪一种？', {
+    '越婢汤': 1,
+    '甘草麻黄汤': 2,
+    '越婢加术汤': 3,
+    '防己茯苓汤': 4,
+    '麻黄附子汤': 5,
+    '杏子汤': 6,
+    '黄芪芍药桂枝苦酒汤': 7,
+    '防己黄芪汤': 8,
   }),
 ];
 
@@ -988,7 +1011,7 @@ const List<FormulaRule> allFormulaRules = [
     meridian: '金匮',
     required: {kQ4: [2, 4]},
     extRequired: {'edema'},
-    reference: {kQ1: [7], kQ7: [5], kQ2: [11], kQ5: [8]},
+    reference: {kQ1: [7], kQ7: [5], kQ2: [11], kQ5: [8], kD9: [8]},
     differential: '汗出恶风＋身重浮肿 → 表虚风湿。',
   ),
   FormulaRule(
@@ -1557,6 +1580,71 @@ const List<FormulaRule> allFormulaRules = [
     required: {kQ12: [5]},
     reference: {kQ3: [2], kQ7: [5], kD6: [2]},
     differential: '渴欲饮水＋水入则吐 → 与五苓散区别：呕重渴重。',
+  ),
+  // ============ 水气病七方（金匮·水气病篇）============
+  // 七方都靠「身重浮肿」这一个 ext 才能出线，所以每首都配齐 3 个必选
+  // （2 个十问信号 + edema），使彼此分数相同、不会被 3 必选方硬压 ——
+  // 平局由 kD9 一句追问破。少阴水气与黄汗另走少阴/黄汗信号。
+  FormulaRule(
+    name: '越婢汤',
+    meridian: '太阳',
+    required: {kQ4: [4], kQ3: [1]}, // 续自汗出 + 不渴
+    extRequired: {'edema'},
+    reference: {kD9: [1]},
+    differential: '风水：一身悉肿＋恶风＋续自汗出＋无大热＋不渴。'
+        '与防己黄芪汤区别：此为水肿而喘，彼为身重肌肉痛。',
+  ),
+  FormulaRule(
+    name: '甘草麻黄汤',
+    meridian: '太阳',
+    required: {kQ3: [1], kQ7: [5]}, // 不渴 + 小便不利
+    extRequired: {'edema'},
+    reference: {kD9: [2]},
+    differential: '里水：一身面目洪肿＋无汗＋小便不利＋不渴。'
+        '与越婢加术汤同条对举，看小便不利还是自利。',
+  ),
+  FormulaRule(
+    name: '越婢加术汤',
+    meridian: '太阳',
+    required: {kQ3: [2], kQ7: [1]}, // 渴 + 小便自利（亡津故渴）
+    extRequired: {'edema'},
+    reference: {kQ2: [2], kD9: [3]},
+    differential: '里水而小便自利 → 亡津液故渴。与甘草麻黄汤一对方。',
+  ),
+  FormulaRule(
+    name: '防己茯苓汤',
+    meridian: '太阴',
+    required: {kQ4: [1], kQ3: [1]}, // 不容易出汗 + 不渴
+    extRequired: {'edema'},
+    reference: {kQ2: [1], kD9: [4]},
+    differential: '皮水：四肢肿＋水气在皮肤中＋四肢聂聂动。'
+        '倪师：皮水一定会出现渴证，聂聂动是水在皮中的凭据。',
+  ),
+  FormulaRule(
+    name: '麻黄附子汤',
+    meridian: '少阴',
+    required: {kQ2: [2], kQ10: [3]}, // 脉沉 + 但欲寐
+    extRequired: {'edema'},
+    reference: {kQ1: [6], kD9: [5]},
+    differential: '水而脉沉小属少阴（但欲寐）→ 温阳发汗。'
+        '与杏子汤同条对举：脉沉属少阴，脉浮属风。',
+  ),
+  FormulaRule(
+    name: '杏子汤',
+    meridian: '太阴',
+    required: {kQ2: [1], kQ3: [1]}, // 脉浮 + 不渴
+    extRequired: {'edema'},
+    reference: {kQ4: [1], kD9: [6]},
+    differential: '水而脉浮属风（无水虚胀者为气水）。与麻黄附子汤一浮一沉。',
+  ),
+  FormulaRule(
+    name: '黄芪芍药桂枝苦酒汤',
+    meridian: '太阳',
+    required: {kQ4: [4], kQ2: [2]}, // 汗出沾衣 + 脉自沉
+    extRequired: {'yellow_sweat'},
+    reference: {kQ3: [1], kD9: [7]},
+    differential: '黄汗：身体肿＋发热＋汗出而渴＋汗沾衣色正黄如柏汁＋脉自沉。'
+        '倪师：汗出入水中浴，水从汗孔入得之。',
   ),
 ];
 
