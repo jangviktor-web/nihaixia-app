@@ -71,6 +71,15 @@ const Map<String, List<(String, String)>> kSymptomExtGroups = {
     ('edema', '身重浮肿'),
     ('yellow_sweat', '黄汗（汗出色黄沾衣）'),
     ('sore_throat', '咽痛/咽中痛'),
+    ('baihe', '百合病（如寒无寒、如热无热、欲卧不能卧）'),
+  ],
+  // 百合病六首唯一的分水岭是「来路」：误汗/误下/误吐/病形如初。
+  // 其余方一律走现症，这个维度不外扩。
+  '近期治疗（选填）': [
+    ('tx_sweat_excess', '发汗太过，汗出不止'),
+    ('tx_purging', '服泻药或攻下之后'),
+    ('tx_emesis', '催吐之后'),
+    ('tx_none', '都没做过，病形如初'),
   ],
 };
 

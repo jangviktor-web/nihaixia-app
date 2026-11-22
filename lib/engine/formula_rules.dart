@@ -323,6 +323,13 @@ const Map<String, String> extSymptoms = {
   'limb_numb': '手足不仁',
   'edema': '身重浮肿',
   'sore_throat': '咽痛/咽中痛',
+  'baihe': '百合病（如寒无寒、如热无热、欲卧不能卧）',
+  // 近期治疗史：百合病六首的唯一分水岭（原文按误汗/误下/误吐/病形如初分支）。
+  // 只服务百合病，其他方仍走现症——避免这个维度扩散到「火逆」各类方上。
+  'tx_sweat_excess': '发汗太过（汗出不止）',
+  'tx_purging': '服泻药或攻下之后',
+  'tx_emesis': '催吐之后',
+  'tx_none': '都没做过，病形如初',
 };
 
 // ============ 公式规则 ============
@@ -616,7 +623,8 @@ const List<FormulaRule> allFormulaRules = [
     meridian: '太阳',
     required: {kQ3: [2], kQ7: [5, 6]},
     reference: {kQ9: [4], kQ2: [9], kQ1: [2], kD2: [2]},
-    differential: '渴而不呕＋小便不利＋心烦不寐 → 阴虚水热互结。',
+    differential: '渴而不呕＋小便不利＋心烦不寐 → 阴虚水热互结。'
+        '太阳（223 脉浮发热）与少阴（319 下利咳呕渴、心烦不得眠）两见，同一方。',
   ),
   FormulaRule(
     name: '桃核承气汤',
@@ -952,13 +960,6 @@ const List<FormulaRule> allFormulaRules = [
     differential: '心中烦不得卧＋手足心热＋脉细数 → 阴虚火旺。与四逆汤区别：此为阴虚。',
   ),
   FormulaRule(
-    name: '猪苓汤',
-    meridian: '少阴',
-    required: {kQ3: [2], kQ7: [5]},
-    reference: {kQ9: [4], kQ2: [9], kQ1: [2], kD2: [2]},
-    differential: '渴＋小便不利＋心烦不寐 → 阴虚水热互结。',
-  ),
-  FormulaRule(
     name: '四逆散',
     meridian: '少阴',
     required: {kQ1: [6], kQ5: [5, 6]},
@@ -1095,6 +1096,7 @@ const List<FormulaRule> allFormulaRules = [
     name: '百合地黄汤',
     meridian: '金匮',
     required: {kQ9: [4], kQ10: [4], kQ3: [2, 3]},
+    extReference: {'baihe', 'tx_none'}, // 病形如初：勾百合病而未误治
     reference: {kQ3: [5], kQ7: [6]},
     differential: '意欲食复不能食＋欲行复不能行＋如寒无寒如热无热 → 百合病。',
   ),
@@ -1862,6 +1864,45 @@ const List<FormulaRule> allFormulaRules = [
     reference: {kQ2: [1]},
     differential: '太阳阳明合病，不下利但呕 → 葛根汤加半夏。'
         '与葛根汤嵌套：多一个「呕」必选，症状全时自动取本方。',
+  ),
+  // ============ 百合病六首（金匮·百合狐惑阴阳毒病）============
+  // 六首现症相同（百合病本证），唯一分水岭是「误汗/误下/误吐/病形如初」这条来路，
+  // 所以用近期治疗史信号。四首分支方靠 tx key 互斥分开；两首演变方用十问主症
+  // （渴不解 / 变发热）把分数拉高，各自不撞。
+  FormulaRule(
+    name: '百合知母汤',
+    meridian: '金匮',
+    extRequired: {'baihe', 'tx_sweat_excess'},
+    differential: '百合病发汗后者 → 汗伤津，加知母清热润燥。'
+        '倪师：知母三钱、百合五钱至一两。',
+  ),
+  FormulaRule(
+    name: '百合滑石代赭汤',
+    meridian: '金匮',
+    extRequired: {'baihe', 'tx_purging'},
+    differential: '百合病下之后者 → 下伤津而利，代赭石涩剂止利、滑石利尿。',
+  ),
+  FormulaRule(
+    name: '百合鸡子黄汤',
+    meridian: '金匮',
+    extRequired: {'baihe', 'tx_emesis'},
+    differential: '百合病吐之后者 → 吐伤胃津，鸡子黄补中生津。',
+  ),
+  FormulaRule(
+    name: '栝蒌牡蛎散',
+    meridian: '金匮',
+    required: {kQ3: [2], kQ7: [6]}, // 渴想喝冷水 + 小便黄赤
+    extRequired: {'baihe'},
+    differential: '百合病渴不解者。倪师：不用牡蛎，光用栝蒌根，吃了还是渴——'
+        '病后必虚，虚热才渴不解。',
+  ),
+  FormulaRule(
+    name: '百合滑石散',
+    meridian: '金匮',
+    required: {kQ2: [4], kQ1: [1]}, // 脉数 + 手足温热（变发热）
+    extRequired: {'baihe'},
+    differential: '百合病变发热者。倪师：这种发热绝不是高热，是低热，'
+        '可能兼膀胱发炎或结石，故用滑石。',
   ),
 ];
 
