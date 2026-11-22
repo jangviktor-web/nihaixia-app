@@ -33,6 +33,7 @@ const String kD8 = 'd_leukorrhea'; // 带下三方（纯 ext 兜底）：矾石�
 const String kD9 = 'd_edema'; // 水气八方（共用「身重浮肿」）：越婢/甘草麻黄/越婢加术/防己茯苓/麻黄附子/杏子/芪芍桂酒/防己黄芪
 const String kD10 = 'd_sore_throat'; // 少阴咽痛五方：甘草汤/桔梗汤/猪肤汤/苦酒汤/半夏散及汤
 const String kD11 = 'd_epigastric_mass'; // 心下痞坚/坚大如盘：木防己/去石膏加苓硝/桂甘姜枣/枳术/苓甘五味加大黄/半夏麻黄
+const String kD12 = 'd_vexed_heart'; // 心烦心悸四首：甘草干姜/干姜附子/桂枝甘草龙牡/桂枝甘草
 
 
 // ============ 12 问 canonical 选项（顺序=文档编号） ============
@@ -121,6 +122,12 @@ const Map<String, List<String>> qOptions = {
     '咳而胸满、形肿而面热如醉',
     '心下动悸明显（胃脘有跳动感）',
   ],
+  kD12: [
+    '误汗后手足厥冷、咽干，烦躁而吐',
+    '昼日烦躁、入夜安静，脉沉微',
+    '火逆烧针后惊狂不安、卧起不宁',
+    '发汗过多，心悸而喜按，无烦躁',
+  ],
 };
 
 /// 一张鉴别追问：题干 + {并列方名: 该方对应的选项号(1-based)}。
@@ -204,6 +211,14 @@ const List<Disambiguator> kDisambiguators = [
     '苓甘五味加姜辛半夏杏仁汤': 5,
     '苓甘五味加姜辛夏杏大黄汤': 6,
     '半夏麻黄丸': 7,
+  }),
+  // 四首都是「心/阳虚而烦」：甘草干姜与干姜附子同属阳虚烦躁，
+  // 桂枝甘草龙牡与桂枝甘草同属心悸，靠本题分。
+  Disambiguator(kD12, '心烦心悸是哪一种？', {
+    '甘草干姜汤': 1,
+    '干姜附子汤': 2,
+    '桂枝甘草龙骨牡蛎汤': 3,
+    '桂枝甘草汤': 4,
   }),
 ];
 
@@ -451,6 +466,7 @@ const List<FormulaRule> allFormulaRules = [
     name: '桂枝甘草汤',
     meridian: '太阳',
     required: {kQ5: [18], kQ10: [2]},
+    reference: {kD12: [4]},
     differential: '发汗过多后心悸欲按 → 心阳虚。',
   ),
   FormulaRule(
@@ -576,7 +592,7 @@ const List<FormulaRule> allFormulaRules = [
     meridian: '太阳',
     required: {kQ1: [6, 7]},
     extRequired: {'day_vex_night_calm'},
-    reference: {kQ2: [10], kQ10: [4]},
+    reference: {kQ2: [10], kQ10: [4], kD12: [2]},
     differential: '昼烦夜静＋脉微 → 阳气暴虚。',
   ),
   // v3.2 新增：炙甘草汤（复脉汤）——脉结代心动悸，阴阳两虚
@@ -1810,6 +1826,42 @@ const List<FormulaRule> allFormulaRules = [
     reference: {kD11: [7]},
     differential: '心下悸者。倪师：病人会说「我的胃这里有个脉会跳动」。'
         '与茯苓甘草汤区别：彼为汗出不渴之水停胃中，此为水在心下作悸。',
+  ),
+  // ============ 火逆/阳虚烦躁与葛根类（伤寒 29/33/34/118）============
+  FormulaRule(
+    name: '桂枝甘草龙骨牡蛎汤',
+    meridian: '太阳',
+    required: {kQ5: [18], kQ10: [4]}, // 心悸 + 烦躁
+    reference: {kD12: [3]},
+    differential: '火逆下之、因烧针而烦躁 → 龙牡镇惊。'
+        '与桂枝甘草汤区别：彼但心悸喜按无烦躁，此兼烦躁卧起不安。'
+        '（桂苓甘草龙骨牡蛎汤＝同方加茯苓，语料注明宋本四味无茯苓，不另立规则）',
+  ),
+  FormulaRule(
+    name: '甘草干姜汤',
+    meridian: '太阳',
+    required: {kQ1: [6], kQ12: [4]}, // 手足厥冷 + 呕（吐逆）
+    reference: {kQ10: [4], kD12: [1]},
+    differential: '误汗致厥、咽中干、烦躁吐逆 → 先复其阳。'
+        '与芍药甘草汤同条：此复阳、彼复阴（脚挛急）。与干姜附子汤靠追问分。',
+  ),
+  FormulaRule(
+    name: '芍药甘草汤',
+    meridian: '太阳',
+    // ponytail: 原文「脚挛急」在十问里没有对应选项，只能挂手足厥冷一线；
+    // 若日后加「小腿抽筋」信号，改挂它即可。
+    required: {kQ1: [6]},
+    differential: '厥愈足温后脚挛急不伸 → 酸甘化阴。与甘草干姜汤同条，'
+        '一先一后（复阳之后复阴）。',
+  ),
+  FormulaRule(
+    name: '葛根加半夏汤',
+    meridian: '太阳',
+    required: {kQ1: [7], kQ4: [1], kQ5: [4], kQ8: [8]}, // 葛根汤证 + 呕
+    extRequired: {'neck_stiff'},
+    reference: {kQ2: [1]},
+    differential: '太阳阳明合病，不下利但呕 → 葛根汤加半夏。'
+        '与葛根汤嵌套：多一个「呕」必选，症状全时自动取本方。',
   ),
 ];
 

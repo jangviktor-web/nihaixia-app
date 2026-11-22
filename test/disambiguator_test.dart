@@ -181,4 +181,25 @@ void main() {
       expect(e.pendingDisambiguator(), isNull, reason: '不应二次追问');
     }
   });
+
+  test('kD12 真实平局：甘草干姜汤 ⇄ 干姜附子汤（阳虚烦躁同源）', () {
+    final e = DiagnosticEngine();
+    e.answerTemperaturePattern('fever_chills');
+    // 手脚冰冷 + 昼日烦躁夜安静 + 吐逆 → 两首都是 2 必选 6.0
+    for (final (k, n) in [(kQ1, 6), (kQ12, 4)]) {
+      final t = optionText(k, n);
+      expect(t, isNotNull, reason: '$k[$n] 无对应选项');
+      e.answerTenQuestion(k, t!);
+    }
+    e.toggleExtSymptom('day_vex_night_calm', true);
+
+    final tied = RuleEngine.tiedTop(e.qAnswers, e.extSymptoms);
+    final names = tied.map((m) => m.rule.name).toSet();
+    expect(names.contains('甘草干姜汤'), isTrue, reason: '并列应含甘草干姜汤：$names');
+    expect(names.contains('干姜附子汤'), isTrue, reason: '并列应含干姜附子汤：$names');
+
+    expect(e.pendingDisambiguator()?.key, kD12);
+    e.answerTenQuestion(kD12, qOptions[kD12]![0]); // 误汗后厥冷咽干烦躁而吐
+    expect(e.diagnose()?.formula, '甘草干姜汤');
+  });
 }
