@@ -29,6 +29,9 @@ const Map<String, List<(String, String)>> kSymptomExtGroups = {
     ('chest_heart_great_cold', '心胸中大寒痛'),
     ('vexing_heat_pain', '心中懊憹热痛'),
     ('suspended_fluid', '悬饮（胸胁引痛）'),
+    ('chest_qi_block', '胸中气塞（闷而不痛）'),
+    ('liver_attachment', '胸胁痛、常想按压胸口'),
+    ('wheeze_no_lie', '喘咳不得卧、时时吐浊'),
   ],
   '心下（胃脘）': [
     ('epigastric_reverse_full', '心下逆满'),
@@ -72,6 +75,22 @@ const Map<String, List<(String, String)>> kSymptomExtGroups = {
     ('yellow_sweat', '黄汗（汗出色黄沾衣）'),
     ('sore_throat', '咽痛/咽中痛'),
     ('baihe', '百合病（如寒无寒、如热无热、欲卧不能卧）'),
+    ('jaundice_dry_skin', '身黄而皮肤枯燥'),
+  ],
+  // 带下三方（矾石散/蛇床子散/狼牙汤）在规则表里是无 required 的纯参考方，
+  // 只靠这三个 key 出线——界面勾不到就是死规则，kD8 永远不会触发。
+  '妇科': [
+    ('leukorrhea', '带下异常'),
+    ('vulva_cold', '阴中冷'),
+    ('vulva_ulcer', '阴中生疮、溃烂'),
+  ],
+  // 出血部位：柏叶汤/黄土汤/泻心汤在规则表里早就在用这三个 key，
+  // 但界面没有入口 → 柏叶汤无 required、只靠 extReference 兜底，
+  // 勾不到就是 0 分，等于死规则。
+  '出血': [
+    ('hematemesis', '吐血'),
+    ('hematochezia_after', '便血（先大便后出血）'),
+    ('hematochezia_before', '便血（先出血后大便）'),
   ],
   // 百合病六首唯一的分水岭是「来路」：误汗/误下/误吐/病形如初。
   // 其余方一律走现症，这个维度不外扩。

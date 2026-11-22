@@ -55,4 +55,24 @@ void main() {
     final noLabel = uiKeys.where((k) => !extSymptoms.containsKey(k)).toList();
     expect(noLabel, isEmpty, reason: '缺中文名: ${noLabel.join("、")}');
   });
+
+  // 纯参考方（既无 required 也无 extRequired）的全部得分都来自 extReference，
+  // 界面上勾不到那个 key 就是 0 分死规则——柏叶汤、带下三方都是这么漏的。
+  test('纯参考方的 extReference key，自测页都要有勾选入口', () {
+    final uiKeys = <String>{
+      for (final g in kSymptomExtGroups.values)
+        for (final (k, _) in g) k,
+    };
+    final dead = <String>[];
+    for (final r in allFormulaRules) {
+      if (r.required.isNotEmpty || r.extRequired.isNotEmpty) continue;
+      if (r.extReference.isEmpty) continue;
+      final gaps = r.extReference.where((k) => !uiKeys.contains(k)).toList();
+      if (gaps.isNotEmpty) dead.add('${r.name}(${gaps.join(",")})');
+    }
+    // ignore: avoid_print
+    print('[纯参考方可达] 死规则 ${dead.length} 条');
+    expect(dead, isEmpty, reason: '这些方只靠 extReference 出线，界面勾不到就永远 0 分：'
+        '${dead.join("、")}');
+  });
 }

@@ -1441,8 +1441,13 @@ const List<FormulaRule> allFormulaRules = [
   FormulaRule(
     name: '柏叶汤',
     meridian: '金匮',
-    extReference: {'hematemesis'},
-    differential: '吐血不止 → 中气虚寒吐血。',
+    // 原文「吐血不止」没写手足，但倪师讲「经方认为吐血和下血都是肠胃里太冷了」
+    // 「看到病人吐血不敢用热药，就耽误了病」——手足冷却不设成门禁（否则只吐血
+    // 不冷的人拿不到本方），只作加分项。
+    extRequired: {'hematemesis'},
+    reference: {kQ1: [6]},
+    differential: '吐血不止 → 中气虚寒吐血。倪师：经方认为吐血下血都是肠胃太冷，'
+        '与泻心汤（实热、舌黄便干）正好相反；肚脐以上出血用柏叶，以下用阿胶。',
   ),
   FormulaRule(
     name: '黄土汤',
