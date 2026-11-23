@@ -103,3 +103,6 @@ deliverables/
 
 # 商店上架素材：大图不入库，仅保留说明文档
 store_assets/**/*.png
+
+# 医案表合并/补列的本地备份（tool/merge_duplicate_cases.py、fill_case_view_column.py）
+assets/medical_cases/*.bak-*

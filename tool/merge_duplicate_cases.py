@@ -77,7 +77,7 @@ def load_map():
 def _flat(s):
     """抹掉标点空白，只留字。保留数字与拉丁字母——剂量 `3钱`/`5钱`、`HT-2`/`HTS2`
     的差异正是要保住的信息，不能跟着标点一起抹掉。"""
-    return re.sub(r"[\s，。、；：""''（）()【】\[\]{}—\-－_/\\:.,·|!！?？~～+＋&*]+", "", s)
+    return re.sub(r'[\s，。、；：""''（）()【】\[\]{}—\-－_/\:.,·|!！?？~～+＋&*]+', '', s)
 
 
 def _cprefix(a, b):
@@ -183,7 +183,10 @@ def main():
     rows = {}
     for i, ln in enumerate(lines):
         c = ln.split("|")
-        if len(c) == 14 and c[1].strip().isdigit():
+        # 表格行两端都有竖线，split('|') 得到「列数+2」个元素（首尾各一个空串）。
+        # 早先按 ==14 判断，表格改成行尾也带竖线后本判据失效，rows 恒空、
+        # 全部映射被静默判成「序号不存在」，脚本整体失效而无人察觉。
+        if len(c) >= 14 and c[1].strip().isdigit():
             rows[c[1].strip()] = (i, c)
 
     plan = []
