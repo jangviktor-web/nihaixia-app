@@ -67,6 +67,14 @@ def is_empirical(name, category=''):
         '鸡矢白散', '烧裈散',
     }
 
+# 同方化裁 / 方阙 / 附方：不另立问诊规则（每首的理由都来自原文或倪师原话）
+DERIVED = {
+    '牡蛎汤',      # 金匮·疟病附方「治牡疟」，与蜀漆散同治多寒之疟，另立必与蜀漆散撞
+    '乌金丸',      # 倪师把乌头赤石脂丸的乌头换乌梅后自命名，且「必须做丸，汤剂无效」
+    '禹余粮丸',    # 伤寒 88 方阙，倪师：「方已失传」，临床上改用参草姜枣把津液补回来
+    '附子理中汤',  # 理中汤加附子，后世合方；理中汤本身已在规则表
+}
+
 # 非方剂条目（灸法等外治操作），不算方
 NOT_FORMULA = {'结胸灸法', '小青龙汤加减'}
 
@@ -134,9 +142,13 @@ print(f'  剂型后缀疑似同方   {len(suspect)}（已排除 {len(DISTINCT)} 
 print(f'  >>> 剩余无规则     {len(gap)}')
 emp = [f for f in gap if is_empirical(f['name'], f.get('category', ''))]
 ext = [f for f in gap if not is_empirical(f['name'], f.get('category', '')) and f['name'] in EXTERNAL]
-zz = [f for f in gap if not is_empirical(f['name'], f.get('category', '')) and f['name'] not in EXTERNAL]
+drv = [f for f in gap if not is_empirical(f['name'], f.get('category', ''))
+       and f['name'] not in EXTERNAL and f['name'] in DERIVED]
+zz = [f for f in gap if not is_empirical(f['name'], f.get('category', ''))
+      and f['name'] not in EXTERNAL and f['name'] not in DERIVED]
 print(f'     其中 倪师经验方/后世方 {len(emp)}')
-print(f'     其中 仲景原文方 {len(zz) + len(ext)}（待补规则 {len(zz)} / 外用不补 {len(ext)}）')
+print(f'     其中 仲景原文方 {len(zz) + len(ext) + len(drv)}（待补规则 {len(zz)} / '
+      f'外用不补 {len(ext)} / 同方化裁·方阙 {len(drv)}）')
 print(f'  库内重复（同方多名）{len(dups)} 组')
 print('=' * 62)
 
@@ -181,6 +193,8 @@ with io.open('tool/gap_no_rule.tsv', 'w', encoding='utf-8', newline='') as fp:
         fp.write(_row(f, '仲景待补规则'))
     for f in ext:
         fp.write(_row(f, '外用不补'))
+    for f in drv:
+        fp.write(_row(f, '同方化裁·方阙'))
     for f in emp:
         fp.write(_row(f, '经验/后世方'))
 print('\n已写 tool/gap_no_rule.tsv')
