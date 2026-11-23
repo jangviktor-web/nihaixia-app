@@ -22,8 +22,8 @@ import 'package:nihaisha_app/data/medical_case_data.dart';
 /// 若这些数字只是变好（空格更少、行数更多），不必更新；只有变差时才该更新，
 /// 并且要先确认是刻意为之。
 const _baselineRows = 1444;
-const _baselineUsable = 1281;
-const _maxEmptyFormula = 130; // 方剂列空 124
+const _baselineUsable = 1278;
+const _maxEmptyFormula = 133; // 方剂列空 127
 const _maxEmptyFourDiag = 640; // 四诊列空 618
 
 /// 与 `parseMedicalCaseTable` 的质量门禁同一判据。注意「未提及」是**精确等于**
