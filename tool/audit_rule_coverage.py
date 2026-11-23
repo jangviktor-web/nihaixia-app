@@ -50,7 +50,11 @@ DISTINCT = {'猪苓散', '文蛤汤', '矾石丸', '矾石汤', '附子散'}
 TRADITIONAL = {'猪胆汁方', '百合洗方', '雄黄熏方', '甘草汤', '桔梗汤',
                '半夏散及汤', '苦酒汤'}
 
-def is_empirical(name):
+def is_empirical(name, category=''):
+    # formulas.json 自己标了「倪海厦经验方」的一律算（术附汤等不带「方」字，
+    # 光看名字会漏判成仲景原文方）。
+    if category == '倪海厦经验方':
+        return True
     if name in TRADITIONAL:
         return False
     if re.search(r'(经验方|标准方|外敷|外洗|排水|消肿|治疗方|分消)', name):
@@ -79,6 +83,8 @@ EXTERNAL = {
     '头风摩散',    # 084 头风，外摩
     '温粉',        # 038 大青龙后「温粉扑之」，止汗外扑
     '黄连粉',      # 386 浸淫疮，外扑（方阙）
+    '干姜附子粉',  # 倪师外用：磨粉敷在小儿足烂疮旁边（同名汤是伤寒 61，另一回事）
+    '附子散',      # 捣罗为散，入绵中如装袜，外敷小儿足烂疮
 }
 
 data = json.load(io.open('assets/data/formulas.json', encoding='utf-8'))
@@ -126,9 +132,9 @@ print(f'  alias 字段命中     {len(by_alias)}')
 print(f'  人工异名表命中     {len(by_manual)}')
 print(f'  剂型后缀疑似同方   {len(suspect)}（已排除 {len(DISTINCT)} 个明确不同方）')
 print(f'  >>> 剩余无规则     {len(gap)}')
-emp = [f for f in gap if is_empirical(f['name'])]
-ext = [f for f in gap if not is_empirical(f['name']) and f['name'] in EXTERNAL]
-zz = [f for f in gap if not is_empirical(f['name']) and f['name'] not in EXTERNAL]
+emp = [f for f in gap if is_empirical(f['name'], f.get('category', ''))]
+ext = [f for f in gap if not is_empirical(f['name'], f.get('category', '')) and f['name'] in EXTERNAL]
+zz = [f for f in gap if not is_empirical(f['name'], f.get('category', '')) and f['name'] not in EXTERNAL]
 print(f'     其中 倪师经验方/后世方 {len(emp)}')
 print(f'     其中 仲景原文方 {len(zz) + len(ext)}（待补规则 {len(zz)} / 外用不补 {len(ext)}）')
 print(f'  库内重复（同方多名）{len(dups)} 组')
