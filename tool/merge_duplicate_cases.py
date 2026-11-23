@@ -149,9 +149,11 @@ def pick(keep, drop, is_dx=False, keep_dx=None, is_acup=False):
 
 
 def merge_tags(*cells):
+    """去重合并溯源标记。md（病案表格体）与 art（诊疗日志文章体）都要保留——
+    只抓 md 会把被并行的 <art:…#N> 丢掉，表到全文的链接就断了。"""
     tags = []
     for c in cells:
-        for t in re.findall(r"<md:[^>]+>", c or ""):
+        for t in re.findall(r"<(?:md|art):[^>]+>", c or ""):
             if t not in tags:
                 tags.append(t)
     return tags

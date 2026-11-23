@@ -103,6 +103,25 @@ void main() {
     expect(bad, isEmpty, reason: '日期写法不统一，同日比对会漏判：${bad.take(5).join("；")}');
   });
 
+  // art 标记是「表行 → 诊疗日志全文」的唯一桥：classic_search_service 靠
+  // `<art:文件名#段号>` 定位到 assets/medical_cases/article_index.json.gz 里的段落。
+  // 合并重复行时若只搬 <md:N> 而漏搬 <art:…>，这条链接就静默断掉（2026-11-23 发生过）。
+  test('诊疗日志链接标记 <art:…> 数量不得减少', () {
+    final artRe = RegExp(r'<art:([^>]+)>');
+    final arts = <String>[];
+    for (final r in rows) {
+      for (final cell in r) {
+        for (final m in artRe.allMatches(cell)) {
+          arts.add(m.group(1)!);
+        }
+      }
+    }
+    // ignore: avoid_print
+    print('[医案] art 标记 ${arts.length} 个 | 重复 ${arts.length - arts.toSet().length} 个');
+    expect(arts.length, greaterThanOrEqualTo(159),
+        reason: 'art 标记数掉了，说明有医案与诊疗日志全文的链接被删断（合并/批处理常见）');
+  });
+
   test('溯源标记 <md:N> 全局唯一', () {
     final tags = <String>[];
     final tagRe = RegExp(r'<md:([^>]+)>');
