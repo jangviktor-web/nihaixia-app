@@ -197,10 +197,12 @@ List<MedicalCase> findRelatedCases(
     });
     return scored.take(max).map((e) => e.$1).toList();
   }
-  final name = c.displayName;
-  if (name.isEmpty || name == '（未命名）') return const [];
+  // 用原始 diagnosis 比对而不是 displayName：后者是「首句 + 20 字上限」的展示
+  // 形式，两条不同的长诊断可能被截成同一串前缀，那样会把不相干的医案判成同病。
+  final name = c.diagnosis.trim();
+  if (name.isEmpty) return const [];
   final same = all
-      .where((o) => o.seq != c.seq && o.displayName == name)
+      .where((o) => o.seq != c.seq && o.diagnosis.trim() == name)
       .toList()
     ..sort((a, b) => a.seq.compareTo(b.seq));
   return same.take(max).toList();
@@ -362,9 +364,38 @@ class MedicalCase {
 
   /// 医案展示名：优先「主要诊断」，缺失时回退「中医病机」，再缺失显「（未命名）」。
   String get displayName {
-    if (diagnosis.isNotEmpty) return diagnosis;
-    if (mechanism.isNotEmpty) return mechanism;
+    final d = _titleOf(diagnosis);
+    if (d.isNotEmpty) return d;
+    final m = _titleOf(mechanism);
+    if (m.isNotEmpty) return m;
     return '（未命名）';
+  }
+
+  /// 把诊断/病机压成一条「标题级」短句。
+  ///
+  /// 原始列常是整段病程记录（实测最长 100 字、>24 字的有 109 例），直接当标题
+  /// 会撑破卡片、详情页 AppBar 也会被挤成两行。三步收敛：
+  ///   1. 折叠所有空白（源里有全角空格和连续空格）
+  ///   2. 取首句（到「。」「；」为止）——诊断列的逗号串往往是同一件事的补充说明
+  ///   3. 首句仍过长时按逗号累加，超过 18 字就停，最后再硬截到 20 字加省略号
+  /// 刻意不断词：宁可多带一个分句，也不要把「里寒湿」切成「里寒」。
+  static String _titleOf(String raw) {
+    var t = raw.replaceAll(RegExp(r'\s+'), ' ').trim();
+    if (t.isEmpty) return '';
+    final head = RegExp(r'^[^。；;]+').firstMatch(t);
+    t = (head?.group(0) ?? t).trim();
+    if (t.length > 20) {
+      final segs = t.split(RegExp(r'[，,]'));
+      var out = segs.first.trim();
+      for (var i = 1; i < segs.length; i++) {
+        final next = segs[i].trim();
+        if (next.isEmpty) continue;
+        if (out.length + 1 + next.length > 18) break;
+        out = '$out，$next';
+      }
+      t = out;
+    }
+    return t.length > 20 ? '${t.substring(0, 20)}…' : t;
   }
 
   /// 复制/分享格式化文本（参照 diagnosis.toCopyText 风格；空字段跳过）。
