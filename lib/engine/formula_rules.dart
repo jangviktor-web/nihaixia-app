@@ -35,6 +35,7 @@ const String kD10 = 'd_sore_throat'; // 少阴咽痛五方：甘草汤/桔梗汤
 const String kD11 = 'd_epigastric_mass'; // 心下痞坚/坚大如盘：木防己/去石膏加苓硝/桂甘姜枣/枳术/苓甘五味加大黄/半夏麻黄
 const String kD12 = 'd_vexed_heart'; // 心烦心悸四首：甘草干姜/干姜附子/桂枝甘草龙牡/桂枝甘草
 const String kD13 = 'd_vomit_dry'; // 干呕三首：吴茱萸汤/半夏干姜散/橘皮汤（同篇同症）
+const String kD14 = 'd_sini_family'; // 四逆族八首：四逆/通脉四逆/白通/白通加猪胆/通脉四逆加猪胆/四逆加人参/茯苓四逆/干姜附子
 
 
 // ============ 12 问 canonical 选项（顺序=文档编号） ============
@@ -134,6 +135,16 @@ const Map<String, List<String>> qOptions = {
     '干呕吐逆、只吐涎沫，没有头痛，人还壮实',
     '精神正常，吃太快梗到就打嗝，手足略凉',
   ],
+  kD14: [
+    '四肢冰冷、脉微欲绝、只想睡、下利清谷',
+    '上述而利不止，身反不恶寒而面赤',
+    '下利、脉微、面色泛红',
+    '白通证而利不止、厥逆无脉、干呕而烦',
+    '吐与利都已停、汗出而厥、四肢拘急、脉微欲绝',
+    '下利很久突然停了（已无物可利），之后又复利，畏寒脉微',
+    '恶寒＋脉微＋烦躁不安',
+    '白天烦躁、入夜安静',
+  ],
 };
 
 /// 一张鉴别追问：题干 + {并列方名: 该方对应的选项号(1-based)}。
@@ -232,6 +243,18 @@ const List<Disambiguator> kDisambiguators = [
     '吴茱萸汤': 1,
     '半夏干姜散': 2,
     '橘皮汤': 3,
+  }),
+  // 少阴四逆族八首共用「手冷/脉微/下利/烦躁」，原文的差别多在程度与先后
+  // （利不止 / 利止复利 / 吐利已断 / 戴阳面赤），十问表达不了，只能问一句。
+  Disambiguator(kD14, '四肢冰冷、脉微这一类，具体是哪种情况？', {
+    '四逆汤': 1,
+    '通脉四逆汤': 2,
+    '白通汤': 3,
+    '白通加猪胆汁汤': 4,
+    '通脉四逆加猪胆汁汤': 5,
+    '四逆加人参汤': 6,
+    '茯苓四逆汤': 7,
+    '干姜附子汤': 8,
   }),
 ];
 
@@ -604,7 +627,7 @@ const List<FormulaRule> allFormulaRules = [
     name: '茯苓四逆汤',
     meridian: '太阳',
     required: {kQ1: [6, 7], kQ10: [4], kQ2: [10]},
-    reference: {kQ3: [3, 1], kQ9: [4], kQ10: [2]},
+    reference: {kQ3: [3, 1], kQ9: [4], kQ10: [2], kD14: [7]},
     differential: '恶寒脉微＋烦躁 → 阴阳两虚。',
   ),
   FormulaRule(
@@ -612,8 +635,41 @@ const List<FormulaRule> allFormulaRules = [
     meridian: '太阳',
     required: {kQ1: [6, 7]},
     extRequired: {'day_vex_night_calm'},
-    reference: {kQ2: [10], kQ10: [4], kD12: [2]},
+    reference: {kQ2: [10], kQ10: [4], kD12: [2], kD14: [8]},
     differential: '昼烦夜静＋脉微 → 阳气暴虚。',
+  ),
+  // ============ 少阴四逆族补遗三首（伤寒 385/68/390）============
+  FormulaRule(
+    name: '四逆加人参汤',
+    meridian: '少阴',
+    // 原文「恶寒脉微而复利」——此刻仍在利，故挂下利；「利止」那一段是病程，
+    // 十问表达不了，交给 kD14 第 6 项（与四逆汤/白通汤同分 9.0 时问）。
+    required: {kQ1: [6, 7], kQ2: [10], kQ6: [3]},
+    reference: {kQ10: [2], kD14: [6]},
+    differential: '恶寒脉微而复利，利止，亡血也 → 四逆汤加人参。'
+        '倪师：利止不是病愈，是「没有东西可利了」，肠胃津液已竭；'
+        '人参在此是救阴、存胃津，救逆时用量要大（一两二两），不能省。',
+  ),
+  FormulaRule(
+    name: '芍药甘草附子汤',
+    meridian: '少阴',
+    // 只认「脉弱」不认「脉微」——与四逆族天然互斥，不必进 kD14。
+    required: {kQ1: [6, 7], kQ2: [11]},
+    reference: {kQ4: [2, 4], kQ5: [9]},
+    differential: '发汗病不解，反恶寒者，虚故也 → 芍药甘草加附子。'
+        '倪师：此恶寒是「摸身体冷的、病人还怕冷」，与麻黄汤的「身烫脉浮紧」正相反；'
+        '多用在素虚缺血之人。治静脉瘤白芍可用一两，脚冷加重附子。',
+  ),
+  FormulaRule(
+    name: '通脉四逆加猪胆汁汤',
+    meridian: '少阴',
+    // 原文「吐已下断」——吐利都已停，所以绝不能再挂下利当必选。
+    required: {kQ1: [6], kQ2: [10], kQ4: [7]},
+    reference: {kD14: [5]},
+    differential: '吐已下断，汗出而厥，四肢拘急不解，脉微欲绝 → 通脉四逆加猪胆汁。'
+        '倪师：津液完全没了、人快昏迷，「只要还有点脉、还没有断气都可用」；'
+        '加猪胆汁只是取人的胆汁帮助消化宿食，无猪胆可用羊胆代。'
+        '生附子一枚约三钱，救逆可到四钱，切勿五钱——「病人没有死，却死在附子上面」。',
   ),
   // v3.2 新增：炙甘草汤（复脉汤）——脉结代心动悸，阴阳两虚
   FormulaRule(
@@ -913,7 +969,7 @@ const List<FormulaRule> allFormulaRules = [
     name: '四逆汤',
     meridian: '少阴',
     required: {kQ1: [6], kQ2: [10], kQ10: [3]},
-    reference: {kQ3: [1, 3], kQ6: [7], kQ7: [7], kQ5: [9], kQ8: [7]},
+    reference: {kQ3: [1, 3], kQ6: [7], kQ7: [7], kQ5: [9], kQ8: [7], kD14: [1]},
     differential: '四肢厥逆＋脉微欲绝＋但欲寐 → 回阳救逆第一方。',
   ),
   FormulaRule(
@@ -921,7 +977,7 @@ const List<FormulaRule> allFormulaRules = [
     meridian: '少阴',
     required: {kQ2: [10], kQ6: [7]},
     extRequired: {'body_no_aversion_face_red'},
-    reference: {kQ1: [6], kQ10: [3]},
+    reference: {kQ1: [6], kQ10: [3], kD14: [2]},
     differential: '下利清谷不止＋脉微欲绝＋身反不恶寒 → 阴盛格阳重证。',
   ),
   FormulaRule(
@@ -929,14 +985,14 @@ const List<FormulaRule> allFormulaRules = [
     meridian: '少阴',
     required: {kQ2: [10], kQ6: [7, 3], kQ1: [6]},
     extReference: {'face_red'},
-    reference: {kQ10: [3], kQ5: [9]},
+    reference: {kQ10: [3], kQ5: [9], kD14: [3]},
     differential: '下利＋脉微＋厥逆 → 阴盛戴阳（面赤）。',
   ),
   FormulaRule(
     name: '白通加猪胆汁汤',
     meridian: '少阴',
     required: {kQ2: [10], kQ6: [7], kQ10: [4]},
-    reference: {kQ1: [6]},
+    reference: {kQ1: [6], kD14: [4]},
     differential: '白通汤证＋利不止厥逆无脉＋干呕烦 → 阴阳格拒。',
   ),
   FormulaRule(
