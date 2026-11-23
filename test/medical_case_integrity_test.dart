@@ -21,8 +21,8 @@ import 'package:nihaisha_app/data/medical_case_data.dart';
 /// 当前基线（2026-11-23，合并 3 组重复行、补 119 行观点列之后）。改动数据后
 /// 若这些数字只是变好（空格更少、行数更多），不必更新；只有变差时才该更新，
 /// 并且要先确认是刻意为之。
-const _baselineRows = 1445;
-const _baselineUsable = 1282;
+const _baselineRows = 1444;
+const _baselineUsable = 1281;
 const _maxEmptyFormula = 130; // 方剂列空 124
 const _maxEmptyFourDiag = 640; // 四诊列空 618
 
@@ -33,6 +33,8 @@ bool _usableRow(List<String> r) {
   if (f.isEmpty) return false;
   if (f.contains('未公开')) return false;
   if (f == '未提及') return false;
+  // 「同上 / 同前」= 复诊占位，单行无方剂信息（2026-11-23 起与未提及同等对待）
+  if (f == '同上' || f == '同前' || f == '同上。' || f == '同前。') return false;
   return true;
 }
 
@@ -150,7 +152,7 @@ void main() {
 
     final usable = _usableCount(rows);
     // ignore: avoid_print
-    print('[医案] 可用例数 $usable（方剂非空 / 非「未公开」/ 非纯「未提及」）');
+    print('[医案] 可用例数 $usable（方剂非空 / 非「未公开」/ 非纯「未提及·同上」）');
     expect(usable, greaterThanOrEqualTo(_baselineUsable),
         reason: '可用例数从 $_baselineUsable 掉了——门禁可用方骤降会让界面「少一些医案」而不报错');
   });

@@ -1,4 +1,4 @@
-/// 倪师医案合并蒸馏表格（1445 行 → 可用 1282 例：无方剂/未公开/纯「未提及」的剔除）。
+/// 倪师医案合并蒸馏表格（1444 行 → 可用 1281 例：无方剂/未公开/纯「未提及」「同上」的剔除）。
 ///
 /// 原始表格为 markdown（assets/medical_cases/cases_table.md，1.2 MB，13 列）。
 /// 不在编译期展开为常量（避免资产体积直接进常量池），改为运行时按行解析：
@@ -474,6 +474,11 @@ List<MedicalCase> parseMedicalCaseTable(String md) {
     if (formula.trim().isEmpty) continue;
     if (formula.contains('未公开')) continue;
     if (formula.trim() == '未提及') continue;
+    // 「同上 / 同前」是复诊行对上一次就诊的指代，单看这一行没有任何方剂信息，
+    // 在列表里标题也会显示成「#10 同上」。与「未提及」同属占位，一并剔除。
+    // 注意只认**纯**占位：「同4/2方 加半夏三钱」这种带具体加减的是有效内容，必须保留。
+    final f = formula.trim();
+    if (f == '同上' || f == '同前' || f == '同上。' || f == '同前。') continue;
 
     cases.add(MedicalCase(
       seq: seq,
