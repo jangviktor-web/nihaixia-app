@@ -95,8 +95,23 @@ class ClassicSearchService {
   static final Map<String, List<_IndexEntry>> _entries = {};
   static final Map<String, Future<void>> _loading = {};
 
+  /// 加载失败原因（按资产路径）。加载本身失败时会重新抛，但**上一次**的原因
+  /// 留在这里供 UI 展示 —— 否则界面只会说「没有命中讲义内容」，把「索引没加载
+  /// 起来」伪装成「讲义里没这段」，用户与开发者都无从判断（2026-11-24 实测踩到）。
+  static final Map<String, String> loadErrors = {};
+
+  /// 上一次检索实际用的关键词（已归一化）。0 命中时 UI 会显示它，
+  /// 一眼能看出是「切成繁体了」还是「抽词抽歪了」。
+  static List<String> lastTerms = const [];
+
   /// 医疗索引是否已加载（供 UI 判断是否显示加载态）。
   static bool get isLoaded => _entries.containsKey(assetPath);
+
+  /// 已加载的医疗索引条目数（0 = 没加载起来）。
+  static int get loadedEntryCount => _entries[assetPath]?.length ?? 0;
+
+  /// 医疗索引的加载失败原因（null = 没失败过）。
+  static String? get loadError => loadErrors[assetPath];
 
   static const Map<String, String> _sourceLabels = {
     'shanghan': '伤寒论讲稿',
@@ -126,6 +141,17 @@ class ClassicSearchService {
   }
 
   static Future<void> _load(String path) async {
+    try {
+      await _loadUnsafe(path);
+      loadErrors.remove(path);
+    } catch (e) {
+      loadErrors[path] = e.toString();
+      _loading.remove(path); // 允许下次重试，而不是永久卡在失败的 Future 上
+      rethrow;
+    }
+  }
+
+  static Future<void> _loadUnsafe(String path) async {
     final data = await rootBundle.load(path);
     final bytes = await gunzipBytesAsync(
         data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
@@ -176,6 +202,7 @@ class ClassicSearchService {
     final terms = rankByRelevance
         ? normalized.split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList()
         : <String>[normalized];
+    lastTerms = terms;
     if (terms.isEmpty) return ClassicSearchResult.empty;
 
     final titleHits = <ClassicHit>[];

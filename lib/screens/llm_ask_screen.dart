@@ -627,11 +627,24 @@ class _LlmAskScreenState extends State<LlmAskScreen> {
   /// 来源可展开：点开直接看命中片段，答案可溯源（不是只给一个数字）。
   Widget _sourcesTile(List<ClassicHit> sources) {
     if (sources.isEmpty) {
-      return const ListTile(
+      // 空态必须自曝原因：只说「没命中」会把「索引没加载起来」「查询被归一化成
+      // 别的字」「抽词抽歪了」三种完全不同的故障伪装成同一句话，用户与开发者
+      // 都无从判断（2026-11-24 用户截图即为此）。
+      final err = ClassicSearchService.loadError;
+      final n = ClassicSearchService.loadedEntryCount;
+      final terms = ClassicSearchService.lastTerms;
+      final detail = err != null
+          ? '讲义索引加载失败：$err'
+          : n == 0
+              ? '讲义索引尚未加载'
+              : '已加载 $n 条讲义，实际检索词：'
+                  '${terms.map((t) => '「$t」').join('、')}';
+      return ListTile(
         dense: true,
         contentPadding: EdgeInsets.zero,
-        leading: Icon(Icons.info_outline, size: 18),
-        title: Text('本次检索没有命中讲义内容', style: TextStyle(fontSize: 12)),
+        leading: const Icon(Icons.info_outline, size: 18),
+        title: const Text('本次检索没有命中讲义内容', style: TextStyle(fontSize: 12)),
+        subtitle: Text(detail, style: const TextStyle(fontSize: 11)),
       );
     }
     return ExpansionTile(
